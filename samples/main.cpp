@@ -1,4 +1,5 @@
-#include "../joj/include/joj/engine.h"
+#include "joj/engine.h"
+#include <iostream>
 
 int main()
 {

@@ -14,6 +14,9 @@
 #ifndef _JOJ_ENGINE_H
 #define _JOJ_ENGINE_H
 
-void joj_print();
+#define JOJ_ENGINE_IMPLEMENTATION
+#include "defines.h"
+
+JAPI void joj_print();
 
 #endif // _JOJ_ENGINE_H
