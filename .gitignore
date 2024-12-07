@@ -1,0 +1,6 @@
+# Configurations
+.vs/
+.vscode/
+
+# Builds
+build/
