@@ -1,8 +1,8 @@
-#include "joj/engine.h"
+#include "joj/platform/window.h"
 #include <iostream>
 
 int main()
 {
-    joj_print();
+    window_print();
     return 0;
 }
