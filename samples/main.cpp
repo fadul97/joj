@@ -1,7 +1,7 @@
-#include <iostream>
+#include "../joj/include/joj/engine.h"
 
 int main()
 {
-    std::cout << "Hello, World!" << std::endl;
+    joj_print();
     return 0;
 }

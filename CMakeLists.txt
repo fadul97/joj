@@ -1,14 +1,7 @@
 # Top CMakeLists.txt
 
 cmake_minimum_required(VERSION 3.22)
-project(
-	joj
-	VERSION "0.0.1"
-	DESCRIPTION "D3D11 Game Engine"
-	LANGUAGES CXX
-)
+project(joj)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
+add_subdirectory(joj)
 add_subdirectory(samples)
