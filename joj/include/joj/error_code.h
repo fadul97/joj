@@ -12,8 +12,8 @@
  * 
  */
 
-#ifndef JOJ_ERROR_CODE_H
-#define JOJ_ERROR_CODE_H
+#ifndef _JOJ_ERROR_CODE_H
+#define _JOJ_ERROR_CODE_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "defines.h"
@@ -144,4 +144,4 @@ namespace joj
     const char* err_to_str(ErrorCode err);
 }
 
-#endif // JOJ_ERROR_CODE_H
+#endif // _JOJ_ERROR_CODE_H

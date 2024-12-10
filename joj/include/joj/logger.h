@@ -11,8 +11,8 @@
  * 
  */
 
-#ifndef JOJ_LOGGER_H
-#define JOJ_LOGGER_H
+#ifndef _JOJ_LOGGER_H
+#define _JOJ_LOGGER_H
 
 #include "error_code.h"
 #include <vadefs.h>
@@ -154,4 +154,4 @@ namespace joj
 #define JFATAL(error, message, ...) joj::Logger::log(joj::LogLevel::LOG_LEVEL_FATAL, error, __FILE__, __LINE__, message, ##__VA_ARGS__);
 #endif
 
-#endif // JOJ_LOGGER_H
+#endif // _JOJ_LOGGER_H
