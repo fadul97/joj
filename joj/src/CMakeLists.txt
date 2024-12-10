@@ -6,6 +6,8 @@ project(joj)
 add_library(joj
     STATIC
     engine.cpp
+	error_code.cpp
+	logger_win32.cpp # TODO: Check for platform before adding this file
 )
 
 target_include_directories(joj
