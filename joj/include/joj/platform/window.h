@@ -8,6 +8,16 @@ JAPI void window_print();
 
 namespace joj
 {
+    enum class WindowMode { Borderless, Fullscreen, Windowed };
+
+    struct WindowRect
+    {
+        u32 left;
+        u32 top;
+        u32 right;
+        u32 bottom;
+    };
+
     template <typename T>
     class JAPI Window
     {
@@ -17,6 +27,9 @@ namespace joj
         virtual ~Window();
 
         const T& get_data() const;
+
+        const WindowRect& get_window_rect() const;
+        const WindowRect& get_client_rect() const;
 
         u32 get_width() const;
         u32 get_height() const;
@@ -29,6 +42,9 @@ namespace joj
     protected:
         T m_data;
 
+        WindowRect m_window_rect;
+        WindowRect m_client_rect;
+
         u32 m_width;
         u32 m_height;
         const char* m_title;
@@ -40,6 +56,14 @@ namespace joj
     template <typename T>
     inline const T& Window<T>::get_data() const
     { return m_data; }
+
+    template <typename T>
+    inline const WindowRect& Window<T>::get_window_rect() const
+    { return m_window_rect; }
+
+    template <typename T>
+    inline const WindowRect& Window<T>::get_client_rect() const
+    { return m_client_rect; }
 
     template <typename T>
     inline u32 Window<T>::get_width() const
