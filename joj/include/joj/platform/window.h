@@ -8,12 +8,15 @@ JAPI void window_print();
 
 namespace joj
 {
+    template <typename T>
     class JAPI Window
     {
     public:
         Window();
         Window(const char* title, const u32 width, const u32 height);
         virtual ~Window();
+
+        const T& get_data() const;
 
         u32 get_width() const;
         u32 get_height() const;
@@ -24,6 +27,8 @@ namespace joj
         u32 get_ypos() const;
 
     protected:
+        T m_data;
+
         u32 m_width;
         u32 m_height;
         const char* m_title;
@@ -32,19 +37,28 @@ namespace joj
         u32 m_ypos;
     };
 
-    inline u32 Window::get_width() const
+    template <typename T>
+    inline const T& Window<T>::get_data() const
+    { return m_data; }
+
+    template <typename T>
+    inline u32 Window<T>::get_width() const
     { return m_width; }
 
-    inline u32 Window::get_height() const
+    template <typename T>
+    inline u32 Window<T>::get_height() const
     { return m_height; }
 
-    inline const char* Window::get_title() const
+    template <typename T>
+    inline const char* Window<T>::get_title() const
     { return m_title; }
 
-    inline u32 Window::get_xpos() const
+    template <typename T>
+    inline u32 Window<T>::get_xpos() const
     { return m_xpos; }
 
-    inline u32 Window::get_ypos() const
+    template <typename T>
+    inline u32 Window<T>::get_ypos() const
     { return m_ypos; }
 }
 
