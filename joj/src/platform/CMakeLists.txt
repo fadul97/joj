@@ -7,6 +7,7 @@ add_library(jojPlatform
 	STATIC
 	window.cpp
     input.cpp
+    timer.cpp
 )
 
 target_include_directories(jojPlatform
