@@ -22,7 +22,7 @@ namespace joj
         u32 height;
     };
 
-    class JAPI Win32Window : Window<WindowData>
+    class JAPI Win32Window : public Window<WindowData>
     {
     public:
         Win32Window();
