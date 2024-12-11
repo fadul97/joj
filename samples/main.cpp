@@ -11,6 +11,15 @@ int main()
         return -1;
     }
 
+    u32 width = 0;
+    u32 height = 0;
+
+    window.get_window_size(width, height);
+    JDEBUG("Window size: %dx%d", width, height);
+
+    window.get_client_size(width, height);
+    JDEBUG("Client size: %dx%d", width, height);
+
     MSG msg = { 0 };
     bool loop = true;
     while (loop)
