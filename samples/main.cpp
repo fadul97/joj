@@ -2,10 +2,18 @@
 #include "joj/logger.h"
 #include "joj/platform/win32/window_win32.h"
 #include "joj/platform/win32/input_win32.h"
+#include "joj/platform/win32/timer_win32.h"
+#include <sstream>
+
+joj::Win32Window window;
+joj::Win32Input input;
+joj::Win32Timer timer;
+f32 frametime = 0.0f;
+f32 get_frametime();
 
 int main()
 {
-    joj::Win32Window window{ "jojWindow", 800, 600, joj::WindowMode::Windowed };
+    window = joj::Win32Window{ "jojWindow", 800, 600, joj::WindowMode::Windowed };
     if (window.create() != joj::ErrorCode::OK)
     {
         JFATAL(joj::ErrorCode::FAILED, "Failed to create Win32Window");
@@ -21,11 +29,14 @@ int main()
     window.get_client_size(width, height);
     JDEBUG("Client size: %dx%d", width, height);
 
-    joj::Win32Input input{};
     input.set_window(window.get_data());
+
+    timer.begin_period();
 
     MSG msg = { 0 };
     bool loop = true;
+
+    timer.start();
     while (loop)
     {
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -37,6 +48,8 @@ int main()
                 loop = false;
         }
 
+        frametime = get_frametime();
+
         if (input.is_key_pressed('A'))
             JDEBUG("A pressed.");
 
@@ -47,5 +60,45 @@ int main()
             loop = false;
     }
 
+    timer.end_period();
+
     return 0;
+}
+
+f32 get_frametime()
+{
+#ifdef _DEBUG
+    static f32 total_time = 0.0f;	// Total time elapsed
+    static u32  frame_count = 0;	// Elapsed frame counter
+#endif
+
+    // Current frame time
+    frametime = timer.reset();
+
+#ifdef _DEBUG
+    // Accumulated frametime
+    total_time += frametime;
+
+    // Increment frame counter
+    frame_count++;
+
+    // Updates FPS indicator in the window every 1000ms (1 second)
+    if (total_time >= 1.0f)
+    {
+        std::stringstream text;		// Text flow for messages
+        text << std::fixed;			// Always show the fractional part
+        text.precision(3);			// three numbers after comma
+
+        text << "Joj Engine v0.0.2" << "    "
+            << "FPS: " << frame_count << "    "
+            << "Frametime: " << frametime * 1000 << " (ms)";
+
+        SetWindowText(window.get_data().handle, text.str().c_str());
+
+        frame_count = 0;
+        total_time -= 1.0f;
+    }
+#endif
+
+    return frametime;
 }

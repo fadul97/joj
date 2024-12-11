@@ -7,6 +7,7 @@ add_library(jojWin32Platform
 	STATIC
 	window_win32.cpp
 	input_win32.cpp
+	timer_win32.cpp
 )
 
 target_include_directories(jojWin32Platform
