@@ -18,18 +18,29 @@ namespace joj
         HWND handle;
         HDC hdc;
         WindowMode window_mode;
-        u16 width;
-        u16 height;
+        u32 width;
+        u32 height;
     };
 
     class JAPI Win32Window : Window<WindowData>
     {
     public:
         Win32Window();
-        Win32Window(const char* title, const u32 width, const u32 height);
+        Win32Window(const char* title, const u32 width, const u32 height,
+            const WindowMode mode);
         ~Win32Window();
 
+        ErrorCode create() override;
+        void destroy() override;
+
+        static LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam,
+            LPARAM lParam);
+
     private:
+        HICON m_icon;
+        HCURSOR m_cursor;
+        u32 m_color;
+        u32 m_style;
     };
 }
 
