@@ -21,8 +21,8 @@ namespace joj
 
         f64 get_total_elapsed() const;
 
-        void time_begin_period() {}
-        void time_end_period() {}
+        void begin_period() {}
+        void end_period() {}
 
     protected:
         b8 m_stopped;
