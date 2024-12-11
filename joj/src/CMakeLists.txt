@@ -16,15 +16,18 @@ target_include_directories(joj
 )
 
 add_subdirectory(platform)
+add_subdirectory(renderer)
 
 target_link_directories(
     joj
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platform/
+    ${CMAKE_CURRENT_SOURCE_DIR}/renderer/
 )
 
 target_link_libraries(
     joj
     PRIVATE
     jojPlatform
+    jojRenderer
 )

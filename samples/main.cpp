@@ -4,6 +4,7 @@
 #include "joj/platform/win32/input_win32.h"
 #include "joj/platform/win32/timer_win32.h"
 #include <sstream>
+#include "joj/renderer/renderer.h"
 
 joj::Win32Window window;
 joj::Win32Input input;
@@ -35,6 +36,8 @@ int main()
 
     MSG msg = { 0 };
     bool loop = true;
+
+    renderer_print();
 
     timer.start();
     while (loop)
