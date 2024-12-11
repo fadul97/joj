@@ -6,6 +6,7 @@ project(joj)
 add_library(jojPlatform
 	STATIC
 	window.cpp
+    input.cpp
 )
 
 target_include_directories(jojPlatform
