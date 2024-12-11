@@ -37,6 +37,9 @@ namespace joj
         u32 get_width() const;
         u32 get_height() const;
 
+        virtual void get_window_size(u32& width, u32& height) = 0;
+        virtual void get_client_size(u32& width, u32& height) = 0;
+
         const char* get_title() const;
 
         u32 get_xpos() const;

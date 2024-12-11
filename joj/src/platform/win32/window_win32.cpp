@@ -292,4 +292,42 @@ LRESULT CALLBACK joj::Win32Window::WinProc(HWND hWnd, UINT msg, WPARAM wParam, L
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
+void joj::Win32Window::get_window_size(u32& width, u32& height)
+{
+    RECT window_rect;
+    if (GetWindowRect(m_data.handle, &window_rect))
+    {
+        m_window_rect.left = window_rect.left;
+        m_window_rect.top = window_rect.top;
+        m_window_rect.right = window_rect.right;
+        m_window_rect.bottom = window_rect.bottom;
+
+        width = m_window_rect.right - m_window_rect.left;
+        height = m_window_rect.bottom - m_window_rect.top;
+    }
+    else
+    {
+        JERROR(ErrorCode::ERR_WINDOW_RECT, "Failed to get window rect.");
+    }
+}
+
+void joj::Win32Window::get_client_size(u32& width, u32& height)
+{
+    RECT client_rect;
+    if (GetClientRect(m_data.handle, &client_rect))
+    {
+        m_client_rect.left = client_rect.left;
+        m_client_rect.top = client_rect.top;
+        m_client_rect.right = client_rect.right;
+        m_client_rect.bottom = client_rect.bottom;
+
+        width = m_client_rect.right - m_client_rect.left;
+        height = m_client_rect.bottom - m_client_rect.top;
+    }
+    else
+    {
+        JERROR(ErrorCode::ERR_WINDOW_CLIENT_RECT, "Failed to get client rect.");
+    }
+}
+
 #endif // JPLATFORM_WINDOWS

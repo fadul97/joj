@@ -33,6 +33,9 @@ namespace joj
         ErrorCode create() override;
         void destroy() override;
 
+        void get_window_size(u32& width, u32& height) override;
+        void get_client_size(u32& width, u32& height) override;
+
         static LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam,
             LPARAM lParam);
 
