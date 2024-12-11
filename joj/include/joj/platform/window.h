@@ -4,6 +4,8 @@
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "defines.h"
 
+#include "error_code.h"
+
 JAPI void window_print();
 
 namespace joj
@@ -23,7 +25,8 @@ namespace joj
     {
     public:
         Window();
-        Window(const char* title, const u32 width, const u32 height);
+        Window(const char* title, const u32 width, const u32 height,
+            const WindowMode mode);
         virtual ~Window();
 
         const T& get_data() const;
@@ -39,6 +42,9 @@ namespace joj
         u32 get_xpos() const;
         u32 get_ypos() const;
 
+        virtual ErrorCode create() = 0;
+        virtual void destroy() = 0;
+
     protected:
         T m_data;
 
@@ -48,6 +54,8 @@ namespace joj
         u32 m_width;
         u32 m_height;
         const char* m_title;
+
+        WindowMode m_mode;
 
         u32 m_xpos;
         u32 m_ypos;
