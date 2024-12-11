@@ -20,6 +20,8 @@ namespace joj
         u32 bottom;
     };
 
+    struct WindowData;
+
     template <typename T>
     class JAPI Window
     {
