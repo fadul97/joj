@@ -56,8 +56,8 @@ namespace joj
         /** @brief D3D11 Context Error code, should be used when creation of D3D11Device fails. */
         ERR_CONTEXT_D3D11_DEVICE_CREATION,
 
-        /** @brief D3D11 Context Error code, should be used when creation of Warp Adapter fails. */
-        ERR_CONTEXT_D3D11_WARP_ADAPTER_CREATION,
+        /** @brief D3D11 Context Error code, should be used when creation of Warp Device Adapter fails. */
+        ERR_CONTEXT_D3D11_WARP_DEVICE_ADAPTER_CREATION,
 
         /** @brief D3D11 Context Error code, should be used when querying ID3D11Debug fails. */
         ERR_CONTEXT_D3D11_QUERY_INTERFACE_ID3D11_DEBUG,
