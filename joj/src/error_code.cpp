@@ -52,7 +52,7 @@ int joj::err_to_int(const ErrorCode err)
     case ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_FACTORY:
         return -15;
 
-    case ErrorCode::ERR_D3D11CONTEXT_CREATION:
+    case ErrorCode::ERR_CONTEXT_D3D11_CREATION:
         return -16;
 
     case ErrorCode::ERR_SWAPCHAIN_D311_CREATION:
@@ -64,7 +64,7 @@ int joj::err_to_int(const ErrorCode err)
     case ErrorCode::ERR_RENDER_TARGET_VIEW_D3D11_CREATION:
         return -19;
 
-    case ErrorCode::ERR_DEPTHSTENCIL_D3D11_BUFFER:
+    case ErrorCode::ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION:
         return -20;
 
     case ErrorCode::ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION:
@@ -145,8 +145,8 @@ const char* joj::err_to_str(const ErrorCode err)
     case ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_FACTORY:
         return "ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_FACTORY";
 
-    case ErrorCode::ERR_D3D11CONTEXT_CREATION:
-        return "ERR_D3D11CONTEXT_CREATION";
+    case ErrorCode::ERR_CONTEXT_D3D11_CREATION:
+        return "ERR_CONTEXT_D3D11_CREATION";
 
     case ErrorCode::ERR_SWAPCHAIN_D311_CREATION:
         return "ERR_SWAPCHAIN_D311_CREATION";
@@ -157,8 +157,8 @@ const char* joj::err_to_str(const ErrorCode err)
     case ErrorCode::ERR_RENDER_TARGET_VIEW_D3D11_CREATION:
         return "ERR_RENDER_TARGET_VIEW_D3D11_CREATION";
 
-    case ErrorCode::ERR_DEPTHSTENCIL_D3D11_BUFFER:
-        return "ERR_DEPTHSTENCIL_D3D11_BUFFER";
+    case ErrorCode::ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION:
+        return "ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION";
 
     case ErrorCode::ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION:
         return "ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION";
