@@ -7,8 +7,8 @@
 
 joj::D3D11Renderer::D3D11Renderer()
 {
-    m_data.device = nullptr;
-    m_data.device_context = nullptr;
+    m_graphics_device.device = nullptr;
+    m_cmd_list.device_context = nullptr;
     m_factory = nullptr;
     m_context_created = false;
 
@@ -84,19 +84,19 @@ joj::D3D11Renderer::~D3D11Renderer()
     }
 
     // Release device context
-    if (m_data.device_context)
+    if (m_cmd_list.device_context)
     {
         // Restores to original state
-        m_data.device_context->ClearState();
-        m_data.device_context->Release();
-        m_data.device_context = nullptr;
+        m_cmd_list.device_context->ClearState();
+        m_cmd_list.device_context->Release();
+        m_cmd_list.device_context = nullptr;
     }
 
     // Release device
-    if (m_data.device)
+    if (m_graphics_device.device)
     {
-        m_data.device->Release();
-        m_data.device = nullptr;
+        m_graphics_device.device->Release();
+        m_graphics_device.device = nullptr;
     }
 
 #if JOJ_DEBUG_MODE
@@ -140,9 +140,9 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
         NULL,                            // Default feature level (NULL = max supported)
         0,                               // Size of feature level array
         D3D11_SDK_VERSION,               // Direct3D SDK version
-        &m_data.device,                  // Stores D3D device created
+        &m_graphics_device.device,                  // Stores D3D device created
         &feature_level,                  // Current Direct3D version in use,
-        &m_data.device_context)          // D3D context device
+        &m_cmd_list.device_context)          // D3D context device
         != S_OK)
     {
         JERROR(ErrorCode::ERR_CONTEXT_D3D11_DEVICE_CREATION,
@@ -150,7 +150,7 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
 
         if (D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_WARP,
             NULL, create_device_flags, NULL, 0, D3D11_SDK_VERSION,
-            &m_data.device, &feature_level, &m_data.device_context) != S_OK)
+            &m_graphics_device.device, &feature_level, &m_cmd_list.device_context) != S_OK)
         {
             JFATAL(ErrorCode::ERR_CONTEXT_D3D11_WARP_DEVICE_ADAPTER_CREATION,
                 "Failed to create WARP Adapter.");
@@ -159,7 +159,7 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
     }
 
 #if JOJ_DEBUG_MODE
-    if (m_data.device->QueryInterface(__uuidof(ID3D11Debug), (void**)&m_debug) != S_OK)
+    if (m_graphics_device.device->QueryInterface(__uuidof(ID3D11Debug), (void**)&m_debug) != S_OK)
     {
         JERROR(ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_ID3D11_DEBUG,
             "Failed to QueryInterface of ID3D11Debug.");
@@ -167,7 +167,7 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
 #endif // JOJ_DEBUG_MODE
 
     IDXGIDevice* dxgi_device = nullptr;
-    if (m_data.device->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgi_device) != S_OK)
+    if (m_graphics_device.device->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgi_device) != S_OK)
     {
         JFATAL(ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_IDXGI_DEVICE,
             "Failed to QueryInterface of DXGIDevice.");
@@ -213,19 +213,19 @@ void joj::D3D11Renderer::destroy_context()
     }
 
     // Release device context
-    if (m_data.device_context)
+    if (m_cmd_list.device_context)
     {
         // Restores to original state
-        m_data.device_context->ClearState();
-        m_data.device_context->Release();
-        m_data.device_context = nullptr;
+        m_cmd_list.device_context->ClearState();
+        m_cmd_list.device_context->Release();
+        m_cmd_list.device_context = nullptr;
     }
 
     // Release device
-    if (m_data.device)
+    if (m_graphics_device.device)
     {
-        m_data.device->Release();
-        m_data.device = nullptr;
+        m_graphics_device.device->Release();
+        m_graphics_device.device = nullptr;
     }
 }
 
@@ -243,7 +243,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
         m_context_created = true;
     }
 
-    if (m_data.device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM,
+    if (m_graphics_device.device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM,
         4, &m_4xmsaa_quality) != S_OK)
     {
         // TODO: Better ErrorCode
@@ -294,7 +294,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     swap_chain_desc.Flags = 0;                                                              // Use Back buffer size for Fullscreen
 
     // Create Swap Chain
-    if (m_factory->CreateSwapChain(m_data.device, &swap_chain_desc,
+    if (m_factory->CreateSwapChain(m_graphics_device.device, &swap_chain_desc,
         &m_swapchain) != S_OK)
     {
         JFATAL(ErrorCode::ERR_SWAPCHAIN_D311_CREATION,
@@ -317,7 +317,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     }
 
     // Create render target view for backbuffer
-    if (m_data.device->CreateRenderTargetView(backbuffer, NULL,
+    if (m_graphics_device.device->CreateRenderTargetView(backbuffer, NULL,
         &m_render_target_view) != S_OK)
     {
         JFATAL(ErrorCode::ERR_RENDER_TARGET_VIEW_D3D11_CREATION,
@@ -357,7 +357,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
 
     // Create Depth/Stencil Buffer
     ID3D11Texture2D* depth_stencil_buffer;
-    if (m_data.device->CreateTexture2D(&depth_stencil_desc, 0,
+    if (m_graphics_device.device->CreateTexture2D(&depth_stencil_desc, 0,
         &depth_stencil_buffer) != S_OK)
     {
         JFATAL(ErrorCode::ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION,
@@ -366,7 +366,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     }
 
     // Create Depth/Stencil View
-    if (m_data.device->CreateDepthStencilView(depth_stencil_buffer, 0,
+    if (m_graphics_device.device->CreateDepthStencilView(depth_stencil_buffer, 0,
         &m_depth_stencil_view) != S_OK)
     {
         JFATAL(ErrorCode::ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION,
@@ -375,7 +375,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     }
 
     // Bind render target and depth stencil to the Output Merger stage
-    m_data.device_context->OMSetRenderTargets(
+    m_cmd_list.device_context->OMSetRenderTargets(
         1, &m_render_target_view, m_depth_stencil_view);
 
     // ---------------------------------------------------
@@ -391,7 +391,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     m_viewport.MaxDepth = 1.0f;
 
     // Set Viewport
-    m_data.device_context->RSSetViewports(1, &m_viewport);
+    m_cmd_list.device_context->RSSetViewports(1, &m_viewport);
 
     // ---------------------------------------------
     // Blend State
@@ -411,7 +411,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     blend_desc.RenderTarget[0].RenderTargetWriteMask = 0x0F;                 // Components of each pixel that can be overwritten
 
     // Create blend state
-    if (m_data.device->CreateBlendState(&blend_desc, &m_blend_state) != S_OK)
+    if (m_graphics_device.device->CreateBlendState(&blend_desc, &m_blend_state) != S_OK)
     {
         JFATAL(ErrorCode::ERR_BLENDSTATE_D3D11_CREATION,
             "Failed to create D3D11 BlendState.");
@@ -419,7 +419,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     }
 
     // Bind blend state to the Output Merger stage
-    m_data.device_context->OMSetBlendState(m_blend_state, nullptr, 0xffffffff);
+    m_cmd_list.device_context->OMSetBlendState(m_blend_state, nullptr, 0xffffffff);
 
     // ---------------------------------------------------
     // Rasterizer
@@ -433,7 +433,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     rasterizer_desc.DepthClipEnable = true;
 
     // Create Solid rasterizer state
-    if (m_data.device->CreateRasterizerState(&rasterizer_desc, &m_rasterizer_state_solid) != S_OK)
+    if (m_graphics_device.device->CreateRasterizerState(&rasterizer_desc, &m_rasterizer_state_solid) != S_OK)
     {
         JFATAL(ErrorCode::ERR_RASTERIZER_D3D11_CREATION, "Failed to create D3D11 RasterizerState.");
         return ErrorCode::ERR_RASTERIZER_D3D11_CREATION;
@@ -443,14 +443,14 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     rasterizer_desc.CullMode = D3D11_CULL_BACK;
 
     // Create Wireframe rasterizer state
-    if (m_data.device->CreateRasterizerState(&rasterizer_desc, &m_rasterizer_state_wireframe) != S_OK)
+    if (m_graphics_device.device->CreateRasterizerState(&rasterizer_desc, &m_rasterizer_state_wireframe) != S_OK)
     {
         JFATAL(ErrorCode::ERR_RASTERIZER_D3D11_CREATION, "Failed to create RasterizerState.");
         return ErrorCode::ERR_RASTERIZER_D3D11_CREATION;
     }
 
     // Set Solid rasterizer state as default
-    m_data.device_context->RSSetState(m_rasterizer_state_solid);
+    m_cmd_list.device_context->RSSetState(m_rasterizer_state_solid);
 
     // ---------------------------------------------------
     //	Release Resources
@@ -516,19 +516,19 @@ void joj::D3D11Renderer::shutdown()
     }
 
     // Release device context
-    if (m_data.device_context)
+    if (m_cmd_list.device_context)
     {
         // Restores to original state
-        m_data.device_context->ClearState();
-        m_data.device_context->Release();
-        m_data.device_context = nullptr;
+        m_cmd_list.device_context->ClearState();
+        m_cmd_list.device_context->Release();
+        m_cmd_list.device_context = nullptr;
     }
 
     // Release device
-    if (m_data.device)
+    if (m_graphics_device.device)
     {
-        m_data.device->Release();
-        m_data.device = nullptr;
+        m_graphics_device.device->Release();
+        m_graphics_device.device = nullptr;
     }
 }
 
@@ -543,20 +543,25 @@ void joj::D3D11Renderer::resize(i32 width, i32 height)
     m_viewport.MaxDepth = 1.0f;
 
     // Set Viewport
-    m_data.device_context->RSSetViewports(1, &m_viewport);
+    m_cmd_list.device_context->RSSetViewports(1, &m_viewport);
 }
 
-joj::RendererData& joj::D3D11Renderer::get_data()
+joj::GraphicsDevice& joj::D3D11Renderer::get_device()
 {
-    return m_data;
+    return m_graphics_device;
+}
+
+joj::CommandList& joj::D3D11Renderer::get_cmd_list()
+{
+    return m_cmd_list;
 }
 
 void joj::D3D11Renderer::clear(f32 r, f32 g, f32 b, f32 a)
 {
     // Background color of the backbuffer = window background color
     f32 bgcolor[4]{ r, g, b, a };
-    m_data.device_context->ClearRenderTargetView(m_render_target_view, bgcolor);
-    m_data.device_context->ClearDepthStencilView(m_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    m_cmd_list.device_context->ClearRenderTargetView(m_render_target_view, bgcolor);
+    m_cmd_list.device_context->ClearDepthStencilView(m_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 void joj::D3D11Renderer::swap_buffers()
@@ -567,7 +572,7 @@ void joj::D3D11Renderer::swap_buffers()
         return;
     }
 
-    m_data.device_context->OMSetRenderTargets(1, &m_render_target_view, m_depth_stencil_view);
+    m_cmd_list.device_context->OMSetRenderTargets(1, &m_render_target_view, m_depth_stencil_view);
 }
 
 

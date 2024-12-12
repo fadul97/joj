@@ -11,7 +11,9 @@ JAPI void renderer_print();
 
 namespace joj
 {
-    struct RendererData;
+    struct GraphicsDevice;
+
+    struct CommandList;
 
     class JAPI IRenderer
     {
@@ -27,7 +29,8 @@ namespace joj
 
         virtual void resize(i32 width, i32 height) = 0;
 
-        virtual RendererData& get_data() = 0;
+        virtual GraphicsDevice& get_device() = 0;
+        virtual CommandList& get_cmd_list() = 0;
 
         virtual void clear(f32 r = 0.23f, f32 g = 0.23f, f32 b = 0.23f, f32 a = 1.0f) = 0;
         virtual void swap_buffers() = 0;

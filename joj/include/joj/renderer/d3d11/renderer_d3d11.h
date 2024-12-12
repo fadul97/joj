@@ -16,9 +16,13 @@
 
 namespace joj
 {
-    struct RendererData
+    struct GraphicsDevice
     {
         ID3D11Device* device;
+    };
+
+    struct CommandList
+    {
         ID3D11DeviceContext* device_context;
     };
 
@@ -36,7 +40,8 @@ namespace joj
 
         void resize(i32 width, i32 height) override;
 
-        RendererData& get_data() override;
+        GraphicsDevice& get_device() override;
+        CommandList& get_cmd_list() override;
 
         void clear(f32 r = 0.23f, f32 g = 0.23f, f32 b = 0.23f, f32 a = 1.0f) override;
         void swap_buffers() override;
@@ -46,7 +51,8 @@ namespace joj
 #endif // JOJ_DEBUG_MODE
 
     private:
-        RendererData m_data;
+        GraphicsDevice m_graphics_device;
+        CommandList m_cmd_list;
 
         IDXGIFactory6* m_factory;
 
