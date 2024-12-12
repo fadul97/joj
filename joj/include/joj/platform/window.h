@@ -43,6 +43,7 @@ namespace joj
         virtual void get_client_size(u32& width, u32& height) = 0;
 
         const char* get_title() const;
+        virtual void set_title(const char* title) = 0;
 
         u32 get_xpos() const;
         u32 get_ypos() const;

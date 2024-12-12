@@ -330,4 +330,9 @@ void joj::Win32Window::get_client_size(u32& width, u32& height)
     }
 }
 
+void joj::Win32Window::set_title(const char* title)
+{
+    SetWindowText(m_data.handle, title);
+}
+
 #endif // JPLATFORM_WINDOWS

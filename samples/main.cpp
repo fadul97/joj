@@ -80,15 +80,15 @@ int main()
 
 f32 get_frametime()
 {
-#ifdef _DEBUG
+#ifdef JOJ_DEBUG_MODE
     static f32 total_time = 0.0f;	// Total time elapsed
     static u32  frame_count = 0;	// Elapsed frame counter
-#endif
+#endif // JOJ_DEBUG_MODE
 
     // Current frame time
     frametime = timer.reset();
 
-#ifdef _DEBUG
+#ifdef JOJ_DEBUG_MODE
     // Accumulated frametime
     total_time += frametime;
 
@@ -102,16 +102,16 @@ f32 get_frametime()
         text << std::fixed;			// Always show the fractional part
         text.precision(3);			// three numbers after comma
 
-        text << "Joj Engine v0.0.2" << "    "
+        text << "Joj Engine v0.0.1" << "    "
             << "FPS: " << frame_count << "    "
             << "Frametime: " << frametime * 1000 << " (ms)";
 
-        SetWindowText(window.get_data().handle, text.str().c_str());
+        window.set_title(text.str().c_str());
 
         frame_count = 0;
         total_time -= 1.0f;
     }
-#endif
+#endif // JOJ_DEBUG_MODE
 
     return frametime;
 }

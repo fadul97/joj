@@ -36,6 +36,8 @@ namespace joj
         void get_window_size(u32& width, u32& height) override;
         void get_client_size(u32& width, u32& height) override;
 
+        void set_title(const char* title) override;
+
         static LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam,
             LPARAM lParam);
 
