@@ -12,9 +12,9 @@ add_library(
 if(WIN32)
     target_link_directories(
         jojD3D11Renderer 
-        PUBLIC 
+        PRIVATE 
         ${CMAKE_CURRENT_SOURCE_DIR}/../../platform/
     )
 
-    target_link_libraries(jojD3D11Renderer PUBLIC jojRenderer dxgi.lib d3d11.lib D3DCompiler.lib)
+    target_link_libraries(jojD3D11Renderer PRIVATE jojRenderer dxgi.lib d3d11.lib D3DCompiler.lib)
 endif()

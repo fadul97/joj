@@ -18,10 +18,10 @@ if(WIN32)
 
     target_link_directories(
         jojRenderer 
-        PUBLIC
+        PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../platform/
         ${CMAKE_CURRENT_SOURCE_DIR}/d3d11/
     )
 
-    target_link_libraries(jojRenderer PUBLIC jojPlatform jojD3D11Renderer)
+    target_link_libraries(jojRenderer PRIVATE jojPlatform jojD3D11Renderer)
 endif()
