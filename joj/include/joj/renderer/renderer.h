@@ -28,10 +28,6 @@ namespace joj
 
         virtual RendererData& get_data() = 0;
     };
-
-    inline IRenderer::IRenderer() {}
-
-    inline IRenderer::~IRenderer() {}
 }
 
 #endif // _JOJ_RENDERER_H
