@@ -31,3 +31,5 @@ target_link_libraries(
     jojPlatform
     jojRenderer
 )
+
+target_compile_definitions(joj PRIVATE JOJ_DEBUG_MODE)

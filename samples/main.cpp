@@ -4,7 +4,7 @@
 #include "joj/platform/win32/input_win32.h"
 #include "joj/platform/win32/timer_win32.h"
 #include <sstream>
-#include "joj/renderer/renderer.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
 
 joj::Win32Window window;
 joj::Win32Input input;
@@ -38,6 +38,13 @@ int main()
     bool loop = true;
 
     renderer_print();
+
+    joj::D3D11Renderer renderer;
+    if (renderer.create_context() != joj::ErrorCode::OK)
+    {
+        JFATAL(joj::ErrorCode::FAILED, "Failed to create D3D11 Context");
+        return -2;
+    }
 
     timer.start();
     while (loop)
