@@ -5,6 +5,7 @@
 #include "defines.h"
 
 #include "error_code.h"
+#include "platform/window.h"
 
 JAPI void renderer_print();
 
@@ -21,12 +22,15 @@ namespace joj
         virtual ErrorCode create_context() = 0;
         virtual void destroy_context() = 0;
 
-        virtual ErrorCode initialize() = 0;
+        virtual ErrorCode initialize(WindowData window) = 0;
         virtual void shutdown() = 0;
 
         virtual void resize(i32 width, i32 height) = 0;
 
         virtual RendererData& get_data() = 0;
+
+        virtual void clear(f32 r = 0.23f, f32 g = 0.23f, f32 b = 0.23f, f32 a = 1.0f) = 0;
+        virtual void swap_buffers() = 0;
     };
 }
 

@@ -31,12 +31,15 @@ namespace joj
         ErrorCode create_context() override;
         void destroy_context() override;
 
-        ErrorCode initialize() override;
+        ErrorCode initialize(WindowData window) override;
         void shutdown() override;
 
         void resize(i32 width, i32 height) override;
 
         RendererData& get_data() override;
+
+        void clear(f32 r = 0.23f, f32 g = 0.23f, f32 b = 0.23f, f32 a = 1.0f) override;
+        void swap_buffers() override;
 
 #if JOJ_DEBUG_MODE
         void log_hardware_info();
@@ -46,6 +49,21 @@ namespace joj
         RendererData m_data;
 
         IDXGIFactory6* m_factory;
+
+        b8 m_context_created;
+
+        b8 m_4xmsaa_enabled;
+        u32 m_4xmsaa_quality;
+        b8 m_vsync;
+        u32 m_buffer_count;
+
+        IDXGISwapChain* m_swapchain;                            // Swap chain
+        ID3D11RenderTargetView* m_render_target_view;           // Backbuffer render target view
+        ID3D11DepthStencilView* m_depth_stencil_view;           // Depth/Stencil view
+        D3D11_VIEWPORT m_viewport;                              // Viewport
+        ID3D11BlendState* m_blend_state;                        // Color mix settings
+        ID3D11RasterizerState* m_rasterizer_state_solid;        // Solid Rasterizer state
+        ID3D11RasterizerState* m_rasterizer_state_wireframe;    // Wireframe Rasterizer state
 
 #if JOJ_DEBUG_MODE
         ID3D11Debug* m_debug;
