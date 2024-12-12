@@ -37,7 +37,7 @@ int joj::err_to_int(const ErrorCode err)
     case ErrorCode::ERR_CONTEXT_D3D11_DEVICE_CREATION:
         return -10;
 
-    case ErrorCode::ERR_CONTEXT_D3D11_WARP_ADAPTER_CREATION:
+    case ErrorCode::ERR_CONTEXT_D3D11_WARP_DEVICE_ADAPTER_CREATION:
         return -11;
 
     case ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_ID3D11_DEBUG:
@@ -130,8 +130,8 @@ const char* joj::err_to_str(const ErrorCode err)
     case ErrorCode::ERR_CONTEXT_D3D11_DEVICE_CREATION:
         return "ERR_CONTEXT_D3D11_DEVICE_CREATION";
 
-    case ErrorCode::ERR_CONTEXT_D3D11_WARP_ADAPTER_CREATION:
-        return "ERR_CONTEXT_D3D11_WARP_ADAPTER_CREATION";
+    case ErrorCode::ERR_CONTEXT_D3D11_WARP_DEVICE_ADAPTER_CREATION:
+        return "ERR_CONTEXT_D3D11_WARP_DEVICE_ADAPTER_CREATION";
 
     case ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_ID3D11_DEBUG:
         return "ERR_CONTEXT_D3D11_QUERY_INTERFACE_ID3D11_DEBUG";
