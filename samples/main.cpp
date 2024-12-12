@@ -40,7 +40,7 @@ int main()
     renderer_print();
 
     joj::D3D11Renderer renderer;
-    if (renderer.create_context() != joj::ErrorCode::OK)
+    if (renderer.initialize(window.get_data()) != joj::ErrorCode::OK)
     {
         JFATAL(joj::ErrorCode::FAILED, "Failed to create D3D11 Context");
         return -2;
@@ -68,6 +68,9 @@ int main()
 
         if (input.is_key_pressed(joj::KEY_ESCAPE))
             loop = false;
+
+        renderer.clear(1.0f, 1.0f, 0.0f, 1.0f);
+        renderer.swap_buffers();
     }
 
     timer.end_period();
