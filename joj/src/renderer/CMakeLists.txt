@@ -8,6 +8,10 @@ add_library(jojRenderer
 	renderer.cpp
 )
 
+if (WIN32)
+	add_subdirectory(d3d11)
+endif()
+
 target_include_directories(jojRenderer
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
