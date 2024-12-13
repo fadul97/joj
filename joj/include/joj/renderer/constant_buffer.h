@@ -11,22 +11,6 @@ namespace joj
 {
     struct CBData;
 
-    inline u32 calculate_cb_byte_size(u32 byte_size)
-    {
-        // Constant buffers must be a multiple of the minimum hardware
-        // allocation size (usually 256 bytes).  So round up to nearest
-        // multiple of 256.  We do this by adding 255 and then masking off
-        // the lower 2 bytes which store all bits < 256.
-        // Example: Suppose byte_size = 300.
-        // (300 + 255) & ~255
-        // 555 & ~255
-        // 0x022B & ~0x00ff
-        // 0x022B & 0xff00
-        // 0x0200
-        // 512
-        return (byte_size + 255) & ~255;
-    }
-
     class JAPI IConstantBuffer
     {
     public:
@@ -37,13 +21,26 @@ namespace joj
 
         virtual ErrorCode create(GraphicsDevice& device) = 0;
 
-        virtual void bind(CommandList& cmd_list, u32 start_slot,
-            u32 num_buffers, const u32* stride, const u32* offset) = 0;
+        virtual void bind_to_vertex_shader(CommandList& cmd_list,
+            u32 start_slot, u32 num_buffers) = 0;
+        virtual void bind_to_pixel_shader(CommandList& cmd_list,
+            u32 start_slot, u32 num_buffers) = 0;
 
-        virtual void update(CommandList& cmd_list, void* data, const u32 sizeof_data) = 0;
+        template <typename T>
+        void update(CommandList& cmd_list, T& data);
 
         virtual CBData& get_data() = 0;
+
+    protected:
+        virtual void update_internal(CommandList& cmd_list, const void* data, const u32 sizeof_data) = 0;
     };
+
+    template <typename T>
+    inline void IConstantBuffer::update(CommandList& cmd_list, T& data)
+    {
+        // static_assert(sizeof(T) <= max_buffer_size, "Data size exceeds constant buffer limits.");
+        update_internal(cmd_list, &data, sizeof(T));
+    }
 }
 
 #endif // _JOJ_CONSTANT_BUFFER_H
