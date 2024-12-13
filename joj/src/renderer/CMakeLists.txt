@@ -6,7 +6,7 @@ project(joj)
 add_library(jojRenderer
 	STATIC
 	renderer.cpp
-)
+    vertex_buffer.cpp)
 
 target_include_directories(jojRenderer
     PUBLIC
