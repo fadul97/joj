@@ -65,6 +65,7 @@ HelloTriangle::HelloTriangle()
     window = joj::Win32Window{ "jojWindow", 800, 600, joj::WindowMode::Windowed };
     input = joj::Win32Input();
     timer = joj::Win32Timer();
+    renderer = joj::D3D11Renderer();
 }
 
 HelloTriangle::~HelloTriangle()
@@ -92,7 +93,6 @@ void HelloTriangle::init()
 
     renderer_print();
 
-    // renderer = joj::D3D11Renderer();
     if (renderer.initialize(window.get_data()) != joj::ErrorCode::OK)
         return;
 
@@ -173,8 +173,7 @@ void HelloTriangle::update(const f32 dt)
     XMMATRIX rotationMatrix = XMMatrixRotationZ(angle);
     ConstantBuffer cbData = {};
     cbData.transform = XMMatrixTranspose(rotationMatrix); // Transpor para o formato row-major exigido pelo HLSL
-    // cbData.transform = XMMatrixTranspose(XMMatrixIdentity());
-    // renderer.get_cmd_list().device_context->UpdateSubresource(gConstantBuffer, 0, nullptr, &cbData, 0, 0);
+    cbData.transform = XMMatrixTranspose(XMMatrixIdentity());
     m_cb.update(renderer.get_cmd_list(), cbData);
 }
 
@@ -190,7 +189,6 @@ void HelloTriangle::draw()
     m_vb.bind(renderer.get_cmd_list(), 0, 1, &stride, &offset);
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
-    // renderer.get_cmd_list().device_context->VSSetConstantBuffers(0, 1, &gConstantBuffer);
 
     renderer.get_cmd_list().device_context->VSSetShader(gVertexShader, nullptr, 0);
     renderer.get_cmd_list().device_context->PSSetShader(gPixelShader, nullptr, 0);

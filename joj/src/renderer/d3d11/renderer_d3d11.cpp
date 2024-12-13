@@ -100,10 +100,13 @@ joj::D3D11Renderer::~D3D11Renderer()
     }
 
 #if JOJ_DEBUG_MODE
-    // Report live objects
-    m_debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-    m_debug->Release();
-    m_debug = nullptr;
+    if (m_debug)
+    {
+        // Report live objects
+        m_debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        m_debug->Release();
+        m_debug = nullptr;
+    }
 #endif // JOJ_DEBUG_MODE
 }
 
