@@ -7,6 +7,7 @@
 #include "joj/platform/win32/timer_win32.h"
 #include "joj/renderer/d3d11/renderer_d3d11.h"
 #include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
+#include "joj/renderer/d3d11/constant_buffer_d3d11.h"
 
 class HelloTriangle
 {
@@ -29,6 +30,7 @@ public:
     f32 frametime = 0.0f;
 
     joj::D3D11VertexBuffer m_vb;
+    joj::D3D11ConstantBuffer m_cb;
 };
 
 #endif // _JOJ_HELLO_TRIANGLE_H

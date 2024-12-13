@@ -55,8 +55,6 @@ const char* gPixelShaderCode = R"(
     }
 )";
 
-ID3D11Buffer* gConstantBuffer = nullptr;
-
 // Estrutura para o Constant Buffer
 struct ConstantBuffer {
     XMMATRIX transform;
@@ -110,23 +108,15 @@ void HelloTriangle::init()
     m_vb.setup(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(vertices), vertices);
     m_vb.create(renderer.get_device());
 
-    D3D11_BUFFER_DESC cbDesc = {};
-    cbDesc.Usage = D3D11_USAGE_DEFAULT;
-    cbDesc.ByteWidth = sizeof(ConstantBuffer);
-    cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    cbDesc.CPUAccessFlags = 0;
+    m_cb.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
+    m_cb.create(renderer.get_device());
 
-    HRESULT hr = renderer.get_device().device->CreateBuffer(&cbDesc, nullptr, &gConstantBuffer);
-    if (FAILED(hr)) {
-        OutputDebugStringA("Falha ao criar Constant Buffer.\n");
-        return;
-    }
 
     // Compilação dos shaders e criação do pipeline
     ID3DBlob* vertexShaderBlob = nullptr;
     ID3DBlob* errorBlob = nullptr;
 
-    hr = D3DCompile(
+    HRESULT hr = D3DCompile(
         gVertexShaderCode, strlen(gVertexShaderCode), nullptr, nullptr, nullptr,
         "main", "vs_5_0", 0, 0, &vertexShaderBlob, &errorBlob);
 
@@ -183,8 +173,9 @@ void HelloTriangle::update(const f32 dt)
     XMMATRIX rotationMatrix = XMMatrixRotationZ(angle);
     ConstantBuffer cbData = {};
     cbData.transform = XMMatrixTranspose(rotationMatrix); // Transpor para o formato row-major exigido pelo HLSL
-    // cbData.transform = XMMatrixIdentity();
-    renderer.get_cmd_list().device_context->UpdateSubresource(gConstantBuffer, 0, nullptr, &cbData, 0, 0);
+    // cbData.transform = XMMatrixTranspose(XMMatrixIdentity());
+    // renderer.get_cmd_list().device_context->UpdateSubresource(gConstantBuffer, 0, nullptr, &cbData, 0, 0);
+    m_cb.update(renderer.get_cmd_list(), cbData);
 }
 
 void HelloTriangle::draw()
@@ -198,7 +189,8 @@ void HelloTriangle::draw()
     UINT offset = 0;
     m_vb.bind(renderer.get_cmd_list(), 0, 1, &stride, &offset);
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    renderer.get_cmd_list().device_context->VSSetConstantBuffers(0, 1, &gConstantBuffer);
+    m_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
+    // renderer.get_cmd_list().device_context->VSSetConstantBuffers(0, 1, &gConstantBuffer);
 
     renderer.get_cmd_list().device_context->VSSetShader(gVertexShader, nullptr, 0);
     renderer.get_cmd_list().device_context->PSSetShader(gPixelShader, nullptr, 0);
@@ -216,7 +208,6 @@ void HelloTriangle::shutdown()
     gInputLayout->Release();
     gVertexShader->Release();
     gPixelShader->Release();
-    gConstantBuffer->Release();
 }
 
 f32 HelloTriangle::get_frametime()

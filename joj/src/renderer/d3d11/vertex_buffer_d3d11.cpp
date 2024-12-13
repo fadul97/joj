@@ -83,7 +83,7 @@ joj::ErrorCode joj::D3D11VertexBuffer::create(GraphicsDevice& device)
         &m_data.vertex_buffer) != S_OK)
     {
         JERROR(ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION,
-            "Failed to create vertex buffer.");
+            "Failed to create D3D11 Vertex Buffer.");
         return ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION;
     }
 
