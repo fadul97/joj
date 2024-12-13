@@ -41,9 +41,15 @@ namespace joj
 
         virtual VBData& get_data() = 0;
 
+        b8 is_filled() const;
+        virtual void cleanup() = 0;
+
     protected:
         b8 m_filled;
     };
+
+    inline b8 VertexBuffer::is_filled() const
+    { return m_filled; }
 }
 
 #endif // _JOJ_VERTEX_BUFFER_H
