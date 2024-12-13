@@ -21,6 +21,7 @@ namespace joj
 
     enum class CPUAccessType
     {
+        None,
         Write,
         Read
     };
