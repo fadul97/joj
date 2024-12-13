@@ -7,7 +7,7 @@ add_library(
     jojD3D11Renderer
     STATIC
     renderer_d3d11.cpp
-)
+    vertex_buffer_d3d11.cpp)
 
 if(WIN32)
     target_link_directories(

@@ -15,7 +15,6 @@ struct Vertex {
     XMFLOAT4 color;
 };
 
-ID3D11Buffer* gVertexBuffer = nullptr;
 ID3D11InputLayout* gInputLayout = nullptr;
 ID3D11VertexShader* gVertexShader = nullptr;
 ID3D11PixelShader* gPixelShader = nullptr;
@@ -108,15 +107,8 @@ void HelloTriangle::init()
         { XMFLOAT3(-0.5f, -0.5f, 0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) }
     };
 
-    D3D11_BUFFER_DESC bufferDesc = {};
-    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth = sizeof(vertices);
-    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = vertices;
-
-    renderer.get_device().device->CreateBuffer(&bufferDesc, &initData, &gVertexBuffer);
+    m_vb.setup(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(vertices), vertices);
+    m_vb.create(renderer.get_device());
 
     D3D11_BUFFER_DESC cbDesc = {};
     cbDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -191,7 +183,7 @@ void HelloTriangle::update(const f32 dt)
     XMMATRIX rotationMatrix = XMMatrixRotationZ(angle);
     ConstantBuffer cbData = {};
     cbData.transform = XMMatrixTranspose(rotationMatrix); // Transpor para o formato row-major exigido pelo HLSL
-    cbData.transform = XMMatrixIdentity();
+    // cbData.transform = XMMatrixIdentity();
     renderer.get_cmd_list().device_context->UpdateSubresource(gConstantBuffer, 0, nullptr, &cbData, 0, 0);
 }
 
@@ -204,7 +196,7 @@ void HelloTriangle::draw()
 
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
-    renderer.get_cmd_list().device_context->IASetVertexBuffers(0, 1, &gVertexBuffer, &stride, &offset);
+    m_vb.bind(renderer.get_cmd_list(), 0, 1, &stride, &offset);
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     renderer.get_cmd_list().device_context->VSSetConstantBuffers(0, 1, &gConstantBuffer);
 
@@ -221,7 +213,6 @@ void HelloTriangle::shutdown()
 {
     timer.end_period();
 
-    gVertexBuffer->Release();
     gInputLayout->Release();
     gVertexShader->Release();
     gPixelShader->Release();
