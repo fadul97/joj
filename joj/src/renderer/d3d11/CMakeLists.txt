@@ -9,7 +9,9 @@ add_library(
     renderer_d3d11.cpp
     vertex_buffer_d3d11.cpp
     constant_buffer_d3d11.cpp
-    shader_d3d11.cpp)
+    shader_d3d11.cpp
+    WICTextureLoader.cpp
+)
 
 if(WIN32)
     target_link_directories(
