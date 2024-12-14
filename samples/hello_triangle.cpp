@@ -16,8 +16,6 @@ struct Vertex {
 };
 
 ID3D11InputLayout* gInputLayout = nullptr;
-ID3D11VertexShader* gVertexShader = nullptr;
-ID3D11PixelShader* gPixelShader = nullptr;
 
 // Vertex Shader (HLSL)
 const char* gVertexShaderCode = R"(
@@ -105,46 +103,18 @@ void HelloTriangle::init()
         { XMFLOAT3(-0.5f, -0.5f, 0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) }
     };
 
-    m_vb.setup(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(vertices), vertices);
+    m_vb.setup(joj::BufferUsage::Default, joj::CPUAccessType::None,
+        sizeof(vertices), vertices);
     m_vb.create(renderer.get_device());
 
     m_cb.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
     m_cb.create(renderer.get_device());
 
+    m_shader.compile_vertex_shader(gVertexShaderCode, "main", joj::ShaderModel::Default);
+    m_shader.create_vertex_shader(renderer.get_device());
 
-    // Compilação dos shaders e criação do pipeline
-    ID3DBlob* vertexShaderBlob = nullptr;
-    ID3DBlob* errorBlob = nullptr;
-
-    HRESULT hr = D3DCompile(
-        gVertexShaderCode, strlen(gVertexShaderCode), nullptr, nullptr, nullptr,
-        "main", "vs_5_0", 0, 0, &vertexShaderBlob, &errorBlob);
-
-    if (FAILED(hr)) {
-        if (errorBlob) {
-            OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-            errorBlob->Release();
-        }
-        return; // Falha ao compilar o shader
-    }
-
-    renderer.get_device().device->CreateVertexShader(vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(), nullptr, &gVertexShader);
-    
-    ID3DBlob* pixelShaderBlob = nullptr;
-    hr = D3DCompile(
-        gPixelShaderCode, strlen(gPixelShaderCode), nullptr, nullptr, nullptr,
-        "main", "ps_5_0", 0, 0, &pixelShaderBlob, &errorBlob);
-
-    if (FAILED(hr)) {
-        if (errorBlob) {
-            OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-            errorBlob->Release();
-        }
-        return; // Falha ao compilar o shader
-    }
-
-    renderer.get_device().device->CreatePixelShader(pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize(), nullptr, &gPixelShader);
-    pixelShaderBlob->Release();
+    m_shader.compile_pixel_shader(gPixelShaderCode, "main", joj::ShaderModel::Default);
+    m_shader.create_pixel_shader(renderer.get_device());
 
     // Layout de entrada
     D3D11_INPUT_ELEMENT_DESC layout[] = {
@@ -152,8 +122,9 @@ void HelloTriangle::init()
         { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, sizeof(XMFLOAT3), D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
-    renderer.get_device().device->CreateInputLayout(layout, 2, vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(), &gInputLayout);
-    vertexShaderBlob->Release();
+    renderer.get_device().device->CreateInputLayout(layout, 2,
+        m_shader.get_vertex_shader().vsblob->GetBufferPointer(),
+        m_shader.get_vertex_shader().vsblob->GetBufferSize(), &gInputLayout);
 }
 
 void HelloTriangle::update(const f32 dt)
@@ -190,8 +161,8 @@ void HelloTriangle::draw()
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
 
-    renderer.get_cmd_list().device_context->VSSetShader(gVertexShader, nullptr, 0);
-    renderer.get_cmd_list().device_context->PSSetShader(gPixelShader, nullptr, 0);
+    m_shader.bind_vertex_shader(renderer.get_cmd_list());
+    m_shader.bind_pixel_shader(renderer.get_cmd_list());
 
     // Desenhar o triângulo
     renderer.get_cmd_list().device_context->Draw(3, 0);
@@ -204,8 +175,6 @@ void HelloTriangle::shutdown()
     timer.end_period();
 
     gInputLayout->Release();
-    gVertexShader->Release();
-    gPixelShader->Release();
 }
 
 f32 HelloTriangle::get_frametime()
