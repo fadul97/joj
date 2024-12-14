@@ -8,7 +8,9 @@ add_library(jojRenderer
 	renderer.cpp
     vertex_buffer.cpp
     constant_buffer.cpp
-    shader.cpp)
+    shader.cpp
+    texture2d.cpp
+)
 
 target_include_directories(jojRenderer
     PUBLIC
