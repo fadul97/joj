@@ -11,6 +11,7 @@ add_library(
     constant_buffer_d3d11.cpp
     shader_d3d11.cpp
     WICTextureLoader.cpp
+    texture2d_d3d11.cpp
 )
 
 if(WIN32)
