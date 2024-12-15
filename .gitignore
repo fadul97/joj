@@ -8,8 +8,9 @@ build/
 # Textures (Ignoring for now - must be added manually)
 samples/textures/
 
-# Sphere model - File has more than 14k lines
+# Sphere and Plane models - Files are large
 samples/models/Sphere.txt
+samples/models/Plane.txt
 
 # Project File Tree
 tree.txt

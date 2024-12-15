@@ -35,17 +35,19 @@ ID3D11Buffer* m_indexBuffer = nullptr;
 
 // Vertex Shader (HLSL)
 const char* gVertexShaderCode = R"(
-    cbuffer ConstantBuffer : register(b0) {
+    #define NUM_LIGHTS 4
+    
+    cbuffer ConstantBuffer : register(b0)
+    {
         float4x4 wvp;
         float4x4 worldMatrix;
 	    float4x4 viewMatrix;
 	    float4x4 projectionMatrix;
     };
 
-    cbuffer CameraBuffer : register(b1)
+    cbuffer LightPositionBuffer : register(b1)
     {
-        float3 cameraPosition;
-        float padding;
+        float4 lightPosition[NUM_LIGHTS];
     };
 
     struct VS_INPUT {
@@ -58,12 +60,13 @@ const char* gVertexShaderCode = R"(
         float4 position : SV_POSITION;
         float2 tex : TEXCOORD0;
         float3 normal : NORMAL;
-        float3 viewDirection : TEXCOORD1;
+        float3 lightPos[NUM_LIGHTS] : TEXCOORD1;
     };
 
     PS_INPUT main(VS_INPUT input) {
         PS_INPUT output;
         float4 worldPosition;
+        int i;
         
         // Change the position vector to be 4 units for proper matrix calculations.
         input.position.w = 1.0f;
@@ -84,11 +87,14 @@ const char* gVertexShaderCode = R"(
         // Calculate the position of the vertex in the world.
         worldPosition = mul(input.position, worldMatrix);
 
-        // Determine the viewing direction based on the position of the camera and the position of the vertex in the world.
-        output.viewDirection = cameraPosition.xyz - worldPosition.xyz;
+        for(i=0; i<NUM_LIGHTS; i++)
+        {
+            // Determine the light positions based on the position of the lights and the position of the vertex in the world.
+            output.lightPos[i] = lightPosition[i].xyz - worldPosition.xyz;
 
-        // Normalize the viewing direction vector.
-        output.viewDirection = normalize(output.viewDirection);
+            // Normalize the light position vectors.
+            output.lightPos[i] = normalize(output.lightPos[i]);
+        }
 
         return output;
     }
@@ -96,20 +102,18 @@ const char* gVertexShaderCode = R"(
 
 // Pixel Shader (HLSL)
 const char* gPixelShaderCode = R"(
-    cbuffer LightBuffer : register(b0)
+    #define NUM_LIGHTS 4
+
+    cbuffer LightColorBuffer : register(b0)
     {
-        float4 ambientColor;
-        float4 diffuseColor;
-        float3 lightDirection;
-        float specularPower;
-        float4 specularColor;
+        float4 diffuseColor[NUM_LIGHTS];
     };
 
     struct PS_INPUT {
         float4 position : SV_POSITION;
         float2 tex : TEXCOORD0;
         float3 normal : NORMAL;
-        float3 viewDirection : TEXCOORD1;
+        float3 lightPos[NUM_LIGHTS] : TEXCOORD1;
     };
 
     Texture2D shaderTexture : register(t0);
@@ -117,51 +121,37 @@ const char* gPixelShaderCode = R"(
 
     float4 main(PS_INPUT input) : SV_TARGET {
         float4 textureColor;
-        float3 lightDir;
-        float lightIntensity;
+        float lightIntensity[NUM_LIGHTS];
+        float4 colorArray[NUM_LIGHTS];
+        float4 colorSum;
         float4 color;
-        float3 reflection;
-        float4 specular;
+        int i;
 
         // Sample the pixel color from the texture using the sampler at this texture coordinate location.
         textureColor = shaderTexture.Sample(SampleType, input.tex);
 
-        // Set the default output color to the ambient light value for all pixels.
-        color = ambientColor;
-
-        // Initialize the specular color.
-        specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        // specular = specularColor;
-
-        // Invert the light direction for calculations.
-        lightDir = -lightDirection;
-
-        // Calculate the amount of light on this pixel.
-        lightIntensity = saturate(dot(input.normal, lightDir));
-
-        if(lightIntensity > 0.0f)
+        for(i=0; i<NUM_LIGHTS; i++)
         {
-            // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
-            color += (diffuseColor * lightIntensity);
+            // Calculate the different amounts of light on this pixel based on the positions of the lights.
+            lightIntensity[i] = saturate(dot(input.normal, input.lightPos[i]));
 
-            // Saturate the ambient and diffuse color.
-            color = saturate(color);
-
-            // Calculate the reflection vector based on the light intensity, normal vector, and light direction.
-            reflection = normalize(2.0f * lightIntensity * input.normal - lightDir);
-
-            // Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
-            // specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
-
-            // FIXED? Multiply specular lighting by specularColor (not being done). -> 'Dot' Light now has color to it.
-            specular = specularColor * pow(saturate(dot(reflection, input.viewDirection)), specularPower);
+            // Determine the diffuse color amount of each of the four lights.
+            colorArray[i] = diffuseColor[i] * lightIntensity[i];
         }
 
-        // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
-        color = color * textureColor;
+        // Initialize the sum of colors.
+        colorSum = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
-        // Add the specular component last to the output color.
-        color = saturate(color + specular);
+        // Add all of the light colors up.
+        for(i=0; i<NUM_LIGHTS; i++)
+        {
+            colorSum.r += colorArray[i].r;
+            colorSum.g += colorArray[i].g;
+            colorSum.b += colorArray[i].b;
+        }
+
+        // Multiply the texture pixel by the combination of all four light colors to get the final result.
+        color = saturate(colorSum) * textureColor;
 
         return color;
     }
@@ -176,19 +166,16 @@ struct ConstantBuffer
     joj::JFloat4x4 projectionMatrix;
 };
 
-struct CameraBufferType
+const int NUM_LIGHTS = 4;
+
+struct LightPositionBuffer
 {
-    joj::JFloat3 cameraPosition;
-    f32 padding;
+    joj::JFloat4 lightPosition[NUM_LIGHTS];
 };
 
 struct LightBuffer
 {
-    joj::JFloat4 ambientColor;
-    joj::JFloat4 diffuseColor;
-    joj::JFloat3 lightDirection;
-    f32 specularPower;
-    joj::JFloat4 specularColor;
+    joj::JFloat4 diffuseColor[NUM_LIGHTS];
 };
 
 b8 HelloTriangle::load_model(char* filename)
@@ -291,14 +278,17 @@ void HelloTriangle::init()
     if (renderer.initialize(window.get_data()) != joj::ErrorCode::OK)
         return;
 
-    m_cam.set_pos(0.0f, 0.0f, -8.0f);
+    m_cam.update_view_matrix();
+    m_cam.set_pos(0.0f, 5.0f, -12.0f);
     m_cam.update_view_matrix();
     m_cam.set_lens(0.25f * J_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
+    m_cam.update_view_matrix();
+    m_cam.look_at(m_cam.get_pos(), joj::JFloat3(0.0f, 0.0f, 0.0f), m_cam.get_up());
     m_cam.update_view_matrix();
 
     timer.start();
 
-    if (!load_model("../../../../samples/models/Sphere.txt"))
+    if (!load_model("../../../../samples/models/Plane.txt"))
         JERROR(joj::ErrorCode::FAILED, "Failed to load model.");
 
     // Criação do Vertex Buffer
@@ -348,8 +338,8 @@ void HelloTriangle::init()
     m_light_cb.setup(joj::calculate_cb_byte_size(sizeof(LightBuffer)), nullptr);
     m_light_cb.create(renderer.get_device());
 
-    m_camera_cb.setup(joj::calculate_cb_byte_size(sizeof(CameraBufferType)), nullptr);
-    m_camera_cb.create(renderer.get_device());
+    m_light_pos_cb.setup(joj::calculate_cb_byte_size(sizeof(LightPositionBuffer)), nullptr);
+    m_light_pos_cb.create(renderer.get_device());
 
     m_shader.compile_vertex_shader(gVertexShaderCode, "main", joj::ShaderModel::Default);
     m_shader.create_vertex_shader(renderer.get_device());
@@ -441,18 +431,21 @@ void HelloTriangle::update(const f32 dt)
 
     {
         LightBuffer lightBuffer;
-        lightBuffer.ambientColor = joj::JFloat4(0.15f, 0.15f, 0.15f, 1.0f);
-        lightBuffer.diffuseColor = joj::JFloat4(1.0f, 1.0f, 1.0f, 1.0);
-        lightBuffer.lightDirection = joj::JFloat3(1.0f, -1.0f, 1.0f);
-        lightBuffer.specularColor = joj::JFloat4(0.0f, 0.0f, 1.0f, 1.0f);
-        lightBuffer.specularPower = 32.0f;
-        m_light_cb.update(renderer.get_cmd_list(), lightBuffer);
-    }
+        LightPositionBuffer lightPos;
+        lightBuffer.diffuseColor[0] = joj::JFloat4(1.0f, 0.0f, 0.0f, 1.0f);
+        lightPos.lightPosition[0] = joj::JFloat4(-3.0f, 1.0f, 3.0f, 1.0f);
 
-    {
-        CameraBufferType cameraBuffer;
-        cameraBuffer.cameraPosition = m_cam.get_pos();
-        m_camera_cb.update(renderer.get_cmd_list(), cameraBuffer);
+        lightBuffer.diffuseColor[1] = joj::JFloat4(0.0f, 1.0f, 0.0f, 1.0f);
+        lightPos.lightPosition[1] = joj::JFloat4(3.0f, 1.0f, 3.0f, 1.0f);
+
+        lightBuffer.diffuseColor[2] = joj::JFloat4(0.0f, 0.0f, 1.0f, 1.0f);
+        lightPos.lightPosition[2] = joj::JFloat4(-3.0f, 1.0f, -3.0f, 1.0f);
+
+        lightBuffer.diffuseColor[3] = joj::JFloat4(1.0f, 1.0f, 1.0f, 1.0f);
+        lightPos.lightPosition[3] = joj::JFloat4(3.0f, 1.0f, -3.0f, 1.0f);
+
+        m_light_cb.update(renderer.get_cmd_list(), lightBuffer);
+        m_light_pos_cb.update(renderer.get_cmd_list(), lightPos);
     }
 }
 
@@ -470,7 +463,7 @@ void HelloTriangle::draw()
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_mat_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
     m_light_cb.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
-    m_camera_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 1, 1);
+    m_light_pos_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 1, 1);
 
     m_tex.bind(renderer.get_cmd_list(), 0, 1);
     renderer.get_cmd_list().device_context->PSSetSamplers(0, 1, &m_sampleState);
