@@ -131,7 +131,8 @@ const char* gPixelShaderCode = R"(
 
         // Initialize the specular color.
         specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        
+        // specular = specularColor;
+
         // Invert the light direction for calculations.
         lightDir = -lightDirection;
 
@@ -150,7 +151,10 @@ const char* gPixelShaderCode = R"(
             reflection = normalize(2.0f * lightIntensity * input.normal - lightDir);
 
             // Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
-            specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
+            // specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
+
+            // FIXED? Multiply specular lighting by specularColor (not being done). -> 'Dot' Light now has color to it.
+            specular = specularColor * pow(saturate(dot(reflection, input.viewDirection)), specularPower);
         }
 
         // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
@@ -439,8 +443,8 @@ void HelloTriangle::update(const f32 dt)
         LightBuffer lightBuffer;
         lightBuffer.ambientColor = joj::JFloat4(0.15f, 0.15f, 0.15f, 1.0f);
         lightBuffer.diffuseColor = joj::JFloat4(1.0f, 1.0f, 1.0f, 1.0);
-        lightBuffer.lightDirection = joj::JFloat3(1.0f, 0.0f, 1.0f);
-        lightBuffer.specularColor = joj::JFloat4(1.0f, 1.0f, 1.0f, 1.0f);
+        lightBuffer.lightDirection = joj::JFloat3(1.0f, -1.0f, 1.0f);
+        lightBuffer.specularColor = joj::JFloat4(0.0f, 0.0f, 1.0f, 1.0f);
         lightBuffer.specularPower = 32.0f;
         m_light_cb.update(renderer.get_cmd_list(), lightBuffer);
     }
