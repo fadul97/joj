@@ -33,7 +33,8 @@ public:
     f32 frametime = 0.0f;
 
     joj::D3D11VertexBuffer m_vb;
-    joj::D3D11ConstantBuffer m_cb;
+    joj::D3D11ConstantBuffer m_mat_cb;
+    joj::D3D11ConstantBuffer m_light_cb;
     joj::D3D11Shader m_shader;
     joj::D3D11Texture2D m_tex;
     joj::FreeCamera m_cam;

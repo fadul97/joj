@@ -13,8 +13,9 @@ using namespace DirectX;
 // Estrutura para um vértice com posição e cor
 struct Vertex
 {
-    XMFLOAT3 position;
-    XMFLOAT2 texture;
+    joj::JFloat3 position;
+    joj::JFloat2 texture;
+    joj::JFloat3 normal;
 };
 
 ID3D11InputLayout* gInputLayout = nullptr;
@@ -30,28 +31,53 @@ const char* gVertexShaderCode = R"(
     };
 
     struct VS_INPUT {
-        float3 position : POSITION;
+        float4 position : POSITION;
         float2 tex : TEXCOORD0;
+        float3 normal : NORMAL;
     };
 
     struct PS_INPUT {
         float4 position : SV_POSITION;
         float2 tex : TEXCOORD0;
+        float3 normal : NORMAL;
     };
 
     PS_INPUT main(VS_INPUT input) {
         PS_INPUT output;
-        output.position = mul(float4(input.position, 1.0f), worldMatrix);
+        
+        // Change the position vector to be 4 units for proper matrix calculations.
+        input.position.w = 1.0f;
+
+        // Calculate the position of the vertex against the world, view, and projection matrices.
+        output.position = mul(input.position, worldMatrix);
+        output.position = mul(output.position, viewMatrix);
+        output.position = mul(output.position, projectionMatrix);
+
         output.tex = input.tex;
+
+        // Calculate the normal vector against the world matrix only.
+        output.normal = mul(input.normal, (float3x3)worldMatrix);
+
+        // Normalize the normal vector.
+        output.normal = normalize(output.normal);
+
         return output;
     }
 )";
 
 // Pixel Shader (HLSL)
 const char* gPixelShaderCode = R"(
+    cbuffer LightBuffer : register(b0)
+    {
+        float4 diffuseColor;
+        float3 lightDirection;
+        float padding;
+    };
+
     struct PS_INPUT {
         float4 position : SV_POSITION;
         float2 tex : TEXCOORD0;
+        float3 normal : NORMAL;
     };
 
     Texture2D shaderTexture : register(t0);
@@ -59,11 +85,26 @@ const char* gPixelShaderCode = R"(
 
     float4 main(PS_INPUT input) : SV_TARGET {
         float4 textureColor;
-        
+        float3 lightDir;
+        float lightIntensity;
+        float4 color;
+
         // Sample the pixel color from the texture using the sampler at this texture coordinate location.
         textureColor = shaderTexture.Sample(SampleType, input.tex);
+        
+        // Invert the light direction for calculations.
+        lightDir = -lightDirection;
 
-        return textureColor;
+        // Calculate the amount of light on this pixel.
+        lightIntensity = saturate(dot(input.normal, lightDir));
+
+        // Determine the final amount of diffuse color based on the diffuse color combined with the light intensity.
+        color = saturate(diffuseColor * lightIntensity);
+
+        // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
+        color = color * textureColor;
+
+        return color;
     }
 )";
 
@@ -74,6 +115,13 @@ struct ConstantBuffer
     joj::JFloat4x4 worldMatrix;
     joj::JFloat4x4 viewMatrix;
     joj::JFloat4x4 projectionMatrix;
+};
+
+struct LightBuffer
+{
+    joj::JFloat4 diffuseColor;
+    joj::JFloat3 lightDirection;
+    f32 padding;
 };
 
 HelloTriangle::HelloTriangle()
@@ -112,24 +160,29 @@ void HelloTriangle::init()
     if (renderer.initialize(window.get_data()) != joj::ErrorCode::OK)
         return;
 
-    m_cam.set_pos(0.0f, 1.0f, -30.0f);
-    m_cam.set_lens(0.25f * J_PI, 800.0f / 600.0f, 1.0f, 1000.0f);
+    m_cam.set_pos(0.0f, 0.0f, -3.0f);
+    m_cam.update_view_matrix();
+    m_cam.set_lens(0.25f * J_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
+    m_cam.update_view_matrix();
 
     timer.start();
 
     // Criação do Vertex Buffer
     Vertex vertices[] = {
-        { XMFLOAT3(0.0f,  0.5f, 0.0f), XMFLOAT2(0.5f, 0.0f) },  // Top
-        { XMFLOAT3(0.5f, -0.5f, 0.0f), XMFLOAT2(1.0f, 1.0f) },  // Bottom right
-        { XMFLOAT3(-0.5f, -0.5f, 0.0f), XMFLOAT2(0.0f, 1.0f) }  // Bottom left
+        { joj::JFloat3(0.0f,  0.5f, 0.0f), joj::JFloat2(0.5f, 0.0f), joj::JFloat3{0.0f, 0.0f, -1.0f} },  // Top
+        { joj::JFloat3(0.5f, -0.5f, 0.0f), joj::JFloat2(1.0f, 1.0f), joj::JFloat3{0.0f, 0.0f, -1.0f} },  // Bottom right
+        { joj::JFloat3(-0.5f, -0.5f, 0.0f), joj::JFloat2(0.0f, 1.0f), joj::JFloat3{0.0f, 0.0f, -1.0f} }  // Bottom left
     };
 
     m_vb.setup(joj::BufferUsage::Default, joj::CPUAccessType::None,
         sizeof(vertices), vertices);
     m_vb.create(renderer.get_device());
 
-    m_cb.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
-    m_cb.create(renderer.get_device());
+    m_mat_cb.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
+    m_mat_cb.create(renderer.get_device());
+
+    m_light_cb.setup(joj::calculate_cb_byte_size(sizeof(LightBuffer)), nullptr);
+    m_light_cb.create(renderer.get_device());
 
     m_shader.compile_vertex_shader(gVertexShaderCode, "main", joj::ShaderModel::Default);
     m_shader.create_vertex_shader(renderer.get_device());
@@ -168,9 +221,10 @@ void HelloTriangle::init()
     D3D11_INPUT_ELEMENT_DESC layout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
-    renderer.get_device().device->CreateInputLayout(layout, 2,
+    renderer.get_device().device->CreateInputLayout(layout, 3,
         m_shader.get_vertex_shader().vsblob->GetBufferPointer(),
         m_shader.get_vertex_shader().vsblob->GetBufferSize(), &gInputLayout);
 }
@@ -186,18 +240,43 @@ void HelloTriangle::update(const f32 dt)
     if (input.is_key_pressed(joj::KEY_ESCAPE))
         loop = false;
 
+
+    static float rotation = 0.0f;
+    // Update the rotation variable each frame.
+    rotation -= 0.0174532925f * 0.1f;
+    if (rotation < 0.0f)
+    {
+        rotation += 360.0f;
+    }
+
     static float angle = 0.0f;
     angle += 0.01f;
 
-    XMMATRIX rotationMatrix = XMMatrixRotationZ(angle);
-    ConstantBuffer cbData = {};
-    joj::JMatrix4x4 wvp = XMMatrixTranspose(rotationMatrix);
-    XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(wvp));
-    joj::JMatrix4x4 I = XMMatrixIdentity();
-    XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(I));
-    XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(wvp));
-    XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(wvp));
-    m_cb.update(renderer.get_cmd_list(), cbData);
+    {
+        joj::JMatrix4x4 W = XMMatrixRotationY(rotation); // XMMatrixIdentity();
+        joj::JMatrix4x4 V = XMLoadFloat4x4(&m_cam.get_view());
+        joj::JMatrix4x4 P = XMLoadFloat4x4(&m_cam.get_proj());
+        joj::JMatrix4x4 WVP = W * V * P;
+
+        ConstantBuffer cbData = {};
+        XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(W));
+
+        joj::JMatrix4x4 wvp = XMMatrixTranspose(WVP);
+        XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(wvp));
+
+        joj::JMatrix4x4 I = XMMatrixIdentity();
+        XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(I));
+        XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(wvp));
+        XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(wvp));
+        m_mat_cb.update(renderer.get_cmd_list(), cbData);
+    }
+
+    {
+        LightBuffer lightBuffer;
+        lightBuffer.diffuseColor = joj::JFloat4(1.0f, 0.7f, 0.7f, 1.0);
+        lightBuffer.lightDirection = joj::JFloat3(0.0f, 0.0f, 1.0f);
+        m_light_cb.update(renderer.get_cmd_list(), lightBuffer);
+    }
 }
 
 void HelloTriangle::draw()
@@ -211,7 +290,8 @@ void HelloTriangle::draw()
     UINT offset = 0;
     m_vb.bind(renderer.get_cmd_list(), 0, 1, &stride, &offset);
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    m_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
+    m_mat_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
+    m_light_cb.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
 
     m_tex.bind(renderer.get_cmd_list(), 0, 1);
     renderer.get_cmd_list().device_context->PSSetSamplers(0, 1, &m_sampleState);
