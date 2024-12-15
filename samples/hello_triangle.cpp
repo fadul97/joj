@@ -81,6 +81,7 @@ const char* gVertexShaderCode = R"(
 const char* gPixelShaderCode = R"(
     cbuffer LightBuffer : register(b0)
     {
+        float4 ambientColor;
         float4 diffuseColor;
         float3 lightDirection;
         float padding;
@@ -103,6 +104,9 @@ const char* gPixelShaderCode = R"(
 
         // Sample the pixel color from the texture using the sampler at this texture coordinate location.
         textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+        // Set the default output color to the ambient light value for all pixels.
+        color = ambientColor;
         
         // Invert the light direction for calculations.
         lightDir = -lightDirection;
@@ -110,8 +114,14 @@ const char* gPixelShaderCode = R"(
         // Calculate the amount of light on this pixel.
         lightIntensity = saturate(dot(input.normal, lightDir));
 
-        // Determine the final amount of diffuse color based on the diffuse color combined with the light intensity.
-        color = saturate(diffuseColor * lightIntensity);
+        if(lightIntensity > 0.0f)
+        {
+            // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
+            color += (diffuseColor * lightIntensity);
+        }
+
+        // Saturate the final light color.
+        color = saturate(color);
 
         // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
         color = color * textureColor;
@@ -131,6 +141,7 @@ struct ConstantBuffer
 
 struct LightBuffer
 {
+    joj::JFloat4 ambientColor;
     joj::JFloat4 diffuseColor;
     joj::JFloat3 lightDirection;
     f32 padding;
@@ -383,8 +394,9 @@ void HelloTriangle::update(const f32 dt)
 
     {
         LightBuffer lightBuffer;
+        lightBuffer.ambientColor = joj::JFloat4(0.15f, 0.15f, 0.15f, 1.0f);
         lightBuffer.diffuseColor = joj::JFloat4(1.0f, 1.0f, 1.0f, 1.0);
-        lightBuffer.lightDirection = joj::JFloat3(0.0f, 0.0f, 1.0f);
+        lightBuffer.lightDirection = joj::JFloat3(1.0f, 0.0f, 0.0f);
         m_light_cb.update(renderer.get_cmd_list(), lightBuffer);
     }
 }
