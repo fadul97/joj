@@ -6,22 +6,27 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
+#include "joj/math/jmath.h"
 
 using namespace DirectX;
 
 // Estrutura para um vértice com posição e cor
-struct Vertex {
+struct Vertex
+{
     XMFLOAT3 position;
     XMFLOAT2 texture;
 };
 
 ID3D11InputLayout* gInputLayout = nullptr;
-ID3D11SamplerState* m_sampleState;
+ID3D11SamplerState* m_sampleState = nullptr;
 
 // Vertex Shader (HLSL)
 const char* gVertexShaderCode = R"(
     cbuffer ConstantBuffer : register(b0) {
-        float4x4 transform;
+        float4x4 wvp;
+        float4x4 worldMatrix;
+	    float4x4 viewMatrix;
+	    float4x4 projectionMatrix;
     };
 
     struct VS_INPUT {
@@ -36,7 +41,7 @@ const char* gVertexShaderCode = R"(
 
     PS_INPUT main(VS_INPUT input) {
         PS_INPUT output;
-        output.position = mul(float4(input.position, 1.0f), transform);
+        output.position = mul(float4(input.position, 1.0f), worldMatrix);
         output.tex = input.tex;
         return output;
     }
@@ -63,8 +68,12 @@ const char* gPixelShaderCode = R"(
 )";
 
 // Estrutura para o Constant Buffer
-struct ConstantBuffer {
-    XMMATRIX transform;
+struct ConstantBuffer
+{
+    joj::JFloat4x4 wvp;
+    joj::JFloat4x4 worldMatrix;
+    joj::JFloat4x4 viewMatrix;
+    joj::JFloat4x4 projectionMatrix;
 };
 
 HelloTriangle::HelloTriangle()
@@ -102,6 +111,9 @@ void HelloTriangle::init()
 
     if (renderer.initialize(window.get_data()) != joj::ErrorCode::OK)
         return;
+
+    m_cam.set_pos(0.0f, 1.0f, -30.0f);
+    m_cam.set_lens(0.25f * J_PI, 800.0f / 600.0f, 1.0f, 1000.0f);
 
     timer.start();
 
@@ -179,8 +191,12 @@ void HelloTriangle::update(const f32 dt)
 
     XMMATRIX rotationMatrix = XMMatrixRotationZ(angle);
     ConstantBuffer cbData = {};
-    cbData.transform = XMMatrixTranspose(rotationMatrix); // Transpor para o formato row-major exigido pelo HLSL
-    cbData.transform = XMMatrixTranspose(XMMatrixIdentity());
+    joj::JMatrix4x4 wvp = XMMatrixTranspose(rotationMatrix);
+    XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(wvp));
+    joj::JMatrix4x4 I = XMMatrixIdentity();
+    XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(I));
+    XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(wvp));
+    XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(wvp));
     m_cb.update(renderer.get_cmd_list(), cbData);
 }
 
