@@ -12,10 +12,11 @@ using namespace DirectX;
 // Estrutura para um vértice com posição e cor
 struct Vertex {
     XMFLOAT3 position;
-    XMFLOAT4 color;
+    XMFLOAT2 texture;
 };
 
 ID3D11InputLayout* gInputLayout = nullptr;
+ID3D11SamplerState* m_sampleState;
 
 // Vertex Shader (HLSL)
 const char* gVertexShaderCode = R"(
@@ -25,18 +26,18 @@ const char* gVertexShaderCode = R"(
 
     struct VS_INPUT {
         float3 position : POSITION;
-        float4 color : COLOR;
+        float2 tex : TEXCOORD0;
     };
 
     struct PS_INPUT {
         float4 position : SV_POSITION;
-        float4 color : COLOR;
+        float2 tex : TEXCOORD0;
     };
 
     PS_INPUT main(VS_INPUT input) {
         PS_INPUT output;
         output.position = mul(float4(input.position, 1.0f), transform);
-        output.color = input.color;
+        output.tex = input.tex;
         return output;
     }
 )";
@@ -45,11 +46,19 @@ const char* gVertexShaderCode = R"(
 const char* gPixelShaderCode = R"(
     struct PS_INPUT {
         float4 position : SV_POSITION;
-        float4 color : COLOR;
+        float2 tex : TEXCOORD0;
     };
 
+    Texture2D shaderTexture : register(t0);
+    SamplerState SampleType : register(s0);
+
     float4 main(PS_INPUT input) : SV_TARGET {
-        return input.color;
+        float4 textureColor;
+        
+        // Sample the pixel color from the texture using the sampler at this texture coordinate location.
+        textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+        return textureColor;
     }
 )";
 
@@ -98,9 +107,9 @@ void HelloTriangle::init()
 
     // Criação do Vertex Buffer
     Vertex vertices[] = {
-        { XMFLOAT3(0.0f,  0.5f, 0.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-        { XMFLOAT3(0.5f, -0.5f, 0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-        { XMFLOAT3(-0.5f, -0.5f, 0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) }
+        { XMFLOAT3(0.0f,  0.5f, 0.0f), XMFLOAT2(0.5f, 0.0f) },  // Top
+        { XMFLOAT3(0.5f, -0.5f, 0.0f), XMFLOAT2(1.0f, 1.0f) },  // Bottom right
+        { XMFLOAT3(-0.5f, -0.5f, 0.0f), XMFLOAT2(0.0f, 1.0f) }  // Bottom left
     };
 
     m_vb.setup(joj::BufferUsage::Default, joj::CPUAccessType::None,
@@ -116,10 +125,37 @@ void HelloTriangle::init()
     m_shader.compile_pixel_shader(gPixelShaderCode, "main", joj::ShaderModel::Default);
     m_shader.create_pixel_shader(renderer.get_device());
 
+    m_tex.create(renderer.get_device(),
+        renderer.get_cmd_list(),
+        L"../../../../samples/textures/stone.png",
+        joj::ImageType::PNG);
+
+    // Create a texture sampler state description.
+    D3D11_SAMPLER_DESC samplerDesc = {};
+    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.MipLODBias = 0.0f;
+    samplerDesc.MaxAnisotropy = 1;
+    samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+    samplerDesc.BorderColor[0] = 0;
+    samplerDesc.BorderColor[1] = 0;
+    samplerDesc.BorderColor[2] = 0;
+    samplerDesc.BorderColor[3] = 0;
+    samplerDesc.MinLOD = 0;
+    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+    // Create the texture sampler state.
+    if (renderer.get_device().device->CreateSamplerState(&samplerDesc, &m_sampleState) != S_OK)
+    {
+        JERROR(joj::ErrorCode::FAILED, "Failed to create D3D11 Sampler State.");
+    }
+
     // Layout de entrada
     D3D11_INPUT_ELEMENT_DESC layout[] = {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, sizeof(XMFLOAT3), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     renderer.get_device().device->CreateInputLayout(layout, 2,
@@ -161,6 +197,9 @@ void HelloTriangle::draw()
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
 
+    m_tex.bind(renderer.get_cmd_list(), 0, 1);
+    renderer.get_cmd_list().device_context->PSSetSamplers(0, 1, &m_sampleState);
+
     m_shader.bind_vertex_shader(renderer.get_cmd_list());
     m_shader.bind_pixel_shader(renderer.get_cmd_list());
 
@@ -174,6 +213,7 @@ void HelloTriangle::shutdown()
 {
     timer.end_period();
 
+    m_sampleState->Release();
     gInputLayout->Release();
 }
 

@@ -9,6 +9,7 @@
 #include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
 #include "joj/renderer/d3d11/constant_buffer_d3d11.h"
 #include "joj/renderer/d3d11/shader_d3d11.h"
+#include "joj/renderer/d3d11/texture2d_d3d11.h"
 
 class HelloTriangle
 {
@@ -33,6 +34,7 @@ public:
     joj::D3D11VertexBuffer m_vb;
     joj::D3D11ConstantBuffer m_cb;
     joj::D3D11Shader m_shader;
+    joj::D3D11Texture2D m_tex;
 };
 
 #endif // _JOJ_HELLO_TRIANGLE_H

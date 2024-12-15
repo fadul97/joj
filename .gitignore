@@ -5,5 +5,8 @@
 # Builds
 build/
 
+# Textures (Ignoring for now - must be added manually)
+samples/textures/
+
 # Project File Tree
 tree.txt
