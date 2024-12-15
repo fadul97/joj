@@ -25,6 +25,9 @@ public:
 
     f32 get_frametime();
 
+    b8 load_model(char* filename);
+    void release_model();
+
     joj::Win32Window window;
     joj::Win32Input input;
     joj::Win32Timer timer;
