@@ -89,6 +89,9 @@ namespace joj
         /** @brief D3D11 Renderer Error code, should be used when creation of DepthStencil Texture fails. */
         ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION,
 
+        /** @brief D3D11 Renderer Error code, should be used when creation of DepthStencil State fails. */
+        ERR_DEPTHSTENCIL_STATE_D3D11_CREATION,
+
         /** @brief D3D11 Renderer Error code, should be used when creation of DepthStencilView fails. */
         ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION,
 
