@@ -38,6 +38,9 @@ namespace joj
         ErrorCode initialize(WindowData window) override;
         void shutdown() override;
 
+        void enable_depth_test() override;
+        void disable_depth_test() override;
+
         void resize(i32 width, i32 height) override;
 
         GraphicsDevice& get_device() override;
@@ -63,13 +66,16 @@ namespace joj
         b8 m_vsync;
         u32 m_buffer_count;
 
-        IDXGISwapChain* m_swapchain;                            // Swap chain
-        ID3D11RenderTargetView* m_render_target_view;           // Backbuffer render target view
-        ID3D11DepthStencilView* m_depth_stencil_view;           // Depth/Stencil view
-        D3D11_VIEWPORT m_viewport;                              // Viewport
-        ID3D11BlendState* m_blend_state;                        // Color mix settings
-        ID3D11RasterizerState* m_rasterizer_state_solid;        // Solid Rasterizer state
-        ID3D11RasterizerState* m_rasterizer_state_wireframe;    // Wireframe Rasterizer state
+        IDXGISwapChain* m_swapchain;                                // Swap chain
+        ID3D11RenderTargetView* m_render_target_view;               // Backbuffer render target view
+        ID3D11Texture2D* m_depth_stencil_buffer;
+        ID3D11DepthStencilState* m_depth_stencil_state;
+        ID3D11DepthStencilState* m_depth_disabled_stencil_state;    // Disabled depth stencil
+        ID3D11DepthStencilView* m_depth_stencil_view;               // Depth/Stencil view
+        D3D11_VIEWPORT m_viewport;                                  // Viewport
+        ID3D11BlendState* m_blend_state;                            // Color mix settings
+        ID3D11RasterizerState* m_rasterizer_state_solid;            // Solid Rasterizer state
+        ID3D11RasterizerState* m_rasterizer_state_wireframe;        // Wireframe Rasterizer state
 
 #if JOJ_DEBUG_MODE
         ID3D11Debug* m_debug;

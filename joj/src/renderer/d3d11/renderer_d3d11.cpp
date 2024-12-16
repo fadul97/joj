@@ -19,6 +19,9 @@ joj::D3D11Renderer::D3D11Renderer()
 
     m_swapchain = nullptr;                     // Swap chain
     m_render_target_view = nullptr;            // Backbuffer render target view
+    m_depth_stencil_buffer = nullptr;
+    m_depth_stencil_state = nullptr;
+    m_depth_disabled_stencil_state = nullptr;  // Disabled depth stencil
     m_depth_stencil_view = nullptr;            // Depth/Stencil view
     m_viewport = { 0 };                        // Viewport
     m_blend_state = nullptr;                   // Color mix settings
@@ -58,6 +61,27 @@ joj::D3D11Renderer::~D3D11Renderer()
     {
         m_depth_stencil_view->Release();
         m_depth_stencil_view = nullptr;
+    }
+
+    // Release Depth Disabled Stencil State
+    if (m_depth_disabled_stencil_state)
+    {
+        m_depth_disabled_stencil_state->Release();
+        m_depth_disabled_stencil_state = nullptr;
+    }
+
+    // Release Depth Stencil State
+    if (m_depth_stencil_state)
+    {
+        m_depth_stencil_state->Release();
+        m_depth_stencil_state = nullptr;
+    }
+
+    // Release Depth Stencil Buffer
+    if (m_depth_stencil_buffer)
+    {
+        m_depth_stencil_buffer->Release();
+        m_depth_stencil_buffer = nullptr;
     }
 
     // Release render target view
@@ -324,56 +348,141 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
         &m_render_target_view) != S_OK)
     {
         JFATAL(ErrorCode::ERR_RENDER_TARGET_VIEW_D3D11_CREATION,
-            "Failed to create D3D11 RenderTargetView.");
+            "Failed to create D3D11 Render Target View.");
         return ErrorCode::ERR_RENDER_TARGET_VIEW_D3D11_CREATION;
     }
 
     // ---------------------------------------------------
-    // Depth/Stencil View
+    // Depth/Stencil Buffer
     // ---------------------------------------------------
 
-    // Describe Depth/Stencil Buffer Desc
-    D3D11_TEXTURE2D_DESC depth_stencil_desc = { 0 };
-    depth_stencil_desc.Width = static_cast<u32>(window.width);           // Depth/Stencil buffer width
-    depth_stencil_desc.Height = static_cast<u32>(window.height);         // Depth/Stencil buffer height
-    depth_stencil_desc.MipLevels = 0;                                    // Number of mipmap levels
-    depth_stencil_desc.ArraySize = 1;                                    // Number of textures in array
-    depth_stencil_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;           // Color format - Does it need to be the same format of swapChainDesc?
-   
+    // Describe Depth/Stencil Buffer
+    D3D11_TEXTURE2D_DESC depth_stencil_tex2d_desc = { 0 };
+    depth_stencil_tex2d_desc.Width = static_cast<u32>(window.width);           // Depth/Stencil buffer width
+    depth_stencil_tex2d_desc.Height = static_cast<u32>(window.height);         // Depth/Stencil buffer height
+    depth_stencil_tex2d_desc.MipLevels = 0;                                    // Number of mipmap levels
+    depth_stencil_tex2d_desc.ArraySize = 1;                                    // Number of textures in array
+    depth_stencil_tex2d_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;           // Color format - Does it need to be the same format of swapChainDesc?
+
     // Use 4x MSAA? It must match swap chain MSAA values.
     if (m_4xmsaa_enabled)
     {
-        depth_stencil_desc.SampleDesc.Count = 4;                         // Samples per pixel (antialiasing)
-        depth_stencil_desc.SampleDesc.Quality = m_4xmsaa_quality - 1;    // Level of image quality
+        depth_stencil_tex2d_desc.SampleDesc.Count = 4;                         // Samples per pixel (antialiasing)
+        depth_stencil_tex2d_desc.SampleDesc.Quality = m_4xmsaa_quality - 1;    // Level of image quality
     }
     // No MSAA
     else
     {
-        depth_stencil_desc.SampleDesc.Count = 1;                         // Samples per pixel (antialiasing)
-        depth_stencil_desc.SampleDesc.Quality = 0;                       // Level of image quality
+        depth_stencil_tex2d_desc.SampleDesc.Count = 1;                         // Samples per pixel (antialiasing)
+        depth_stencil_tex2d_desc.SampleDesc.Quality = 0;                       // Level of image quality
     }
 
-    depth_stencil_desc.Usage = D3D11_USAGE_DEFAULT;                      // Default - GPU will both read and write to the resource
-    depth_stencil_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;             // Where resource will be bound to the pipeline
-    depth_stencil_desc.CPUAccessFlags = 0;                               // CPU will not read not write to the Depth/Stencil buffer
-    depth_stencil_desc.MiscFlags = 0;                                    // Optional flags
+    depth_stencil_tex2d_desc.Usage = D3D11_USAGE_DEFAULT;                      // Default - GPU will both read and write to the resource
+    depth_stencil_tex2d_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;             // Where resource will be bound to the pipeline
+    depth_stencil_tex2d_desc.CPUAccessFlags = 0;                               // CPU will not read not write to the Depth/Stencil buffer
+    depth_stencil_tex2d_desc.MiscFlags = 0;                                    // Optional flags
 
     // Create Depth/Stencil Buffer
-    ID3D11Texture2D* depth_stencil_buffer;
-    if (m_graphics_device.device->CreateTexture2D(&depth_stencil_desc, 0,
-        &depth_stencil_buffer) != S_OK)
+    if (m_graphics_device.device->CreateTexture2D(&depth_stencil_tex2d_desc, 0,
+        &m_depth_stencil_buffer) != S_OK)
     {
         JFATAL(ErrorCode::ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION,
             "Failed to create D3D11 DepthStencil buffer (Texture2D).");
         return ErrorCode::ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION;
     }
 
+    // ---------------------------------------------------
+    // Depth/Stencil State - Depth Enabled
+    // ---------------------------------------------------
+
+    // Describe Depth Stencil
+    D3D11_DEPTH_STENCIL_DESC depth_stencil_desc = { 0 };
+
+    // Set up the description of the stencil state.
+    depth_stencil_desc.DepthEnable = true;
+    depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS;
+
+    depth_stencil_desc.StencilEnable = true;
+    depth_stencil_desc.StencilReadMask = 0xFF;
+    depth_stencil_desc.StencilWriteMask = 0xFF;
+
+    // Stencil operations if pixel is front-facing.
+    depth_stencil_desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+    depth_stencil_desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+    depth_stencil_desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+    depth_stencil_desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+    // Stencil operations if pixel is back-facing.
+    depth_stencil_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+    depth_stencil_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+    depth_stencil_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+    depth_stencil_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+    // Create Depth Stencil State
+    if (m_graphics_device.device->CreateDepthStencilState(&depth_stencil_desc,
+        &m_depth_stencil_state) != S_OK)
+    {
+        JFATAL(ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION,
+            "Failed to create D3D11 Depth Stencil State.");
+        return ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION;
+    }
+
+    // Set Depth Stencil State
+    m_cmd_list.device_context->OMSetDepthStencilState(m_depth_stencil_state, 1);
+
+    // ---------------------------------------------------
+    // Depth/Stencil State - Depth Disabled
+    // ---------------------------------------------------
+
+    // Describe Depth Stencil
+    D3D11_DEPTH_STENCIL_DESC depth_disabled_stencil_desc = { 0 };
+    ZeroMemory(&depth_disabled_stencil_desc, sizeof(depth_disabled_stencil_desc));
+
+    // Create a second depth stencil state which turns off the Z buffer for 2D rendering.  The only difference is 
+    // that DepthEnable is set to false, all other parameters are the same as the other depth stencil state.
+    depth_disabled_stencil_desc.DepthEnable = false;
+    depth_disabled_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    depth_disabled_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS;
+    depth_disabled_stencil_desc.StencilEnable = true;
+    depth_disabled_stencil_desc.StencilReadMask = 0xFF;
+    depth_disabled_stencil_desc.StencilWriteMask = 0xFF;
+    depth_disabled_stencil_desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+    depth_disabled_stencil_desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+    depth_disabled_stencil_desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+    depth_disabled_stencil_desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+    depth_disabled_stencil_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+    depth_disabled_stencil_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+    depth_disabled_stencil_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+    depth_disabled_stencil_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+    
+    // Create Depth Stencil State
+    if (m_graphics_device.device->CreateDepthStencilState(&depth_disabled_stencil_desc,
+        &m_depth_disabled_stencil_state) != S_OK)
+    {
+        JFATAL(ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION,
+            "Failed to create D3D11 Depth Stencil State.");
+        return ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION;
+    }
+
+    // ---------------------------------------------------
+    // Depth/Stencil View
+    // ---------------------------------------------------
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC depth_stencil_view_desc = {};
+    ZeroMemory(&depth_stencil_view_desc, sizeof(depth_stencil_view_desc));
+
+    // Set up the depth stencil view description.
+    depth_stencil_view_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depth_stencil_view_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    depth_stencil_view_desc.Texture2D.MipSlice = 0;
+
     // Create Depth/Stencil View
-    if (m_graphics_device.device->CreateDepthStencilView(depth_stencil_buffer, 0,
-        &m_depth_stencil_view) != S_OK)
+    if (m_graphics_device.device->CreateDepthStencilView(m_depth_stencil_buffer,
+        &depth_stencil_view_desc, &m_depth_stencil_view) != S_OK)
     {
         JFATAL(ErrorCode::ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION,
-            "Failed to create D3D11 DepthStencilView.");
+            "Failed to create D3D11 Depth Stencil View.");
         return ErrorCode::ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION;
     }
 
@@ -460,7 +569,6 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     // ---------------------------------------------------
 
     backbuffer->Release();
-    depth_stencil_buffer->Release();
 
     return ErrorCode::OK;
 }
@@ -533,6 +641,14 @@ void joj::D3D11Renderer::shutdown()
         m_graphics_device.device->Release();
         m_graphics_device.device = nullptr;
     }
+}
+
+void joj::D3D11Renderer::enable_depth_test()
+{
+}
+
+void joj::D3D11Renderer::disable_depth_test()
+{
 }
 
 void joj::D3D11Renderer::resize(i32 width, i32 height)

@@ -27,6 +27,9 @@ namespace joj
         virtual ErrorCode initialize(WindowData window) = 0;
         virtual void shutdown() = 0;
 
+        virtual void enable_depth_test() = 0;
+        virtual void disable_depth_test() = 0;
+
         virtual void resize(i32 width, i32 height) = 0;
 
         virtual GraphicsDevice& get_device() = 0;
