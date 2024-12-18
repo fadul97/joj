@@ -35,8 +35,7 @@ ID3D11Buffer* m_indexBuffer = nullptr;
 
 // Vertex Shader (HLSL)
 const char* gVertexShaderCode = R"(
-    cbuffer ConstantBuffer : register(b0)
-    {
+    cbuffer ConstantBuffer : register(b0) {
         float4x4 wvp;
         float4x4 worldMatrix;
 	    float4x4 viewMatrix;
@@ -46,11 +45,13 @@ const char* gVertexShaderCode = R"(
     struct VS_INPUT {
         float4 position : POSITION;
         float2 tex : TEXCOORD0;
+        float3 normal : NORMAL;
     };
 
     struct PS_INPUT {
         float4 position : SV_POSITION;
         float2 tex : TEXCOORD0;
+        float3 normal : NORMAL;
     };
 
     PS_INPUT main(VS_INPUT input) {
@@ -66,15 +67,29 @@ const char* gVertexShaderCode = R"(
 
         output.tex = input.tex;
 
+        // Calculate the normal vector against the world matrix only.
+        output.normal = mul(input.normal, (float3x3)worldMatrix);
+
+        // Normalize the normal vector.
+        output.normal = normalize(output.normal);
+
         return output;
     }
 )";
 
 // Pixel Shader (HLSL)
 const char* gPixelShaderCode = R"(
+    cbuffer LightBuffer : register(b0)
+    {
+        float4 diffuseColor;
+        float3 lightDirection;
+        float padding;
+    };
+
     struct PS_INPUT {
         float4 position : SV_POSITION;
         float2 tex : TEXCOORD0;
+        float3 normal : NORMAL;
     };
 
     Texture2D shaderTexture : register(t0);
@@ -82,11 +97,26 @@ const char* gPixelShaderCode = R"(
 
     float4 main(PS_INPUT input) : SV_TARGET {
         float4 textureColor;
+        float3 lightDir;
+        float lightIntensity;
+        float4 color;
 
         // Sample the pixel color from the texture using the sampler at this texture coordinate location.
         textureColor = shaderTexture.Sample(SampleType, input.tex);
+        
+        // Invert the light direction for calculations.
+        lightDir = -lightDirection;
 
-        return textureColor;
+        // Calculate the amount of light on this pixel.
+        lightIntensity = saturate(dot(input.normal, lightDir));
+
+        // Determine the final amount of diffuse color based on the diffuse color combined with the light intensity.
+        color = saturate(diffuseColor * lightIntensity);
+
+        // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
+        color = color * textureColor;
+
+        return color;
     }
 )";
 
@@ -101,14 +131,11 @@ struct ConstantBuffer
 
 const int NUM_LIGHTS = 4;
 
-struct LightPositionBuffer
-{
-    joj::JFloat4 lightPosition[NUM_LIGHTS];
-};
-
 struct LightBuffer
 {
-    joj::JFloat4 diffuseColor[NUM_LIGHTS];
+    joj::JFloat4 diffuseColor;
+    joj::JFloat3 lightDirection;
+    f32 padding;
 };
 
 b8 HelloTriangle::load_model(char* filename)
@@ -214,22 +241,15 @@ void HelloTriangle::init()
     m_cam.update_view_matrix();
     m_cam.set_pos(0.0f, 0.0f, -10.0f);
     m_cam.update_view_matrix();
-    // m_cam.set_lens(0.25f * J_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
-    // m_cam.update_view_matrix();
-    // m_cam.look_at(m_cam.get_pos(), joj::JFloat3(0.0f, 0.0f, 0.0f), m_cam.get_up());
-    // m_cam.update_view_matrix();
+    m_cam.set_lens(0.25f * J_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
+    m_cam.update_view_matrix();
+    m_cam.look_at(m_cam.get_pos(), joj::JFloat3(0.0f, 0.0f, 0.0f), m_cam.get_up());
+    m_cam.update_view_matrix();
 
     timer.start();
 
-    // Initialize the previous rendering position to negative one.
-    m_prevPosX = -1;
-    m_prevPosY = -1;
-
-    // Set the number of vertices in the vertex array.
-    vertexCount = 6;
-
-    // Set the number of indices in the index array.
-    indexCount = vertexCount;
+    if (!load_model("../../../../samples/models/Cube.txt"))
+        JERROR(joj::ErrorCode::FAILED, "Failed to load model.");
 
     // Create the vertex array.
     Vertex* vertices = new Vertex[vertexCount];
@@ -237,42 +257,28 @@ void HelloTriangle::init()
     // Create the index array.
     u32* indices = new u32[indexCount];
 
-    // Initialize vertex array to zeros at first.
-    memset(vertices, 0, (sizeof(Vertex) * vertexCount));
-
+    // Load the vertex array and index array with data.
     for (i32 i = 0; i < vertexCount; i++)
     {
+        vertices[i].position = joj::JFloat3(model[i].x, model[i].y, model[i].z);
+        vertices[i].texture = joj::JFloat2(model[i].tu, model[i].tv);
+        vertices[i].normal = joj::JFloat3(model[i].nx, model[i].ny, model[i].nz);
+
         indices[i] = i;
     }
 
-    // Set up the description of the static index buffer.
-    D3D11_BUFFER_DESC indexBufferDesc;
-    indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    indexBufferDesc.ByteWidth = sizeof(u32) * indexCount;
-    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    indexBufferDesc.CPUAccessFlags = 0;
-    indexBufferDesc.MiscFlags = 0;
-    indexBufferDesc.StructureByteStride = 0;
-
-    // Give the subresource structure a pointer to the index data.
-    D3D11_SUBRESOURCE_DATA indexData;
-    indexData.pSysMem = indices;
-    indexData.SysMemPitch = 0;
-    indexData.SysMemSlicePitch = 0;
-
-    // Create the index buffer.
-    HRESULT result = renderer.get_device().device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
-    if (FAILED(result))
-    {
-        return;
-    }
-
-    m_2dvb.setup(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write,
+    m_vb.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
         sizeof(Vertex) * vertexCount, vertices);
-    m_2dvb.create(renderer.get_device());
+    m_vb.create(renderer.get_device());
+
+    m_ib.setup(sizeof(u32) * indexCount, indices);
+    m_ib.create(renderer.get_device());
 
     m_mat_cb.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
     m_mat_cb.create(renderer.get_device());
+
+    m_light_cb.setup(joj::calculate_cb_byte_size(sizeof(LightBuffer)), nullptr);
+    m_light_cb.create(renderer.get_device());
 
     m_shader.compile_vertex_shader(gVertexShaderCode, "main", joj::ShaderModel::Default);
     m_shader.create_vertex_shader(renderer.get_device());
@@ -311,9 +317,10 @@ void HelloTriangle::init()
     D3D11_INPUT_ELEMENT_DESC layout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
-    renderer.get_device().device->CreateInputLayout(layout, 2,
+    renderer.get_device().device->CreateInputLayout(layout, 3,
         m_shader.get_vertex_shader().vsblob->GetBufferPointer(),
         m_shader.get_vertex_shader().vsblob->GetBufferSize(), &gInputLayout);
 
@@ -348,11 +355,11 @@ void HelloTriangle::update(const f32 dt)
     angle += 0.01f;
 
     {
-        joj::JMatrix4x4 W = joj::matrix4x4_identity(); // XMMatrixIdentity();
+        joj::JMatrix4x4 W = XMMatrixRotationY(rotation); // joj::matrix4x4_identity(); // XMMatrixIdentity();
         joj::JMatrix4x4 V = XMLoadFloat4x4(&m_cam.get_view());
         joj::JMatrix4x4 P;
-        // P = XMLoadFloat4x4(&m_cam.get_proj());
-        P = XMMatrixOrthographicLH(800.0f, 600.0f, 0.3f, 1000.0f);
+        P = XMLoadFloat4x4(&m_cam.get_proj());
+        // P = XMMatrixOrthographicLH(800.0f, 600.0f, 0.3f, 1000.0f);
         joj::JMatrix4x4 WVP = W * V * P;
 
         ConstantBuffer cbData = {};
@@ -363,70 +370,11 @@ void HelloTriangle::update(const f32 dt)
         m_mat_cb.update(renderer.get_cmd_list(), cbData);
     }
 
-    if ((m_prevPosX == m_renderX) && (m_prevPosY == m_renderY))
     {
-        return;
-    }
-    else
-    {
-        m_prevPosX = m_renderX;
-        m_prevPosY = m_renderY;
-
-        Vertex* vertices = new Vertex[vertexCount];
-
-        // Magic Numbers - Tutorial uses TGA files. The Converted PNG is larger,
-        // this is a hacky fix for the screen coordinates
-        f32 image_width = 512.0f;
-        f32 image_height = 512.0f;
-
-        f32 left, right, top, bottom;
-        // Calculate the screen coordinates of the left side of the bitmap.
-        left = (f32)((800 / 2) * -1) + (f32)m_renderX;
-
-        // Calculate the screen coordinates of the right side of the bitmap.
-        right = left + image_width;
-
-        // Calculate the screen coordinates of the top of the bitmap.
-        top = (f32)(600 / 2) - (f32)m_renderY;
-
-        // Calculate the screen coordinates of the bottom of the bitmap.
-        bottom = top - image_height;
-
-        vertices[0].position = joj::JFloat3(left, top, 0.0f);  // Top left.
-        vertices[0].texture = joj::JFloat2(0.0f, 0.0f);
-
-        vertices[1].position = joj::JFloat3(right, bottom, 0.0f);  // Bottom right.
-        vertices[1].texture = joj::JFloat2(1.0f, 1.0f);
-
-        vertices[2].position = joj::JFloat3(left, bottom, 0.0f);  // Bottom left.
-        vertices[2].texture = joj::JFloat2(0.0f, 1.0f);
-
-        // Second triangle.
-        vertices[3].position = joj::JFloat3(left, top, 0.0f);  // Top left.
-        vertices[3].texture = joj::JFloat2(0.0f, 0.0f);
-
-        vertices[4].position = joj::JFloat3(right, top, 0.0f);  // Top right.
-        vertices[4].texture = joj::JFloat2(1.0f, 0.0f);
-
-        vertices[5].position = joj::JFloat3(right, bottom, 0.0f);  // Bottom right.
-        vertices[5].texture = joj::JFloat2(1.0f, 1.0f);
-
-        D3D11_MAPPED_SUBRESOURCE mappedData;
-        if (renderer.get_cmd_list().device_context->Map(
-            m_2dvb.get_data().vertex_buffer, 0, D3D11_MAP_WRITE_DISCARD,
-            0, &mappedData) != S_OK)
-        {
-            JERROR(joj::ErrorCode::FAILED, "Failed to map Subresource data.");
-            return;
-        }
-
-        Vertex* v = reinterpret_cast<Vertex*>(mappedData.pData);
-        memcpy(v, (void*)vertices, (sizeof(Vertex) * vertexCount));
-
-        renderer.get_cmd_list().device_context->Unmap(m_2dvb.get_data().vertex_buffer, 0);
-
-        delete[] vertices;
-        vertices = nullptr;
+        LightBuffer lightBuffer;
+        lightBuffer.diffuseColor = joj::JFloat4(1.0f, 1.0f, 1.0f, 1.0);
+        lightBuffer.lightDirection = joj::JFloat3(0.0f, 0.0f, 1.0f);
+        m_light_cb.update(renderer.get_cmd_list(), lightBuffer);
     }
 }
 
@@ -436,14 +384,16 @@ void HelloTriangle::draw()
 
     // Configurar o pipeline gráfico
     renderer.get_cmd_list().device_context->IASetInputLayout(gInputLayout);
-    renderer.disable_depth_test();
 
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
-    m_2dvb.bind(renderer.get_cmd_list(), 0, 1, &stride, &offset);
-    renderer.get_cmd_list().device_context->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, offset);
+    m_vb.bind(renderer.get_cmd_list(), 0, 1, &stride, &offset);
+    m_ib.bind(renderer.get_cmd_list(), joj::DataFormat::R32_UINT, offset);
+    
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    
     m_mat_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
+    m_light_cb.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
 
     m_tex.bind(renderer.get_cmd_list(), 0, 1);
     renderer.get_cmd_list().device_context->PSSetSamplers(0, 1, &m_sampleState);
@@ -451,10 +401,7 @@ void HelloTriangle::draw()
     m_shader.bind_vertex_shader(renderer.get_cmd_list());
     m_shader.bind_pixel_shader(renderer.get_cmd_list());
 
-    // Desenhar o triângulo
     renderer.get_cmd_list().device_context->DrawIndexed(indexCount, 0, 0);
-
-    renderer.enable_depth_test();
 
     renderer.swap_buffers();
 }
