@@ -13,7 +13,7 @@ namespace joj
 
     enum class DataFormat
     {
-
+        DR32_UINT
     };
 
     class JAPI IndexBuffer
