@@ -56,7 +56,7 @@ void joj::D3D11IndexBuffer::bind(CommandList& cmd_list, DataFormat format,
 {
     switch (format)
     {
-    case DataFormat::DR32_UINT:
+    case DataFormat::R32_UINT:
         cmd_list.device_context->IASetIndexBuffer(m_data.index_buffer,
             DXGI_FORMAT_R32_UINT, offset);
         break;
