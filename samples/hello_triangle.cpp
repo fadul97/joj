@@ -15,42 +15,11 @@
 #include <string>
 #include <stdexcept>
 #include <algorithm>
-#include <renderer/d3d11/shader_library_d3d11.h>
-
-u32 vertexCount = 0;
-u32 indexCount = 0;
 
 using namespace DirectX;
-struct Vertex
-{
-    joj::JFloat3 position; // XMFloat3
-    joj::JFloat2 texture;  // XMFloat2
-    joj::JFloat3 normal;   // XMFloat3
-};
-
-bool operator==(const Vertex& lhs, const Vertex& rhs) {
-    return lhs.position.x == rhs.position.x &&
-        lhs.position.y == rhs.position.y &&
-        lhs.position.z == rhs.position.z &&
-        lhs.texture.x == rhs.texture.x &&
-        lhs.texture.y == rhs.texture.y &&
-        lhs.normal.x == rhs.normal.x &&
-        lhs.normal.y == rhs.normal.y &&
-        lhs.normal.z == rhs.normal.z;
-}
 
 ID3D11InputLayout* gInputLayout = nullptr;
 ID3D11SamplerState* m_sampleState = nullptr;
-ID3D11Buffer* m_indexBuffer = nullptr;
-
-// Estrutura para o Constant Buffer
-struct ConstantBuffer
-{
-    joj::JFloat4x4 wvp;
-    joj::JFloat4x4 worldMatrix;
-    joj::JFloat4x4 viewMatrix;
-    joj::JFloat4x4 projectionMatrix;
-};
 
 struct CameraBufferType
 {
@@ -66,96 +35,6 @@ struct LightBuffer
     f32 specularPower;
     joj::JFloat4 specularColor;
 };
-
-b8 load_OBJ(const std::string& filename, Vertex*& vertices, u32*& indices,
-    u32& vertex_count, u32& index_count)
-{
-    std::vector<joj::JFloat3> positions;
-    std::vector<joj::JFloat2> tex_coords;
-    std::vector<joj::JFloat3> normals;
-    std::vector<Vertex> vertex_list;
-    std::vector<u32> index_list;
-
-    std::ifstream file(filename);
-    if (!file.is_open())
-        return false;
-
-    std::string line;
-    while (std::getline(file, line))
-    {
-        std::istringstream iss(line);
-        std::string prefix;
-        iss >> prefix;
-
-        if (prefix == "v")
-        {
-            joj::JFloat3 pos;
-            iss >> pos.x >> pos.y >> pos.z;
-            positions.push_back(pos);
-        }
-        else if (prefix == "vt")
-        {
-            joj::JFloat2 tex;
-            iss >> tex.x >> tex.y;
-            tex_coords.push_back(tex);
-        }
-        else if (prefix == "vn")
-        {
-            joj::JFloat3 norm;
-            iss >> norm.x >> norm.y >> norm.z;
-            normals.push_back(norm);
-        }
-        else if (prefix == "f")
-        {
-            std::string vertexData;
-            while (iss >> vertexData)
-            {
-                std::istringstream vertexStream(vertexData);
-                std::string v, t, n;
-                u32 posIndex = 0, texIndex = 0, normIndex = 0;
-
-                std::getline(vertexStream, v, '/');
-                if (!v.empty()) posIndex = std::stoi(v) - 1;
-
-                if (std::getline(vertexStream, t, '/')) {
-                    if (!t.empty()) texIndex = std::stoi(t) - 1;
-                }
-
-                if (std::getline(vertexStream, n)) {
-                    if (!n.empty()) normIndex = std::stoi(n) - 1;
-                }
-
-                Vertex vertex = {};
-                if (posIndex < positions.size()) vertex.position = positions[posIndex];
-                if (texIndex < tex_coords.size()) vertex.texture = tex_coords[texIndex];
-                if (normIndex < normals.size()) vertex.normal = normals[normIndex];
-
-                auto it = std::find(vertex_list.begin(), vertex_list.end(), vertex);
-                if (it != vertex_list.end()) {
-                    index_list.push_back(static_cast<u32>(std::distance(vertex_list.begin(), it)));
-                }
-                else {
-                    vertex_list.push_back(vertex);
-                    index_list.push_back(static_cast<u32>(vertex_list.size() - 1));
-                }
-            }
-        }
-    }
-
-    file.close();
-
-    // Copiar dados para os arrays de saída
-    vertex_count = vertex_list.size();
-    index_count = index_list.size();
-
-    vertices = new Vertex[vertex_count];
-    std::copy(vertex_list.begin(), vertex_list.end(), vertices);
-
-    indices = new u32[index_count];
-    std::copy(index_list.begin(), index_list.end(), indices);
-
-    return true;
-}
 
 HelloTriangle::HelloTriangle()
 {
@@ -203,44 +82,19 @@ void HelloTriangle::init()
 
     timer.start();
 
-    // Create the vertex array.
-    Vertex* vertices = nullptr;
+    m_spaceship = joj::D3D11Mesh("../../../../samples/models/MySpaceShip.obj", joj::MeshType::OBJ);
+    m_spaceship.setup(renderer.get_device());
+    m_spaceship.translate(-10, 0, 10);
 
-    // Create the index array.
-    u32* indices = nullptr;
-
-    if (!load_OBJ("../../../../samples/models/MySpaceShip.obj",
-        vertices, indices, vertexCount, indexCount))
-        JERROR(joj::ErrorCode::FAILED, "Failed to load model.");
-
-    m_vb.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
-        sizeof(Vertex) * vertexCount, vertices);
-    m_vb.create(renderer.get_device());
-
-    m_ib.setup(sizeof(u32) * indexCount, indices);
-    m_ib.create(renderer.get_device());
-
-    m_mat_cb.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
-    m_mat_cb.create(renderer.get_device());
+    m_spaceship2 = joj::D3D11Mesh("../../../../samples/models/MySpaceShip.obj", joj::MeshType::OBJ);
+    m_spaceship2.setup(renderer.get_device());
+    m_spaceship2.translate(10, 0, 10);
 
     m_light_cb.setup(joj::calculate_cb_byte_size(sizeof(LightBuffer)), nullptr);
     m_light_cb.create(renderer.get_device());
 
     m_camera_cb.setup(joj::calculate_cb_byte_size(sizeof(CameraBufferType)), nullptr);
     m_camera_cb.create(renderer.get_device());
-
-    m_shader.compile_vertex_shader(joj::D3D11ShaderLibrary::VertexShaderCode,
-        "main", joj::ShaderModel::Default);
-    m_shader.create_vertex_shader(renderer.get_device());
-
-    m_shader.compile_pixel_shader(joj::D3D11ShaderLibrary::PixelShaderCode,
-        "main", joj::ShaderModel::Default);
-    m_shader.create_pixel_shader(renderer.get_device());
-
-    m_tex.create(renderer.get_device(),
-        renderer.get_cmd_list(),
-        L"../../../../samples/textures/stone.png",
-        joj::ImageType::PNG);
 
     // Create a texture sampler state description.
     D3D11_SAMPLER_DESC samplerDesc = {};
@@ -272,14 +126,8 @@ void HelloTriangle::init()
     };
 
     renderer.get_device().device->CreateInputLayout(layout, 3,
-        m_shader.get_vertex_shader().vsblob->GetBufferPointer(),
-        m_shader.get_vertex_shader().vsblob->GetBufferSize(), &gInputLayout);
-
-    delete[] vertices;
-    vertices = nullptr;
-
-    delete[] indices;
-    indices = nullptr;
+        m_spaceship.get_shader().get_vertex_shader().vsblob->GetBufferPointer(),
+        m_spaceship.get_shader().get_vertex_shader().vsblob->GetBufferSize(), &gInputLayout);
 }
 
 void HelloTriangle::update(const f32 dt)
@@ -306,17 +154,8 @@ void HelloTriangle::update(const f32 dt)
     angle += 0.01f;
 
     {
-        joj::JMatrix4x4 W = XMMatrixRotationY(rotation); // joj::matrix4x4_identity();
-        joj::JMatrix4x4 V = XMLoadFloat4x4(&m_cam.get_view());
-        joj::JMatrix4x4 P = XMLoadFloat4x4(&m_cam.get_proj());
-        joj::JMatrix4x4 WVP = W * V * P;
-
-        ConstantBuffer cbData = {};
-        XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
-        XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
-        XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
-        XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
-        m_mat_cb.update(renderer.get_cmd_list(), cbData);
+        m_spaceship.update(m_cam.get_view(), m_cam.get_proj(), dt);
+        m_spaceship2.update(m_cam.get_view(), m_cam.get_proj(), dt);
     }
 
     {
@@ -340,27 +179,16 @@ void HelloTriangle::draw()
 {
     renderer.clear();
 
-    // Configurar o pipeline gráfico
     renderer.get_cmd_list().device_context->IASetInputLayout(gInputLayout);
-
-    UINT stride = sizeof(Vertex);
-    UINT offset = 0;
-    m_vb.bind(renderer.get_cmd_list(), 0, 1, &stride, &offset);
-    m_ib.bind(renderer.get_cmd_list(), joj::DataFormat::R32_UINT, offset);
-    
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     
-    m_mat_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
     m_light_cb.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
     m_camera_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 1, 1);
 
-    m_tex.bind(renderer.get_cmd_list(), 0, 1);
     renderer.get_cmd_list().device_context->PSSetSamplers(0, 1, &m_sampleState);
 
-    m_shader.bind_vertex_shader(renderer.get_cmd_list());
-    m_shader.bind_pixel_shader(renderer.get_cmd_list());
-
-    renderer.get_cmd_list().device_context->DrawIndexed(indexCount, 0, 0);
+    m_spaceship.draw(renderer.get_device(), renderer.get_cmd_list());
+    m_spaceship2.draw(renderer.get_device(), renderer.get_cmd_list());
 
     renderer.swap_buffers();
 }

@@ -12,6 +12,7 @@
 #include "joj/renderer/d3d11/shader_d3d11.h"
 #include "joj/renderer/d3d11/texture2d_d3d11.h"
 #include "joj/systems/camera/free_camera.h"
+#include "joj/resources/d3d11/mesh_d3d11.h"
 
 class HelloTriangle
 {
@@ -33,14 +34,11 @@ public:
     b8 loop = true;
     f32 frametime = 0.0f;
 
-    joj::D3D11VertexBuffer m_vb;
-    joj::D3D11IndexBuffer m_ib;
-    joj::D3D11ConstantBuffer m_mat_cb;
     joj::D3D11ConstantBuffer m_light_cb;
     joj::D3D11ConstantBuffer m_camera_cb;
-    joj::D3D11Shader m_shader;
-    joj::D3D11Texture2D m_tex;
     joj::FreeCamera m_cam;
+    joj::D3D11Mesh m_spaceship;
+    joj::D3D11Mesh m_spaceship2;
 };
 
 #endif // _JOJ_HELLO_TRIANGLE_H
