@@ -10,6 +10,7 @@ add_library(jojRenderer
     constant_buffer.cpp
     shader.cpp
     texture2d.cpp
+    index_buffer.cpp
 )
 
 target_include_directories(jojRenderer
