@@ -15,6 +15,7 @@
 #include <string>
 #include <stdexcept>
 #include <algorithm>
+#include <renderer/d3d11/shader_library_d3d11.h>
 
 u32 vertexCount = 0;
 u32 indexCount = 0;
@@ -42,141 +43,6 @@ ID3D11InputLayout* gInputLayout = nullptr;
 ID3D11SamplerState* m_sampleState = nullptr;
 ID3D11Buffer* m_indexBuffer = nullptr;
 
-// Vertex Shader (HLSL)
-const char* gVertexShaderCode = R"(
-    cbuffer ConstantBuffer : register(b0) {
-        float4x4 wvp;
-        float4x4 worldMatrix;
-	    float4x4 viewMatrix;
-	    float4x4 projectionMatrix;
-    };
-
-    cbuffer CameraBuffer : register(b1)
-    {
-        float3 cameraPosition;
-        float padding;
-    };
-
-    struct VS_INPUT {
-        float4 position : POSITION;
-        float2 tex : TEXCOORD0;
-        float3 normal : NORMAL;
-    };
-
-    struct PS_INPUT {
-        float4 position : SV_POSITION;
-        float2 tex : TEXCOORD0;
-        float3 normal : NORMAL;
-        float3 viewDirection : TEXCOORD1;
-    };
-
-    PS_INPUT main(VS_INPUT input) {
-        PS_INPUT output;
-        float4 worldPosition;
-        
-        // Change the position vector to be 4 units for proper matrix calculations.
-        input.position.w = 1.0f;
-
-        // Calculate the position of the vertex against the world, view, and projection matrices.
-        output.position = mul(input.position, worldMatrix);
-        output.position = mul(output.position, viewMatrix);
-        output.position = mul(output.position, projectionMatrix);
-
-        output.tex = input.tex;
-
-        // Calculate the normal vector against the world matrix only.
-        output.normal = mul(input.normal, (float3x3)worldMatrix);
-
-        // Normalize the normal vector.
-        output.normal = normalize(output.normal);
-
-        // Calculate the position of the vertex in the world.
-        worldPosition = mul(input.position, worldMatrix);
-
-        // Determine the viewing direction based on the position of the camera and the position of the vertex in the world.
-        output.viewDirection = cameraPosition.xyz - worldPosition.xyz;
-
-        // Normalize the viewing direction vector.
-        output.viewDirection = normalize(output.viewDirection);
-
-        return output;
-    }
-)";
-
-// Pixel Shader (HLSL)
-const char* gPixelShaderCode = R"(
-    cbuffer LightBuffer : register(b0)
-    {
-        float4 ambientColor;
-        float4 diffuseColor;
-        float3 lightDirection;
-        float specularPower;
-        float4 specularColor;
-    };
-
-    struct PS_INPUT {
-        float4 position : SV_POSITION;
-        float2 tex : TEXCOORD0;
-        float3 normal : NORMAL;
-        float3 viewDirection : TEXCOORD1;
-    };
-
-    Texture2D shaderTexture : register(t0);
-    SamplerState SampleType : register(s0);
-
-    float4 main(PS_INPUT input) : SV_TARGET {
-        float4 textureColor;
-        float3 lightDir;
-        float lightIntensity;
-        float4 color;
-        float3 reflection;
-        float4 specular;
-
-        // Sample the pixel color from the texture using the sampler at this texture coordinate location.
-        // textureColor = shaderTexture.Sample(SampleType, input.tex);
-
-        // Set the default output color to the ambient light value for all pixels.
-        color = ambientColor;
-
-        // Initialize the specular color.
-        specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        // specular = specularColor;
-
-        // Invert the light direction for calculations.
-        lightDir = -lightDirection;
-
-        // Calculate the amount of light on this pixel.
-        lightIntensity = saturate(dot(input.normal, lightDir));
-
-        if(lightIntensity > 0.0f)
-        {
-            // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
-            color += (diffuseColor * lightIntensity);
-
-            // Saturate the ambient and diffuse color.
-            color = saturate(color);
-
-            // Calculate the reflection vector based on the light intensity, normal vector, and light direction.
-            reflection = normalize(2.0f * lightIntensity * input.normal - lightDir);
-
-            // Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
-            // specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
-
-            // FIXED? Multiply specular lighting by specularColor (not being done). -> 'Dot' Light now has color to it.
-            specular = specularColor * pow(saturate(dot(reflection, input.viewDirection)), specularPower);
-        }
-
-        // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
-        // color = color * textureColor;
-
-        // Add the specular component last to the output color.
-        color = saturate(color + specular);
-
-        return color;
-    }
-)";
-
-// Estrutura para o Constant Buffer
 // Estrutura para o Constant Buffer
 struct ConstantBuffer
 {
@@ -363,10 +229,12 @@ void HelloTriangle::init()
     m_camera_cb.setup(joj::calculate_cb_byte_size(sizeof(CameraBufferType)), nullptr);
     m_camera_cb.create(renderer.get_device());
 
-    m_shader.compile_vertex_shader(gVertexShaderCode, "main", joj::ShaderModel::Default);
+    m_shader.compile_vertex_shader(joj::D3D11ShaderLibrary::VertexShaderCode,
+        "main", joj::ShaderModel::Default);
     m_shader.create_vertex_shader(renderer.get_device());
 
-    m_shader.compile_pixel_shader(gPixelShaderCode, "main", joj::ShaderModel::Default);
+    m_shader.compile_pixel_shader(joj::D3D11ShaderLibrary::PixelShaderCode,
+        "main", joj::ShaderModel::Default);
     m_shader.create_pixel_shader(renderer.get_device());
 
     m_tex.create(renderer.get_device(),
