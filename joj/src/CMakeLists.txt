@@ -18,6 +18,7 @@ target_include_directories(joj
 add_subdirectory(platform)
 add_subdirectory(renderer)
 add_subdirectory(systems)
+add_subdirectory(resources)
 
 target_link_directories(
     joj
@@ -25,6 +26,7 @@ target_link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/platform/
     ${CMAKE_CURRENT_SOURCE_DIR}/renderer/
     ${CMAKE_CURRENT_SOURCE_DIR}/systems/
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/
 )
 
 target_link_libraries(
@@ -33,6 +35,7 @@ target_link_libraries(
     jojPlatform
     jojRenderer
     jojSystems
+    jojResources
 )
 
 target_compile_definitions(joj PRIVATE JOJ_DEBUG_MODE)
