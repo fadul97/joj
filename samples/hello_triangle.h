@@ -26,9 +26,6 @@ public:
 
     f32 get_frametime();
 
-    b8 load_model(char* filename);
-    void release_model();
-
     joj::Win32Window window;
     joj::Win32Input input;
     joj::Win32Timer timer;
@@ -40,6 +37,7 @@ public:
     joj::D3D11IndexBuffer m_ib;
     joj::D3D11ConstantBuffer m_mat_cb;
     joj::D3D11ConstantBuffer m_light_cb;
+    joj::D3D11ConstantBuffer m_camera_cb;
     joj::D3D11Shader m_shader;
     joj::D3D11Texture2D m_tex;
     joj::FreeCamera m_cam;

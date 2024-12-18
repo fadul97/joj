@@ -11,6 +11,7 @@ samples/textures/
 # Sphere and Plane models - Files are large
 samples/models/Sphere.txt
 samples/models/Plane.txt
+samples/models/MyMonkey.obj
 
 # Project File Tree
 tree.txt
