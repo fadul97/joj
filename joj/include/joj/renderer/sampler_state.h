@@ -88,10 +88,10 @@ namespace joj
 
         virtual ErrorCode create(SamplerDesc& desc) = 0;
 
-        virtual SamplerData& get_data() const = 0;
-
         virtual void bind(CommandList& cmd_list, SamplerType type,
             u32 start_slot, u32 num_samplers) = 0;
+
+        virtual SamplerData& get_data() const = 0;
     };
 }
 
