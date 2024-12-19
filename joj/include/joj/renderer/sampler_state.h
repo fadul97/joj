@@ -20,7 +20,7 @@ namespace joj
         MIN_MAG_MIP_POINT,
         MIN_MAG_POINT_MIP_LINEAR,
         MIN_MAG_MIP_LINEAR,
-        Anisotropic,
+        ANISOTROPIC,
     };
 
     enum class TextureAddressMode
@@ -86,12 +86,12 @@ namespace joj
         SamplerState();
         virtual ~SamplerState();
 
-        virtual ErrorCode create(SamplerDesc& desc) = 0;
+        virtual ErrorCode create(GraphicsDevice& device, SamplerDesc& desc) = 0;
 
         virtual void bind(CommandList& cmd_list, SamplerType type,
             u32 start_slot, u32 num_samplers) = 0;
 
-        virtual SamplerData& get_data() const = 0;
+        virtual SamplerData& get_data() = 0;
     };
 }
 
