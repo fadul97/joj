@@ -11,6 +11,7 @@ add_library(jojRenderer
     shader.cpp
     texture2d.cpp
     index_buffer.cpp
+    sampler_state.cpp
 )
 
 target_include_directories(jojRenderer
