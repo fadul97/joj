@@ -4,17 +4,13 @@
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "defines.h"
 
+#include "data_format.h"
 #include "error_code.h"
 #include "renderer.h"
 
 namespace joj
 {
     struct IBData;
-
-    enum class DataFormat
-    {
-        R32_UINT
-    };
 
     class JAPI IndexBuffer
     {
