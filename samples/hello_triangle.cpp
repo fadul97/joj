@@ -19,7 +19,6 @@
 using namespace DirectX;
 
 ID3D11InputLayout* gInputLayout = nullptr;
-ID3D11SamplerState* m_sampleState = nullptr;
 
 struct CameraBufferType
 {
@@ -86,7 +85,7 @@ void HelloTriangle::init()
     m_spaceship.setup(renderer.get_device());
     m_spaceship.translate(-10, 0, 10);
 
-    m_spaceship2 = joj::D3D11Mesh("../../../../samples/models/MySpaceShip.obj", joj::MeshType::OBJ);
+    m_spaceship2 = joj::D3D11Mesh("../../../../samples/models/MyCube.obj", joj::MeshType::OBJ);
     m_spaceship2.setup(renderer.get_device());
     m_spaceship2.translate(10, 0, 10);
 
@@ -96,27 +95,25 @@ void HelloTriangle::init()
     m_camera_cb.setup(joj::calculate_cb_byte_size(sizeof(CameraBufferType)), nullptr);
     m_camera_cb.create(renderer.get_device());
 
-    // Create a texture sampler state description.
-    D3D11_SAMPLER_DESC samplerDesc = {};
-    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-    samplerDesc.MipLODBias = 0.0f;
-    samplerDesc.MaxAnisotropy = 1;
-    samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-    samplerDesc.BorderColor[0] = 0;
-    samplerDesc.BorderColor[1] = 0;
-    samplerDesc.BorderColor[2] = 0;
-    samplerDesc.BorderColor[3] = 0;
-    samplerDesc.MinLOD = 0;
-    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    // Describe a texture sampler.
+    joj::SamplerDesc samplerDesc;
+    samplerDesc.filter = joj::SamplerFilter::MIN_MAG_MIP_LINEAR;
+    samplerDesc.addressU = joj::TextureAddressMode::Wrap;
+    samplerDesc.addressV = joj::TextureAddressMode::Wrap;
+    samplerDesc.addressW = joj::TextureAddressMode::Wrap;
+    samplerDesc.mip_lod_bias = 0.0f;
+    samplerDesc.max_anisotropy = 1;
+    samplerDesc.func = joj::ComparisonFunc::Always;
+    samplerDesc.border_color[0] = 0.0f;
+    samplerDesc.border_color[0] = 0.0f;
+    samplerDesc.border_color[0] = 0.0f;
+    samplerDesc.border_color[0] = 0.0f;
+    samplerDesc.min_lod = joj::LodValue::Zero;
+    samplerDesc.max_lod = joj::LodValue::Float32_MAX;
 
-    // Create the texture sampler state.
-    if (renderer.get_device().device->CreateSamplerState(&samplerDesc, &m_sampleState) != S_OK)
-    {
-        JERROR(joj::ErrorCode::FAILED, "Failed to create D3D11 Sampler State.");
-    }
+    // Create Sampler State
+    m_sampler_state.create(renderer.get_device(), samplerDesc);
+    m_sampler_state.bind(renderer.get_cmd_list(), joj::SamplerType::Anisotropic, 0, 1);
 
     // Layout de entrada
     D3D11_INPUT_ELEMENT_DESC layout[] = {
@@ -185,8 +182,6 @@ void HelloTriangle::draw()
     m_light_cb.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
     m_camera_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 1, 1);
 
-    renderer.get_cmd_list().device_context->PSSetSamplers(0, 1, &m_sampleState);
-
     m_spaceship.draw(renderer.get_device(), renderer.get_cmd_list());
     m_spaceship2.draw(renderer.get_device(), renderer.get_cmd_list());
 
@@ -197,7 +192,6 @@ void HelloTriangle::shutdown()
 {
     timer.end_period();
 
-    m_sampleState->Release();
     gInputLayout->Release();
 }
 
