@@ -8,6 +8,7 @@
 #include <d3dcompiler.h>
 #include "joj/math/jmath.h"
 #include "joj/jmacros.h"
+#include "joj/systems/light/light.h"
 
 #include <vector>
 #include <string>

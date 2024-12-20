@@ -9,6 +9,7 @@ add_library(
 )
 
 add_subdirectory(camera)
+add_subdirectory(light)
 
 target_include_directories(
     jojSystems
@@ -21,6 +22,7 @@ target_link_directories(
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/math/
     ${CMAKE_CURRENT_SOURCE_DIR}/camera/
+    ${CMAKE_CURRENT_SOURCE_DIR}/light/
 )
 
-target_link_libraries(jojSystems PUBLIC jojMath jojCamera)
+target_link_libraries(jojSystems PUBLIC jojMath jojCamera jojLight)
