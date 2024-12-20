@@ -14,6 +14,7 @@ add_library(
     texture2d_d3d11.cpp
     index_buffer_d3d11.cpp
     sampler_state_d3d11.cpp
+    input_layout_d3d11.cpp
 )
 
 if(WIN32)
