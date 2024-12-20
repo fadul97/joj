@@ -14,6 +14,7 @@
 #include "joj/systems/camera/free_camera.h"
 #include "joj/resources/d3d11/mesh_d3d11.h"
 #include "joj/renderer/d3d11/sampler_state_d3d11.h"
+#include "joj/renderer/d3d11/input_layout_d3d11.h"
 
 class HelloTriangle
 {
@@ -41,6 +42,7 @@ public:
     joj::D3D11Mesh m_spaceship;
     joj::D3D11Mesh m_spaceship2;
     joj::D3D11SamplerState m_sampler_state;
+    joj::D3D11InputLayout m_input_layout;
 };
 
 #endif // _JOJ_HELLO_TRIANGLE_H

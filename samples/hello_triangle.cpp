@@ -8,17 +8,12 @@
 #include <d3dcompiler.h>
 #include "joj/math/jmath.h"
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include <vector>
 #include <string>
 #include <stdexcept>
 #include <algorithm>
 
 using namespace DirectX;
-
-ID3D11InputLayout* gInputLayout = nullptr;
 
 struct CameraBufferType
 {
@@ -115,16 +110,18 @@ void HelloTriangle::init()
     m_sampler_state.create(renderer.get_device(), samplerDesc);
     m_sampler_state.bind(renderer.get_cmd_list(), joj::SamplerType::Anisotropic, 0, 1);
 
-    // Layout de entrada
-    D3D11_INPUT_ELEMENT_DESC layout[] = {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    joj::InputDesc layout[] = {
+        { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT, 0,  0, joj::InputClassification::PerVertexData, 0 },
+        { "TEXCOORD", 0, joj::DataFormat::R32G32_FLOAT,    0, 12, joj::InputClassification::PerVertexData, 0 },
+        { "NORMAL",   0, joj::DataFormat::R32G32B32_FLOAT, 0, 20, joj::InputClassification::PerVertexData, 0 },
     };
 
-    renderer.get_device().device->CreateInputLayout(layout, 3,
-        m_spaceship.get_shader().get_vertex_shader().vsblob->GetBufferPointer(),
-        m_spaceship.get_shader().get_vertex_shader().vsblob->GetBufferSize(), &gInputLayout);
+    for (auto& l : layout)
+    {
+        m_input_layout.add(l);
+    }
+
+    m_input_layout.create(renderer.get_device(), m_spaceship.get_shader().get_vertex_shader());
 }
 
 void HelloTriangle::update(const f32 dt)
@@ -176,7 +173,7 @@ void HelloTriangle::draw()
 {
     renderer.clear();
 
-    renderer.get_cmd_list().device_context->IASetInputLayout(gInputLayout);
+    m_input_layout.bind(renderer.get_cmd_list());
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     
     m_light_cb.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
@@ -191,8 +188,6 @@ void HelloTriangle::draw()
 void HelloTriangle::shutdown()
 {
     timer.end_period();
-
-    gInputLayout->Release();
 }
 
 f32 HelloTriangle::get_frametime()
