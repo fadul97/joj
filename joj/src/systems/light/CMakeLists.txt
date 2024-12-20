@@ -6,7 +6,7 @@ add_library(
     jojLight
     STATIC
     light.cpp
-)
+    light_debug.cpp)
 
 target_include_directories(
     jojLight
