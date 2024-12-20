@@ -7,6 +7,7 @@
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
 #include "joj/math/jmath.h"
+#include "joj/jmacros.h"
 
 #include <vector>
 #include <string>
@@ -85,10 +86,10 @@ void HelloTriangle::init()
     m_spaceship2.translate(10, 0, 10);
 
     m_light_cb.setup(joj::calculate_cb_byte_size(sizeof(LightBuffer)), nullptr);
-    m_light_cb.create(renderer.get_device());
+    JOJ_LOG_IF_FAIL(m_light_cb.create(renderer.get_device()));
 
     m_camera_cb.setup(joj::calculate_cb_byte_size(sizeof(CameraBufferType)), nullptr);
-    m_camera_cb.create(renderer.get_device());
+    JOJ_LOG_IF_FAIL(m_camera_cb.create(renderer.get_device()));
 
     // Describe a texture sampler.
     joj::SamplerDesc samplerDesc;
@@ -107,7 +108,7 @@ void HelloTriangle::init()
     samplerDesc.max_lod = joj::LodValue::Float32_MAX;
 
     // Create Sampler State
-    m_sampler_state.create(renderer.get_device(), samplerDesc);
+    JOJ_LOG_IF_FAIL(m_sampler_state.create(renderer.get_device(), samplerDesc));
     m_sampler_state.bind(renderer.get_cmd_list(), joj::SamplerType::Anisotropic, 0, 1);
 
     joj::InputDesc layout[] = {
@@ -121,7 +122,7 @@ void HelloTriangle::init()
         m_input_layout.add(l);
     }
 
-    m_input_layout.create(renderer.get_device(), m_spaceship.get_shader().get_vertex_shader());
+    JOJ_LOG_IF_FAIL(m_input_layout.create(renderer.get_device(), m_spaceship.get_shader().get_vertex_shader()));
 }
 
 void HelloTriangle::update(const f32 dt)

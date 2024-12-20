@@ -12,6 +12,7 @@
 #include "logger.h"
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "renderer/d3d11/shader_library_d3d11.h"
+#include "jmacros.h"
 
 joj::D3D11Mesh::D3D11Mesh()
     : Mesh()
@@ -47,21 +48,21 @@ void joj::D3D11Mesh::setup(GraphicsDevice& device)
 {
     m_vb.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
         sizeof(Vertex) * m_vertex_count, m_vertices.data());
-    m_vb.create(device);
+    JOJ_LOG_IF_FAIL(m_vb.create(device));
 
     m_ib.setup(sizeof(u32) * m_index_count, m_indices.data());
-    m_ib.create(device);
+    JOJ_LOG_IF_FAIL(m_ib.create(device));
 
     m_cb.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
-    m_cb.create(device);
+    JOJ_LOG_IF_FAIL(m_cb.create(device));
 
     m_shader.compile_vertex_shader(D3D11ShaderLibrary::VertexShaderCode,
         "main", joj::ShaderModel::Default);
-    m_shader.create_vertex_shader(device);
+    JOJ_LOG_IF_FAIL(m_shader.create_vertex_shader(device));
 
     m_shader.compile_pixel_shader(D3D11ShaderLibrary::PixelShaderCode,
         "main", joj::ShaderModel::Default);
-    m_shader.create_pixel_shader(device);
+    JOJ_LOG_IF_FAIL(m_shader.create_pixel_shader(device));
 
     JDEBUG("Setup D3D11 Mesh!");
 }
