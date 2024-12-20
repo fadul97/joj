@@ -11,6 +11,17 @@ JAPI void renderer_print();
 
 namespace joj
 {
+    enum class PrimitiveTopology
+    {
+        UNDEFINED,
+        POINT_LIST,
+        LINE_LIST,
+        LINE_STRIP,
+        TRIANGLE_LIST,
+        TRIANGLE_STRIP,
+    };
+
+
     struct GraphicsDevice;
 
     struct CommandList;
@@ -29,6 +40,8 @@ namespace joj
 
         virtual void enable_depth_test() = 0;
         virtual void disable_depth_test() = 0;
+
+        virtual void set_primitive_topology(const PrimitiveTopology topology) = 0;
 
         virtual void resize(i32 width, i32 height) = 0;
 

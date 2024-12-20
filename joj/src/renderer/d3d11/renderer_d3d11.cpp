@@ -645,10 +645,39 @@ void joj::D3D11Renderer::shutdown()
 
 void joj::D3D11Renderer::enable_depth_test()
 {
+    JTODO();
 }
 
 void joj::D3D11Renderer::disable_depth_test()
 {
+    JTODO();
+}
+
+void joj::D3D11Renderer::set_primitive_topology(const PrimitiveTopology topology)
+{
+    switch (topology)
+    {
+    case PrimitiveTopology::UNDEFINED:
+        m_cmd_list.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED);
+        break;
+    case PrimitiveTopology::POINT_LIST:
+        m_cmd_list.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+        break;
+    case PrimitiveTopology::LINE_LIST:
+        m_cmd_list.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+        break;
+    case PrimitiveTopology::LINE_STRIP:
+        m_cmd_list.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+        break;
+    case PrimitiveTopology::TRIANGLE_LIST:
+        m_cmd_list.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        break;
+    case PrimitiveTopology::TRIANGLE_STRIP:
+        m_cmd_list.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+        break;
+    default:
+        break;
+    }
 }
 
 void joj::D3D11Renderer::resize(i32 width, i32 height)

@@ -41,6 +41,8 @@ namespace joj
         void enable_depth_test() override;
         void disable_depth_test() override;
 
+        void set_primitive_topology(const PrimitiveTopology topology) override;
+
         void resize(i32 width, i32 height) override;
 
         GraphicsDevice& get_device() override;
