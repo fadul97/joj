@@ -175,7 +175,7 @@ void HelloTriangle::draw()
     renderer.clear();
 
     m_input_layout.bind(renderer.get_cmd_list());
-    renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    renderer.set_primitive_topology(joj::PrimitiveTopology::TRIANGLE_LIST);
     
     m_light_cb.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
     m_camera_cb.bind_to_vertex_shader(renderer.get_cmd_list(), 1, 1);
