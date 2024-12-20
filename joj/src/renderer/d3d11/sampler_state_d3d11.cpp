@@ -145,24 +145,24 @@ joj::ErrorCode joj::D3D11SamplerState::create(GraphicsDevice& device,
         break;
     }
 
-    switch (desc.min_lod)
+    switch (desc.min_LOD)
     {
-    case LodValue::Zero:
+    case LODValue::Zero:
         sampler_desc.MinLOD = 0.0f;
         break;
-    case LodValue::Float32_MAX:
+    case LODValue::Float32_MAX:
         sampler_desc.MinLOD = D3D11_FLOAT32_MAX;
         break;
     default:
         break;
     }
 
-    switch (desc.max_lod)
+    switch (desc.max_LOD)
     {
-    case LodValue::Zero:
+    case LODValue::Zero:
         sampler_desc.MaxLOD = 0.0f;
         break;
-    case LodValue::Float32_MAX:
+    case LODValue::Float32_MAX:
         sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
         break;
     default:

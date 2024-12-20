@@ -104,8 +104,8 @@ void HelloTriangle::init()
     samplerDesc.border_color[0] = 0.0f;
     samplerDesc.border_color[0] = 0.0f;
     samplerDesc.border_color[0] = 0.0f;
-    samplerDesc.min_lod = joj::LodValue::Zero;
-    samplerDesc.max_lod = joj::LodValue::Float32_MAX;
+    samplerDesc.min_LOD = joj::LODValue::Zero;
+    samplerDesc.max_LOD = joj::LODValue::Float32_MAX;
 
     // Create Sampler State
     JOJ_LOG_IF_FAIL(m_sampler_state.create(renderer.get_device(), samplerDesc));

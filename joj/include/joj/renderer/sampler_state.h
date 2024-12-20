@@ -44,7 +44,7 @@ namespace joj
         Always
     };
 
-    enum class LodValue
+    enum class LODValue
     {
         Zero,
         Float32_MAX,
@@ -60,8 +60,8 @@ namespace joj
         u32 max_anisotropy;
         ComparisonFunc func;
         f32 border_color[4];
-        LodValue min_lod;
-        LodValue max_lod;
+        LODValue min_LOD;
+        LODValue max_LOD;
 
         /*
          * TODO: Default values? 

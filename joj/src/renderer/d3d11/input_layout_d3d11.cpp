@@ -64,7 +64,6 @@ joj::ErrorCode joj::D3D11InputLayout::create(GraphicsDevice& device,
         d3d11_desc.InstanceDataStepRate = desc.instance_data_step_rate;
 
         input_desc.push_back(d3d11_desc);
-        JDEBUG("Added InputDesc to vector.");
     }
 
     if (device.device->CreateInputLayout(input_desc.data(), input_desc.size(),
