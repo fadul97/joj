@@ -80,6 +80,15 @@ joj::D3D11Shader::~D3D11Shader()
 void joj::D3D11Shader::compile_vertex_shader(const std::string& vertex_shader,
 	const std::string& entry_point, const ShaderModel shader_model)
 {
+	DWORD shader_flags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef JOJ_DEBUG_MODE
+	// Let compiler insert debug information into the output code
+	shader_flags |= D3DCOMPILE_DEBUG;
+
+	// Disable optimizations
+	shader_flags |= D3DCOMPILE_SKIP_OPTIMIZATION;      // Compiler will not validate the generated code -> Recommended to use only with successfully compiled shaders
+#endif // JOJ_DEBUG_MODE
+
 	ID3DBlob* error_blob = nullptr;
 
 	std::string model;
@@ -94,9 +103,9 @@ void joj::D3D11Shader::compile_vertex_shader(const std::string& vertex_shader,
 	}
 
 	if (D3DCompile(
-		vertex_shader.c_str(), vertex_shader.length(), nullptr, nullptr, nullptr,
-		entry_point.c_str(), model.c_str(), 0, 0, &m_vertex_shader.vsblob,
-		&error_blob) != S_OK)
+		vertex_shader.c_str(), vertex_shader.length(), nullptr, nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE, entry_point.c_str(), model.c_str(),
+		shader_flags, 0, &m_vertex_shader.vsblob, &error_blob) != S_OK)
 	{
 		if (error_blob)
 		{
@@ -115,6 +124,15 @@ void joj::D3D11Shader::compile_vertex_shader(const std::string& vertex_shader,
 void joj::D3D11Shader::compile_pixel_shader(const std::string& pixel_shader,
 	const std::string& entry_point, const ShaderModel shader_model)
 {
+	DWORD shader_flags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef JOJ_DEBUG_MODE
+	// Let compiler insert debug information into the output code
+	shader_flags |= D3DCOMPILE_DEBUG;
+
+	// Disable optimizations
+	shader_flags |= D3DCOMPILE_SKIP_OPTIMIZATION;      // Compiler will not validate the generated code -> Recommended to use only with successfully compiled shaders
+#endif // JOJ_DEBUG_MODE
+
 	ID3DBlob* error_blob = nullptr;
 
 	std::string model;
@@ -129,9 +147,9 @@ void joj::D3D11Shader::compile_pixel_shader(const std::string& pixel_shader,
 	}
 
 	if (D3DCompile(
-		pixel_shader.c_str(), pixel_shader.length(), nullptr, nullptr, nullptr,
-		entry_point.c_str(), model.c_str(), 0, 0, &m_pixel_shader.psblob,
-		&error_blob) != S_OK)
+		pixel_shader.c_str(), pixel_shader.length(), nullptr, nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE, entry_point.c_str(), model.c_str(),
+		shader_flags, 0, &m_pixel_shader.psblob, &error_blob) != S_OK)
 	{
 		if (error_blob)
 		{
@@ -150,13 +168,13 @@ void joj::D3D11Shader::compile_vertex_shader_from_file(const std::string& vertex
     const std::string& entry_point, const ShaderModel shader_model)
 {
 	DWORD shader_flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#ifdef _DEBUG
+#ifdef JOJ_DEBUG_MODE
 	// Let compiler insert debug information into the output code
 	shader_flags |= D3DCOMPILE_DEBUG;
 
 	// Disable optimizations
 	shader_flags |= D3DCOMPILE_SKIP_OPTIMIZATION;      // Compiler will not validate the generated code -> Recommended to use only with successfully compiled shaders
-#endif // !_DEBUG
+#endif // JOJ_DEBUG_MODE
 
 	// --------------------------------
 	// Vertex Shader
@@ -207,13 +225,13 @@ void joj::D3D11Shader::compile_pixel_shader_from_file(const std::string& pixel_p
     const std::string& entry_point, const ShaderModel shader_model)
 {
 	DWORD shader_flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#ifdef _DEBUG
+#ifdef JOJ_DEBUG_MODE
 	// Let compiler insert debug information into the output code
 	shader_flags |= D3DCOMPILE_DEBUG;
 
 	// Disable optimizations
 	shader_flags |= D3DCOMPILE_SKIP_OPTIMIZATION;      // Compiler will not validate the generated code -> Recommended to use only with successfully compiled shaders
-#endif // !_DEBUG
+#endif // JOJ_DEBUG_MODE
 
 	// --------------------------------
 	// Pixel Shader
@@ -264,13 +282,13 @@ void joj::D3D11Shader::compile_geometry_shader_from_file(const std::string& geom
     const std::string& entry_point, const ShaderModel shader_model)
 {
 	DWORD shader_flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#ifdef _DEBUG
+#ifdef JOJ_DEBUG_MODE
 	// Let compiler insert debug information into the output code
 	shader_flags |= D3DCOMPILE_DEBUG;
 
 	// Disable optimizations
 	shader_flags |= D3DCOMPILE_SKIP_OPTIMIZATION;      // Compiler will not validate the generated code -> Recommended to use only with successfully compiled shaders
-#endif // !_DEBUG
+#endif // JOJ_DEBUG_MODE
 
 	// --------------------------------
 	// Geometry Shader
@@ -313,13 +331,13 @@ void joj::D3D11Shader::compile_compute_shader_from_file(const std::string& compu
     const std::string& entry_point, const ShaderModel shader_model)
 {
 	DWORD shader_flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#ifdef _DEBUG
+#ifdef JOJ_DEBUG_MODE
 	// Let compiler insert debug information into the output code
 	shader_flags |= D3DCOMPILE_DEBUG;
 
 	// Disable optimizations
 	shader_flags |= D3DCOMPILE_SKIP_OPTIMIZATION;      // Compiler will not validate the generated code -> Recommended to use only with successfully compiled shaders
-#endif // !_DEBUG
+#endif // JOJ_DEBUG_MODE
 
 	// --------------------------------
 	// Compute Shader
