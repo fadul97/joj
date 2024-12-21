@@ -8,7 +8,10 @@ namespace joj
 {
 	namespace D3D11ShaderLibrary
 	{
+        // FIXME: Include needs to be in an appropriate folder path
         const char* VertexShaderCode = R"(
+            #include "../../../../samples/shaders/LightHelper.hlsl"
+
             cbuffer ConstantBuffer : register(b0) {
                 float4x4 wvp;
                 float4x4 worldMatrix;
