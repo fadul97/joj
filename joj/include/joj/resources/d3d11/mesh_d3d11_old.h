@@ -1,12 +1,12 @@
-#ifndef _JOJ_D3D11_MESH_H
-#define _JOJ_D3D11_MESH_H
+#ifndef _JOJ_D3D11_MESH_GEOMETRY_OLD_H
+#define _JOJ_D3D11_MESH_GEOMETRY_OLD_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "defines.h"
 
 #if JPLATFORM_WINDOWS
 
-#include "resources/mesh.h"
+#include "resources/mesh_old.h"
 #include "renderer/d3d11/vertex_buffer_d3d11.h"
 #include "renderer/d3d11/index_buffer_d3d11.h"
 #include "renderer/d3d11/constant_buffer_d3d11.h"
@@ -44,4 +44,4 @@ namespace joj
 
 #endif // JPLATFORM_WINDOWS
 
-#endif // _JOJ_D3D11_MESH_H
+#endif // _JOJ_D3D11_MESH_GEOMETRY_OLD_H

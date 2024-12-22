@@ -12,7 +12,7 @@
 #include "joj/renderer/d3d11/shader_d3d11.h"
 #include "joj/renderer/d3d11/texture2d_d3d11.h"
 #include "joj/systems/camera/free_camera.h"
-#include "joj/resources/d3d11/mesh_d3d11.h"
+#include "joj/resources/d3d11/mesh_d3d11_old.h"
 #include "joj/renderer/d3d11/sampler_state_d3d11.h"
 #include "joj/renderer/d3d11/input_layout_d3d11.h"
 

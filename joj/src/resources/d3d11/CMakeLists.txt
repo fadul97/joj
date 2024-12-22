@@ -5,7 +5,7 @@ project(joj)
 add_library(
     jojD3D11Resources
     STATIC
-    mesh_d3d11.cpp
+    mesh_d3d11_old.cpp
 )
 
 target_include_directories(

@@ -1,5 +1,5 @@
-#ifndef _JOJ_MESH_H
-#define _JOJ_MESH_H
+#ifndef _JOJ_MESH_GEOMETRY_OLD_H
+#define _JOJ_MESH_GEOMETRY_OLD_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "defines.h"
@@ -89,4 +89,4 @@ namespace joj
     { return m_index_count; }
 }
 
-#endif // _JOJ_MESH_H
+#endif // _JOJ_MESH_GEOMETRY_OLD_H

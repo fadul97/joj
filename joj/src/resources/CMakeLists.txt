@@ -5,7 +5,7 @@ project(joj)
 add_library(
     jojResources
     STATIC
-    mesh.cpp
+    "mesh_old.cpp"
 )
 
 if (WIN32)
