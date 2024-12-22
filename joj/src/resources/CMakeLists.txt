@@ -7,6 +7,7 @@ add_library(
     STATIC
     mesh_old.cpp
     submesh.cpp
+    mesh.cpp
 )
 
 if (WIN32)
