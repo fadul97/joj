@@ -13,7 +13,8 @@ namespace joj
     {
         R32G32B32_FLOAT,
         R32G32_FLOAT,
-        R32_UINT
+        R32_UINT,
+        R16_UINT
     };
 }
 
