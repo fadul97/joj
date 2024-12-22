@@ -55,4 +55,16 @@ void joj::D3D11TextureManager::destroy()
     m_texture_SRV.clear();
 }
 
+joj::TextureData2D& joj::D3D11TextureManager::get_texture(const std::wstring& filename)
+{
+    if (m_texture_SRV.find(filename) != m_texture_SRV.end())
+    {
+        return m_texture_SRV[filename];
+    }
+
+    TextureData2D tex;
+    tex.srv = nullptr;
+    return tex;
+}
+
 #endif // JPLATFORM_WINDOWS
