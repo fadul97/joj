@@ -13,6 +13,7 @@ add_library(jojRenderer
     index_buffer.cpp
     sampler_state.cpp
     input_layout.cpp
+    texture_manager.cpp
 )
 
 target_include_directories(jojRenderer

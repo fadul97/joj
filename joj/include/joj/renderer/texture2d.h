@@ -7,18 +7,11 @@
 #include "error_code.h"
 #include <string>
 #include "renderer.h"
+#include "image_type.h"
+#include "texture2d_data.h"
 
 namespace joj
 {
-    enum class ImageType
-    {
-        PNG,
-        JPG,
-        DDS,
-    };
-
-    struct Texture2DData;
-
     class JAPI Texture2D
     {
     public:
