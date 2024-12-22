@@ -11,7 +11,7 @@
 
 namespace joj
 {
-    struct Texture2DData
+    struct TextureData2D
     {
         ID3D11ShaderResourceView* srv;
     };
@@ -29,9 +29,9 @@ namespace joj
         void bind(CommandList& cmd_list, u32 start_slot, u32 num_views) override;
         void unbind(CommandList& cmd_list) override;
 
-        Texture2DData& get_data() override;
+        TextureData2D& get_data() override;
     protected:
-        Texture2DData m_data;
+        TextureData2D m_data;
     };
 }
 

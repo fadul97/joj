@@ -25,7 +25,7 @@ namespace joj
         virtual void bind(CommandList& cmd_list, u32 start_slot, u32 num_views) = 0;
         virtual void unbind(CommandList& cmd_list) = 0;
 
-        virtual Texture2DData& get_data() = 0;
+        virtual TextureData2D& get_data() = 0;
 
         u32 get_width() const;
         u32 get_height() const;
