@@ -3,7 +3,6 @@
 
 namespace joj
 {
-    // Struct needs to be defined when implementing a Texture2D child class
     struct TextureData2D;
 }
 

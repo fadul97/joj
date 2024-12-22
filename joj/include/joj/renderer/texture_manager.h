@@ -21,7 +21,7 @@ namespace joj
         virtual ~TextureManager();
 
         virtual ErrorCode create(GraphicsDevice& device, CommandList& cmd_list,
-            const std::wstring& filepath, ImageType type) = 0;
+            const std::wstring& filename, ImageType type) = 0;
         virtual void destroy() = 0;
 
         /*

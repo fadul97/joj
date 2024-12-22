@@ -102,7 +102,7 @@ void joj::D3D11Texture2D::unbind(CommandList& cmd_list)
     cmd_list.device_context->PSSetShaderResources(0, 1, null_srv);
 }
 
-joj::Texture2DData& joj::D3D11Texture2D::get_data()
+joj::TextureData2D& joj::D3D11Texture2D::get_data()
 {
     return m_data;
 }

@@ -7,15 +7,10 @@
 #if JPLATFORM_WINDOWS
 
 #include "renderer/texture2d.h"
-#include <d3d11.h>
+#include "texture2d_data_d3d11.h"
 
 namespace joj
 {
-    struct TextureData2D
-    {
-        ID3D11ShaderResourceView* srv;
-    };
-
     class JAPI D3D11Texture2D : public Texture2D
     {
     public:
