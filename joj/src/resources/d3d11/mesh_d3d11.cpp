@@ -14,14 +14,14 @@
 #include "renderer/d3d11/shader_library_d3d11.h"
 #include "jmacros.h"
 
-joj::D3D11Mesh::D3D11Mesh()
-    : Mesh()
+joj::D3D11MeshGeometryOld::D3D11MeshGeometryOld()
+    : MeshGeometryOld()
 {
     m_cb_data = {};
 }
 
-joj::D3D11Mesh::D3D11Mesh(const std::string& filename, MeshType type)
-    : Mesh(filename, type)
+joj::D3D11MeshGeometryOld::D3D11MeshGeometryOld(const std::string& filename, MeshGeometryType type)
+    : MeshGeometryOld(filename, type)
 {
     if (!load_OBJ(filename, m_vertices, m_indices, m_vertex_count, m_index_count))
     {
@@ -35,16 +35,16 @@ joj::D3D11Mesh::D3D11Mesh(const std::string& filename, MeshType type)
     m_cb_data = {};
 }
 
-joj::D3D11Mesh::~D3D11Mesh()
+joj::D3D11MeshGeometryOld::~D3D11MeshGeometryOld()
 {
 }
 
-joj::Shader& joj::D3D11Mesh::get_shader()
+joj::Shader& joj::D3D11MeshGeometryOld::get_shader()
 {
     return m_shader;
 }
 
-void joj::D3D11Mesh::setup(GraphicsDevice& device)
+void joj::D3D11MeshGeometryOld::setup(GraphicsDevice& device)
 {
     m_vb.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
         sizeof(Vertex) * m_vertex_count, m_vertices.data());
@@ -67,7 +67,7 @@ void joj::D3D11Mesh::setup(GraphicsDevice& device)
     JDEBUG("Setup D3D11 Mesh!");
 }
 
-void joj::D3D11Mesh::update(const JFloat4x4 view, const JFloat4x4 proj, const f32 dt)
+void joj::D3D11MeshGeometryOld::update(const JFloat4x4 view, const JFloat4x4 proj, const f32 dt)
 {
     static f32 rotation = 0.0f;
     // Update the rotation variable each frame.
@@ -94,7 +94,7 @@ void joj::D3D11Mesh::update(const JFloat4x4 view, const JFloat4x4 proj, const f3
     }
 }
 
-void joj::D3D11Mesh::draw(GraphicsDevice& device, CommandList& cmd_list)
+void joj::D3D11MeshGeometryOld::draw(GraphicsDevice& device, CommandList& cmd_list)
 {
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
@@ -133,7 +133,7 @@ namespace joj
     }
 }
 
-b8 joj::D3D11Mesh::load_OBJ(const std::string& filename, std::vector<Vertex>& vertices,
+b8 joj::D3D11MeshGeometryOld::load_OBJ(const std::string& filename, std::vector<Vertex>& vertices,
     std::vector<u32>& indices, u32& vertex_count, u32& index_count)
 {
     std::vector<joj::JFloat3> positions;

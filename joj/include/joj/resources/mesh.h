@@ -26,18 +26,18 @@ namespace joj
         JFloat4x4 projectionMatrix;
     };
 
-    enum class MeshType
+    enum class MeshGeometryType
     {
         None,
         OBJ,
     };
 
-    class JAPI Mesh
+    class JAPI MeshGeometryOld
     {
     public:
-        Mesh();
-        Mesh(const std::string& filename, MeshType type);
-        virtual ~Mesh();
+        MeshGeometryOld();
+        MeshGeometryOld(const std::string& filename, MeshGeometryType type);
+        virtual ~MeshGeometryOld();
 
         void translate(f32 dx, f32 dy, f32 dz);
         void move_to(f32 px, f32 py, f32 pz);
@@ -59,7 +59,7 @@ namespace joj
         virtual void draw(GraphicsDevice& device, CommandList& cmd_list) = 0;
 
     protected:
-        MeshType m_type;
+        MeshGeometryType m_type;
         JFloat3 m_position;
         std::vector<Vertex> m_vertices;
         std::vector<u32> m_indices;
@@ -67,25 +67,25 @@ namespace joj
         u32 m_index_count;
     };
 
-    inline void Mesh::translate(const f32 dx, const f32 dy, const f32 dz)
+    inline void MeshGeometryOld::translate(const f32 dx, const f32 dy, const f32 dz)
     { m_position.x += dx; m_position.y += dy; m_position.z += dz; }
 
-    inline void Mesh::move_to(const f32 px, const f32 py, const f32 pz)
+    inline void MeshGeometryOld::move_to(const f32 px, const f32 py, const f32 pz)
     { m_position.x = px; m_position.y = py; m_position.z = pz; }
 
-    inline JFloat3 Mesh::get_position() const
+    inline JFloat3 MeshGeometryOld::get_position() const
     { return m_position; }
 
-    inline const Vertex* Mesh::get_vertex_data() const
+    inline const Vertex* MeshGeometryOld::get_vertex_data() const
     { return m_vertices.data(); }
 
-    inline const u32* Mesh::get_index_data() const
+    inline const u32* MeshGeometryOld::get_index_data() const
     { return m_indices.data(); }
 
-    inline u32 Mesh::get_vertex_count() const
+    inline u32 MeshGeometryOld::get_vertex_count() const
     { return m_vertex_count; }
 
-    inline u32 Mesh::get_index_count() const
+    inline u32 MeshGeometryOld::get_index_count() const
     { return m_index_count; }
 }
 

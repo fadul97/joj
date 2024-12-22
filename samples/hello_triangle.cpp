@@ -78,11 +78,11 @@ void HelloTriangle::init()
 
     timer.start();
 
-    m_spaceship = joj::D3D11Mesh("../../../../samples/models/MySpaceShip.obj", joj::MeshType::OBJ);
+    m_spaceship = joj::D3D11MeshGeometryOld("../../../../samples/models/MySpaceShip.obj", joj::MeshGeometryType::OBJ);
     m_spaceship.setup(renderer.get_device());
     m_spaceship.translate(-10, 0, 10);
 
-    m_spaceship2 = joj::D3D11Mesh("../../../../samples/models/MyCube.obj", joj::MeshType::OBJ);
+    m_spaceship2 = joj::D3D11MeshGeometryOld("../../../../samples/models/MyCube.obj", joj::MeshGeometryType::OBJ);
     m_spaceship2.setup(renderer.get_device());
     m_spaceship2.translate(10, 0, 10);
 

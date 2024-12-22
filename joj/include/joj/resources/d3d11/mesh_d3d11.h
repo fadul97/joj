@@ -14,12 +14,12 @@
 
 namespace joj
 {
-    class JAPI D3D11Mesh : public Mesh
+    class JAPI D3D11MeshGeometryOld : public MeshGeometryOld
     {
     public:
-        D3D11Mesh();
-        D3D11Mesh(const std::string& filename, MeshType type);
-        ~D3D11Mesh();
+        D3D11MeshGeometryOld();
+        D3D11MeshGeometryOld(const std::string& filename, MeshGeometryType type);
+        ~D3D11MeshGeometryOld();
 
         Shader& get_shader() override;
 

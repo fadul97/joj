@@ -39,8 +39,8 @@ public:
     joj::D3D11ConstantBuffer m_light_cb;
     joj::D3D11ConstantBuffer m_camera_cb;
     joj::FreeCamera m_cam;
-    joj::D3D11Mesh m_spaceship;
-    joj::D3D11Mesh m_spaceship2;
+    joj::D3D11MeshGeometryOld m_spaceship;
+    joj::D3D11MeshGeometryOld m_spaceship2;
     joj::D3D11SamplerState m_sampler_state;
     joj::D3D11InputLayout m_input_layout;
 };
