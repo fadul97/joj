@@ -133,6 +133,8 @@ namespace joj
         ERR_SHADER_D3D11_PIXEL_CREATION,
         ERR_SAMPLER_STATE_D3D11_CREATION,
         ERR_INPUT_LAYOUT_D3D11_CREATION,
+
+        ERR_FILE_OPENED_FAILED,
     };
 
     // TODO: Add all cases.

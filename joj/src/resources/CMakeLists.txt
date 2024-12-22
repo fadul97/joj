@@ -8,6 +8,7 @@ add_library(
     mesh_old.cpp
     submesh.cpp
     mesh.cpp
+    m3d_loader.cpp
 )
 
 if (WIN32)
