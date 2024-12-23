@@ -60,6 +60,10 @@ void joj::D3D11IndexBuffer::bind(CommandList& cmd_list, DataFormat format,
         cmd_list.device_context->IASetIndexBuffer(m_data.index_buffer,
             DXGI_FORMAT_R32_UINT, offset);
         break;
+    case DataFormat::R16_UINT:
+        cmd_list.device_context->IASetIndexBuffer(m_data.index_buffer,
+            DXGI_FORMAT_R16_UINT, offset);
+        break;
     default:
         break;
     }
