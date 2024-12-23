@@ -10,6 +10,10 @@ add_library(
     mesh.cpp
     m3d_loader.cpp
     basic_model.cpp
+    key_frame.cpp
+    bone_animation.cpp
+    animation_clip.cpp
+    skinned_data.cpp
 )
 
 if (WIN32)
