@@ -12,6 +12,7 @@ samples/textures/
 samples/models/Sphere.txt
 samples/models/Plane.txt
 samples/models/MyMonkey.obj
+samples/models/*.m3d
 
 # Project File Tree
 tree.txt
