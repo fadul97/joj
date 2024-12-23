@@ -33,6 +33,9 @@ joj::ErrorCode joj::D3D11InputLayout::create(GraphicsDevice& device,
         
         switch (desc.format)
         {
+        case DataFormat::R32G32B32A32_FLOAT:
+            d3d11_desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+            break;
         case DataFormat::R32G32B32_FLOAT:
             d3d11_desc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
             break;
@@ -42,6 +45,11 @@ joj::ErrorCode joj::D3D11InputLayout::create(GraphicsDevice& device,
         case DataFormat::R32_UINT:
             d3d11_desc.Format = DXGI_FORMAT_R32_UINT;
             break;
+        case DataFormat::R32G32B32A32_UINT:
+            d3d11_desc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+            break;
+        case DataFormat::R8G8B8A8_UINT:
+            d3d11_desc.Format = DXGI_FORMAT_R8G8B8A8_UINT;
         default:
             break;
         }
