@@ -9,6 +9,7 @@ build/
 samples/textures/
 
 # Files are too large
+samples/models/Skull.txt
 samples/models/Car.txt
 samples/models/Cube.txt
 samples/models/Sphere.txt
