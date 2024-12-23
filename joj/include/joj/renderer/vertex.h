@@ -5,6 +5,7 @@
 #include "defines.h"
 
 #include "math/jmath.h"
+#include <wtypes.h>
 
 namespace joj
 {
@@ -24,12 +25,23 @@ namespace joj
 			JFloat2 tex;
 			JFloat4 tangentU;
 		};
+
+		struct PosNormalTexTanSkinned
+		{
+			JFloat3 pos;
+			JFloat3 normal;
+			JFloat2 tex;
+			JFloat4 tangentU;
+			JFloat3 weights;
+			BYTE bone_indices[4];
+		};
     }
 
 	enum class VertexFormat
 	{
 		PosNormalTex,
-		PosNormalTexTan
+		PosNormalTexTan,
+		PosNormalTexTanSkinned
 	};
 }
 
