@@ -11,6 +11,7 @@ joj::D3D11Mesh::D3D11Mesh()
 {
 	m_vb = D3D11VertexBuffer();
 	m_ib = D3D11IndexBuffer();
+	mIB = nullptr;
 }
 
 joj::D3D11Mesh::~D3D11Mesh()
@@ -20,7 +21,8 @@ joj::D3D11Mesh::~D3D11Mesh()
 joj::ErrorCode joj::D3D11Mesh::set_indices(GraphicsDevice& device,
 	const u16* indices, u32 count)
 {
-	m_ib.setup(sizeof(indices) * count, indices);
+	// Always u16 type indices
+	m_ib.setup(sizeof(u16) * count, indices);
 
 	if JOJ_FAILED(m_ib.create(device))
 	{
