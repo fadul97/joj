@@ -53,6 +53,18 @@ namespace joj
 
         return I;
     }
+
+    inline JMatrix4x4 inverse_transpose(const JMatrix4x4& M)
+    {
+        // Inverse-transpose is just applied to normals.  So zero out 
+        // translation row so that it doesn't get into our inverse-transpose
+        // calculation--we don't want the inverse-transpose of the translation.
+        JMatrix4x4 A = M;
+        A.r[3] = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+
+        JVector4 det = DirectX::XMMatrixDeterminant(A);
+        return DirectX::XMMatrixTranspose(XMMatrixInverse(&det, A));
+    }
 }
 
 #endif // JPLATFORM_WINDOWS
