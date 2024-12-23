@@ -17,8 +17,8 @@
 #include "joj/renderer/d3d11/input_layout_d3d11.h"
 #include "joj/resources/d3d11/basic_model_d3d11.h"
 #include "joj/renderer/d3d11/texture_manager_d3d11.h"
-#include <resources/basic_model.h>
 #include "joj/systems/light/light.h"
+#include "joj/resources/d3d11/basic_skinned_model_d3d11.h"
 
 class HelloTriangle
 {
@@ -43,8 +43,8 @@ public:
     joj::RasterizerState m_raster_state = joj::RasterizerState::Solid;
     joj::FreeCamera m_cam;
     joj::D3D11SamplerState m_sampler_state;
-    joj::D3D11InputLayout m_input_layout;
-    joj::D3D11Shader m_shader;
+    joj::D3D11InputLayout m_static_layout;
+    joj::D3D11Shader m_static_shader;
 
     joj::D3D11ConstantBuffer cbObject;
     joj::D3D11ConstantBuffer cbFrame;
@@ -66,6 +66,15 @@ public:
     joj::JFloat4x4 mShadowTransform = joj::float4x4_identity();
     std::vector<joj::BasicModelInstance> mModelInstances;
     std::vector<joj::BasicModelInstance> mAlphaClippedModelInstances;
+
+
+    void draw_animated_characters();
+    joj::D3D11ConstantBuffer cbSkinned;
+    joj::D3D11InputLayout m_skinned_layout;
+    joj::D3D11Shader m_skinned_shader;
+    joj::D3D11BasicSkinnedModel mCharacterModel;
+    joj::SkinnedModelInstance mCharacterInstance1;
+    joj::SkinnedModelInstance mCharacterInstance2;
 };
 
 #endif // _JOJ_HELLO_TRIANGLE_H

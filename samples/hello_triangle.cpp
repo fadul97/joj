@@ -32,6 +32,11 @@ struct LightBuffer
     joj::JFloat4 specularColor;
 };
 
+struct cbPerSkinned
+{
+    joj::JFloat4x4 gBoneTransforms[96];
+};
+
 struct cbPerObject
 {
     joj::JFloat4x4 gWorld;
@@ -110,7 +115,7 @@ void HelloTriangle::init()
         return;
 
     m_cam.update_view_matrix();
-    m_cam.set_pos(0.0f, 5.0f, -20.0f);
+    m_cam.set_pos(0.0f, 5.0f, -15.0f);
     m_cam.update_view_matrix();
     m_cam.set_lens(0.25f * J_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
     m_cam.update_view_matrix();
@@ -119,18 +124,19 @@ void HelloTriangle::init()
 
     timer.start();
 
-    m_shader.compile_vertex_shader_from_file(
+    /*
+    m_static_shader.compile_vertex_shader_from_file(
         "../../../../samples/shaders/M3DTest.hlsl",
         "VS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_shader.create_vertex_shader(renderer.get_device()));
+    JOJ_LOG_IF_FAIL(m_static_shader.create_vertex_shader(renderer.get_device()));
 
-    m_shader.compile_pixel_shader_from_file(
+    m_static_shader.compile_pixel_shader_from_file(
         "../../../../samples/shaders/M3DTest.hlsl",
         "PS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_shader.create_pixel_shader(renderer.get_device()));
+    JOJ_LOG_IF_FAIL(m_static_shader.create_pixel_shader(renderer.get_device()));
 
-    m_shader.bind_vertex_shader(renderer.get_cmd_list());
-    m_shader.bind_pixel_shader(renderer.get_cmd_list());
+    m_static_shader.bind_vertex_shader(renderer.get_cmd_list());
+    m_static_shader.bind_pixel_shader(renderer.get_cmd_list());
 
     joj::InputDesc layout[] = {
         { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT, 0,  0, joj::InputClassification::PerVertexData, 0 },
@@ -141,11 +147,12 @@ void HelloTriangle::init()
 
     for (auto& l : layout)
     {
-        m_input_layout.add(l);
+        m_static_layout.add(l);
     }
 
-    JOJ_LOG_IF_FAIL(m_input_layout.create(renderer.get_device(), m_shader.get_vertex_shader()));
-    m_input_layout.bind(renderer.get_cmd_list());
+    JOJ_LOG_IF_FAIL(m_static_layout.create(renderer.get_device(), m_static_shader.get_vertex_shader()));
+    m_static_layout.bind(renderer.get_cmd_list());
+    */
 
     mTreeModel = joj::D3D11BasicModel();
     JOJ_LOG_IF_FAIL(mTreeModel.load_m3d(renderer.get_device(),
@@ -304,6 +311,84 @@ void HelloTriangle::init()
     // Create Sampler State
     JOJ_LOG_IF_FAIL(m_sampler_state.create(renderer.get_device(), samplerDesc));
     m_sampler_state.bind(renderer.get_cmd_list(), joj::SamplerType::Anisotropic, 0, 1);
+
+    mCharacterModel = joj::D3D11BasicSkinnedModel();
+    JOJ_LOG_IF_FAIL(mCharacterModel.load_m3d(renderer.get_device(),
+        renderer.get_cmd_list(),
+        m_tex_mgr,
+        "../../../../samples/models/soldier.m3d",
+        L"../../../../samples/textures/"));
+
+    mCharacterInstance1.model = &mCharacterModel;
+    mCharacterInstance2.model = &mCharacterModel;
+    mCharacterInstance1.time_pos = 0.0f;
+    mCharacterInstance2.time_pos = 0.0f;
+    mCharacterInstance1.clip_name = "Take1";
+    mCharacterInstance2.clip_name = "Take1";
+    mCharacterInstance1.final_transforms.resize(mCharacterModel.get_skinned_data().get_bone_count());
+    mCharacterInstance2.final_transforms.resize(mCharacterModel.get_skinned_data().get_bone_count());
+
+    // Reflect to change coordinate system from the RHS the data was exported out as.
+    modelScale = XMMatrixScaling(0.05f, 0.05f, -0.05f);
+    modelRot = XMMatrixRotationY(J_PI);
+    modelOffset = XMMatrixTranslation(-2.0f, 0.0f, -7.0f);
+    XMStoreFloat4x4(&mCharacterInstance1.world, modelScale * modelRot * modelOffset);
+
+    modelOffset = XMMatrixTranslation(2.0f, 0.0f, -7.0f);
+    XMStoreFloat4x4(&mCharacterInstance2.world, modelScale * modelRot * modelOffset);
+
+    /*
+    float3 PosL : POSITION;          // 12 bytes (3 * 4 bytes)
+    float3 NormalL : NORMAL;         // 12 bytes (3 * 4 bytes)
+    float2 Tex : TEXCOORD;           // 8 bytes  (2 * 4 bytes)
+    float4 TangentL : TANGENT;       // 16 bytes (4 * 4 bytes)
+    float3 Weights : WEIGHTS;        // 12 bytes (3 * 4 bytes)
+    uint4 BoneIndices : BONEINDICES; // 16 bytes (4 * 4 bytes)
+    */
+
+    m_skinned_shader.compile_vertex_shader_from_file(
+        "../../../../samples/shaders/NormalMap.hlsl",
+        "SkinnedVS", joj::ShaderModel::Default);
+    JOJ_LOG_IF_FAIL(m_skinned_shader.create_vertex_shader(renderer.get_device()));
+
+    m_skinned_shader.compile_pixel_shader_from_file(
+        "../../../../samples/shaders/NormalMap.hlsl",
+        "PS", joj::ShaderModel::Default);
+    JOJ_LOG_IF_FAIL(m_skinned_shader.create_pixel_shader(renderer.get_device()));
+
+    m_skinned_shader.bind_vertex_shader(renderer.get_cmd_list());
+    m_skinned_shader.bind_pixel_shader(renderer.get_cmd_list());
+
+    /*
+    {"POSITION",     0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{"NORMAL",       0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{"TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{"TANGENT",      0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{"WEIGHTS",      0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{"BONEINDICES",  0, DXGI_FORMAT_R8G8B8A8_UINT,   0, 60, D3D11_INPUT_PER_VERTEX_DATA, 0}
+    */
+
+    joj::InputDesc skinned_layout[] = {
+        { "POSITION",    0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
+        { "NORMAL",      0, joj::DataFormat::R32G32B32_FLOAT,    0, 12, joj::InputClassification::PerVertexData, 0 },
+        { "TEXCOORD",    0, joj::DataFormat::R32G32_FLOAT,       0, 24, joj::InputClassification::PerVertexData, 0 },
+        { "TANGENT",     0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 32, joj::InputClassification::PerVertexData, 0 },
+        { "WEIGHTS",     0, joj::DataFormat::R32G32B32_FLOAT,    0, 48, joj::InputClassification::PerVertexData, 0 },
+        { "BONEINDICES", 0, joj::DataFormat::R8G8B8A8_UINT,      0, 60, joj::InputClassification::PerVertexData, 0 },
+    };
+
+    for (auto& l : skinned_layout)
+    {
+        m_skinned_layout.add(l);
+    }
+
+    JOJ_LOG_IF_FAIL(m_skinned_layout.create(renderer.get_device(), m_skinned_shader.get_vertex_shader()));
+    m_skinned_layout.bind(renderer.get_cmd_list());
+
+    cbSkinned.setup(joj::calculate_cb_byte_size(sizeof(cbPerSkinned)), nullptr);
+    JOJ_LOG_IF_FAIL(cbSkinned.create(renderer.get_device()));
+    cbSkinned.bind_to_vertex_shader(renderer.get_cmd_list(), 2, 1);
+    cbSkinned.bind_to_pixel_shader(renderer.get_cmd_list(), 2, 1);
 }
 
 void HelloTriangle::update(const f32 dt)
@@ -322,24 +407,14 @@ void HelloTriangle::update(const f32 dt)
     if (input.is_key_pressed(joj::KEY_ESCAPE))
         loop = false;
 
-
-    static float rotation = 0.0f;
-    // Update the rotation variable each frame.
-    rotation -= 0.0174532925f * 0.1f;
-    if (rotation < 0.0f)
-    {
-        rotation += 360.0f;
-    }
-
-    static float angle = 0.0f;
-    angle += 0.01f;
+    mCharacterInstance1.update(dt);
+    mCharacterInstance2.update(dt);
 }
 
 void HelloTriangle::draw()
 {
     renderer.clear();
 
-    m_input_layout.bind(renderer.get_cmd_list());
     renderer.set_primitive_topology(joj::PrimitiveTopology::TRIANGLE_LIST);
 
     renderer.set_rasterizer_state(m_raster_state);
@@ -350,16 +425,18 @@ void HelloTriangle::draw()
     draw_one_object(ind);
     */
 
-    draw_objects();
-
-    draw_alpha_objects();
-
+    // draw_objects();
+    // draw_alpha_objects();
+    draw_animated_characters();
 
     renderer.swap_buffers();
 }
 
 void HelloTriangle::draw_one_object(u32 model_index)
 {
+    m_static_shader.bind_vertex_shader(renderer.get_cmd_list());
+    m_static_shader.bind_pixel_shader(renderer.get_cmd_list());
+
     using namespace DirectX;
 
     XMMATRIX view = XMLoadFloat4x4(&m_cam.get_view());
@@ -375,6 +452,7 @@ void HelloTriangle::draw_one_object(u32 model_index)
     cbPF.gEyePosW = m_cam.get_pos();
     cbFrame.update(renderer.get_cmd_list(), cbPF);
 
+    m_static_layout.bind(renderer.get_cmd_list());
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     XMMATRIX world;
@@ -434,6 +512,14 @@ void HelloTriangle::draw_one_object(u32 model_index)
 
 void HelloTriangle::draw_objects()
 {
+    m_static_shader.bind_vertex_shader(renderer.get_cmd_list());
+    m_static_shader.bind_pixel_shader(renderer.get_cmd_list());
+
+    cbObject.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
+    cbObject.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
+    cbFrame.bind_to_vertex_shader(renderer.get_cmd_list(), 1, 1);
+    cbFrame.bind_to_pixel_shader(renderer.get_cmd_list(), 1, 1);
+
     XMMATRIX view = XMLoadFloat4x4(&m_cam.get_view());
     XMMATRIX proj = XMLoadFloat4x4(&m_cam.get_proj());
     XMMATRIX viewProj = XMMatrixMultiply(view, proj);
@@ -447,6 +533,7 @@ void HelloTriangle::draw_objects()
     cbPF.gEyePosW = m_cam.get_pos();
     cbFrame.update(renderer.get_cmd_list(), cbPF);
 
+    m_static_layout.bind(renderer.get_cmd_list());
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     XMMATRIX world;
@@ -522,6 +609,7 @@ void HelloTriangle::draw_alpha_objects()
     cbPF.gEyePosW = m_cam.get_pos();
     cbFrame.update(renderer.get_cmd_list(), cbPF);
 
+    m_static_layout.bind(renderer.get_cmd_list());
     renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     XMMATRIX world;
@@ -579,6 +667,140 @@ void HelloTriangle::draw_alpha_objects()
 
             mAlphaClippedModelInstances[model_index].model->get_mesh()->draw(renderer.get_cmd_list(), subset);
         }
+    }
+}
+
+void HelloTriangle::draw_animated_characters()
+{
+    m_skinned_shader.bind_vertex_shader(renderer.get_cmd_list());
+    m_skinned_shader.bind_pixel_shader(renderer.get_cmd_list());
+
+    cbObject.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
+    cbObject.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
+    cbFrame.bind_to_vertex_shader(renderer.get_cmd_list(), 1, 1);
+    cbFrame.bind_to_pixel_shader(renderer.get_cmd_list(), 1, 1);
+    cbSkinned.bind_to_vertex_shader(renderer.get_cmd_list(), 2, 1);
+    cbSkinned.bind_to_pixel_shader(renderer.get_cmd_list(), 2, 1);
+
+    XMMATRIX view = XMLoadFloat4x4(&m_cam.get_view());
+    XMMATRIX proj = XMLoadFloat4x4(&m_cam.get_proj());
+    XMMATRIX viewProj = XMMatrixMultiply(view, proj);
+
+    float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+    cbPerFrame cbPF;
+    cbPF.gDirLights[0] = mDirLights[0];
+    cbPF.gDirLights[1] = mDirLights[1];
+    cbPF.gDirLights[2] = mDirLights[2];
+    cbPF.gEyePosW = m_cam.get_pos();
+    cbFrame.update(renderer.get_cmd_list(), cbPF);
+
+    m_skinned_layout.bind(renderer.get_cmd_list());
+    renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    XMMATRIX world;
+    XMMATRIX worldInvTranspose;
+    XMMATRIX worldViewProj;
+
+    // Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+    XMMATRIX toTexSpace(
+        0.5f, 0.0f, 0.0f, 0.0f,
+        0.0f, -0.5f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.0f, 1.0f);
+
+    XMMATRIX shadowTransform = XMLoadFloat4x4(&mShadowTransform);
+
+    u32 stride = sizeof(joj::Vertex::PosNormalTexTanSkinned);
+    u32 offset = 0;
+
+    // Instance 1
+
+    world = XMLoadFloat4x4(&mCharacterInstance1.world);
+    worldInvTranspose = joj::inverse_transpose(world);
+    worldViewProj = world * view * proj;
+    auto worldViewProjTex = worldViewProj * toTexSpace;
+    auto cbShadowTransform = world * shadowTransform;
+    auto texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+
+    cbPerSkinned cbPS;
+    // Itera sobre cada transformação final no vetor e copia para o array gBoneTransforms
+    for (size_t i = 0; i < mCharacterInstance1.final_transforms.size(); ++i)
+    {
+        auto I = joj::matrix4x4_identity();
+        DirectX::XMMATRIX transform;
+        // transform = DirectX::XMLoadFloat4x4(&mCharacterInstance1.final_transforms[i]);
+        transform = I;
+        DirectX::XMStoreFloat4x4(&cbPS.gBoneTransforms[i], DirectX::XMMatrixTranspose(transform));
+    }
+    cbSkinned.update(renderer.get_cmd_list(), cbPS);
+
+    cbPerObject cbPO;
+    XMStoreFloat4x4(&cbPO.gWorld, XMMatrixTranspose(world));
+    XMStoreFloat4x4(&cbPO.gWorldInvTranspose, XMMatrixTranspose(worldInvTranspose));
+    XMStoreFloat4x4(&cbPO.gWorldViewProj, XMMatrixTranspose(worldViewProj));
+    XMStoreFloat4x4(&cbPO.gWorldViewProjTex, XMMatrixTranspose(worldViewProjTex));
+    XMStoreFloat4x4(&cbPO.gShadowTransform, XMMatrixTranspose(cbShadowTransform));
+    XMStoreFloat4x4(&cbPO.gTexTransform, XMMatrixTranspose(texTransform));
+    cbPO.gUseTexure = 1;
+    cbPO.gAlphaClip = 0;
+    cbPO.gFogEnabled = 0;
+    cbPO.gReflectionEnabled = 0;
+
+    for (u32 subset = 0; subset < mCharacterInstance1.model->get_submesh_count(); ++subset)
+    {
+        cbPO.gMaterial = mCharacterInstance1.model->get_mat()[subset];
+        cbObject.update(renderer.get_cmd_list(), cbPO);
+
+        /*
+        auto& diffuse_map_SRV = mModelInstances[model_index].model->get_diffuse_map_SRV()[subset];
+        auto& normal_map_SRV = mModelInstances[model_index].model->get_normal_map_SRV()[subset];
+        */
+
+        renderer.get_cmd_list().device_context->PSSetShaderResources(0, 1,
+            &mCharacterInstance1.model->get_diffuse_map_SRV()[subset]->srv);
+
+        renderer.get_cmd_list().device_context->PSSetShaderResources(1, 1,
+            &mCharacterInstance1.model->get_normal_map_SRV()[subset]->srv);
+
+        mCharacterInstance1.model->get_mesh()->draw(renderer.get_cmd_list(), subset);
+    }
+
+    // Instance 2
+
+    world = XMLoadFloat4x4(&mCharacterInstance2.world);
+    worldInvTranspose = joj::inverse_transpose(world);
+    worldViewProj = world * view * proj;
+
+    // Itera sobre cada transformação final no vetor e copia para o array gBoneTransforms
+    for (size_t i = 0; i < mCharacterInstance2.final_transforms.size(); ++i)
+    {
+        DirectX::XMMATRIX transform = DirectX::XMLoadFloat4x4(&mCharacterInstance2.final_transforms[i]);
+        DirectX::XMStoreFloat4x4(&cbPS.gBoneTransforms[i], DirectX::XMMatrixTranspose(transform));
+    }
+    cbSkinned.update(renderer.get_cmd_list(), cbPS);
+    
+    XMStoreFloat4x4(&cbPO.gWorld, XMMatrixTranspose(world));
+    XMStoreFloat4x4(&cbPO.gWorldInvTranspose, XMMatrixTranspose(worldInvTranspose));
+    XMStoreFloat4x4(&cbPO.gWorldViewProj, XMMatrixTranspose(worldViewProj));
+
+    for (u32 subset = 0; subset < mCharacterInstance2.model->get_submesh_count(); ++subset)
+    {
+        cbPO.gMaterial = mCharacterInstance2.model->get_mat()[subset];
+        cbObject.update(renderer.get_cmd_list(), cbPO);
+
+        /*
+        auto& diffuse_map_SRV = mModelInstances[model_index].model->get_diffuse_map_SRV()[subset];
+        auto& normal_map_SRV = mModelInstances[model_index].model->get_normal_map_SRV()[subset];
+        */
+
+        renderer.get_cmd_list().device_context->PSSetShaderResources(0, 1,
+            &mCharacterInstance2.model->get_diffuse_map_SRV()[subset]->srv);
+
+        renderer.get_cmd_list().device_context->PSSetShaderResources(1, 1,
+            &mCharacterInstance2.model->get_normal_map_SRV()[subset]->srv);
+
+        mCharacterInstance2.model->get_mesh()->draw(renderer.get_cmd_list(), subset);
     }
 }
 
