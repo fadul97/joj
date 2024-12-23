@@ -10,6 +10,7 @@
 #include "submesh.h"
 #include "systems/material/material.h"
 #include "error_code.h"
+#include "skinned_data.h"
 
 namespace joj
 {
@@ -29,6 +30,13 @@ namespace joj
             std::vector<u16>& indices,
             std::vector<SubMesh>& submeshes,
             std::vector<M3DMaterial>& mats);
+
+        JAPI ErrorCode load_M3D_skinned(const std::string& filename,
+            std::vector<Vertex::PosNormalTexTanSkinned>& vertices,
+            std::vector<u16>& indices,
+            std::vector<SubMesh>& submeshes,
+            std::vector<M3DMaterial>& mats,
+            SkinnedData& skin_info);
     }
 }
 
