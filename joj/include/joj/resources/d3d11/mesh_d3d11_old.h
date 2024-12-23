@@ -36,7 +36,7 @@ namespace joj
         D3D11Shader m_shader;
         ConstantBuffer m_cb_data;
 
-        b8 load_OBJ(const std::string& filename, std::vector<Vertex>& vertices,
+        b8 load_OBJ(const std::string& filename, std::vector<VertexOLD>& vertices,
             std::vector<u32>& indices, u32& vertex_count, u32& index_count);
     };
 

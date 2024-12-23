@@ -11,7 +11,7 @@
 
 namespace joj
 {
-    struct Vertex
+    struct VertexOLD
     {
         JFloat3 position;
         JFloat2 texture;
@@ -44,7 +44,7 @@ namespace joj
 
         JFloat3 get_position() const;
 
-        const Vertex* get_vertex_data() const;
+        const VertexOLD* get_vertex_data() const;
         const u32* get_index_data() const;
 
         u32 get_vertex_count() const;
@@ -61,7 +61,7 @@ namespace joj
     protected:
         MeshGeometryType m_type;
         JFloat3 m_position;
-        std::vector<Vertex> m_vertices;
+        std::vector<VertexOLD> m_vertices;
         std::vector<u32> m_indices;
         u32 m_vertex_count;
         u32 m_index_count;
@@ -76,7 +76,7 @@ namespace joj
     inline JFloat3 MeshGeometryOld::get_position() const
     { return m_position; }
 
-    inline const Vertex* MeshGeometryOld::get_vertex_data() const
+    inline const VertexOLD* MeshGeometryOld::get_vertex_data() const
     { return m_vertices.data(); }
 
     inline const u32* MeshGeometryOld::get_index_data() const

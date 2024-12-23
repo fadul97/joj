@@ -8,7 +8,9 @@ build/
 # Textures (Ignoring for now - must be added manually)
 samples/textures/
 
-# Sphere and Plane models - Files are large
+# Files are too large
+samples/models/Car.txt
+samples/models/Cube.txt
 samples/models/Sphere.txt
 samples/models/Plane.txt
 samples/models/MyMonkey.obj

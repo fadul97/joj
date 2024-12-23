@@ -47,7 +47,7 @@ joj::Shader& joj::D3D11MeshGeometryOld::get_shader()
 void joj::D3D11MeshGeometryOld::setup(GraphicsDevice& device)
 {
     m_vb.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
-        sizeof(Vertex) * m_vertex_count, m_vertices.data());
+        sizeof(VertexOLD) * m_vertex_count, m_vertices.data());
     JOJ_LOG_IF_FAIL(m_vb.create(device));
 
     m_ib.setup(sizeof(u32) * m_index_count, m_indices.data());
@@ -96,7 +96,7 @@ void joj::D3D11MeshGeometryOld::update(const JFloat4x4 view, const JFloat4x4 pro
 
 void joj::D3D11MeshGeometryOld::draw(GraphicsDevice& device, CommandList& cmd_list)
 {
-    UINT stride = sizeof(Vertex);
+    UINT stride = sizeof(VertexOLD);
     UINT offset = 0;
 
     // Bind Vertex Buffer
@@ -120,7 +120,7 @@ void joj::D3D11MeshGeometryOld::draw(GraphicsDevice& device, CommandList& cmd_li
 
 namespace joj
 {
-    bool operator==(const Vertex& lhs, const Vertex& rhs)
+    bool operator==(const VertexOLD& lhs, const VertexOLD& rhs)
     {
         return lhs.position.x == rhs.position.x &&
             lhs.position.y == rhs.position.y &&
@@ -133,13 +133,13 @@ namespace joj
     }
 }
 
-b8 joj::D3D11MeshGeometryOld::load_OBJ(const std::string& filename, std::vector<Vertex>& vertices,
+b8 joj::D3D11MeshGeometryOld::load_OBJ(const std::string& filename, std::vector<VertexOLD>& vertices,
     std::vector<u32>& indices, u32& vertex_count, u32& index_count)
 {
     std::vector<joj::JFloat3> positions;
     std::vector<joj::JFloat2> tex_coords;
     std::vector<joj::JFloat3> normals;
-    std::vector<Vertex> vertex_list;
+    std::vector<VertexOLD> vertex_list;
     std::vector<u32> index_list;
 
     std::ifstream file(filename);
@@ -191,7 +191,7 @@ b8 joj::D3D11MeshGeometryOld::load_OBJ(const std::string& filename, std::vector<
                     if (!n.empty()) normIndex = std::stoi(n) - 1;
                 }
 
-                Vertex vertex = {};
+                VertexOLD vertex = {};
                 if (posIndex < positions.size()) vertex.position = positions[posIndex];
                 if (texIndex < tex_coords.size()) vertex.texture = tex_coords[texIndex];
                 if (normIndex < normals.size()) vertex.normal = normals[normIndex];
