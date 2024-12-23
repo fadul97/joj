@@ -50,6 +50,7 @@ public:
     joj::D3D11ConstantBuffer cbFrame;
 
     joj::D3D11TextureManager m_tex_mgr;
+    joj::D3D11BasicModel mTreeModel;
     joj::D3D11BasicModel m_base_model;
     joj::D3D11BasicModel mStairsModel;
     joj::D3D11BasicModel mPillar1Model;
@@ -60,9 +61,11 @@ public:
     u32 ind = 0;
     void draw_one_object(u32 model_index);
     void draw_objects();
+    void draw_alpha_objects();
     joj::DirectionalLight mDirLights[3];
     joj::JFloat4x4 mShadowTransform = joj::float4x4_identity();
     std::vector<joj::BasicModelInstance> mModelInstances;
+    std::vector<joj::BasicModelInstance> mAlphaClippedModelInstances;
 };
 
 #endif // _JOJ_HELLO_TRIANGLE_H

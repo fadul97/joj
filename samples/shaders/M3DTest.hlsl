@@ -34,6 +34,17 @@ Texture2D gDiffuseMap : register(t0);
 Texture2D gNormalMap : register(t1);
 
 SamplerState samLinear : register(s0);
+
+SamplerComparisonState samShadow
+{
+    Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+    AddressU = BORDER;
+    AddressV = BORDER;
+    AddressW = BORDER;
+    BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    ComparisonFunc = LESS_EQUAL;
+};
  
 struct VertexIn
 {
@@ -112,19 +123,73 @@ float4 PS(VertexOut pin) : SV_Target
 		
     }
 
-    // return texColor;
-	
 	//
 	// Normal mapping
 	//
-
+    
     float3 normalMapSample = gNormalMap.Sample(samLinear, pin.Tex).rgb;
-	 
+    float3 bumpedNormalW = NormalSampleToWorldSpace(normalMapSample, pin.NormalW, pin.TangentW);
+
 	//
 	// Lighting.
 	//
 
     float4 litColor = texColor;
+    if (3 > 0)
+    {
+		// Start with a sum of zero. 
+        float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		  
+		// Only the first light casts a shadow.
+        // float3 shadow = float3(1.0f, 1.0f, 1.0f);
+        // shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pin.ShadowPosH);
+
+		// Finish texture projection and sample SSAO map.
+        pin.SsaoPosH /= pin.SsaoPosH.w;
+        // float ambientAccess = gSsaoMap.Sample(samLinear, pin.SsaoPosH.xy, 0.0f).r;
+		
+		// Sum the light contribution from each light source.  
+		[unroll] 
+        for (int i = 0; i < 3; ++i)
+        {
+            float4 A, D, S;
+            ComputeDirectionalLight(gMaterial, gDirLights[i], bumpedNormalW, toEye,
+				A, D, S);
+
+            ambient += A;
+            diffuse +=  D;
+            spec += S;
+        }
+		   
+        litColor = texColor * (ambient + diffuse) + spec;
+		  
+        if (gReflectionEnabled)
+        {
+            float3 incident = -toEye;
+            float3 reflectionVector = reflect(incident, bumpedNormalW);
+            // float4 reflectionColor = gCubeMap.Sample(samLinear, reflectionVector);
+
+            litColor += gMaterial.Reflect;
+        }
+    }
+    
+    //
+	// Fogging
+	//
+
+    if (gFogEnabled)
+    {
+        float fogLerp = saturate((distToEye - gFogStart) / gFogRange);
+
+		// Blend the fog color and the lit color.
+        litColor = lerp(litColor, gFogColor, fogLerp);
+    }
+    
+    // Common to take alpha from diffuse material and texture.
+    litColor.a = gMaterial.Diffuse.a * texColor.a;
+
 
     return litColor;
 }
