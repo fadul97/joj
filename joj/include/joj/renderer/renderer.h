@@ -21,6 +21,11 @@ namespace joj
         TRIANGLE_STRIP,
     };
 
+    enum class RasterizerState
+    {
+        Wireframe,
+        Solid
+    };
 
     struct GraphicsDevice;
 
@@ -41,6 +46,7 @@ namespace joj
         virtual void enable_depth_test() = 0;
         virtual void disable_depth_test() = 0;
 
+        virtual void set_rasterizer_state(const RasterizerState state) = 0;
         virtual void set_primitive_topology(const PrimitiveTopology topology) = 0;
 
         virtual void resize(i32 width, i32 height) = 0;

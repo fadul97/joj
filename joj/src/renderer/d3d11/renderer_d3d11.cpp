@@ -653,6 +653,21 @@ void joj::D3D11Renderer::disable_depth_test()
     JTODO();
 }
 
+void joj::D3D11Renderer::set_rasterizer_state(const RasterizerState state)
+{
+    switch (state)
+    {
+    case RasterizerState::Wireframe:
+        m_cmd_list.device_context->RSSetState(m_rasterizer_state_wireframe);
+        break;
+    case RasterizerState::Solid:
+        m_cmd_list.device_context->RSSetState(m_rasterizer_state_solid);
+        break;
+    default:
+        break;
+    }
+}
+
 void joj::D3D11Renderer::set_primitive_topology(const PrimitiveTopology topology)
 {
     switch (topology)
