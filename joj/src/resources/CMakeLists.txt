@@ -9,6 +9,7 @@ add_library(
     submesh.cpp
     mesh.cpp
     m3d_loader.cpp
+    basic_model.cpp
 )
 
 if (WIN32)

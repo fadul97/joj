@@ -7,6 +7,7 @@ add_library(
     STATIC
     mesh_d3d11_old.cpp
     mesh_d3d11.cpp
+    basic_model_d3d11.cpp
 )
 
 target_include_directories(

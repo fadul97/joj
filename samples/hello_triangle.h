@@ -15,6 +15,10 @@
 #include "joj/resources/d3d11/mesh_d3d11_old.h"
 #include "joj/renderer/d3d11/sampler_state_d3d11.h"
 #include "joj/renderer/d3d11/input_layout_d3d11.h"
+#include "joj/resources/d3d11/basic_model_d3d11.h"
+#include "joj/renderer/d3d11/texture_manager_d3d11.h"
+#include <resources/basic_model.h>
+#include "joj/systems/light/light.h"
 
 class HelloTriangle
 {
@@ -36,13 +40,29 @@ public:
     b8 loop = true;
     f32 frametime = 0.0f;
 
-    joj::D3D11ConstantBuffer m_light_cb;
-    joj::D3D11ConstantBuffer m_camera_cb;
+    joj::RasterizerState m_raster_state = joj::RasterizerState::Solid;
     joj::FreeCamera m_cam;
-    joj::D3D11MeshGeometryOld m_spaceship;
-    joj::D3D11MeshGeometryOld m_spaceship2;
     joj::D3D11SamplerState m_sampler_state;
     joj::D3D11InputLayout m_input_layout;
+    joj::D3D11Shader m_shader;
+
+    joj::D3D11ConstantBuffer cbObject;
+    joj::D3D11ConstantBuffer cbFrame;
+
+    joj::D3D11TextureManager m_tex_mgr;
+    joj::D3D11BasicModel m_base_model;
+    joj::D3D11BasicModel mStairsModel;
+    joj::D3D11BasicModel mPillar1Model;
+    joj::D3D11BasicModel mPillar2Model;
+    joj::D3D11BasicModel mPillar3Model;
+    joj::D3D11BasicModel mPillar4Model;
+    joj::D3D11BasicModel mRockModel;
+    u32 ind = 0;
+    void draw_one_object(u32 model_index);
+    void draw_objects();
+    joj::DirectionalLight mDirLights[3];
+    joj::JFloat4x4 mShadowTransform = joj::float4x4_identity();
+    std::vector<joj::BasicModelInstance> mModelInstances;
 };
 
 #endif // _JOJ_HELLO_TRIANGLE_H
