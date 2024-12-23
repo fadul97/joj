@@ -12,8 +12,9 @@
 
 namespace joj
 {
-    class JAPI D3D11Mesh : Mesh
+    class JAPI D3D11Mesh : public Mesh
     {
+	public:
 		D3D11Mesh();
 		~D3D11Mesh();
 

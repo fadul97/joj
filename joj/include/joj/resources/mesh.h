@@ -44,7 +44,7 @@ namespace joj
 	{
 		// static_assert(sizeof(T) <= max_buffer_size, "Data size exceeds constant buffer limits.");
 		m_vertex_stride = sizeof(VertexType);
-		return set_vertices_internal(device, &vertices, sizeof(VertexType), count);
+		return set_vertices_internal(device, vertices, sizeof(VertexType), count);
 	}
 }
 
