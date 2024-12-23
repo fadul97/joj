@@ -16,6 +16,11 @@
 namespace joj
 {
     // Vector types
+    struct JInt4
+    {
+        u32 x, y, z, w;
+    };
+    
     using JFloat2 = DirectX::XMFLOAT2;
     using JFloat3 = DirectX::XMFLOAT3;
     using JFloat4 = DirectX::XMFLOAT4;

@@ -5,10 +5,13 @@ namespace joj
 {
     enum class DataFormat
     {
+        R32G32B32A32_FLOAT,
         R32G32B32_FLOAT,
         R32G32_FLOAT,
         R32_UINT,
-        R16_UINT
+        R16_UINT,
+        R32G32B32A32_UINT,
+        R8G8B8A8_UINT,
     };
 }
 
