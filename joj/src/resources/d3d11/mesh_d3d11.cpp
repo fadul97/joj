@@ -11,7 +11,6 @@ joj::D3D11Mesh::D3D11Mesh()
 {
 	m_vb = D3D11VertexBuffer();
 	m_ib = D3D11IndexBuffer();
-	mIB = nullptr;
 }
 
 joj::D3D11Mesh::~D3D11Mesh()
