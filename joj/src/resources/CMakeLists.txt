@@ -14,6 +14,7 @@ add_library(
     bone_animation.cpp
     animation_clip.cpp
     skinned_data.cpp
+    basic_skinned_model.cpp
 )
 
 if (WIN32)
