@@ -11,6 +11,7 @@
 
 #define J_PI DirectX::XM_PI
 #define J_2PI DirectX::XM_2PI
+#define JINFINITY FLT_MAX
 
 namespace joj
 {
@@ -64,6 +65,18 @@ namespace joj
 
         JVector4 det = DirectX::XMMatrixDeterminant(A);
         return DirectX::XMMatrixTranspose(XMMatrixInverse(&det, A));
+    }
+
+    template<typename T>
+    inline T Min(const T& a, const T& b)
+    {
+        return a < b ? a : b;
+    }
+
+    template<typename T>
+    inline T Max(const T& a, const T& b)
+    {
+        return a > b ? a : b;
     }
 }
 
