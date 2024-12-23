@@ -24,4 +24,4 @@ namespace joj
 
 #endif // JPLATFORM_WINDOWS
 
-#endif _JOJ_D3D11_BASIC_MODEL_H
+#endif // _JOJ_D3D11_BASIC_MODEL_H

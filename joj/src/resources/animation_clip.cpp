@@ -15,7 +15,7 @@ f32 joj::AnimationClip::get_clip_start_time() const
 f32 joj::AnimationClip::get_clip_end_time() const
 {
 	// Find largest end time over all bones in this clip.
-	float t = 0.0f;
+	f32 t = 0.0f;
 	for (u32 i = 0; i < bone_animations.size(); ++i)
 	{
 		t = Max(t, bone_animations[i].get_end_time());

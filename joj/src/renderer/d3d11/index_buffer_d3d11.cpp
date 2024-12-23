@@ -45,7 +45,7 @@ joj::ErrorCode joj::D3D11IndexBuffer::create(GraphicsDevice& device)
     {
         JERROR(ErrorCode::ERR_INDEX_BUFFER_D3D11_CREATION,
             "Failed to create D3D11 Index Buffer.");
-        return ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION;
+        return ErrorCode::ERR_INDEX_BUFFER_D3D11_CREATION;
     }
 
     return ErrorCode::OK;
