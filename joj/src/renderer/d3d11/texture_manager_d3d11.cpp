@@ -25,18 +25,20 @@ joj::ErrorCode joj::D3D11TextureManager::create(GraphicsDevice& device,
 {
     ID3D11ShaderResourceView* srv = nullptr;
 
+    /*
     if (m_texture_SRV.find(filename) != m_texture_SRV.end())
     {
-        JWARN("Texture '%s' was already loaded and will not be loaded again.",
+        JWARN("Texture '%ls' was already loaded and will not be loaded again.",
             filename.c_str());
         return ErrorCode::OK;
     }
+    */
 
     if (DirectX::CreateDDSTextureFromFile(device.device, filename.c_str(),
         nullptr, &srv) != S_OK)
     {
         JERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
-            "Failed to load DDS file '%s'.", filename.c_str());
+            "Failed to load DDS file '%ls'.", filename.c_str());
         return ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION;
     }
 
