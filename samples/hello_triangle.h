@@ -20,6 +20,36 @@
 #include "joj/systems/light/light.h"
 #include "joj/resources/d3d11/basic_skinned_model_d3d11.h"
 
+struct cbPerSkinned
+{
+    joj::JFloat4x4 gBoneTransforms[96];
+};
+
+struct cbPerObject
+{
+    joj::JFloat4x4 gWorld = joj::float4x4_identity();
+    joj::JFloat4x4 gWorldInvTranspose = joj::float4x4_identity();
+    joj::JFloat4x4 gWorldViewProj = joj::float4x4_identity();
+    joj::JFloat4x4 gWorldViewProjTex = joj::float4x4_identity();
+    joj::JFloat4x4 gTexTransform = joj::float4x4_identity();
+    joj::JFloat4x4 gShadowTransform = joj::float4x4_identity();
+    joj::Material gMaterial;
+    u32 gUseTexure;
+    u32 gAlphaClip;
+    u32 gFogEnabled;
+    u32 gReflectionEnabled;
+};
+
+struct cbPerFrame
+{
+    joj::DirectionalLight gDirLights[3];
+    joj::JFloat3 gEyePosW;
+
+    f32  gFogStart;
+    f32  gFogRange;
+    joj::JFloat4 gFogColor;
+};
+
 class HelloTriangle
 {
 public:
@@ -30,6 +60,13 @@ public:
     void update(const f32 dt);
     void draw();
     void shutdown();
+
+    void init_platform();
+    void setup_camera();
+    void build_shaders_and_input_layout();
+    void load_meshes_and_models();
+    void build_cbs();
+    void build_sampler_state();
 
     f32 get_frametime();
 

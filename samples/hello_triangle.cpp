@@ -2,59 +2,10 @@
 
 #include "logger.h"
 #include <sstream>
-
 #include <d3d11.h>
-#include <DirectXMath.h>
-#include <d3dcompiler.h>
-#include "joj/math/jmath.h"
 #include "joj/jmacros.h"
-#include "joj/systems/light/light.h"
-
-#include <vector>
-#include <string>
-#include <stdexcept>
-#include <algorithm>
 
 using namespace DirectX;
-
-struct LightBuffer
-{
-    joj::JFloat4 ambientColor;
-    joj::JFloat4 diffuseColor;
-    joj::JFloat3 lightDirection;
-    f32 specularPower;
-    joj::JFloat4 specularColor;
-};
-
-struct cbPerSkinned
-{
-    joj::JFloat4x4 gBoneTransforms[96];
-};
-
-struct cbPerObject
-{
-    joj::JFloat4x4 gWorld;
-    joj::JFloat4x4 gWorldInvTranspose;
-    joj::JFloat4x4 gWorldViewProj;
-    joj::JFloat4x4 gWorldViewProjTex;
-    joj::JFloat4x4 gTexTransform;
-    joj::JFloat4x4 gShadowTransform;
-    joj::Material gMaterial;
-    u32 gUseTexure;
-    u32 gAlphaClip;
-    u32 gFogEnabled;
-    u32 gReflectionEnabled;
-};
-
-struct cbPerFrame
-{
-    joj::DirectionalLight gDirLights[3];
-    joj::JFloat3 gEyePosW;
-
-    f32  gFogStart;
-    f32  gFogRange;
-    joj::JFloat4 gFogColor;
-};
 
 HelloTriangle::HelloTriangle()
 {
@@ -85,7 +36,7 @@ HelloTriangle::~HelloTriangle()
 
 }
 
-void HelloTriangle::init()
+void HelloTriangle::init_platform()
 {
     if (window.create() != joj::ErrorCode::OK)
         return;
@@ -108,6 +59,11 @@ void HelloTriangle::init()
     if (renderer.initialize(window.get_data()) != joj::ErrorCode::OK)
         return;
 
+    timer.start();
+}
+
+void HelloTriangle::setup_camera()
+{
     m_cam.update_view_matrix();
     m_cam.set_pos(0.0f, 5.0f, -15.0f);
     m_cam.update_view_matrix();
@@ -115,9 +71,10 @@ void HelloTriangle::init()
     m_cam.update_view_matrix();
     m_cam.look_at(m_cam.get_pos(), joj::JFloat3(0.0f, 0.0f, 0.0f), m_cam.get_up());
     m_cam.update_view_matrix();
+}
 
-    timer.start();
-
+void HelloTriangle::build_shaders_and_input_layout()
+{
     m_static_shader.compile_vertex_shader_from_file(
         "../../../../samples/shaders/M3DTest.hlsl",
         "VS", joj::ShaderModel::Default);
@@ -145,7 +102,10 @@ void HelloTriangle::init()
 
     JOJ_LOG_IF_FAIL(m_static_layout.create(renderer.get_device(), m_static_shader.get_vertex_shader()));
     m_static_layout.bind(renderer.get_cmd_list());
+}
 
+void HelloTriangle::load_meshes_and_models()
+{
     m_rock_model = joj::D3D11BasicModel();
     JOJ_LOG_IF_FAIL(m_rock_model.load_m3d(renderer.get_device(),
         renderer.get_cmd_list(),
@@ -180,7 +140,10 @@ void HelloTriangle::init()
     mModelInstances.push_back(rockInstance1);
     mModelInstances.push_back(rockInstance2);
     mModelInstances.push_back(rockInstance3);
+}
 
+void HelloTriangle::build_cbs()
+{
     cbObject.setup(joj::calculate_cb_byte_size(sizeof(cbPerObject)), nullptr);
     JOJ_LOG_IF_FAIL(cbObject.create(renderer.get_device()));
     cbObject.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
@@ -190,7 +153,10 @@ void HelloTriangle::init()
     JOJ_LOG_IF_FAIL(cbFrame.create(renderer.get_device()));
     cbFrame.bind_to_vertex_shader(renderer.get_cmd_list(), 1, 1);
     cbFrame.bind_to_pixel_shader(renderer.get_cmd_list(), 1, 1);
+}
 
+void HelloTriangle::build_sampler_state()
+{
     // Describe a texture sampler.
     joj::SamplerDesc samplerDesc;
     samplerDesc.filter = joj::SamplerFilter::MIN_MAG_MIP_LINEAR;
@@ -210,6 +176,17 @@ void HelloTriangle::init()
     // Create Sampler State
     JOJ_LOG_IF_FAIL(m_sampler_state.create(renderer.get_device(), samplerDesc));
     m_sampler_state.bind(renderer.get_cmd_list(), joj::SamplerType::Anisotropic, 0, 1);
+}
+
+void HelloTriangle::init()
+{
+    init_platform();
+
+    setup_camera();
+    build_shaders_and_input_layout();
+    load_meshes_and_models();
+    build_cbs();
+    build_sampler_state();
 }
 
 void HelloTriangle::update(const f32 dt)
