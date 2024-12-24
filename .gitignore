@@ -6,7 +6,7 @@
 build/
 
 # Textures (Ignoring for now - must be added manually)
-samples/textures/
+# samples/textures/
 
 # Files are too large
 samples/models/Skull.txt
@@ -15,7 +15,7 @@ samples/models/Cube.txt
 samples/models/Sphere.txt
 samples/models/Plane.txt
 samples/models/MyMonkey.obj
-samples/models/*.m3d
+samples/models/soldier.m3d
 
 # Project File Tree
 tree.txt

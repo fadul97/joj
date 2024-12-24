@@ -17,12 +17,6 @@
 
 using namespace DirectX;
 
-struct CameraBufferType
-{
-    joj::JFloat3 cameraPosition;
-    f32 padding;
-};
-
 struct LightBuffer
 {
     joj::JFloat4 ambientColor;
@@ -124,7 +118,6 @@ void HelloTriangle::init()
 
     timer.start();
 
-    /*
     m_static_shader.compile_vertex_shader_from_file(
         "../../../../samples/shaders/M3DTest.hlsl",
         "VS", joj::ShaderModel::Default);
@@ -152,111 +145,25 @@ void HelloTriangle::init()
 
     JOJ_LOG_IF_FAIL(m_static_layout.create(renderer.get_device(), m_static_shader.get_vertex_shader()));
     m_static_layout.bind(renderer.get_cmd_list());
-    */
 
-    mTreeModel = joj::D3D11BasicModel();
-    JOJ_LOG_IF_FAIL(mTreeModel.load_m3d(renderer.get_device(),
-        renderer.get_cmd_list(),
-        m_tex_mgr,
-        "../../../../samples/models/tree.m3d",
-        L"../../../../samples/textures/"));
-
-    m_base_model = joj::D3D11BasicModel();
-    JOJ_LOG_IF_FAIL(m_base_model.load_m3d(renderer.get_device(),
-        renderer.get_cmd_list(),
-        m_tex_mgr,
-        "../../../../samples/models/base.m3d",
-        L"../../../../samples/textures/"));
-
-    mStairsModel = joj::D3D11BasicModel();
-    JOJ_LOG_IF_FAIL(mStairsModel.load_m3d(renderer.get_device(),
-        renderer.get_cmd_list(),
-        m_tex_mgr,
-        "../../../../samples/models/stairs.m3d",
-        L"../../../../samples/textures/"));
-
-    mPillar1Model = joj::D3D11BasicModel();
-    JOJ_LOG_IF_FAIL(mPillar1Model.load_m3d(renderer.get_device(),
-        renderer.get_cmd_list(),
-        m_tex_mgr,
-        "../../../../samples/models/pillar1.m3d",
-        L"../../../../samples/textures/"));
-
-    mPillar2Model = joj::D3D11BasicModel();
-    JOJ_LOG_IF_FAIL(mPillar2Model.load_m3d(renderer.get_device(),
-        renderer.get_cmd_list(),
-        m_tex_mgr,
-        "../../../../samples/models/pillar2.m3d",
-        L"../../../../samples/textures/"));
-
-    mPillar3Model = joj::D3D11BasicModel();
-    JOJ_LOG_IF_FAIL(mPillar3Model.load_m3d(renderer.get_device(),
-        renderer.get_cmd_list(),
-        m_tex_mgr,
-        "../../../../samples/models/pillar5.m3d",
-        L"../../../../samples/textures/"));
-
-    mPillar4Model = joj::D3D11BasicModel();
-    JOJ_LOG_IF_FAIL(mPillar4Model.load_m3d(renderer.get_device(),
-        renderer.get_cmd_list(),
-        m_tex_mgr,
-        "../../../../samples/models/pillar6.m3d",
-        L"../../../../samples/textures/"));
-
-    mRockModel = joj::D3D11BasicModel();
-    JOJ_LOG_IF_FAIL(mRockModel.load_m3d(renderer.get_device(),
+    m_rock_model = joj::D3D11BasicModel();
+    JOJ_LOG_IF_FAIL(m_rock_model.load_m3d(renderer.get_device(),
         renderer.get_cmd_list(),
         m_tex_mgr,
         "../../../../samples/models/rock.m3d",
         L"../../../../samples/textures/"));
 
-    joj::BasicModelInstance treeInstance;
-    joj::BasicModelInstance baseInstance;
-    joj::BasicModelInstance stairsInstance;
-    joj::BasicModelInstance pillar1Instance;
-    joj::BasicModelInstance pillar2Instance;
-    joj::BasicModelInstance pillar3Instance;
-    joj::BasicModelInstance pillar4Instance;
     joj::BasicModelInstance rockInstance1;
     joj::BasicModelInstance rockInstance2;
     joj::BasicModelInstance rockInstance3;
 
-    treeInstance.model = &mTreeModel;
-    baseInstance.model = &m_base_model;
-    stairsInstance.model = &mStairsModel;
-    pillar1Instance.model = &mPillar1Model;
-    pillar2Instance.model = &mPillar2Model;
-    pillar3Instance.model = &mPillar3Model;
-    pillar4Instance.model = &mPillar4Model;
-    rockInstance1.model = &mRockModel;
-    rockInstance2.model = &mRockModel;
-    rockInstance3.model = &mRockModel;
+    rockInstance1.model = &m_rock_model;
+    rockInstance2.model = &m_rock_model;
+    rockInstance3.model = &m_rock_model;
 
     XMMATRIX modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
     XMMATRIX modelRot = XMMatrixRotationY(0.0f);
     XMMATRIX modelOffset = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-    XMStoreFloat4x4(&treeInstance.world, modelScale * modelRot * modelOffset);
-    XMStoreFloat4x4(&baseInstance.world, modelScale * modelRot * modelOffset);
-
-    modelRot = XMMatrixRotationY(0.5f * XM_PI);
-    modelOffset = XMMatrixTranslation(0.0f, -2.5f, -12.0f);
-    XMStoreFloat4x4(&stairsInstance.world, modelScale * modelRot * modelOffset);
-
-    modelScale = XMMatrixScaling(0.8f, 0.8f, 0.8f);
-    modelOffset = XMMatrixTranslation(-5.0f, 1.5f, 5.0f);
-    XMStoreFloat4x4(&pillar1Instance.world, modelScale * modelRot * modelOffset);
-
-    modelScale = XMMatrixScaling(0.8f, 0.8f, 0.8f);
-    modelOffset = XMMatrixTranslation(5.0f, 1.5f, 5.0f);
-    XMStoreFloat4x4(&pillar2Instance.world, modelScale * modelRot * modelOffset);
-
-    modelScale = XMMatrixScaling(0.8f, 0.8f, 0.8f);
-    modelOffset = XMMatrixTranslation(5.0f, 1.5f, -5.0f);
-    XMStoreFloat4x4(&pillar3Instance.world, modelScale * modelRot * modelOffset);
-
-    modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-    modelOffset = XMMatrixTranslation(-5.0f, 1.0f, -5.0f);
-    XMStoreFloat4x4(&pillar4Instance.world, modelScale * modelRot * modelOffset);
 
     modelScale = XMMatrixScaling(0.8f, 0.8f, 0.8f);
     modelOffset = XMMatrixTranslation(-1.0f, 1.4f, -7.0f);
@@ -270,14 +177,6 @@ void HelloTriangle::init()
     modelOffset = XMMatrixTranslation(-4.0f, 1.3f, 3.0f);
     XMStoreFloat4x4(&rockInstance3.world, modelScale * modelRot * modelOffset);
 
-    mAlphaClippedModelInstances.push_back(treeInstance);
-
-    mModelInstances.push_back(baseInstance);
-    mModelInstances.push_back(stairsInstance);
-    mModelInstances.push_back(pillar1Instance);
-    mModelInstances.push_back(pillar2Instance);
-    mModelInstances.push_back(pillar3Instance);
-    mModelInstances.push_back(pillar4Instance);
     mModelInstances.push_back(rockInstance1);
     mModelInstances.push_back(rockInstance2);
     mModelInstances.push_back(rockInstance3);
@@ -311,84 +210,6 @@ void HelloTriangle::init()
     // Create Sampler State
     JOJ_LOG_IF_FAIL(m_sampler_state.create(renderer.get_device(), samplerDesc));
     m_sampler_state.bind(renderer.get_cmd_list(), joj::SamplerType::Anisotropic, 0, 1);
-
-    mCharacterModel = joj::D3D11BasicSkinnedModel();
-    JOJ_LOG_IF_FAIL(mCharacterModel.load_m3d(renderer.get_device(),
-        renderer.get_cmd_list(),
-        m_tex_mgr,
-        "../../../../samples/models/soldier.m3d",
-        L"../../../../samples/textures/"));
-
-    mCharacterInstance1.model = &mCharacterModel;
-    mCharacterInstance2.model = &mCharacterModel;
-    mCharacterInstance1.time_pos = 0.0f;
-    mCharacterInstance2.time_pos = 0.0f;
-    mCharacterInstance1.clip_name = "Take1";
-    mCharacterInstance2.clip_name = "Take1";
-    mCharacterInstance1.final_transforms.resize(mCharacterModel.get_skinned_data().get_bone_count());
-    mCharacterInstance2.final_transforms.resize(mCharacterModel.get_skinned_data().get_bone_count());
-
-    // Reflect to change coordinate system from the RHS the data was exported out as.
-    modelScale = XMMatrixScaling(0.05f, 0.05f, -0.05f);
-    modelRot = XMMatrixRotationY(J_PI);
-    modelOffset = XMMatrixTranslation(-2.0f, 0.0f, -7.0f);
-    XMStoreFloat4x4(&mCharacterInstance1.world, modelScale * modelRot * modelOffset);
-
-    modelOffset = XMMatrixTranslation(2.0f, 0.0f, -7.0f);
-    XMStoreFloat4x4(&mCharacterInstance2.world, modelScale * modelRot * modelOffset);
-
-    /*
-    float3 PosL : POSITION;          // 12 bytes (3 * 4 bytes)
-    float3 NormalL : NORMAL;         // 12 bytes (3 * 4 bytes)
-    float2 Tex : TEXCOORD;           // 8 bytes  (2 * 4 bytes)
-    float4 TangentL : TANGENT;       // 16 bytes (4 * 4 bytes)
-    float3 Weights : WEIGHTS;        // 12 bytes (3 * 4 bytes)
-    uint4 BoneIndices : BONEINDICES; // 16 bytes (4 * 4 bytes)
-    */
-
-    m_skinned_shader.compile_vertex_shader_from_file(
-        "../../../../samples/shaders/NormalMap.hlsl",
-        "SkinnedVS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_skinned_shader.create_vertex_shader(renderer.get_device()));
-
-    m_skinned_shader.compile_pixel_shader_from_file(
-        "../../../../samples/shaders/NormalMap.hlsl",
-        "PS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_skinned_shader.create_pixel_shader(renderer.get_device()));
-
-    m_skinned_shader.bind_vertex_shader(renderer.get_cmd_list());
-    m_skinned_shader.bind_pixel_shader(renderer.get_cmd_list());
-
-    /*
-    {"POSITION",     0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0},
-	{"NORMAL",       0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	{"TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	{"TANGENT",      0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	{"WEIGHTS",      0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	{"BONEINDICES",  0, DXGI_FORMAT_R8G8B8A8_UINT,   0, 60, D3D11_INPUT_PER_VERTEX_DATA, 0}
-    */
-
-    joj::InputDesc skinned_layout[] = {
-        { "POSITION",    0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
-        { "NORMAL",      0, joj::DataFormat::R32G32B32_FLOAT,    0, 12, joj::InputClassification::PerVertexData, 0 },
-        { "TEXCOORD",    0, joj::DataFormat::R32G32_FLOAT,       0, 24, joj::InputClassification::PerVertexData, 0 },
-        { "TANGENT",     0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 32, joj::InputClassification::PerVertexData, 0 },
-        { "WEIGHTS",     0, joj::DataFormat::R32G32B32_FLOAT,    0, 48, joj::InputClassification::PerVertexData, 0 },
-        { "BONEINDICES", 0, joj::DataFormat::R8G8B8A8_UINT,      0, 60, joj::InputClassification::PerVertexData, 0 },
-    };
-
-    for (auto& l : skinned_layout)
-    {
-        m_skinned_layout.add(l);
-    }
-
-    JOJ_LOG_IF_FAIL(m_skinned_layout.create(renderer.get_device(), m_skinned_shader.get_vertex_shader()));
-    m_skinned_layout.bind(renderer.get_cmd_list());
-
-    cbSkinned.setup(joj::calculate_cb_byte_size(sizeof(cbPerSkinned)), nullptr);
-    JOJ_LOG_IF_FAIL(cbSkinned.create(renderer.get_device()));
-    cbSkinned.bind_to_vertex_shader(renderer.get_cmd_list(), 2, 1);
-    cbSkinned.bind_to_pixel_shader(renderer.get_cmd_list(), 2, 1);
 }
 
 void HelloTriangle::update(const f32 dt)
@@ -406,9 +227,6 @@ void HelloTriangle::update(const f32 dt)
 
     if (input.is_key_pressed(joj::KEY_ESCAPE))
         loop = false;
-
-    mCharacterInstance1.update(dt);
-    mCharacterInstance2.update(dt);
 }
 
 void HelloTriangle::draw()
@@ -419,15 +237,7 @@ void HelloTriangle::draw()
 
     renderer.set_rasterizer_state(m_raster_state);
     
-    /*
-    if (input.is_key_pressed('T'))
-        ind = (ind + 1) % mModelInstances.size();
-    draw_one_object(ind);
-    */
-
-    // draw_objects();
-    // draw_alpha_objects();
-    draw_animated_characters();
+    draw_objects();
 
     renderer.swap_buffers();
 }
@@ -591,216 +401,6 @@ void HelloTriangle::draw_objects()
 
             mModelInstances[model_index].model->get_mesh()->draw(renderer.get_cmd_list(), subset);
         }
-    }
-}
-
-void HelloTriangle::draw_alpha_objects()
-{
-    XMMATRIX view = XMLoadFloat4x4(&m_cam.get_view());
-    XMMATRIX proj = XMLoadFloat4x4(&m_cam.get_proj());
-    XMMATRIX viewProj = XMMatrixMultiply(view, proj);
-
-    float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-
-    cbPerFrame cbPF;
-    cbPF.gDirLights[0] = mDirLights[0];
-    cbPF.gDirLights[1] = mDirLights[1];
-    cbPF.gDirLights[2] = mDirLights[2];
-    cbPF.gEyePosW = m_cam.get_pos();
-    cbFrame.update(renderer.get_cmd_list(), cbPF);
-
-    m_static_layout.bind(renderer.get_cmd_list());
-    renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    XMMATRIX world;
-    XMMATRIX worldInvTranspose;
-    XMMATRIX worldViewProj;
-
-    // Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-    XMMATRIX toTexSpace(
-        0.5f, 0.0f, 0.0f, 0.0f,
-        0.0f, -0.5f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.0f, 1.0f);
-
-    XMMATRIX shadowTransform = XMLoadFloat4x4(&mShadowTransform);
-
-    u32 stride = sizeof(joj::Vertex::PosNormalTexTan);
-    u32 offset = 0;
-
-    for (u32 model_index = 0; model_index < mAlphaClippedModelInstances.size(); ++model_index)
-    {
-        world = XMLoadFloat4x4(&mAlphaClippedModelInstances[model_index].world);
-        worldInvTranspose = joj::inverse_transpose(world);
-        worldViewProj = world * view * proj;
-        auto worldViewProjTex = worldViewProj * toTexSpace;
-        auto cbShadowTransform = world * shadowTransform;
-        auto texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-
-        cbPerObject cbPO;
-        XMStoreFloat4x4(&cbPO.gWorld, XMMatrixTranspose(world));
-        XMStoreFloat4x4(&cbPO.gWorldInvTranspose, XMMatrixTranspose(worldInvTranspose));
-        XMStoreFloat4x4(&cbPO.gWorldViewProj, XMMatrixTranspose(worldViewProj));
-        XMStoreFloat4x4(&cbPO.gWorldViewProjTex, XMMatrixTranspose(worldViewProjTex));
-        XMStoreFloat4x4(&cbPO.gShadowTransform, XMMatrixTranspose(cbShadowTransform));
-        XMStoreFloat4x4(&cbPO.gTexTransform, XMMatrixTranspose(texTransform));
-        cbPO.gUseTexure = 1;
-        cbPO.gAlphaClip = 1;
-        cbPO.gFogEnabled = 0;
-        cbPO.gReflectionEnabled = 0;
-
-        for (u32 subset = 0; subset < mAlphaClippedModelInstances[model_index].model->get_submesh_count(); ++subset)
-        {
-            cbPO.gMaterial = mAlphaClippedModelInstances[model_index].model->get_mat()[subset];
-            cbObject.update(renderer.get_cmd_list(), cbPO);
-
-            /*
-            auto& diffuse_map_SRV = mModelInstances[model_index].model->get_diffuse_map_SRV()[subset];
-            auto& normal_map_SRV = mModelInstances[model_index].model->get_normal_map_SRV()[subset];
-            */
-
-            renderer.get_cmd_list().device_context->PSSetShaderResources(0, 1,
-                &mAlphaClippedModelInstances[model_index].model->get_diffuse_map_SRV()[subset]->srv);
-
-            renderer.get_cmd_list().device_context->PSSetShaderResources(1, 1,
-                &mAlphaClippedModelInstances[model_index].model->get_normal_map_SRV()[subset]->srv);
-
-            mAlphaClippedModelInstances[model_index].model->get_mesh()->draw(renderer.get_cmd_list(), subset);
-        }
-    }
-}
-
-void HelloTriangle::draw_animated_characters()
-{
-    m_skinned_shader.bind_vertex_shader(renderer.get_cmd_list());
-    m_skinned_shader.bind_pixel_shader(renderer.get_cmd_list());
-
-    cbObject.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
-    cbObject.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
-    cbFrame.bind_to_vertex_shader(renderer.get_cmd_list(), 1, 1);
-    cbFrame.bind_to_pixel_shader(renderer.get_cmd_list(), 1, 1);
-    cbSkinned.bind_to_vertex_shader(renderer.get_cmd_list(), 2, 1);
-    cbSkinned.bind_to_pixel_shader(renderer.get_cmd_list(), 2, 1);
-
-    XMMATRIX view = XMLoadFloat4x4(&m_cam.get_view());
-    XMMATRIX proj = XMLoadFloat4x4(&m_cam.get_proj());
-    XMMATRIX viewProj = XMMatrixMultiply(view, proj);
-
-    float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-
-    cbPerFrame cbPF;
-    cbPF.gDirLights[0] = mDirLights[0];
-    cbPF.gDirLights[1] = mDirLights[1];
-    cbPF.gDirLights[2] = mDirLights[2];
-    cbPF.gEyePosW = m_cam.get_pos();
-    cbFrame.update(renderer.get_cmd_list(), cbPF);
-
-    m_skinned_layout.bind(renderer.get_cmd_list());
-    renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    XMMATRIX world;
-    XMMATRIX worldInvTranspose;
-    XMMATRIX worldViewProj;
-
-    // Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-    XMMATRIX toTexSpace(
-        0.5f, 0.0f, 0.0f, 0.0f,
-        0.0f, -0.5f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.0f, 1.0f);
-
-    XMMATRIX shadowTransform = XMLoadFloat4x4(&mShadowTransform);
-
-    u32 stride = sizeof(joj::Vertex::PosNormalTexTanSkinned);
-    u32 offset = 0;
-
-    // Instance 1
-
-    world = XMLoadFloat4x4(&mCharacterInstance1.world);
-    worldInvTranspose = joj::inverse_transpose(world);
-    worldViewProj = world * view * proj;
-    auto worldViewProjTex = worldViewProj * toTexSpace;
-    auto cbShadowTransform = world * shadowTransform;
-    auto texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-
-    cbPerSkinned cbPS;
-    // Itera sobre cada transformação final no vetor e copia para o array gBoneTransforms
-    for (size_t i = 0; i < mCharacterInstance1.final_transforms.size(); ++i)
-    {
-        auto I = joj::matrix4x4_identity();
-        DirectX::XMMATRIX transform;
-        // transform = DirectX::XMLoadFloat4x4(&mCharacterInstance1.final_transforms[i]);
-        transform = I;
-        DirectX::XMStoreFloat4x4(&cbPS.gBoneTransforms[i], DirectX::XMMatrixTranspose(transform));
-    }
-    cbSkinned.update(renderer.get_cmd_list(), cbPS);
-
-    cbPerObject cbPO;
-    XMStoreFloat4x4(&cbPO.gWorld, XMMatrixTranspose(world));
-    XMStoreFloat4x4(&cbPO.gWorldInvTranspose, XMMatrixTranspose(worldInvTranspose));
-    XMStoreFloat4x4(&cbPO.gWorldViewProj, XMMatrixTranspose(worldViewProj));
-    XMStoreFloat4x4(&cbPO.gWorldViewProjTex, XMMatrixTranspose(worldViewProjTex));
-    XMStoreFloat4x4(&cbPO.gShadowTransform, XMMatrixTranspose(cbShadowTransform));
-    XMStoreFloat4x4(&cbPO.gTexTransform, XMMatrixTranspose(texTransform));
-    cbPO.gUseTexure = 1;
-    cbPO.gAlphaClip = 0;
-    cbPO.gFogEnabled = 0;
-    cbPO.gReflectionEnabled = 0;
-
-    for (u32 subset = 0; subset < mCharacterInstance1.model->get_submesh_count(); ++subset)
-    {
-        cbPO.gMaterial = mCharacterInstance1.model->get_mat()[subset];
-        cbObject.update(renderer.get_cmd_list(), cbPO);
-
-        /*
-        auto& diffuse_map_SRV = mModelInstances[model_index].model->get_diffuse_map_SRV()[subset];
-        auto& normal_map_SRV = mModelInstances[model_index].model->get_normal_map_SRV()[subset];
-        */
-
-        renderer.get_cmd_list().device_context->PSSetShaderResources(0, 1,
-            &mCharacterInstance1.model->get_diffuse_map_SRV()[subset]->srv);
-
-        renderer.get_cmd_list().device_context->PSSetShaderResources(1, 1,
-            &mCharacterInstance1.model->get_normal_map_SRV()[subset]->srv);
-
-        mCharacterInstance1.model->get_mesh()->draw(renderer.get_cmd_list(), subset);
-    }
-
-    // Instance 2
-
-    world = XMLoadFloat4x4(&mCharacterInstance2.world);
-    worldInvTranspose = joj::inverse_transpose(world);
-    worldViewProj = world * view * proj;
-
-    // Itera sobre cada transformação final no vetor e copia para o array gBoneTransforms
-    for (size_t i = 0; i < mCharacterInstance2.final_transforms.size(); ++i)
-    {
-        DirectX::XMMATRIX transform = DirectX::XMLoadFloat4x4(&mCharacterInstance2.final_transforms[i]);
-        DirectX::XMStoreFloat4x4(&cbPS.gBoneTransforms[i], DirectX::XMMatrixTranspose(transform));
-    }
-    cbSkinned.update(renderer.get_cmd_list(), cbPS);
-    
-    XMStoreFloat4x4(&cbPO.gWorld, XMMatrixTranspose(world));
-    XMStoreFloat4x4(&cbPO.gWorldInvTranspose, XMMatrixTranspose(worldInvTranspose));
-    XMStoreFloat4x4(&cbPO.gWorldViewProj, XMMatrixTranspose(worldViewProj));
-
-    for (u32 subset = 0; subset < mCharacterInstance2.model->get_submesh_count(); ++subset)
-    {
-        cbPO.gMaterial = mCharacterInstance2.model->get_mat()[subset];
-        cbObject.update(renderer.get_cmd_list(), cbPO);
-
-        /*
-        auto& diffuse_map_SRV = mModelInstances[model_index].model->get_diffuse_map_SRV()[subset];
-        auto& normal_map_SRV = mModelInstances[model_index].model->get_normal_map_SRV()[subset];
-        */
-
-        renderer.get_cmd_list().device_context->PSSetShaderResources(0, 1,
-            &mCharacterInstance2.model->get_diffuse_map_SRV()[subset]->srv);
-
-        renderer.get_cmd_list().device_context->PSSetShaderResources(1, 1,
-            &mCharacterInstance2.model->get_normal_map_SRV()[subset]->srv);
-
-        mCharacterInstance2.model->get_mesh()->draw(renderer.get_cmd_list(), subset);
     }
 }
 

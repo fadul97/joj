@@ -50,31 +50,13 @@ public:
     joj::D3D11ConstantBuffer cbFrame;
 
     joj::D3D11TextureManager m_tex_mgr;
-    joj::D3D11BasicModel mTreeModel;
-    joj::D3D11BasicModel m_base_model;
-    joj::D3D11BasicModel mStairsModel;
-    joj::D3D11BasicModel mPillar1Model;
-    joj::D3D11BasicModel mPillar2Model;
-    joj::D3D11BasicModel mPillar3Model;
-    joj::D3D11BasicModel mPillar4Model;
-    joj::D3D11BasicModel mRockModel;
+    joj::D3D11BasicModel m_rock_model;
     u32 ind = 0;
     void draw_one_object(u32 model_index);
     void draw_objects();
-    void draw_alpha_objects();
     joj::DirectionalLight mDirLights[3];
     joj::JFloat4x4 mShadowTransform = joj::float4x4_identity();
     std::vector<joj::BasicModelInstance> mModelInstances;
-    std::vector<joj::BasicModelInstance> mAlphaClippedModelInstances;
-
-
-    void draw_animated_characters();
-    joj::D3D11ConstantBuffer cbSkinned;
-    joj::D3D11InputLayout m_skinned_layout;
-    joj::D3D11Shader m_skinned_shader;
-    joj::D3D11BasicSkinnedModel mCharacterModel;
-    joj::SkinnedModelInstance mCharacterInstance1;
-    joj::SkinnedModelInstance mCharacterInstance2;
 };
 
 #endif // _JOJ_HELLO_TRIANGLE_H
