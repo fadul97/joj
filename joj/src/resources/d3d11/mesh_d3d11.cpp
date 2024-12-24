@@ -60,7 +60,7 @@ joj::ErrorCode joj::D3D11Mesh::set_vertices_internal(GraphicsDevice& device,
 
 	m_vb.setup(BufferUsage::Immutable, CPUAccessType::None, sizeof_data * count, vertices);
 
-	if (JOJ_FAILED(m_vb.create(device)))
+	if JOJ_FAILED(m_vb.create(device))
 	{
 		JERROR(ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION,
 			"Failed to create D3D11 Vertex Buffer for D3D11Mesh.");
