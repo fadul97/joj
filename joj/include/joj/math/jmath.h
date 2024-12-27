@@ -83,6 +83,21 @@ namespace joj
     {
         return a > b ? a : b;
     }
+
+    inline JFloat4 calculate_tangent(const JFloat3& edge1, const JFloat3& edge2,
+        const JFloat2& deltaUV1, const JFloat2& deltaUV2)
+    {
+        f32 f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+        
+        JFloat3 tangent =
+        {
+            f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x),
+            f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y),
+            f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z)
+        };
+        
+        return { tangent.x, tangent.y, tangent.z, 1.0f };
+    }
 }
 
 #endif // JPLATFORM_WINDOWS
