@@ -23,9 +23,15 @@ namespace joj
         BasicModel();
         virtual ~BasicModel();
 
+        virtual ErrorCode load_obj(GraphicsDevice& device, CommandList& cmd_list,
+            const std::string& model_filename) = 0;
+
         virtual ErrorCode load_m3d(GraphicsDevice& device, CommandList& cmd_list,
             TextureManager& tex_mgr, const std::string& model_filename,
             const std::wstring& texture_path) = 0;
+
+        virtual ErrorCode load_jsf(GraphicsDevice& device, CommandList& cmd_list,
+            const std::string& model_filename) = 0;
 
         u32 get_submesh_count() const;
 
