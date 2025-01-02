@@ -15,10 +15,12 @@ set(OUTPUT_DIR $<TARGET_FILE_DIR:jojSamples>)
 
 # Create custom target to copy resources 
 add_custom_target(copy_resources ALL
+    COMMAND ${CMAKE_COMMAND} -E echo "Copying shaders to '${OUTPUT_DIR}'..."
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADERS_DIR} ${OUTPUT_DIR}/shaders
+    COMMAND ${CMAKE_COMMAND} -E echo "Copying textures to '${OUTPUT_DIR}'..."
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEXTURES_DIR} ${OUTPUT_DIR}/textures
+    COMMAND ${CMAKE_COMMAND} -E echo "Copying models to '${OUTPUT_DIR}'..."
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${MODELS_DIR} ${OUTPUT_DIR}/models
-    COMMENT "Copying resource directories to ${OUTPUT_DIR}"
 )
 
 # Add copy_resources target to jojSamples (resources will be copied before running executable)
