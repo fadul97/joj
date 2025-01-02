@@ -86,7 +86,6 @@ public:
     joj::D3D11ConstantBuffer cbObject;
     joj::D3D11ConstantBuffer cbFrame;
 
-    joj::D3D11BasicModel m_cube_test;
     joj::D3D11TextureManager m_tex_mgr;
     joj::D3D11BasicModel m_rock_model;
     u32 ind = 0;

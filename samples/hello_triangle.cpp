@@ -106,11 +106,6 @@ void HelloTriangle::build_shaders_and_input_layout()
 
 void HelloTriangle::load_meshes_and_models()
 {
-    m_cube_test = joj::D3D11BasicModel();
-    JOJ_LOG_IF_FAIL(m_cube_test.load_obj(renderer.get_device(),
-        renderer.get_cmd_list(),
-        "../../../../samples/models/MyCube.obj"));
-
     m_rock_model = joj::D3D11BasicModel();
     JOJ_LOG_IF_FAIL(m_rock_model.load_m3d(renderer.get_device(),
         renderer.get_cmd_list(),
@@ -121,12 +116,10 @@ void HelloTriangle::load_meshes_and_models()
     joj::BasicModelInstance rockInstance1;
     joj::BasicModelInstance rockInstance2;
     joj::BasicModelInstance rockInstance3;
-    joj::BasicModelInstance cubeInstance;
 
     rockInstance1.model = &m_rock_model;
     rockInstance2.model = &m_rock_model;
     rockInstance3.model = &m_rock_model;
-    cubeInstance.model = &m_cube_test;
 
     XMMATRIX modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
     XMMATRIX modelRot = XMMatrixRotationY(0.0f);
@@ -144,14 +137,9 @@ void HelloTriangle::load_meshes_and_models()
     modelOffset = XMMatrixTranslation(-4.0f, 1.3f, 3.0f);
     XMStoreFloat4x4(&rockInstance3.world, modelScale * modelRot * modelOffset);
 
-    modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-    modelOffset = XMMatrixTranslation(0.0f, 0.0f, 5.0f);
-    XMStoreFloat4x4(&cubeInstance.world, modelScale * modelRot * modelOffset);
-
     mModelInstances.push_back(rockInstance1);
     mModelInstances.push_back(rockInstance2);
     mModelInstances.push_back(rockInstance3);
-    mModelInstances.push_back(cubeInstance);
 }
 
 void HelloTriangle::build_cbs()
@@ -371,15 +359,6 @@ void HelloTriangle::draw_objects()
         cbPO.gAlphaClip = 0;
         cbPO.gFogEnabled = 0;
         cbPO.gReflectionEnabled = 0;
-
-        if (model_index == 3)
-        {
-            cbPO.gUseTexure = 0;
-            cbObject.update(renderer.get_cmd_list(), cbPO);
-
-            mModelInstances[model_index].model->get_mesh()->draw(renderer.get_cmd_list(), 0);
-            continue;
-        }
 
         for (u32 subset = 0; subset < mModelInstances[model_index].model->get_submesh_count(); ++subset)
         {
