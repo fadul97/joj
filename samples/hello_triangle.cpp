@@ -76,12 +76,12 @@ void HelloTriangle::setup_camera()
 void HelloTriangle::build_shaders_and_input_layout()
 {
     m_static_shader.compile_vertex_shader_from_file(
-        "../../../../samples/shaders/JSFTest.hlsl",
+        "shaders/JSFTest.hlsl",
         "VS", joj::ShaderModel::Default);
     JOJ_LOG_IF_FAIL(m_static_shader.create_vertex_shader(renderer.get_device()));
 
     m_static_shader.compile_pixel_shader_from_file(
-        "../../../../samples/shaders/JSFTest.hlsl",
+        "shaders/JSFTest.hlsl",
         "PS", joj::ShaderModel::Default);
     JOJ_LOG_IF_FAIL(m_static_shader.create_pixel_shader(renderer.get_device()));
 
@@ -110,8 +110,8 @@ void HelloTriangle::load_meshes_and_models()
     JOJ_LOG_IF_FAIL(m_rock_model.load_m3d(renderer.get_device(),
         renderer.get_cmd_list(),
         m_tex_mgr,
-        "../../../../samples/models/rock.m3d",
-        L"../../../../samples/textures/"));
+        "models/rock.m3d",
+        L"textures/"));
 
     joj::BasicModelInstance rockInstance1;
     joj::BasicModelInstance rockInstance2;
