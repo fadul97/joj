@@ -26,10 +26,14 @@ add_custom_target(copy_resources ALL
 # Add copy_resources target to jojSamples (resources will be copied before running executable)
 add_dependencies(jojSamples copy_resources)
 
-target_link_libraries(jojSamples joj)
-
 target_include_directories(jojSamples
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../joj/include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/
 )
 
+target_link_directories(jojSamples
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/
+)
+
+target_link_libraries(jojSamples joj)

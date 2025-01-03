@@ -128,13 +128,13 @@ void joj::FreeCamera::look_at(const JFloat3& pos, const JFloat3& target, const J
     m_view_dirty = true;
 }
 
-joj::JFloat4x4 joj::FreeCamera::get_view() const
+joj::JFloat4x4& joj::FreeCamera::get_view()
 {
     assert(!m_view_dirty);
     return m_view;
 }
 
-joj::JFloat4x4 joj::FreeCamera::get_proj() const
+joj::JFloat4x4& joj::FreeCamera::get_proj()
 {
     return m_proj;
 }

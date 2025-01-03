@@ -53,8 +53,8 @@ namespace joj
 
         void look_at(const JFloat3& pos, const JFloat3& target, const JFloat3& world_up);
 
-        JFloat4x4 get_view() const;
-        JFloat4x4 get_proj() const;
+        JFloat4x4& get_view();
+        JFloat4x4& get_proj();
 
         void strafe(const f32 d);
         void walk(const f32 d);
