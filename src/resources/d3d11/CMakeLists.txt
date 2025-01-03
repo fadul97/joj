@@ -9,6 +9,7 @@ add_library(
     mesh_d3d11.cpp
     basic_model_d3d11.cpp
     basic_skinned_model_d3d11.cpp
+    model_manager_d3d11.cpp
 )
 
 target_include_directories(

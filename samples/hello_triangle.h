@@ -19,6 +19,7 @@
 #include "joj/renderer/d3d11/texture_manager_d3d11.h"
 #include "joj/systems/light/light.h"
 #include "joj/resources/d3d11/basic_skinned_model_d3d11.h"
+#include "joj/resources/d3d11/model_manager_d3d11.h"
 
 struct cbPerSkinned
 {
@@ -86,8 +87,8 @@ public:
     joj::D3D11ConstantBuffer cbObject;
     joj::D3D11ConstantBuffer cbFrame;
 
-    joj::D3D11TextureManager m_tex_mgr;
-    joj::D3D11BasicModel m_rock_model;
+    joj::D3D11ModelManager m_model_manager;
+
     u32 ind = 0;
     void draw_one_object(u32 model_index);
     void draw_objects();

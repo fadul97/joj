@@ -106,10 +106,8 @@ void HelloTriangle::build_shaders_and_input_layout()
 
 void HelloTriangle::load_meshes_and_models()
 {
-    m_rock_model = joj::D3D11BasicModel();
-    JOJ_LOG_IF_FAIL(m_rock_model.load_m3d(renderer.get_device(),
+    JOJ_LOG_IF_FAIL(m_model_manager.load_model(renderer.get_device(),
         renderer.get_cmd_list(),
-        m_tex_mgr,
         "models/rock.m3d",
         L"textures/"));
 
@@ -117,29 +115,33 @@ void HelloTriangle::load_meshes_and_models()
     joj::BasicModelInstance rockInstance2;
     joj::BasicModelInstance rockInstance3;
 
-    rockInstance1.model = &m_rock_model;
-    rockInstance2.model = &m_rock_model;
-    rockInstance3.model = &m_rock_model;
+    joj::D3D11BasicModel* rock_model = m_model_manager.get_model("models/rock.m3d");
+    if (rock_model != nullptr)
+    {
+        rockInstance1.model = rock_model;
+        rockInstance2.model = rock_model;
+        rockInstance3.model = rock_model;
 
-    XMMATRIX modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-    XMMATRIX modelRot = XMMatrixRotationY(0.0f);
-    XMMATRIX modelOffset = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+        joj::JMatrix4x4 modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+        joj::JMatrix4x4 modelRot = XMMatrixRotationY(0.0f);
+        joj::JMatrix4x4 modelOffset = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 
-    modelScale = XMMatrixScaling(0.8f, 0.8f, 0.8f);
-    modelOffset = XMMatrixTranslation(-1.0f, 1.4f, -7.0f);
-    XMStoreFloat4x4(&rockInstance1.world, modelScale * modelRot * modelOffset);
+        modelScale = XMMatrixScaling(0.8f, 0.8f, 0.8f);
+        modelOffset = XMMatrixTranslation(-1.0f, 1.4f, -7.0f);
+        XMStoreFloat4x4(&rockInstance1.world, modelScale * modelRot * modelOffset);
 
-    modelScale = XMMatrixScaling(0.8f, 0.8f, 0.8f);
-    modelOffset = XMMatrixTranslation(5.0f, 1.2f, -2.0f);
-    XMStoreFloat4x4(&rockInstance2.world, modelScale * modelRot * modelOffset);
+        modelScale = XMMatrixScaling(0.8f, 0.8f, 0.8f);
+        modelOffset = XMMatrixTranslation(5.0f, 1.2f, -2.0f);
+        XMStoreFloat4x4(&rockInstance2.world, modelScale * modelRot * modelOffset);
 
-    modelScale = XMMatrixScaling(0.8f, 0.8f, 0.8f);
-    modelOffset = XMMatrixTranslation(-4.0f, 1.3f, 3.0f);
-    XMStoreFloat4x4(&rockInstance3.world, modelScale * modelRot * modelOffset);
+        modelScale = XMMatrixScaling(0.8f, 0.8f, 0.8f);
+        modelOffset = XMMatrixTranslation(-4.0f, 1.3f, 3.0f);
+        XMStoreFloat4x4(&rockInstance3.world, modelScale * modelRot * modelOffset);
 
-    mModelInstances.push_back(rockInstance1);
-    mModelInstances.push_back(rockInstance2);
-    mModelInstances.push_back(rockInstance3);
+        mModelInstances.push_back(rockInstance1);
+        mModelInstances.push_back(rockInstance2);
+        mModelInstances.push_back(rockInstance3);
+    }
 }
 
 void HelloTriangle::build_cbs()
