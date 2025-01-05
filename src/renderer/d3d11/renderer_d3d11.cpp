@@ -645,12 +645,12 @@ void joj::D3D11Renderer::shutdown()
 
 void joj::D3D11Renderer::enable_depth_test()
 {
-    JTODO();
+    m_cmd_list.device_context->OMSetDepthStencilState(m_depth_stencil_state, 1);
 }
 
 void joj::D3D11Renderer::disable_depth_test()
 {
-    JTODO();
+    m_cmd_list.device_context->OMSetDepthStencilState(m_depth_disabled_stencil_state, 1);
 }
 
 void joj::D3D11Renderer::set_rasterizer_state(const RasterizerState state)
