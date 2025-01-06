@@ -31,7 +31,6 @@ public:
     f32 frametime = 0.0f;
 
     // ---------------------------------------------------
-    joj::Viewport game_viewport;
     joj::Viewport gui_viewport;
 };
 

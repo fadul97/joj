@@ -24,13 +24,15 @@ target_include_directories(jojRenderer
 
 if(WIN32)
     add_subdirectory(d3d11)
+    add_subdirectory(gui)
 
     target_link_directories(
         jojRenderer 
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../platform/
         ${CMAKE_CURRENT_SOURCE_DIR}/d3d11/
+        ${CMAKE_CURRENT_SOURCE_DIR}/gui/
     )
 
-    target_link_libraries(jojRenderer PRIVATE jojPlatform jojD3D11Renderer)
+    target_link_libraries(jojRenderer PRIVATE jojPlatform jojGUIRenderer jojD3D11Renderer)
 endif()

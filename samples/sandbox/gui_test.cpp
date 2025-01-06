@@ -47,7 +47,6 @@ void GUITest::init()
 {
     init_platform();
 
-    game_viewport.set(0.0f, 0.0f, 400.0f, 600.0f, 0.0f, 1.0f);
     gui_viewport.set(400.0f, 0.0f, 400.0f, 600.0f, 0.0f, 1.0f);
 }
 
@@ -59,9 +58,6 @@ void GUITest::update(const f32 dt)
 
 void GUITest::draw()
 {
-    renderer.set_viewport(game_viewport);
-    renderer.clear(1.0f, 0.0f, 0.0f, 1.0f);
-
     renderer.set_viewport(gui_viewport);
     renderer.clear(0.0f, 0.0f, 1.0f, 1.0f);
 

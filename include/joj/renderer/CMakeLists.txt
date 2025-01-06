@@ -5,4 +5,5 @@ project(joj)
 
 if (WIN32)
 	add_subdirectory(d3d11)
+	add_subdirectory(gui)
 endif()
