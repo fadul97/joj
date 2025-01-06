@@ -44,6 +44,11 @@ namespace joj
         void set_rasterizer_state(const RasterizerState state) override;
         void set_primitive_topology(const PrimitiveTopology topology) override;
 
+        void set_viewport(const f32 x, const f32 y, const f32 width,
+            const f32 height, const f32 min_depth, const f32 max_depth) override;
+        void set_viewport(const Viewport& viewport) override;
+        void set_viewport_size(const u32 width, const u32 height) override;
+
         void resize(i32 width, i32 height) override;
 
         GraphicsDevice& get_device() override;

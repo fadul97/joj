@@ -695,6 +695,37 @@ void joj::D3D11Renderer::set_primitive_topology(const PrimitiveTopology topology
     }
 }
 
+void joj::D3D11Renderer::set_viewport(f32 x, f32 y, f32 width, f32 height, f32 min_depth, f32 max_depth)
+{
+    m_viewport.TopLeftX = x;
+    m_viewport.TopLeftY = y;
+    m_viewport.Width = width;
+    m_viewport.Height = height;
+    m_viewport.MinDepth = min_depth;
+    m_viewport.MaxDepth = max_depth;
+
+    m_cmd_list.device_context->RSSetViewports(1, &m_viewport);
+}
+
+void joj::D3D11Renderer::set_viewport(const Viewport& viewport)
+{
+    m_viewport.TopLeftX = viewport.m_x;
+    m_viewport.TopLeftY = viewport.m_y;
+    m_viewport.Width = viewport.m_width;
+    m_viewport.Height = viewport.m_height;
+    m_viewport.MinDepth = viewport.m_min_depth;
+    m_viewport.MaxDepth = viewport.m_max_depth;
+    m_cmd_list.device_context->RSSetViewports(1, &m_viewport);
+}
+
+void joj::D3D11Renderer::set_viewport_size(const u32 width, const u32 height)
+{
+    m_viewport.Width = static_cast<f32>(width);
+    m_viewport.Height = static_cast<f32>(height);
+
+    m_cmd_list.device_context->RSSetViewports(1, &m_viewport);
+}
+
 void joj::D3D11Renderer::resize(i32 width, i32 height)
 {
     // Describe Viewport
@@ -734,8 +765,6 @@ void joj::D3D11Renderer::swap_buffers()
         JERROR(ErrorCode::ERR_RENDERER_D3D11_SWAPCHAIN_PRESENT, "Failed to present SwapChain.");
         return;
     }
-
-    m_cmd_list.device_context->OMSetRenderTargets(1, &m_render_target_view, m_depth_stencil_view);
 }
 
 

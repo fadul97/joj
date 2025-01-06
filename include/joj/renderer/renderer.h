@@ -6,6 +6,7 @@
 
 #include "error_code.h"
 #include "platform/window.h"
+#include "viewport.h"
 
 JAPI void renderer_print();
 
@@ -48,6 +49,11 @@ namespace joj
 
         virtual void set_rasterizer_state(const RasterizerState state) = 0;
         virtual void set_primitive_topology(const PrimitiveTopology topology) = 0;
+
+        virtual void set_viewport(const f32 x, const f32 y, const f32 width,
+            const f32 height, const f32 min_depth, const f32 max_depth) = 0;
+        virtual void set_viewport(const Viewport& viewport) = 0;
+        virtual void set_viewport_size(const u32 width, const u32 height) = 0;
 
         virtual void resize(i32 width, i32 height) = 0;
 
