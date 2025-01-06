@@ -6,6 +6,7 @@
 #include "joj/platform/win32/input_win32.h"
 #include "joj/platform/win32/timer_win32.h"
 #include "joj/renderer/d3d11/renderer_d3d11.h"
+#include "joj/renderer/viewport.h"
 
 class GUITest
 {
@@ -28,6 +29,10 @@ public:
     joj::D3D11Renderer renderer;
     b8 loop = true;
     f32 frametime = 0.0f;
+
+    // ---------------------------------------------------
+    joj::Viewport game_viewport;
+    joj::Viewport gui_viewport;
 };
 
 #endif // _JOJ_GUI_TEST_H
