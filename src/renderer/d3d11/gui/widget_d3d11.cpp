@@ -105,24 +105,13 @@ joj::ErrorCode joj::D3D11Widget::create(GraphicsDevice& device)
     return ErrorCode::OK;
 }
 
-void joj::D3D11Widget::draw(GraphicsDevice& device, CommandList& cmd_list)
+void joj::D3D11Widget::draw(CommandList& cmd_list)
 {
     u32 stride = sizeof(Vertex::PosColor);
     u32 offset = 0;
     m_vb.bind(cmd_list, 0, 1, &stride, &offset);
     m_ib.bind(cmd_list, DataFormat::R32_UINT, offset);
     m_input_layout.bind(cmd_list);
-
-    if (m_update_position)
-    {
-        // Create Vertex Buffer
-        if JOJ_FAILED(m_vb.create(device))
-        {
-            JERROR(ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION,
-                "Failed to create D3D11 Vertex Buffer.");
-        }
-        m_update_position = false;
-    }
 
     CBHovered cb_data;
     cb_data.hovered = 0;

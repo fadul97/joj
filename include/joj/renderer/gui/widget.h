@@ -20,7 +20,7 @@ namespace joj
 
         virtual ErrorCode create(GraphicsDevice& device) = 0;
 
-        virtual void draw(GraphicsDevice& device, CommandList& cmd_list) = 0;
+        virtual void draw(CommandList& cmd_list) = 0;
 
         virtual b8 is_hovered(const i32 x, const i32 y) = 0;
 

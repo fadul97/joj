@@ -32,7 +32,7 @@ namespace joj
 
         ErrorCode create(GraphicsDevice& device) override;
 
-        void draw(GraphicsDevice& device, CommandList& cmd_list) override;
+        void draw(CommandList& cmd_list) override;
 
         b8 is_hovered(const i32 x, const i32 y) override;
 

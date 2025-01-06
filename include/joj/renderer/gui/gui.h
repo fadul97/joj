@@ -15,7 +15,8 @@ namespace joj
         virtual ~IGUI();
 
         virtual void init(GraphicsDevice& device) = 0;
-        virtual void update(const f32 dt, const i32 xmouse, const i32 ymouse) = 0;
+        virtual void update(const f32 dt, const i32 xmouse, const i32 ymouse,
+            const b8 clicked) = 0;
         virtual void draw(CommandList& cmd_list) = 0;
         virtual void shutdown() = 0;
     };

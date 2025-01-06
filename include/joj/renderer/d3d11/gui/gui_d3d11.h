@@ -20,7 +20,8 @@ namespace joj
         ~D3D11GUI();
         
         void init(GraphicsDevice& device) override;
-        void update(const f32 dt, const i32 xmouse, const i32 ymouse) override;
+        void update(const f32 dt, const i32 xmouse, const i32 ymouse,
+            const b8 clicked) override;
         void draw(CommandList& cmd_list) override;
         void shutdown() override;
 

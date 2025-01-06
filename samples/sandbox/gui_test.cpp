@@ -56,7 +56,8 @@ void GUITest::update(const f32 dt)
     if (input.is_key_pressed(joj::KEY_ESCAPE))
         loop = false;
 
-    m_gui.update(dt, input.get_xmouse(), input.get_ymouse());
+    m_gui.update(dt, input.get_xmouse(), input.get_ymouse(),
+        input.is_button_down(joj::BUTTON_LEFT));
 }
 
 void GUITest::draw()
