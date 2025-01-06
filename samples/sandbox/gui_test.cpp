@@ -48,22 +48,22 @@ void GUITest::init()
 {
     init_platform();
 
-    // gui_viewport.set(400.0f, 0.0f, 400.0f, 600.0f, 0.0f, 1.0f);
-    m_canvas = joj::D3D11Canvas(600, 0, 200, 600, joj::Color(1.0f, 0.0f, 0.0f, 1.0f));
-    JOJ_LOG_IF_FAIL(m_canvas.create(renderer.get_device()));
+    m_gui.init(renderer.get_device());
 }
 
 void GUITest::update(const f32 dt)
 {
     if (input.is_key_pressed(joj::KEY_ESCAPE))
         loop = false;
+
+    m_gui.update(dt);
 }
 
 void GUITest::draw()
 {
     renderer.clear(0.0f, 0.0f, 1.0f, 1.0f);
 
-    m_canvas.draw(renderer.get_cmd_list());
+    m_gui.draw(renderer.get_cmd_list());
 
     renderer.swap_buffers();
 }

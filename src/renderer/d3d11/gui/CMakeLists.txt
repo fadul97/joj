@@ -6,6 +6,7 @@ project(joj)
 add_library(
 	jojD3D11GUIRenderer
 	STATIC
+    gui_d3d11.cpp
 	canvas_d3d11.cpp
 )
 
