@@ -141,6 +141,8 @@ namespace joj
 
         ERR_BASIC_MODEL_SET_VERTICES_FAILED,
         ERR_BASIC_MODEL_SET_INDICES_FAILED,
+
+        ERR_GUI_CANVAS_D3D11_CREATION,
     };
 
     // TODO: Add all cases.
