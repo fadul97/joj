@@ -20,12 +20,23 @@ add_library(
 )
 
 if(WIN32)
+    add_subdirectory(gui)    
+
     target_link_directories(
         jojD3D11Renderer 
         PRIVATE 
         ${CMAKE_CURRENT_SOURCE_DIR}/../../platform/
+        ${CMAKE_CURRENT_SOURCE_DIR}/gui/
     )
 
     # TODO: Is dxguid.lib needed?
-    target_link_libraries(jojD3D11Renderer PRIVATE jojRenderer dxgi.lib dxguid.lib d3d11.lib D3DCompiler.lib)
+    target_link_libraries(jojD3D11Renderer
+        PRIVATE
+        jojRenderer
+        jojD3D11GUIRenderer
+        dxgi.lib
+        dxguid.lib
+        d3d11.lib
+        D3DCompiler.lib
+    )
 endif()

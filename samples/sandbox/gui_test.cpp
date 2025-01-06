@@ -47,6 +47,9 @@ void GUITest::init()
 {
     init_platform();
 
+    m_canvas = joj::D3D11Canvas(0, 0, 200, 200, joj::Color(1.0f, 0.0f, 0.0f, 1.0f));
+    JOJ_LOG_IF_FAIL(m_canvas.create(renderer.get_device()));
+
     gui_viewport.set(400.0f, 0.0f, 400.0f, 600.0f, 0.0f, 1.0f);
 }
 
@@ -58,8 +61,9 @@ void GUITest::update(const f32 dt)
 
 void GUITest::draw()
 {
-    renderer.set_viewport(gui_viewport);
     renderer.clear(0.0f, 0.0f, 1.0f, 1.0f);
+
+    m_canvas.draw(renderer.get_cmd_list());
 
     renderer.swap_buffers();
 }

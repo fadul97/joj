@@ -7,6 +7,7 @@
 #include "joj/platform/win32/timer_win32.h"
 #include "joj/renderer/d3d11/renderer_d3d11.h"
 #include "joj/renderer/viewport.h"
+#include "joj/renderer/d3d11/gui/canvas_d3d11.h"
 
 class GUITest
 {
@@ -32,6 +33,7 @@ public:
 
     // ---------------------------------------------------
     joj::Viewport gui_viewport;
+    joj::D3D11Canvas m_canvas;
 };
 
 #endif // _JOJ_GUI_TEST_H
