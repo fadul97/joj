@@ -6,31 +6,17 @@
 
 #if JPLATFORM_WINDOWS
 
-#include "renderer/gui/canvas.h"
-#include "renderer/d3d11/shader_d3d11.h"
-#include "renderer/d3d11/vertex_buffer_d3d11.h"
-#include "renderer/d3d11/index_buffer_d3d11.h"
-#include "renderer/d3d11/input_layout_d3d11.h"
+#include "renderer/d3d11/gui/widget_d3d11.h"
 
 namespace joj
 {
-    class JAPI D3D11Canvas : public Canvas
+    class JAPI D3D11Canvas : public D3D11Widget
     {
     public:
         D3D11Canvas();
         D3D11Canvas(const u16 x, const u16 y, const u16 width, const u16 height);
         D3D11Canvas(const u16 x, const u16 y, const u16 width, const u16 height, const Color color);
         ~D3D11Canvas();
-
-        ErrorCode create(GraphicsDevice& device) override;
-
-        void draw(CommandList& cmd_list) override;
-
-    private:
-        D3D11Shader m_shader;
-        D3D11VertexBuffer m_vb;
-        D3D11IndexBuffer m_ib;
-        D3D11InputLayout m_input_layout;
     };
 }
 
