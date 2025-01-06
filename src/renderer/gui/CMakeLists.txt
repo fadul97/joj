@@ -6,6 +6,7 @@ project(joj)
 add_library(
 	jojGUIRenderer
 	STATIC
+	gui.cpp
 	canvas.cpp
 )
 
