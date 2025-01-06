@@ -7,7 +7,9 @@ add_library(
 	jojD3D11GUIRenderer
 	STATIC
     gui_d3d11.cpp
+    widget_d3d11.cpp
 	canvas_d3d11.cpp
+    button_d3d11.cpp
 )
 
 if(WIN32)

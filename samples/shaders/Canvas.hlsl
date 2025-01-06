@@ -1,3 +1,9 @@
+cbuffer cbHovered : register(b0)
+{
+    float4 gHoveredColor;
+    bool gHovered;
+}
+
 // Vertex Shader
 struct VS_INPUT
 {
@@ -14,8 +20,14 @@ struct PS_INPUT
 PS_INPUT VS(VS_INPUT input)
 {
     PS_INPUT output;
+
     output.PosH = float4(input.Pos, 1.0f); // Converte para coordenadas homogêneas
-    output.Color = input.Color; // Passa a cor para o Pixel Shader
+    
+    if (gHovered)
+        output.Color = gHoveredColor; // Se o mouse estiver sobre o objeto, muda a cor
+    else
+        output.Color = input.Color; // Passa a cor para o Pixel Shader
+
     return output;
 }
 

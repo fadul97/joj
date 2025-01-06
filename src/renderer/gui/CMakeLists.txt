@@ -7,7 +7,9 @@ add_library(
 	jojGUIRenderer
 	STATIC
 	gui.cpp
+	widget.cpp
 	canvas.cpp
+	button.cpp
 )
 
 target_include_directories(

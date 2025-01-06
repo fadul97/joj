@@ -56,14 +56,16 @@ void GUITest::update(const f32 dt)
     if (input.is_key_pressed(joj::KEY_ESCAPE))
         loop = false;
 
-    m_gui.update(dt);
+    m_gui.update(dt, input.get_xmouse(), input.get_ymouse());
 }
 
 void GUITest::draw()
 {
     renderer.clear(0.0f, 0.0f, 1.0f, 1.0f);
 
+    renderer.disable_depth_test();
     m_gui.draw(renderer.get_cmd_list());
+    renderer.enable_depth_test();
 
     renderer.swap_buffers();
 }
