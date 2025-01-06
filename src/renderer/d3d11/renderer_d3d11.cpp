@@ -765,8 +765,9 @@ void joj::D3D11Renderer::swap_buffers()
         JERROR(ErrorCode::ERR_RENDERER_D3D11_SWAPCHAIN_PRESENT, "Failed to present SwapChain.");
         return;
     }
-}
 
+    m_cmd_list.device_context->OMSetRenderTargets(1, &m_render_target_view, m_depth_stencil_view);
+}
 
 #if JOJ_DEBUG_MODE
 void joj::D3D11Renderer::log_hardware_info()

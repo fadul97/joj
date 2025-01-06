@@ -35,26 +35,42 @@ joj::ErrorCode joj::D3D11Canvas::create(GraphicsDevice& device)
         JFloat4 color;
 	};
     */
+
     const Vertex::PosColor quad_vertices[4] =
     {
         // Position
         {
-            JFloat3{ static_cast<f32>(m_x), static_cast<f32>(m_y), 0.0f }, // Top Left
+            JFloat3{ m_normalized_x, m_normalized_y, 0.0f }, // Top Left
             JFloat4{ m_background_color.r, m_background_color.g, m_background_color.b, m_background_color.a }
         },
         {
-            JFloat3{ static_cast<f32>(m_x + m_width), static_cast<f32>(m_y), 0.0f }, // Top Right
+            JFloat3{ m_normalized_x + m_normalized_width, m_normalized_y, 0.0f }, // Top Right
             JFloat4{ m_background_color.r, m_background_color.g, m_background_color.b, m_background_color.a }
         },
         {
-            JFloat3{ static_cast<f32>(m_x + m_width), static_cast<f32>(m_y + m_height), 0.0f }, // Bottom Right
+            JFloat3{ m_normalized_x + m_normalized_width, m_normalized_y - m_normalized_height, 0.0f }, // Bottom Right
             JFloat4{ m_background_color.r, m_background_color.g, m_background_color.b, m_background_color.a }
         },
         {
-            JFloat3{ static_cast<f32>(m_x), static_cast<f32>(m_y + m_height), 0.0f }, // Bottom Left
+            JFloat3{ m_normalized_x, m_normalized_y - m_normalized_height, 0.0f }, // Bottom Left
             JFloat4{ m_background_color.r, m_background_color.g, m_background_color.b, m_background_color.a }
         },
     };
+
+    JDEBUG("Canvas size: %f, %f, %f, %f",
+        m_normalized_x, m_normalized_y, m_normalized_width, m_normalized_height);
+
+    JDEBUG("[Top Left]: %f, %f, %f",
+        quad_vertices[0].pos.x, quad_vertices[0].pos.y, quad_vertices[0].pos.z);
+
+    JDEBUG("[Top Right]: %f, %f, %f",
+        quad_vertices[1].pos.x, quad_vertices[1].pos.y, quad_vertices[1].pos.z);
+
+    JDEBUG("[Bottom Left]: %f, %f, %f",
+        quad_vertices[3].pos.x, quad_vertices[3].pos.y, quad_vertices[3].pos.z);
+
+    JDEBUG("[Bottom Right]: %f, %f, %f",
+        quad_vertices[2].pos.x, quad_vertices[2].pos.y, quad_vertices[2].pos.z);
 
     m_vb.setup(BufferUsage::Immutable, CPUAccessType::None,
         sizeof(Vertex::PosColor) * 4, quad_vertices);
@@ -83,9 +99,11 @@ joj::ErrorCode joj::D3D11Canvas::create(GraphicsDevice& device)
         return ErrorCode::ERR_GUI_CANVAS_D3D11_CREATION;
     }
 
-    // Create shader
-    m_shader.compile_vertex_shader(D3D11ShaderLibrary::VertexShaderCanvas, "VS", ShaderModel::Default);
-    m_shader.compile_pixel_shader(D3D11ShaderLibrary::PixelShaderCanvas, "PS", ShaderModel::Default);
+    // Compile and Create Shader
+    m_shader.compile_vertex_shader_from_file("shaders/Canvas.hlsl", "VS", ShaderModel::Default);
+    m_shader.compile_pixel_shader_from_file("shaders/Canvas.hlsl", "PS", ShaderModel::Default);
+    JOJ_LOG_IF_FAIL(m_shader.create_vertex_shader(device));
+    JOJ_LOG_IF_FAIL(m_shader.create_pixel_shader(device));
 
     // Create input layout
     InputDesc input_desc[] =

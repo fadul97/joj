@@ -28,6 +28,11 @@ namespace joj
         u16 m_width;
         u16 m_height;
         Color m_background_color;
+
+        f32 m_normalized_x;
+        f32 m_normalized_y;
+        f32 m_normalized_width;
+        f32 m_normalized_height;
     };
 }
 #endif // _JOJ_CANVAS_H
