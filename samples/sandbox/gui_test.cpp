@@ -3,6 +3,7 @@
 #include "logger.h"
 #include <sstream>
 #include "joj/jmacros.h"
+#include "joj/renderer/vertex.h"
 
 GUITest::GUITest()
 {
@@ -47,10 +48,9 @@ void GUITest::init()
 {
     init_platform();
 
-    m_canvas = joj::D3D11Canvas(0, 0, 200, 200, joj::Color(1.0f, 0.0f, 0.0f, 1.0f));
+    // gui_viewport.set(400.0f, 0.0f, 400.0f, 600.0f, 0.0f, 1.0f);
+    m_canvas = joj::D3D11Canvas(600, 0, 200, 600, joj::Color(1.0f, 0.0f, 0.0f, 1.0f));
     JOJ_LOG_IF_FAIL(m_canvas.create(renderer.get_device()));
-
-    gui_viewport.set(400.0f, 0.0f, 400.0f, 600.0f, 0.0f, 1.0f);
 }
 
 void GUITest::update(const f32 dt)
