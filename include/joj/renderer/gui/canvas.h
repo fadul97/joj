@@ -4,13 +4,11 @@
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "defines.h"
 
-#include "renderer/color.h"
-#include "error_code.h"
-#include "renderer/renderer.h"
+#include "widget.h"
 
 namespace joj
 {
-    class JAPI Canvas
+    class JAPI Canvas : public IWidget
     {
     public:
         Canvas();
@@ -21,18 +19,6 @@ namespace joj
         virtual ErrorCode create(GraphicsDevice& device) = 0;
 
         virtual void draw(CommandList& cmd_list) = 0;
-
-    protected:
-        u16 m_x;
-        u16 m_y;
-        u16 m_width;
-        u16 m_height;
-        Color m_background_color;
-
-        f32 m_normalized_x;
-        f32 m_normalized_y;
-        f32 m_normalized_width;
-        f32 m_normalized_height;
     };
 }
 #endif // _JOJ_CANVAS_H
