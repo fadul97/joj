@@ -105,13 +105,24 @@ joj::ErrorCode joj::D3D11Widget::create(GraphicsDevice& device)
     return ErrorCode::OK;
 }
 
-void joj::D3D11Widget::draw(CommandList& cmd_list)
+void joj::D3D11Widget::draw(GraphicsDevice& device, CommandList& cmd_list)
 {
     u32 stride = sizeof(Vertex::PosColor);
     u32 offset = 0;
     m_vb.bind(cmd_list, 0, 1, &stride, &offset);
     m_ib.bind(cmd_list, DataFormat::R32_UINT, offset);
     m_input_layout.bind(cmd_list);
+
+    if (m_update_position)
+    {
+        // Create Vertex Buffer
+        if JOJ_FAILED(m_vb.create(device))
+        {
+            JERROR(ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION,
+                "Failed to create D3D11 Vertex Buffer.");
+        }
+        m_update_position = false;
+    }
 
     CBHovered cb_data;
     cb_data.hovered = 0;
@@ -153,6 +164,30 @@ void joj::D3D11Widget::set_background_color(const Color color)
 void joj::D3D11Widget::set_hovered_color(const Color color)
 {
     m_hovered_color = color;
+}
+
+b8 joj::D3D11Widget::on_left_edge(const i32 x, const i32 y)
+{
+    const i32 tolerance = 2;
+    return x >= m_x - tolerance && x <= m_x + tolerance && y >= m_y && y <= m_y + m_height;
+}
+
+b8 joj::D3D11Widget::on_right_edge(const i32 x, const i32 y)
+{
+    const i32 tolerance = 2;
+    return x >= m_x + m_width - tolerance && x <= m_x + m_width + tolerance && y >= m_y && y <= m_y + m_height;
+}
+
+b8 joj::D3D11Widget::on_top_edge(const i32 x, const i32 y)
+{
+    const i32 tolerance = 2;
+    return x >= m_x && x <= m_x + m_width && y >= m_y - tolerance && y <= m_y + tolerance;
+}
+
+b8 joj::D3D11Widget::on_bottom_edge(const i32 x, const i32 y)
+{
+    const i32 tolerance = 2;
+    return x >= m_x && x <= m_x + m_width && y >= m_y + m_height - tolerance && y <= m_y + m_height + tolerance;
 }
 
 #endif // JPLATFORM_WINDOWS

@@ -32,7 +32,7 @@ namespace joj
 
         ErrorCode create(GraphicsDevice& device) override;
 
-        void draw(CommandList& cmd_list) override;
+        void draw(GraphicsDevice& device, CommandList& cmd_list) override;
 
         b8 is_hovered(const i32 x, const i32 y) override;
 
@@ -40,6 +40,11 @@ namespace joj
 
         void set_background_color(const Color color) override;
         void set_hovered_color(const Color color) override;
+
+        b8 on_left_edge(const i32 x, const i32 y) override;
+        b8 on_right_edge(const i32 x, const i32 y) override;
+        b8 on_top_edge(const i32 x, const i32 y) override;
+        b8 on_bottom_edge(const i32 x, const i32 y) override;
 
     protected:
         D3D11Shader m_shader;
