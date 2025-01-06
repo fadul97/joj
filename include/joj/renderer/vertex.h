@@ -11,7 +11,13 @@ namespace joj
 {
     namespace Vertex
     {
-		struct PorNormalTex
+		struct PosColor
+		{
+            JFloat3 pos;
+            JFloat4 color;
+		};
+
+		struct PosNormalTex
 		{
 			JFloat3 pos;
 			JFloat3 normal;
