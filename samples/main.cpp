@@ -4,14 +4,14 @@
 #include <sstream>
 #include "joj/renderer/d3d11/renderer_d3d11.h"
 #include "logger.h"
-#include "hello_triangle.h"
+#include "test_app.h"
 
 f32 frametime = 0.0f;
 b8 process_events();
 
 int main()
 {
-    HelloTriangle app;
+    TestApp app;
     app.init();
 
     while (app.loop)

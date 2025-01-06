@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(jojSamples)
 
-add_executable(jojSamples main.cpp hello_triangle.cpp)
+add_executable(jojSamples main.cpp test_app.cpp)
 
 # Resource folders
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders)

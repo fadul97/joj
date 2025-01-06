@@ -1,4 +1,4 @@
-#include "hello_triangle.h"
+#include "test_app.h"
 
 #include "logger.h"
 #include <sstream>
@@ -7,7 +7,7 @@
 
 using namespace DirectX;
 
-HelloTriangle::HelloTriangle()
+TestApp::TestApp()
 {
     window = joj::Win32Window{ "jojWindow", 800, 600, joj::WindowMode::Windowed };
     input = joj::Win32Input();
@@ -31,12 +31,12 @@ HelloTriangle::HelloTriangle()
     mDirLights[2].direction = XMFLOAT3(0.0f, 0.0, -1.0f);
 }
 
-HelloTriangle::~HelloTriangle()
+TestApp::~TestApp()
 {
 
 }
 
-void HelloTriangle::init_platform()
+void TestApp::init_platform()
 {
     if (window.create() != joj::ErrorCode::OK)
         return;
@@ -62,7 +62,7 @@ void HelloTriangle::init_platform()
     timer.start();
 }
 
-void HelloTriangle::setup_camera()
+void TestApp::setup_camera()
 {
     m_cam.update_view_matrix();
     m_cam.set_pos(0.0f, 5.0f, -15.0f);
@@ -73,7 +73,7 @@ void HelloTriangle::setup_camera()
     m_cam.update_view_matrix();
 }
 
-void HelloTriangle::build_shaders_and_input_layout()
+void TestApp::build_shaders_and_input_layout()
 {
     m_static_shader.compile_vertex_shader_from_file(
         "shaders/JSFTest.hlsl",
@@ -104,7 +104,7 @@ void HelloTriangle::build_shaders_and_input_layout()
     m_static_layout.bind(renderer.get_cmd_list());
 }
 
-void HelloTriangle::load_meshes_and_models()
+void TestApp::load_meshes_and_models()
 {
     JOJ_LOG_IF_FAIL(m_model_manager.load_model(renderer.get_device(),
         renderer.get_cmd_list(),
@@ -144,7 +144,7 @@ void HelloTriangle::load_meshes_and_models()
     }
 }
 
-void HelloTriangle::build_cbs()
+void TestApp::build_cbs()
 {
     cbObject.setup(joj::calculate_cb_byte_size(sizeof(cbPerObject)), nullptr);
     JOJ_LOG_IF_FAIL(cbObject.create(renderer.get_device()));
@@ -157,7 +157,7 @@ void HelloTriangle::build_cbs()
     cbFrame.bind_to_pixel_shader(renderer.get_cmd_list(), 1, 1);
 }
 
-void HelloTriangle::build_sampler_state()
+void TestApp::build_sampler_state()
 {
     // Describe a texture sampler.
     joj::SamplerDesc samplerDesc;
@@ -180,7 +180,7 @@ void HelloTriangle::build_sampler_state()
     m_sampler_state.bind(renderer.get_cmd_list(), joj::SamplerType::Anisotropic, 0, 1);
 }
 
-void HelloTriangle::init()
+void TestApp::init()
 {
     init_platform();
 
@@ -191,7 +191,7 @@ void HelloTriangle::init()
     build_sampler_state();
 }
 
-void HelloTriangle::update(const f32 dt)
+void TestApp::update(const f32 dt)
 {
     if (input.is_key_pressed('1'))
     {
@@ -208,7 +208,7 @@ void HelloTriangle::update(const f32 dt)
         loop = false;
 }
 
-void HelloTriangle::draw()
+void TestApp::draw()
 {
     renderer.clear();
 
@@ -221,7 +221,7 @@ void HelloTriangle::draw()
     renderer.swap_buffers();
 }
 
-void HelloTriangle::draw_one_object(u32 model_index)
+void TestApp::draw_one_object(u32 model_index)
 {
     m_static_shader.bind_vertex_shader(renderer.get_cmd_list());
     m_static_shader.bind_pixel_shader(renderer.get_cmd_list());
@@ -299,7 +299,7 @@ void HelloTriangle::draw_one_object(u32 model_index)
     }
 }
 
-void HelloTriangle::draw_objects()
+void TestApp::draw_objects()
 {
     m_static_shader.bind_vertex_shader(renderer.get_cmd_list());
     m_static_shader.bind_pixel_shader(renderer.get_cmd_list());
@@ -383,12 +383,12 @@ void HelloTriangle::draw_objects()
     }
 }
 
-void HelloTriangle::shutdown()
+void TestApp::shutdown()
 {
     timer.end_period();
 }
 
-f32 HelloTriangle::get_frametime()
+f32 TestApp::get_frametime()
 {
 #ifdef JOJ_DEBUG_MODE
     static f32 total_time = 0.0f;	// Total time elapsed

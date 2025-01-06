@@ -1,5 +1,5 @@
-#ifndef _JOJ_HELLO_TRIANGLE_H
-#define _JOJ_HELLO_TRIANGLE_H
+#ifndef _JOJ_TEST_APP_H
+#define _JOJ_TEST_APP_H
 
 #include "joj/engine.h"
 #include "joj/platform/win32/window_win32.h"
@@ -51,11 +51,11 @@ struct cbPerFrame
     joj::JFloat4 gFogColor;
 };
 
-class HelloTriangle
+class TestApp
 {
 public:
-    HelloTriangle();
-    ~HelloTriangle();
+    TestApp();
+    ~TestApp();
 
     void init();
     void update(const f32 dt);
@@ -97,4 +97,4 @@ public:
     std::vector<joj::BasicModelInstance> mModelInstances;
 };
 
-#endif // _JOJ_HELLO_TRIANGLE_H
+#endif // _JOJ_TEST_APP_H
