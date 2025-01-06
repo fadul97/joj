@@ -20,7 +20,7 @@ namespace joj
 
         virtual ErrorCode create(GraphicsDevice& device) = 0;
 
-        virtual void draw(CommandList& cmd_list) = 0;
+        virtual void draw(GraphicsDevice& device, CommandList& cmd_list) = 0;
 
         virtual b8 is_hovered(const i32 x, const i32 y) = 0;
 
@@ -28,6 +28,11 @@ namespace joj
 
         virtual void set_background_color(const Color color) = 0;
         virtual void set_hovered_color(const Color color) = 0;
+
+        virtual b8 on_left_edge(const i32 x, const i32 y) = 0;
+        virtual b8 on_right_edge(const i32 x, const i32 y) = 0;
+        virtual b8 on_top_edge(const i32 x, const i32 y) = 0;
+        virtual b8 on_bottom_edge(const i32 x, const i32 y) = 0;
 
     protected:
         u16 m_x;
@@ -43,6 +48,7 @@ namespace joj
         f32 m_normalized_height;
 
         b8 m_update;
+        b8 m_update_position;
     };
 }
 
