@@ -111,9 +111,9 @@ void TestApp::load_meshes_and_models()
         "models/rock.m3d",
         L"textures/"));
 
-    joj::BasicModelInstance rockInstance1;
-    joj::BasicModelInstance rockInstance2;
-    joj::BasicModelInstance rockInstance3;
+    joj::BasicModelInstance rockInstance1{};
+    joj::BasicModelInstance rockInstance2{};
+    joj::BasicModelInstance rockInstance3{};
 
     joj::D3D11BasicModel* rock_model = m_model_manager.get_model("models/rock.m3d");
     if (rock_model != nullptr)
@@ -160,7 +160,7 @@ void TestApp::build_cbs()
 void TestApp::build_sampler_state()
 {
     // Describe a texture sampler.
-    joj::SamplerDesc samplerDesc;
+    joj::SamplerDesc samplerDesc = { 0 };
     samplerDesc.filter = joj::SamplerFilter::MIN_MAG_MIP_LINEAR;
     samplerDesc.addressU = joj::TextureAddressMode::Wrap;
     samplerDesc.addressV = joj::TextureAddressMode::Wrap;

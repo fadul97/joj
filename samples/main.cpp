@@ -1,17 +1,11 @@
-#include "joj/platform/win32/window_win32.h"
-#include "joj/platform/win32/input_win32.h"
-#include "joj/platform/win32/timer_win32.h"
-#include <sstream>
-#include "joj/renderer/d3d11/renderer_d3d11.h"
-#include "logger.h"
-#include "test_app.h"
+#include "sandbox/gui_test.h"
 
 f32 frametime = 0.0f;
 b8 process_events();
 
 int main()
 {
-    TestApp app;
+    GUITest app;
     app.init();
 
     while (app.loop)
