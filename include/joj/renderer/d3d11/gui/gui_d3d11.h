@@ -7,7 +7,9 @@
 #if JPLATFORM_WINDOWS
 
 #include "renderer/gui/gui.h"
+#include <vector>
 #include "renderer/d3d11/gui/canvas_d3d11.h"
+#include "renderer/d3d11/gui/button_d3d11.h"
 
 namespace joj
 {
@@ -18,12 +20,12 @@ namespace joj
         ~D3D11GUI();
         
         void init(GraphicsDevice& device) override;
-        void update(const f32 dt) override;
+        void update(const f32 dt, const i32 xmouse, const i32 ymouse) override;
         void draw(CommandList& cmd_list) override;
         void shutdown() override;
 
     private:
-        D3D11Canvas m_canvas;
+        std::vector<D3D11Widget*> m_widgets;
     };
 }
 
