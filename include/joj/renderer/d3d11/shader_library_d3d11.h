@@ -142,6 +142,41 @@ namespace joj
                 return color;
             }
         )";
+
+        const char* VertexShaderCanvas = R"(
+            struct VS_INPUT
+            {
+                float3 PosL : POSITION;  // Posição local
+                float4 ColorL : COLOR;   // Cor local
+            };
+
+            struct PS_INPUT
+            {
+                float4 PosH : SV_POSITION; // Posição clip-space
+                float4 ColorH : COLOR;     // Cor para o shader de pixels
+            };
+
+            PS_INPUT VS(VS_INPUT input) {
+                PS_INPUT output;
+
+                // Converter para homogeneizar a coordenada PosH
+                output.PosH = float4(input.PosL, 1.0f); // Adiciona w = 1.0f
+                output.ColorH = input.ColorL;
+
+                return output;
+            }
+        )";
+
+        const char* PixelShaderCanvas = R"(
+            struct PS_INPUT {
+                float4 position : SV_POSITION; // Posição clip-space
+                float4 color : COLOR;          // Cor recebida do VS
+            };
+
+            float4 PS(PS_INPUT input) : SV_TARGET {
+                return input.color; // Retorna a cor para o render target
+            }
+        )";
 	}
 }
 
