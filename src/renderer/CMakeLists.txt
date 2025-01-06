@@ -14,6 +14,7 @@ add_library(jojRenderer
     sampler_state.cpp
     input_layout.cpp
     texture_manager.cpp
+    viewport.cpp
 )
 
 target_include_directories(jojRenderer
