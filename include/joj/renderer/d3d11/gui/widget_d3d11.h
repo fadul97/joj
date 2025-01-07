@@ -22,12 +22,14 @@ namespace joj
         i32 hovered;
     };
 
-    class JAPI D3D11Widget : public IWidget
+    class JAPI D3D11Widget : public Widget
     {
     public:
         D3D11Widget();
-        D3D11Widget(const u16 x, const u16 y, const u16 width, const u16 height);
-        D3D11Widget(const u16 x, const u16 y, const u16 width, const u16 height, const Color color);
+        D3D11Widget(const u16 x, const u16 y, const u16 width, const u16 height,
+            Widget* child);
+        D3D11Widget(const u16 x, const u16 y, const u16 width, const u16 height,
+            const Color color, Widget* child);
         ~D3D11Widget();
 
         ErrorCode create(GraphicsDevice& device) override;
@@ -36,7 +38,8 @@ namespace joj
 
         b8 is_hovered(const i32 x, const i32 y) override;
 
-        void update() override;
+        void update(const i32 xmouse, const i32 ymouse, const b8 clicked) override;
+        void should_update() override;
 
         void set_background_color(const Color color) override;
         void set_hovered_color(const Color color) override;

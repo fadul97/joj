@@ -10,13 +10,15 @@
 
 namespace joj
 {
-    class JAPI IWidget
+    class JAPI Widget
     {
     public:
-        IWidget();
-        IWidget(const u16 x, const u16 y, const u16 width, const u16 height);
-        IWidget(const u16 x, const u16 y, const u16 width, const u16 height, const Color color);
-        ~IWidget();
+        Widget();
+        Widget(const u16 x, const u16 y, const u16 width, const u16 height,
+            Widget* child);
+        Widget(const u16 x, const u16 y, const u16 width, const u16 height,
+            const Color color, Widget* child);
+        virtual ~Widget();
 
         virtual ErrorCode create(GraphicsDevice& device) = 0;
 
@@ -24,7 +26,8 @@ namespace joj
 
         virtual b8 is_hovered(const i32 x, const i32 y) = 0;
 
-        virtual void update() = 0;
+        virtual void update(const i32 xmouse, const i32 ymouse, const b8 clicked) = 0;
+        virtual void should_update() = 0;
 
         virtual void set_background_color(const Color color) = 0;
         virtual void set_hovered_color(const Color color) = 0;
@@ -49,6 +52,8 @@ namespace joj
 
         b8 m_update;
         b8 m_update_position;
+
+        Widget* m_child;
     };
 }
 

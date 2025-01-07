@@ -11,18 +11,22 @@ joj::D3D11Widget::D3D11Widget()
 {
 }
 
-joj::D3D11Widget::D3D11Widget(const u16 x, const u16 y, const u16 width, const u16 height)
-    : IWidget(x, y, width, height)
+joj::D3D11Widget::D3D11Widget(const u16 x, const u16 y, const u16 width, const u16 height,
+    Widget* child)
+    : Widget(x, y, width, height, child)
 {
 }
 
-joj::D3D11Widget::D3D11Widget(const u16 x, const u16 y, const u16 width, const u16 height, const Color color)
-    : IWidget(x, y, width, height, color)
+joj::D3D11Widget::D3D11Widget(const u16 x, const u16 y, const u16 width, const u16 height,
+    const Color color, Widget* child)
+    : Widget(x, y, width, height, color, child)
 {
 }
 
 joj::D3D11Widget::~D3D11Widget()
 {
+    if (m_child)
+        delete m_child;
 }
 
 joj::ErrorCode joj::D3D11Widget::create(GraphicsDevice& device)
@@ -102,6 +106,9 @@ joj::ErrorCode joj::D3D11Widget::create(GraphicsDevice& device)
         return ErrorCode::ERR_GUI_CANVAS_D3D11_CREATION;
     }
 
+    if (m_child)
+        return m_child->create(device);
+
     return ErrorCode::OK;
 }
 
@@ -133,6 +140,9 @@ void joj::D3D11Widget::draw(CommandList& cmd_list)
 
     cmd_list.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     cmd_list.device_context->DrawIndexed(6, 0, 0);
+
+    if (m_child)
+        m_child->draw(cmd_list);
 }
 
 b8 joj::D3D11Widget::is_hovered(const i32 x, const i32 y)
@@ -140,7 +150,32 @@ b8 joj::D3D11Widget::is_hovered(const i32 x, const i32 y)
     return x >= m_x && x <= m_x + m_width && y >= m_y && y <= m_y + m_height;
 }
 
-void joj::D3D11Widget::update()
+void joj::D3D11Widget::update(const i32 xmouse, const i32 ymouse, const b8 clicked)
+{
+    if (xmouse < 0 || ymouse < 0)
+        return;
+
+    const f32 window_width = 800.0f;
+    const f32 window_height = 600.0f;
+
+    f32 ndc_x = 2.0f * static_cast<f32>(xmouse) / window_width - 1.0f;
+    f32 ndc_y = 1.0f - 2.0f * static_cast<f32>(ymouse) / window_height;
+
+    if (is_hovered(xmouse, ymouse))
+    {
+        m_update = true;
+    }
+
+    if (m_child)
+    {
+        m_child->update(xmouse, ymouse, clicked);
+
+        if (m_child->is_hovered(xmouse, ymouse))
+            m_update = false;
+    }
+}
+
+void joj::D3D11Widget::should_update()
 {
     m_update = true;
 }

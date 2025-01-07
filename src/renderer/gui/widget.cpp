@@ -2,21 +2,24 @@
 
 #include "logger.h"
 
-joj::IWidget::IWidget()
+joj::Widget::Widget()
     : m_x(0), m_y(0), m_width(0), m_height(0),
     m_background_color(Color(0.0f, 0.0f, 0.0f, 1.0f)),
     m_hovered_color(Color(1.0f, 1.0f, 1.0f, 1.0f)),
     m_normalized_x(0), m_normalized_y(0),
     m_normalized_width(0), m_normalized_height(0),
-    m_update(false), m_update_position(false)
+    m_update(false), m_update_position(false),
+    m_child(nullptr)
 {
 }
 
-joj::IWidget::IWidget(const u16 x, const u16 y, const u16 width, const u16 height)
+joj::Widget::Widget(const u16 x, const u16 y, const u16 width, const u16 height,
+    Widget* child)
     : m_x(x), m_y(y), m_width(width), m_height(height),
     m_background_color(Color(0.0f, 0.0f, 0.0f, 1.0f)),
     m_hovered_color(Color(1.0f, 1.0f, 1.0f, 1.0f)),
-    m_update(false), m_update_position(false)
+    m_update(false), m_update_position(false),
+    m_child(child)
 {
     const f32 window_width = 800.0f;
     const f32 window_height = 600.0f;
@@ -31,10 +34,12 @@ joj::IWidget::IWidget(const u16 x, const u16 y, const u16 width, const u16 heigh
         m_normalized_x, m_normalized_y, m_normalized_width, m_normalized_height);
 }
 
-joj::IWidget::IWidget(const u16 x, const u16 y, const u16 width, const u16 height, const Color color)
+joj::Widget::Widget(const u16 x, const u16 y, const u16 width, const u16 height,
+    const Color color, Widget* child)
     : m_x(x), m_y(y), m_width(width), m_height(height),
     m_background_color(color), m_hovered_color(Color(1.0f, 1.0f, 1.0f, 1.0f)),
-    m_update(false), m_update_position(false)
+    m_update(false), m_update_position(false),
+    m_child(child)
 {
     const f32 window_width = 800.0f;
     const f32 window_height = 600.0f;
@@ -49,6 +54,6 @@ joj::IWidget::IWidget(const u16 x, const u16 y, const u16 width, const u16 heigh
         m_normalized_x, m_normalized_y, m_normalized_width, m_normalized_height);
 }
 
-joj::IWidget::~IWidget()
+joj::Widget::~Widget()
 {
 }

@@ -8,12 +8,14 @@
 
 namespace joj
 {
-    class JAPI Button : public IWidget
+    class JAPI Button : public Widget
     {
     public:
         Button();
-        Button(const u16 x, const u16 y, const u16 width, const u16 height);
-        Button(const u16 x, const u16 y, const u16 width, const u16 height, const Color color);
+        Button(const u16 x, const u16 y, const u16 width, const u16 height,
+            Widget* child);
+        Button(const u16 x, const u16 y, const u16 width, const u16 height,
+            const Color color, Widget* child);
         ~Button();
 
         virtual ErrorCode create(GraphicsDevice& device) = 0;
