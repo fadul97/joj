@@ -7,7 +7,6 @@
 // #include "renderer/d3d11/renderer_d3d11.h"
 #include "platform/win32/window_win32.h"
 #include <windowsx.h>
-#include "gui/win32/jwidget_factory_win32.h"
 
 joj::IRenderer* joj::D3D11GUI::s_renderer = nullptr;
 
@@ -124,15 +123,7 @@ void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
     // ---------------------------------------------------
 
     ParentData parent_data = { m_main_window.handle, app_id };
-    JWin32WidgetFactory factory = JWin32WidgetFactory(parent_data);
-    JButton* button = factory.create_button(10, 10, 100, 30, "Click Me!");
-    if (!button)
-    {
-        JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
-        return;
-    }
-
-    m_widgets.push_back(button);
+    m_factory = JWin32WidgetFactory(parent_data);
 
     m_initialized = true;
 }
@@ -190,6 +181,19 @@ void joj::D3D11GUI::shutdown()
 void joj::D3D11GUI::add_widget(JWidget* widget)
 {
     m_widgets.push_back(widget);
+}
+
+void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
+    const std::string& label)
+{
+    JButton* button = m_factory.create_button(10, 10, 100, 30, "Click Me!");
+    if (!button)
+    {
+        JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
+        return;
+    }
+
+    m_widgets.push_back(button);
 }
 
 LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,

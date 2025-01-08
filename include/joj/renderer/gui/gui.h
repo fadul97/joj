@@ -7,6 +7,7 @@
 #include "renderer/renderer.h"
 #include "platform/window.h"
 #include "gui/jwidget.h"
+#include <string>
 
 namespace joj
 {
@@ -23,6 +24,8 @@ namespace joj
         virtual void shutdown() = 0;
 
         virtual void add_widget(JWidget* widget) = 0;
+        virtual void add_button(i32 x, i32 y, i32 width, i32 height,
+            const std::string& label) = 0;
     };
 }
 

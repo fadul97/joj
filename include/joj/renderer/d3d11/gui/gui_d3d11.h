@@ -9,6 +9,7 @@
 #include "renderer/gui/gui.h"
 #include <vector>
 #include "gui/jwidget.h"
+#include "gui/win32/jwidget_factory_win32.h"
 
 namespace joj
 {
@@ -37,12 +38,15 @@ namespace joj
         void shutdown() override;
 
         void add_widget(JWidget* widget);
+        void add_button(i32 x, i32 y, i32 width, i32 height,
+            const std::string& label) override;
 
     private:
         std::vector<JWidget*> m_widgets;
         b8 m_initialized;
 
         GUIWindow m_main_window;
+        JWin32WidgetFactory m_factory;
 
         static IRenderer* s_renderer;
 

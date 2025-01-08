@@ -51,6 +51,9 @@ void GUITest::init()
     // Create a non-const copy of window data to pass to m_gui.init
     joj::WindowData windowData = window.get_data();
     m_gui.init(windowData, renderer);
+
+    // Create a button
+    m_gui.add_button(10, 10, 100, 30, "Click Me!");
 }
 
 void GUITest::update(const f32 dt)
