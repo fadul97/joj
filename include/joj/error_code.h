@@ -144,6 +144,8 @@ namespace joj
 
         ERR_GUI_CANVAS_D3D11_CREATION,
         ERR_GUI_NOT_INITIALIZED,
+
+        ERR_GUI_BUTTON_WIN32_CREATION,
     };
 
     // TODO: Add all cases.
