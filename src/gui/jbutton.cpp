@@ -1,5 +1,7 @@
 #include "gui/jbutton.h"
 
+#define _WIN32_WINNT 0x0501
+#include <commctrl.h>
 #include "logger.h"
 
 joj::JButton::JButton()
@@ -23,6 +25,21 @@ joj::JButton::~JButton()
     }
 }
 
+static LRESULT CALLBACK ChildProc(HWND hwnd, UINT msg,
+    WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR)
+{
+    switch (msg) {
+    case WM_COMMAND:
+        switch (LOWORD(wParam)) {
+        case IDC_BUTTON:
+            MessageBox(0, "hello world", 0, 0);
+            break;
+        }
+        break;
+    }
+    return DefSubclassProc(hwnd, msg, wParam, lParam);
+}
+
 void joj::JButton::create(JWidgetCreationData& data)
 {
     m_handle.handle = CreateWindowEx(
@@ -34,13 +51,16 @@ void joj::JButton::create(JWidgetCreationData& data)
         m_bounds.right - m_bounds.left,
         m_bounds.bottom - m_bounds.top,
         data.parent_handle,
-        nullptr,
+        HMENU(IDC_BUTTON),
         data.instance,
         nullptr
     );
 
     if (m_handle.handle)
         register_widget(m_handle);
+
+    if (m_handle.handle)
+        SetWindowSubclass(m_handle.handle, ChildProc, 0, 0);
 }
 
 void joj::JButton::draw(CommandList& cmd_list)
@@ -59,7 +79,6 @@ void joj::JButton::update(i32 xmouse, i32 ymouse, b8 clicked)
     } RECT, *PRECT, NEAR *NPRECT, FAR *LPRECT;
     */
 
-    /*
     RECT bounds = { m_bounds.left, m_bounds.top, m_bounds.right, m_bounds.bottom };
 
     m_is_hovered = is_hovered(xmouse, ymouse);
@@ -69,7 +88,6 @@ void joj::JButton::update(i32 xmouse, i32 ymouse, b8 clicked)
     {
         m_on_click.trigger();
     }
-    */
 }
 
 b8 joj::JButton::is_hovered(const i32 x, const i32 y)

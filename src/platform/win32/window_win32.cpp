@@ -9,6 +9,7 @@ joj::Win32Window::Win32Window()
     : Window{}
 {
     m_data.handle = nullptr;
+    m_data.instance = nullptr;
     m_data.hdc = nullptr;
     m_data.window_mode = WindowMode::Windowed;
     m_data.width = 0;
@@ -25,6 +26,7 @@ joj::Win32Window::Win32Window(const char* title, const u32 width, const u32 heig
     : Window{title, width, height, mode}
 {
     m_data.handle = nullptr;
+    m_data.instance = nullptr;
     m_data.hdc = nullptr;
     m_data.window_mode = mode;
     m_data.width = width;
@@ -49,8 +51,8 @@ joj::ErrorCode joj::Win32Window::create()
 {
     const char* joj_wnd_class_name = "JOJ_WINDOW_CLASS";
 
-    HINSTANCE app_id = GetModuleHandle(nullptr);
-    if (!app_id)
+    m_data.instance = GetModuleHandle(nullptr);
+    if (!m_data.instance)
     {
         JFATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to get module handle.");
         return ErrorCode::ERR_WINDOW_HANDLE;
@@ -58,14 +60,14 @@ joj::ErrorCode joj::Win32Window::create()
 
     WNDCLASSEX wnd_class;
 
-    if (!GetClassInfoExA(app_id, joj_wnd_class_name, &wnd_class))
+    if (!GetClassInfoExA(m_data.instance, joj_wnd_class_name, &wnd_class))
     {
         wnd_class.cbSize = sizeof(WNDCLASSEX);
         wnd_class.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
         wnd_class.lpfnWndProc = WinProc;
         wnd_class.cbClsExtra = 0;
         wnd_class.cbWndExtra = 0;
-        wnd_class.hInstance = app_id;
+        wnd_class.hInstance = m_data.instance;
         wnd_class.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
         wnd_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
         wnd_class.hbrBackground = CreateSolidBrush(RGB(60, 60, 60));
@@ -164,7 +166,7 @@ joj::ErrorCode joj::Win32Window::create()
         m_width, m_height,
         nullptr,
         nullptr,
-        app_id,
+        m_data.instance,
         nullptr
     );
 

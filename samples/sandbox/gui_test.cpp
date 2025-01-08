@@ -36,10 +36,12 @@ void GUITest::init_platform()
 
     timer.begin_period();
 
-    renderer_print();
+    // renderer_print();
 
+    /*
     if (renderer.initialize(window.get_data()) != joj::ErrorCode::OK)
         return;
+    */
 
     timer.start();
 }
@@ -57,9 +59,9 @@ void GUITest::init()
     m_gui.init(windowData, renderer);
 
     // Create a button
-    m_gui.add_button(10, 10, 100, 30, "Click Me!", ([]() {
-        JDEBUG("Button clicked");
-    }));
+    m_gui.add_button(10, 10, 100, 30, "Click Me!", []() {
+        JDEBUG("Botão foi clicado!");
+    });
 }
 
 void GUITest::update(const f32 dt)
@@ -68,18 +70,18 @@ void GUITest::update(const f32 dt)
         loop = false;
 
     m_gui.update(dt, input.get_xmouse(), input.get_ymouse(),
-        input.is_key_down(VK_LBUTTON));
+        input.is_button_down(joj::BUTTON_LEFT));
 }
 
 void GUITest::draw()
 {
-    renderer.clear(0.0f, 0.0f, 1.0f, 1.0f);
+    // renderer.clear(0.0f, 0.0f, 1.0f, 1.0f);
 
-    renderer.disable_depth_test();
+    // renderer.disable_depth_test();
     m_gui.draw(renderer.get_cmd_list());
-    renderer.enable_depth_test();
+    // renderer.enable_depth_test();
 
-    renderer.swap_buffers();
+    // renderer.swap_buffers();
 }
 
 void GUITest::shutdown()

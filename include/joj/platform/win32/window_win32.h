@@ -16,6 +16,7 @@ namespace joj
     struct WindowData
     {
         HWND handle;
+        HINSTANCE instance;
         HDC hdc;
         WindowMode window_mode;
         u32 width;

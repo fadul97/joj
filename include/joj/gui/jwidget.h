@@ -8,6 +8,8 @@
 #include "jevent.h"
 #include <unordered_map>
 
+#define IDC_BUTTON 201
+
 namespace joj
 {
     struct JWidgetCreationData
@@ -47,7 +49,7 @@ namespace joj
 
         virtual LRESULT handle_message(UINT msg, WPARAM wParam, LPARAM lParam) = 0;
 
-    public:
+    protected:
         u32 m_x;
         u32 m_y;
         u32 m_width;

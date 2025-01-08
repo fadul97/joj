@@ -13,4 +13,4 @@ target_include_directories(jojWin32GUI
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/
 )
 
-target_link_libraries(jojWin32GUI PUBLIC User32.lib Gdi32.lib winmm.lib)
+target_link_libraries(jojWin32GUI PUBLIC User32.lib Gdi32.lib winmm.lib Comctl32.lib)
