@@ -3,121 +3,246 @@
 #if JPLATFORM_WINDOWS
 
 #include "jmacros.h"
+#include "logger.h"
+// #include "renderer/d3d11/renderer_d3d11.h"
+#include "platform/win32/window_win32.h"
+#include <windowsx.h>
+
+joj::IRenderer* joj::D3D11GUI::s_renderer = nullptr;
+
+#define IDC_BUTTON1 2010
 
 joj::D3D11GUI::D3D11GUI()
+    : m_initialized(false)
 {
+    m_main_window.handle = nullptr;
+    m_main_window.hdc = nullptr;
+    m_main_window.window_mode = WindowMode::Windowed;
+    m_main_window.width = 0;
+    m_main_window.height = 0;
+
+    m_button.handle = nullptr;
+    m_button.hdc = nullptr;
+    m_button.window_mode = WindowMode::Windowed;
+    m_button.width = 0;
+    m_button.height = 0;
 }
 
 joj::D3D11GUI::~D3D11GUI()
 {
 }
 
-void joj::D3D11GUI::init(GraphicsDevice& device)
+void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
 {
+    s_renderer = &renderer;
+
     D3D11Canvas* m_canvas = new D3D11Canvas(
         580, 10, 200, 580,
-        joj::Color(0.1f, 0.1f, 0.1f, 1.0f),
-        new D3D11Button(
-            600, 200, 100, 100,
-            joj::Color(0.0f, 1.0f, 0.0f, 1.0f),
-            nullptr
-        )
-    );
-    JOJ_LOG_IF_FAIL(m_canvas->create(device));
+        joj::Color(0.1f, 0.1f, 0.1f, 1.0f));
+    JOJ_LOG_IF_FAIL(m_canvas->create(renderer.get_device()));
     m_canvas->set_hovered_color(joj::Color(0.23f, 0.23f, 0.23f, 1.0f));
 
     m_widgets.push_back(m_canvas);
+
+    // ---------------------------------------------------
+    // Create child window of Window
+    // ---------------------------------------------------
+
+    const char* gui_class_name = "JGUI_WINDOW_CLASS";
+    HINSTANCE app_id = GetModuleHandle(nullptr);
+    if (!app_id)
+    {
+        JFATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to get module handle.");
+        return;
+    }
+
+    WNDCLASSEX wnd_class;
+    if (!GetClassInfoExA(app_id, gui_class_name, &wnd_class))
+    {
+        wnd_class.cbSize = sizeof(WNDCLASSEX);
+        wnd_class.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+        wnd_class.lpfnWndProc = GUIWinProc;
+        wnd_class.cbClsExtra = 0;
+        wnd_class.cbWndExtra = 0;
+        wnd_class.hInstance = app_id;
+        wnd_class.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+        wnd_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
+        wnd_class.hbrBackground = CreateSolidBrush(RGB(60, 60, 60));
+        wnd_class.lpszMenuName = nullptr;
+        wnd_class.lpszClassName = gui_class_name;
+        wnd_class.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
+
+        // Register "JOJ_WINDOW_CLASS" class
+        if (!RegisterClassEx(&wnd_class))
+        {
+            JERROR(ErrorCode::ERR_WINDOW_REGISTRATION, "Failed to register window class.");
+            return;
+        }
+    }
+
+    u32 width = window.width / 4;
+    u32 height = window.height - 100;
+    DWORD style = WS_OVERLAPPED | WS_SYSMENU | WS_VISIBLE | WS_THICKFRAME;
+
+    m_main_window.handle = CreateWindowEx(
+        0,
+        gui_class_name,
+        "GUIMainWindow",
+        style,
+        window.width - width, 0,
+        width, height,
+        window.handle,
+        nullptr,
+        app_id,
+        nullptr
+    );
+
+    if (!m_main_window.handle)
+    {
+        JFATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to create window.");
+        return;
+    }
+
+    RECT new_rect = { 0, 0, static_cast<LONG>(width), static_cast<LONG>(height) };
+    if (!AdjustWindowRectEx(&new_rect,
+        GetWindowStyle(m_main_window.handle),
+        GetMenu(m_main_window.handle) != nullptr,
+        GetWindowExStyle(m_main_window.handle)))
+    {
+        JERROR(ErrorCode::ERR_WINDOW_ADJUST, "Could not adjust window rect ex.");
+    }
+
+    m_main_window.x = (GetSystemMetrics(SM_CXSCREEN) / 2) - ((new_rect.right - new_rect.left) / 2);
+    m_main_window.y = (GetSystemMetrics(SM_CYSCREEN) / 2) - ((new_rect.bottom - new_rect.top) / 2);
+    if (!MoveWindow(
+        m_main_window.handle,
+        m_main_window.x + window.width / 3,
+        m_main_window.y + 10,
+        new_rect.right - new_rect.left,
+        new_rect.bottom - new_rect.top,
+        TRUE))
+    {
+        JERROR(ErrorCode::ERR_WINDOW_MOVE, "Could not move window.");
+    }
+
+    m_main_window.hdc = GetDC(m_main_window.handle);
+    if (!m_main_window.hdc)
+    {
+        JERROR(ErrorCode::ERR_WINDOW_DEVICE_CONTEXT, "Failed to get device context.");
+        return;
+    }
+
+    // ---------------------------------------------------
+    // Create Button of Child Window
+    // ---------------------------------------------------
+
+    m_button.x = 10;
+    m_button.y = 10;
+    m_button.width = 100;
+    m_button.height = 30;
+
+    m_button.handle = CreateWindowEx(
+        0,
+        "BUTTON",
+        "Click Me",
+        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+        10, 10, 100, 30,
+        m_main_window.handle,
+        (HMENU)IDC_BUTTON1,
+        app_id,
+        NULL
+    );
+
+    m_initialized = true;
 }
 
 void joj::D3D11GUI::update(const f32 dt, const i32 xmouse, const i32 ymouse, const b8 clicked)
 {
-    m_widgets[0]->update(xmouse, ymouse, clicked);
-    /*
-    if (xmouse < 0 || ymouse < 0)
+    if (m_initialized == false)
+    {
+        JERROR(ErrorCode::ERR_GUI_NOT_INITIALIZED, "GUI not initialized.");
         return;
+    }
 
-    const f32 window_width = 800.0f;
-    const f32 window_height = 600.0f;
-
-    f32 ndc_x = 2.0f * static_cast<f32>(xmouse) / window_width - 1.0f;
-    f32 ndc_y = 1.0f - 2.0f * static_cast<f32>(ymouse) / window_height;
-
-    i32 hovered_index = -1;
-    i32 left_index = -1;
-    i32 right_index = -1;
-    i32 top_index = -1;
-    i32 bottom_index = -1;
-    i32 index = 0;
-    for (auto it = m_widgets.begin(); it != m_widgets.end(); ++it, ++index)
+    for (auto it = m_widgets.begin(); it != m_widgets.end(); ++it)
     {
         auto& widget = *it;
+        widget->update(xmouse, ymouse, clicked);
 
-        if (widget->is_hovered(xmouse, ymouse))
-        {
-            hovered_index = index;
-        }
-
-        if (widget->on_left_edge(xmouse, ymouse) && clicked)
-        {
-            left_index = index;
-        }
-
-        if (widget->on_right_edge(xmouse, ymouse) && clicked)
-        {
-            right_index = index;
-        }
-
-        if (widget->on_top_edge(xmouse, ymouse) && clicked)
-        {
-            top_index = index;
-        }
-
-        if (widget->on_bottom_edge(xmouse, ymouse) && clicked)
-        {
-            bottom_index = index;
-        }
     }
-
-    if (hovered_index != -1 && hovered_index < m_widgets.size())
-    {
-        m_widgets[hovered_index]->should_update();
-    }
-
-    if (left_index != -1 && left_index < m_widgets.size())
-    {
-        JDEBUG("On left edge of widget %d", left_index);
-    }
-
-    if (right_index != -1 && right_index < m_widgets.size())
-    {
-        JDEBUG("On right edge of widget %d", right_index);
-    }
-
-    if (top_index != -1 && top_index < m_widgets.size())
-    {
-        JDEBUG("On top edge of widget %d", top_index);
-    }
-
-    if (bottom_index != -1 && bottom_index < m_widgets.size())
-    {
-        JDEBUG("On bottom edge of widget %d", bottom_index);
-    }
-    */
 }
 
 void joj::D3D11GUI::draw(CommandList& cmd_list)
 {
-    m_widgets[0]->draw(cmd_list);
-    /*
+    if (m_initialized == false)
+    {
+        JERROR(ErrorCode::ERR_GUI_NOT_INITIALIZED, "GUI not initialized.");
+        return;
+    }
+
     for (auto& widget : m_widgets)
     {
         widget->draw(cmd_list);
     }
-    */
 }
 
 void joj::D3D11GUI::shutdown()
 {
+    if (m_initialized == false)
+    {
+        JERROR(ErrorCode::ERR_GUI_NOT_INITIALIZED, "GUI not initialized.");
+        return;
+    }
+
+    for (auto& widget : m_widgets)
+    {
+        delete widget;
+    }
+
+    if (m_main_window.hdc != nullptr)
+        ReleaseDC(m_main_window.handle, m_main_window.hdc);
+
+    if (m_main_window.handle != nullptr)
+        DestroyWindow(m_main_window.handle);
+}
+
+LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
+    LPARAM lParam)
+{
+    switch (msg)
+    {
+        // Show Window if Space is pressed
+    case WM_KEYDOWN:
+    {
+        if (wParam == VK_SPACE)
+        {
+            ShowWindow(hWnd, SW_HIDE);
+        }
+        break;
+    }
+
+    case WM_COMMAND:
+    {
+        switch (LOWORD(wParam))
+        {
+        case IDC_BUTTON1:
+        {
+            JDEBUG("Button clicked");
+            break;
+        }
+        }
+        break;
+    }
+    case WM_DESTROY:
+    case WM_QUIT:
+    case WM_CLOSE:
+        JDEBUG("Running = false");
+        ShowWindow(hWnd, SW_HIDE);
+        return 0;
+    default:
+        break;
+    }
+    return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 #endif // JPLATFORM_WINDOWS

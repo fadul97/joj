@@ -13,13 +13,25 @@
 
 namespace joj
 {
+    struct GUIWindow
+    {
+        HWND handle;
+        HDC hdc;
+        WindowMode window_mode;
+        u32 x;
+        u32 y;
+        u32 width;
+        u32 height;
+    };
+
+
     class JAPI D3D11GUI : public IGUI
     {
     public:
         D3D11GUI();
         ~D3D11GUI();
         
-        void init(GraphicsDevice& device) override;
+        void init(WindowData& window, IRenderer& renderer) override;
         void update(const f32 dt, const i32 xmouse, const i32 ymouse,
             const b8 clicked) override;
         void draw(CommandList& cmd_list) override;
@@ -27,6 +39,15 @@ namespace joj
 
     private:
         std::vector<D3D11Widget*> m_widgets;
+        b8 m_initialized;
+
+        GUIWindow m_main_window;
+        GUIWindow m_button;
+
+        static IRenderer* s_renderer;
+
+        static LRESULT CALLBACK GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
+            LPARAM lParam);
     };
 }
 

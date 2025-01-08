@@ -12,10 +12,9 @@ namespace joj
     {
     public:
         Canvas();
+        Canvas(const u16 x, const u16 y, const u16 width, const u16 height);
         Canvas(const u16 x, const u16 y, const u16 width, const u16 height,
-            Widget* child);
-        Canvas(const u16 x, const u16 y, const u16 width, const u16 height,
-            const Color color, Widget* child);
+            const Color color);
         ~Canvas();
 
         virtual ErrorCode create(GraphicsDevice& device) = 0;

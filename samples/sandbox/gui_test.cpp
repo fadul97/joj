@@ -48,7 +48,9 @@ void GUITest::init()
 {
     init_platform();
 
-    m_gui.init(renderer.get_device());
+    // Create a non-const copy of window data to pass to m_gui.init
+    joj::WindowData windowData = window.get_data();
+    m_gui.init(windowData, renderer);
 }
 
 void GUITest::update(const f32 dt)
@@ -73,6 +75,7 @@ void GUITest::draw()
 
 void GUITest::shutdown()
 {
+    m_gui.shutdown();
     timer.end_period();
 }
 

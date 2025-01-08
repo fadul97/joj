@@ -143,6 +143,7 @@ namespace joj
         ERR_BASIC_MODEL_SET_INDICES_FAILED,
 
         ERR_GUI_CANVAS_D3D11_CREATION,
+        ERR_GUI_NOT_INITIALIZED,
     };
 
     // TODO: Add all cases.

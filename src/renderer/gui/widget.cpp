@@ -8,18 +8,15 @@ joj::Widget::Widget()
     m_hovered_color(Color(1.0f, 1.0f, 1.0f, 1.0f)),
     m_normalized_x(0), m_normalized_y(0),
     m_normalized_width(0), m_normalized_height(0),
-    m_update(false), m_update_position(false),
-    m_child(nullptr)
+    m_update(false), m_update_position(false)
 {
 }
 
-joj::Widget::Widget(const u16 x, const u16 y, const u16 width, const u16 height,
-    Widget* child)
+joj::Widget::Widget(const u16 x, const u16 y, const u16 width, const u16 height)
     : m_x(x), m_y(y), m_width(width), m_height(height),
     m_background_color(Color(0.0f, 0.0f, 0.0f, 1.0f)),
     m_hovered_color(Color(1.0f, 1.0f, 1.0f, 1.0f)),
-    m_update(false), m_update_position(false),
-    m_child(child)
+    m_update(false), m_update_position(false)
 {
     const f32 window_width = 800.0f;
     const f32 window_height = 600.0f;
@@ -35,11 +32,10 @@ joj::Widget::Widget(const u16 x, const u16 y, const u16 width, const u16 height,
 }
 
 joj::Widget::Widget(const u16 x, const u16 y, const u16 width, const u16 height,
-    const Color color, Widget* child)
+    const Color color)
     : m_x(x), m_y(y), m_width(width), m_height(height),
     m_background_color(color), m_hovered_color(Color(1.0f, 1.0f, 1.0f, 1.0f)),
-    m_update(false), m_update_position(false),
-    m_child(child)
+    m_update(false), m_update_position(false)
 {
     const f32 window_width = 800.0f;
     const f32 window_height = 600.0f;

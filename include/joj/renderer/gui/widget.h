@@ -14,10 +14,9 @@ namespace joj
     {
     public:
         Widget();
+        Widget(const u16 x, const u16 y, const u16 width, const u16 height);
         Widget(const u16 x, const u16 y, const u16 width, const u16 height,
-            Widget* child);
-        Widget(const u16 x, const u16 y, const u16 width, const u16 height,
-            const Color color, Widget* child);
+            const Color color);
         virtual ~Widget();
 
         virtual ErrorCode create(GraphicsDevice& device) = 0;
@@ -52,8 +51,6 @@ namespace joj
 
         b8 m_update;
         b8 m_update_position;
-
-        Widget* m_child;
     };
 }
 

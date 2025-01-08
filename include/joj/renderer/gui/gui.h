@@ -5,6 +5,7 @@
 #include "defines.h"
 
 #include "renderer/renderer.h"
+#include "platform/window.h"
 
 namespace joj
 {
@@ -14,7 +15,7 @@ namespace joj
         IGUI();
         virtual ~IGUI();
 
-        virtual void init(GraphicsDevice& device) = 0;
+        virtual void init(WindowData& window, IRenderer& renderer) = 0;
         virtual void update(const f32 dt, const i32 xmouse, const i32 ymouse,
             const b8 clicked) = 0;
         virtual void draw(CommandList& cmd_list) = 0;
