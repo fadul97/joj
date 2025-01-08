@@ -7,6 +7,7 @@
 // #include "renderer/d3d11/renderer_d3d11.h"
 #include "platform/win32/window_win32.h"
 #include <windowsx.h>
+#include "gui/win32/jwidget_factory_win32.h"
 
 joj::IRenderer* joj::D3D11GUI::s_renderer = nullptr;
 
@@ -20,12 +21,6 @@ joj::D3D11GUI::D3D11GUI()
     m_main_window.window_mode = WindowMode::Windowed;
     m_main_window.width = 0;
     m_main_window.height = 0;
-
-    m_button.handle = nullptr;
-    m_button.hdc = nullptr;
-    m_button.window_mode = WindowMode::Windowed;
-    m_button.width = 0;
-    m_button.height = 0;
 }
 
 joj::D3D11GUI::~D3D11GUI()
@@ -35,14 +30,6 @@ joj::D3D11GUI::~D3D11GUI()
 void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
 {
     s_renderer = &renderer;
-
-    D3D11Canvas* m_canvas = new D3D11Canvas(
-        580, 10, 200, 580,
-        joj::Color(0.1f, 0.1f, 0.1f, 1.0f));
-    JOJ_LOG_IF_FAIL(m_canvas->create(renderer.get_device()));
-    m_canvas->set_hovered_color(joj::Color(0.23f, 0.23f, 0.23f, 1.0f));
-
-    m_widgets.push_back(m_canvas);
 
     // ---------------------------------------------------
     // Create child window of Window
@@ -133,25 +120,19 @@ void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
     }
 
     // ---------------------------------------------------
-    // Create Button of Child Window
+    // Create Button for Main Window
     // ---------------------------------------------------
 
-    m_button.x = 10;
-    m_button.y = 10;
-    m_button.width = 100;
-    m_button.height = 30;
+    ParentData parent_data = { m_main_window.handle, app_id };
+    JWin32WidgetFactory factory = JWin32WidgetFactory(parent_data);
+    JButton* button = factory.create_button(10, 10, 100, 30, "Click Me!");
+    if (!button)
+    {
+        JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
+        return;
+    }
 
-    m_button.handle = CreateWindowEx(
-        0,
-        "BUTTON",
-        "Click Me",
-        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-        10, 10, 100, 30,
-        m_main_window.handle,
-        (HMENU)IDC_BUTTON1,
-        app_id,
-        NULL
-    );
+    m_widgets.push_back(button);
 
     m_initialized = true;
 }
@@ -204,6 +185,11 @@ void joj::D3D11GUI::shutdown()
 
     if (m_main_window.handle != nullptr)
         DestroyWindow(m_main_window.handle);
+}
+
+void joj::D3D11GUI::add_widget(JWidget* widget)
+{
+    m_widgets.push_back(widget);
 }
 
 LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,

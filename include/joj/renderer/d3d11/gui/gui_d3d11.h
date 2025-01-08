@@ -8,8 +8,7 @@
 
 #include "renderer/gui/gui.h"
 #include <vector>
-#include "renderer/d3d11/gui/canvas_d3d11.h"
-#include "renderer/d3d11/gui/button_d3d11.h"
+#include "gui/jwidget.h"
 
 namespace joj
 {
@@ -37,12 +36,13 @@ namespace joj
         void draw(CommandList& cmd_list) override;
         void shutdown() override;
 
+        void add_widget(JWidget* widget);
+
     private:
-        std::vector<D3D11Widget*> m_widgets;
+        std::vector<JWidget*> m_widgets;
         b8 m_initialized;
 
         GUIWindow m_main_window;
-        GUIWindow m_button;
 
         static IRenderer* s_renderer;
 

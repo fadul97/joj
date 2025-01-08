@@ -6,6 +6,7 @@
 
 #include "renderer/renderer.h"
 #include "platform/window.h"
+#include "gui/jwidget.h"
 
 namespace joj
 {
@@ -20,6 +21,8 @@ namespace joj
             const b8 clicked) = 0;
         virtual void draw(CommandList& cmd_list) = 0;
         virtual void shutdown() = 0;
+
+        virtual void add_widget(JWidget* widget) = 0;
     };
 }
 
