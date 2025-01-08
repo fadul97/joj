@@ -1,5 +1,7 @@
 #include "gui/jwidget.h"
 
+joj::JWidget::WidgetMap joj::JWidget::g_widget_map;
+
 joj::JWidget::JWidget()
     : m_x(0), m_y(0), m_width(0), m_height(0), m_on_click(), m_is_hovered(false)
 {

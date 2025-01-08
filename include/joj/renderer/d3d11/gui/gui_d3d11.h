@@ -10,7 +10,7 @@
 #include <vector>
 #include "gui/jwidget.h"
 #include "gui/win32/jwidget_factory_win32.h"
-#include "platform/keys.h"
+#include "platform/win32/input_win32.h"
 
 namespace joj
 {
@@ -54,9 +54,8 @@ namespace joj
         static LRESULT CALLBACK GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
             LPARAM lParam);
 
+        static Win32Input s_input;
         static Mouse s_mouse;
-
-        void process_events();
     };
 }
 

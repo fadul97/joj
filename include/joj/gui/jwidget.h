@@ -6,6 +6,7 @@
 
 #include <Windows.h>
 #include "jevent.h"
+#include <unordered_map>
 
 namespace joj
 {
@@ -38,7 +39,15 @@ namespace joj
 
         virtual void on_click(const JEvent::Callback& callback) = 0;
 
-    protected:
+        void register_widget(WidgetHandle handle);
+        void unregister_widget(WidgetHandle handle);
+
+        using WidgetMap = std::unordered_map<HWND, JWidget*>;
+        static WidgetMap& get_widget_map();
+
+        virtual LRESULT handle_message(UINT msg, WPARAM wParam, LPARAM lParam) = 0;
+
+    public:
         u32 m_x;
         u32 m_y;
         u32 m_width;
@@ -46,7 +55,24 @@ namespace joj
 
         JEvent m_on_click;
         b8 m_is_hovered;
+
+        static WidgetMap g_widget_map;
     };
+
+    inline void JWidget::register_widget(WidgetHandle handle)
+    {
+        g_widget_map[handle.handle] = this;
+    }
+
+    inline void JWidget::unregister_widget(WidgetHandle handle)
+    {
+        g_widget_map.erase(handle.handle);
+    }
+
+    inline std::unordered_map<HWND, JWidget*>& JWidget::get_widget_map()
+    {
+        return g_widget_map;
+    }
 }
 
 #endif // _JOJ_JWIDGET_H

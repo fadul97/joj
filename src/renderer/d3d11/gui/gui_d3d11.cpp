@@ -137,8 +137,6 @@ void joj::D3D11GUI::update(const f32 dt, const i32 xmouse, const i32 ymouse, con
         return;
     }
 
-    process_events();
-
     for (auto it = m_widgets.begin(); it != m_widgets.end(); ++it)
     {
         auto& widget = *it;
@@ -280,17 +278,19 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     default:
         break;
     }
-    return DefWindowProc(hWnd, msg, wParam, lParam);
-}
 
-void joj::D3D11GUI::process_events()
-{
-    MSG msg = { 0 };
-    if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    // Find the widget that corresponds to the window handle
+    auto it = JWidget::get_widget_map().find(hWnd);
+    if (it != JWidget::get_widget_map().end())
     {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        auto widget = it->second;
+        if (widget)
+        {
+            return widget->handle_message(msg, wParam, lParam);
+        }
     }
+
+    return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 #endif // JPLATFORM_WINDOWS

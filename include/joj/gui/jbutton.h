@@ -26,6 +26,8 @@ namespace joj
 
         void on_click(const JEvent::Callback& callback) override;
 
+        LRESULT handle_message(UINT msg, WPARAM wParam, LPARAM lParam) override;
+
     private:
         WidgetHandle m_handle;
         WindowRect m_bounds;

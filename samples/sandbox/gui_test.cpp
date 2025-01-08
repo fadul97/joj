@@ -68,7 +68,7 @@ void GUITest::update(const f32 dt)
         loop = false;
 
     m_gui.update(dt, input.get_xmouse(), input.get_ymouse(),
-        input.is_button_down(joj::BUTTON_LEFT));
+        input.is_key_down(VK_LBUTTON));
 }
 
 void GUITest::draw()

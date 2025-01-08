@@ -6,6 +6,7 @@
 
 #include "renderer/renderer.h"
 #include "platform/window.h"
+#include "platform/input.h"
 #include "gui/jwidget.h"
 #include <string>
 

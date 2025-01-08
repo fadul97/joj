@@ -10,7 +10,6 @@ namespace joj
     class JAPI JEvent
     {
     public:
-    public:
         using Callback = std::function<void()>;
         
         JEvent();
