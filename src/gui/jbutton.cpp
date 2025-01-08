@@ -1,5 +1,7 @@
 #include "gui/jbutton.h"
 
+#include "logger.h"
+
 joj::JButton::JButton()
     : JWidget(), m_label("Button"), m_bounds({ 0, 0, 0, 0 }), m_handle({ nullptr })
 {
@@ -39,5 +41,32 @@ void joj::JButton::draw(CommandList& cmd_list)
 
 void joj::JButton::update(i32 xmouse, i32 ymouse, b8 clicked)
 {
+    /*
+    typedef struct tagRECT
+    {
+        LONG    left;
+        LONG    top;
+        LONG    right;
+        LONG    bottom;
+    } RECT, *PRECT, NEAR *NPRECT, FAR *LPRECT;
+    */
+    RECT bounds = { m_bounds.left, m_bounds.top, m_bounds.right, m_bounds.bottom };
+
+    m_is_hovered = is_hovered(xmouse, ymouse);
+    // JDEBUG("Button hovered: %d, Mouse: %d,%d", m_is_hovered, xmouse, ymouse);
+
+    if (m_is_hovered && clicked)
+    {
+        m_on_click.trigger();
+    }
 }
 
+b8 joj::JButton::is_hovered(const i32 x, const i32 y)
+{
+    return x >= m_x && x <= m_x + m_width && y >= m_y && y <= m_y + m_height;
+}
+
+void joj::JButton::on_click(const JEvent::Callback& callback)
+{
+    m_on_click.set_callback(callback);
+}

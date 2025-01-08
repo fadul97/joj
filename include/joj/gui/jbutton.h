@@ -22,6 +22,10 @@ namespace joj
         void draw(CommandList& cmd_list) override;
         void update(i32 xmouse, i32 ymouse, b8 clicked) override;
 
+        b8 is_hovered(const i32 x, const i32 y) override;
+
+        void on_click(const JEvent::Callback& callback) override;
+
     private:
         WidgetHandle m_handle;
         WindowRect m_bounds;

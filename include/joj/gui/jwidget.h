@@ -5,6 +5,7 @@
 #include "defines.h"
 
 #include <Windows.h>
+#include "jevent.h"
 
 namespace joj
 {
@@ -33,11 +34,18 @@ namespace joj
         virtual void draw(CommandList& cmd_list) = 0;
         virtual void update(i32 xmouse, i32 ymouse, b8 clicked) = 0;
 
-    private:
+        virtual b8 is_hovered(const i32 x, const i32 y) = 0;
+
+        virtual void on_click(const JEvent::Callback& callback) = 0;
+
+    protected:
         u32 m_x;
         u32 m_y;
         u32 m_width;
         u32 m_height;
+
+        JEvent m_on_click;
+        b8 m_is_hovered;
     };
 }
 
