@@ -7,6 +7,7 @@
 #include "jwidget.h"
 #include "platform/window.h"
 #include <string>
+#include <Windows.h>
 
 namespace joj
 {
@@ -28,6 +29,9 @@ namespace joj
 
         LRESULT handle_message(UINT msg, WPARAM wParam, LPARAM lParam) override;
 
+        static LRESULT CALLBACK ButtonProc(HWND hWnd, UINT msg, WPARAM wParam,
+            LPARAM lParam);
+    
     private:
         WidgetHandle m_handle;
         WindowRect m_bounds;

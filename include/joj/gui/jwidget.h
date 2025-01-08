@@ -59,6 +59,7 @@ namespace joj
         b8 m_is_hovered;
 
         static WidgetMap g_widget_map;
+        static WNDPROC s_originalWndProc;
     };
 
     inline void JWidget::register_widget(WidgetHandle handle)

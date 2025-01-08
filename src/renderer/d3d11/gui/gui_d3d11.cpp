@@ -7,9 +7,11 @@
 // #include "renderer/d3d11/renderer_d3d11.h"
 #include "platform/win32/window_win32.h"
 #include <windowsx.h>
+#include "platform/win32/input_win32.h"
 
 joj::IRenderer* joj::D3D11GUI::s_renderer = nullptr;
 joj::Mouse joj::D3D11GUI::s_mouse = { 0 };
+WNDPROC joj::D3D11GUI::s_originalWndProc = nullptr;
 
 #define IDC_BUTTON1 2010
 
@@ -56,6 +58,12 @@ void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
 
     m_widgets.push_back(button);
 
+    // SetWindowLongPtr(m_main_window.handle, GWLP_WNDPROC, (LONG_PTR)GUIWinProc);
+    s_originalWndProc = (WNDPROC)SetWindowLongPtr(m_main_window.handle, GWLP_WNDPROC, (LONG_PTR)GUIWinProc);
+
+    // Log Handle
+    JDEBUG("GUI Handle: %p", m_main_window.handle);
+
     m_initialized = true;
 }
 
@@ -72,7 +80,7 @@ void joj::D3D11GUI::update(const f32 dt, const i32 xmouse, const i32 ymouse, con
         auto& widget = *it;
         // JDEBUG("Clicked: %d", clicked);
         widget->update(xmouse, ymouse, clicked);
-        if (widget->is_hovered(s_mouse.x, s_mouse.y))
+        if (widget->is_hovered(s_mouse.x, s_mouse.y) && clicked)
         {
             // JDEBUG("Mouse hovered");
         }
@@ -137,6 +145,19 @@ void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
 LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     LPARAM lParam)
 {
+    // JDEBUG("Message: %d", msg);
+
+    // Log Handle
+    // JDEBUG("Handle: %p", hWnd);
+
+    // Pass message to JWidgets
+    auto it = JWidget::get_widget_map().find(hWnd);
+    if (it != JWidget::get_widget_map().end())
+    {
+        auto widget = it->second;
+        return widget->handle_message(msg, wParam, lParam);
+    }
+
     switch (msg)
     {
     // Read Mouse Position
@@ -209,7 +230,8 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
         break;
     }
 
-    return DefWindowProc(hWnd, msg, wParam, lParam);
+    return CallWindowProc(s_originalWndProc, hWnd, msg, wParam, lParam);
+    // return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 #endif // JPLATFORM_WINDOWS

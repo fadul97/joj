@@ -29,8 +29,13 @@ static LRESULT CALLBACK ChildProc(HWND hwnd, UINT msg,
     WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR)
 {
     switch (msg) {
+    case WM_LBUTTONDOWN:
+        JDEBUG("Button message: %d", msg);
+        SetFocus(hwnd);
+        break;
     case WM_COMMAND:
-        switch (LOWORD(wParam)) {
+        switch (LOWORD(wParam))
+        {
         case IDC_BUTTON:
             MessageBox(0, "hello world", 0, 0);
             break;
@@ -59,8 +64,15 @@ void joj::JButton::create(JWidgetCreationData& data)
     if (m_handle.handle)
         register_widget(m_handle);
 
+    // Log Handle
+    JDEBUG("Button Handle: %p", m_handle.handle);
+
+    s_originalWndProc = (WNDPROC)SetWindowLongPtr(m_handle.handle, GWLP_WNDPROC, (LONG_PTR)ButtonProc);
+
+    /*
     if (m_handle.handle)
         SetWindowSubclass(m_handle.handle, ChildProc, 0, 0);
+    */
 }
 
 void joj::JButton::draw(CommandList& cmd_list)
@@ -104,6 +116,9 @@ LRESULT joj::JButton::handle_message(UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
     {
+    case WM_LBUTTONDOWN:
+        JDEBUG("Button message: %d", msg);
+        break;
     case WM_COMMAND:
         if (HIWORD(wParam) == BN_CLICKED)
         {
@@ -113,3 +128,27 @@ LRESULT joj::JButton::handle_message(UINT msg, WPARAM wParam, LPARAM lParam)
     }
     return DefWindowProc(m_handle.handle, msg, wParam, lParam);
 }
+
+LRESULT CALLBACK joj::JButton::ButtonProc(HWND hWnd, UINT msg, WPARAM wParam,
+    LPARAM lParam)
+{
+    // Encaminhar a mensagem para o procedimento de janela da janela principal
+    HWND parent_handle = GetParent(hWnd);
+    if (parent_handle && msg != WM_PAINT && msg != WM_ERASEBKGND)
+    {
+        SendMessage(parent_handle, msg, wParam, lParam);
+    }
+
+    switch (msg)
+    {
+    case WM_LBUTTONDOWN:
+        JDEBUG("Button message: %d", msg);
+        break;
+    default:
+        break;
+    }
+
+    // Chamar o procedimento de janela original do botão para manter visibilidade e funcionalidade
+    return CallWindowProc(s_originalWndProc, hWnd, msg, wParam, lParam);
+}
+

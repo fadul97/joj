@@ -56,6 +56,7 @@ namespace joj
 
         static Win32Input s_input;
         static Mouse s_mouse;
+        static WNDPROC s_originalWndProc;
     };
 }
 
