@@ -10,6 +10,7 @@
 #include <vector>
 #include "gui/jwidget.h"
 #include "gui/win32/jwidget_factory_win32.h"
+#include "platform/keys.h"
 
 namespace joj
 {
@@ -39,7 +40,7 @@ namespace joj
 
         void add_widget(JWidget* widget);
         void add_button(i32 x, i32 y, i32 width, i32 height,
-            const std::string& label) override;
+            const std::string& label, const JEvent::Callback& callback = nullptr) override;
 
     private:
         std::vector<JWidget*> m_widgets;
@@ -52,6 +53,10 @@ namespace joj
 
         static LRESULT CALLBACK GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
             LPARAM lParam);
+
+        static Mouse s_mouse;
+
+        void process_events();
     };
 }
 

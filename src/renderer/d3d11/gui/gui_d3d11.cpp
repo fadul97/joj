@@ -9,6 +9,7 @@
 #include <windowsx.h>
 
 joj::IRenderer* joj::D3D11GUI::s_renderer = nullptr;
+joj::Mouse joj::D3D11GUI::s_mouse = { 0 };
 
 #define IDC_BUTTON1 2010
 
@@ -136,10 +137,16 @@ void joj::D3D11GUI::update(const f32 dt, const i32 xmouse, const i32 ymouse, con
         return;
     }
 
+    process_events();
+
     for (auto it = m_widgets.begin(); it != m_widgets.end(); ++it)
     {
         auto& widget = *it;
-        widget->update(xmouse, ymouse, clicked);
+        widget->update(s_mouse.x, s_mouse.y, s_mouse.buttons[BUTTON_LEFT]);
+        if (widget->is_hovered(s_mouse.x, s_mouse.y))
+        {
+            // JDEBUG("Mouse hovered");
+        }
 
     }
 }
@@ -184,7 +191,7 @@ void joj::D3D11GUI::add_widget(JWidget* widget)
 }
 
 void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
-    const std::string& label)
+    const std::string& label, const JEvent::Callback& callback)
 {
     JButton* button = m_factory.create_button(10, 10, 100, 30, "Click Me!");
     if (!button)
@@ -192,6 +199,9 @@ void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
         JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
         return;
     }
+
+    if (callback)
+        button->on_click(callback);
 
     m_widgets.push_back(button);
 }
@@ -201,7 +211,45 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
 {
     switch (msg)
     {
-        // Show Window if Space is pressed
+    // Read Mouse Position
+    case WM_MOUSEMOVE:
+    {
+        s_mouse.x = GET_X_LPARAM(lParam);
+        s_mouse.y = GET_Y_LPARAM(lParam);
+        return 0;
+    }
+    // Read Mouse Button
+    case WM_LBUTTONDOWN:
+    {
+        s_mouse.buttons[BUTTON_LEFT] = true;
+        return 0;
+    }
+    case WM_LBUTTONUP:
+    {
+        s_mouse.buttons[BUTTON_LEFT] = false;
+        return 0;
+    }
+    case WM_MBUTTONDOWN:
+    {
+        s_mouse.buttons[BUTTON_MIDDLE] = true;
+        return 0;
+    }
+    case WM_MBUTTONUP:
+    {
+        s_mouse.buttons[BUTTON_MIDDLE] = false;
+        return 0;
+    }
+    case WM_RBUTTONDOWN:
+    {
+        s_mouse.buttons[BUTTON_RIGHT] = true;
+        return 0;
+    }
+    case WM_RBUTTONUP:
+    {
+        s_mouse.buttons[BUTTON_RIGHT] = false;
+        return 0;
+    }
+    // Hide Window if Space is pressed
     case WM_KEYDOWN:
     {
         if (wParam == VK_SPACE)
@@ -233,6 +281,16 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
         break;
     }
     return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+void joj::D3D11GUI::process_events()
+{
+    MSG msg = { 0 };
+    if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
 }
 
 #endif // JPLATFORM_WINDOWS
