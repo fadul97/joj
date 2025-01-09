@@ -129,8 +129,8 @@ void joj::D3D11GUI::add_widget(JWidget* widget)
 void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
     const std::string& label, const JEvent::Callback& callback)
 {
-    auto button = m_factory.create_button(10, 10, 100, 30, "Click Me!");
-    if (!button.get())
+    JButton* button = m_factory.create_button(10, 10, 100, 30, "Click Me!");
+    if (!button)
     {
         JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
         return;
@@ -153,49 +153,24 @@ void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
 void joj::D3D11GUI::add_button(const std::string& label, i32 x, i32 y, i32 width, i32 height,
     const std::function<void()>& function)
 {
-    auto button = m_factory.create_button(10, 10, 100, 30, "Click Me!", function);
-    if (!button.get())
+    JButton* button = m_factory.create_button(10, 10, 100, 30, "Click Me!", function);
+    if (!button)
     {
         JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
         return;
     }
 
-    JDEBUG("Button created at address: %p", button.get());
-    
     button->trigger();
     JDEBUG("Called trigger!");
     
-    // m_widgets.push_back(button);
+    // m_widgets2.push_back(std::move(button));
     
-    // Check the callback after adding the button to the list
-    if (button->m_callback)
-    {
-        button->trigger();
-        JDEBUG("Callback is still valid after adding button to list.");
-    } 
-    else
-    {
-        JDEBUG("Callback is null after adding button to list!");
-    }
 }
 
 
 LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     LPARAM lParam)
 {
-    // JDEBUG("Message: %d", msg);
-
-    // Log Handle every 0.25s
-    /*
-    if (time_elaped > 0.5f)
-    {
-        JDEBUG("Handle: %p", hWnd);
-        time_elaped = 0.0f;
-    }
-    */
-
-    // Pass message to JWidgets
-
     switch (msg)
     {
     case WM_COMMAND:

@@ -11,6 +11,7 @@
 #include "gui/jwidget.h"
 #include "gui/win32/jwidget_factory_win32.h"
 #include "platform/win32/input_win32.h"
+#include <memory>
 
 namespace joj
 {
@@ -46,6 +47,7 @@ namespace joj
 
     private:
         std::vector<JWidget*> m_widgets;
+        // std::vector<std::unique_ptr<JWidget>> m_widgets2;
         b8 m_initialized;
 
         GUIWindow m_main_window;

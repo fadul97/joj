@@ -20,11 +20,6 @@ namespace joj
             const char* title);
         ~JButton();
 
-        JButton(const JButton& other) = delete;
-        JButton& operator=(const JButton& other) = delete;
-        JButton(JButton&& other) noexcept = default;
-        JButton& operator=(JButton&& other) noexcept = default;
-
         void create(JWidgetCreationData& data, const JEvent::Callback& callback) override;
         void draw(CommandList& cmd_list) override;
         void update(i32 xmouse, i32 ymouse, b8 clicked) override;
@@ -51,14 +46,7 @@ namespace joj
     inline void JButton::set_callback(const std::function<void()>& callback)
     {
         if (callback)
-        {
-            JDEBUG("Setting callback for button.");
             m_callback = callback;
-        }
-        else
-        {
-            JDEBUG("Callback is null when setting callback for button.");
-        }
     }
 }
 

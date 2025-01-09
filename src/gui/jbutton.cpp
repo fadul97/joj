@@ -75,11 +75,6 @@ static LRESULT CALLBACK ChildProc(HWND hwnd, UINT msg,
     return DefSubclassProc(hwnd, msg, wParam, lParam);
 }
 
-void mycallback() {
-    MessageBox(0, "hello world", 0, 0);
-}
-
-int i = 0;
 void joj::JButton::create(JWidgetCreationData& data, const JEvent::Callback& callback)
 {
     m_handle.handle = CreateWindowEx(
@@ -100,20 +95,16 @@ void joj::JButton::create(JWidgetCreationData& data, const JEvent::Callback& cal
     {
         register_widget(m_handle);
 
-        // Adicionar depuração para confirmar que o procedimento da janela está sendo configurado
-        JDEBUG("Setting original WindowProc for button handle: %p", m_handle.handle);
         s_originalWndProc = (WNDPROC)SetWindowLongPtr(m_handle.handle, GWLP_WNDPROC, (LONG_PTR)ButtonProc);
         if (!s_originalWndProc)
         {
             DWORD error = GetLastError();
             JFATAL(ErrorCode::FAILED, "SetWindowLongPtr failed with error code: %lu", error);
         }
-    }
 
-    if (callback)
-    {
-        JDEBUG("i = %d", i++);
-        m_callback = callback;
+        if (callback)
+            m_callback = callback;
+
     }
 }
 
@@ -126,7 +117,6 @@ void joj::JButton::update(i32 xmouse, i32 ymouse, b8 clicked)
     RECT bounds = { m_bounds.left, m_bounds.top, m_bounds.right, m_bounds.bottom };
 
     m_is_hovered = is_hovered(xmouse, ymouse);
-    // JDEBUG("Button hovered: %d, Mouse: %d,%d", m_is_hovered, xmouse, ymouse);
 
     if (m_is_hovered && clicked)
     {
@@ -157,16 +147,8 @@ void joj::JButton::on_click(const JEvent::Callback& callback)
 
 void joj::JButton::trigger()
 {
-    JDEBUG("Triggering button callback.");
     if (m_callback)
-    {
-        JDEBUG("Button callback is valid. Calling callback.");
         m_callback();
-    }
-    else
-    {
-        JDEBUG("ButtonCallback is null in trigger!");
-    }
 }
 
 LRESULT joj::JButton::handle_message(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -189,8 +171,6 @@ LRESULT joj::JButton::handle_message(UINT msg, WPARAM wParam, LPARAM lParam)
 LRESULT CALLBACK joj::JButton::ButtonProc(HWND hWnd, UINT msg, WPARAM wParam,
     LPARAM lParam)
 {
-    JDEBUG("ButtonProc called with message: %d", msg);
-
     HWND parent_handle = GetParent(hWnd);
 
     switch (msg)

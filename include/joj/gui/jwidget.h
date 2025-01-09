@@ -62,11 +62,6 @@ namespace joj
 
         static WidgetMap g_widget_map;
         static WNDPROC s_originalWndProc;
-
-        JWidget(const JWidget& other) = delete;
-        JWidget& operator=(const JWidget& other) = delete;
-        JWidget(JWidget&& other) noexcept = default;
-        JWidget& operator=(JWidget&& other) noexcept = default;
     };
 
     inline void JWidget::register_widget(WidgetHandle& handle)

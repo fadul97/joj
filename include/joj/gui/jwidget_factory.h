@@ -7,7 +7,6 @@
 #include "jbutton.h"
 #include <string>
 #include "jevent.h"
-#include <memory>
 
 namespace joj
 {
@@ -17,7 +16,7 @@ namespace joj
         JWidgetFactory() = default;
         virtual ~JWidgetFactory() = default;
 
-        virtual std::unique_ptr<JButton> create_button(i32 x, i32 y, i32 width, i32 height,
+        virtual JButton* create_button(i32 x, i32 y, i32 width, i32 height,
             const std::string& label, const JEvent::Callback& callback = nullptr) = 0;
     };
 }
