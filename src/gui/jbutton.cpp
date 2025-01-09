@@ -75,7 +75,12 @@ static LRESULT CALLBACK ChildProc(HWND hwnd, UINT msg,
     return DefSubclassProc(hwnd, msg, wParam, lParam);
 }
 
-void joj::JButton::create(JWidgetCreationData& data)
+void mycallback() {
+    MessageBox(0, "hello world", 0, 0);
+}
+
+int i = 0;
+void joj::JButton::create(JWidgetCreationData& data, const JEvent::Callback& callback)
 {
     m_handle.handle = CreateWindowEx(
         0,
@@ -92,14 +97,24 @@ void joj::JButton::create(JWidgetCreationData& data)
     );
 
     if (m_handle.handle)
+    {
         register_widget(m_handle);
 
-    s_originalWndProc = (WNDPROC)SetWindowLongPtr(m_handle.handle, GWLP_WNDPROC, (LONG_PTR)ButtonProc);
+        // Adicionar depuração para confirmar que o procedimento da janela está sendo configurado
+        JDEBUG("Setting original WindowProc for button handle: %p", m_handle.handle);
+        s_originalWndProc = (WNDPROC)SetWindowLongPtr(m_handle.handle, GWLP_WNDPROC, (LONG_PTR)ButtonProc);
+        if (!s_originalWndProc)
+        {
+            DWORD error = GetLastError();
+            JFATAL(ErrorCode::FAILED, "SetWindowLongPtr failed with error code: %lu", error);
+        }
+    }
 
-    /*
-    if (m_handle.handle)
-        SetWindowSubclass(m_handle.handle, ChildProc, 0, 0);
-    */
+    if (callback)
+    {
+        JDEBUG("i = %d", i++);
+        m_callback = callback;
+    }
 }
 
 void joj::JButton::draw(CommandList& cmd_list)
@@ -108,16 +123,6 @@ void joj::JButton::draw(CommandList& cmd_list)
 
 void joj::JButton::update(i32 xmouse, i32 ymouse, b8 clicked)
 {
-    /*
-    typedef struct tagRECT
-    {
-        LONG    left;
-        LONG    top;
-        LONG    right;
-        LONG    bottom;
-    } RECT, *PRECT, NEAR *NPRECT, FAR *LPRECT;
-    */
-
     RECT bounds = { m_bounds.left, m_bounds.top, m_bounds.right, m_bounds.bottom };
 
     m_is_hovered = is_hovered(xmouse, ymouse);
@@ -126,6 +131,7 @@ void joj::JButton::update(i32 xmouse, i32 ymouse, b8 clicked)
     if (m_is_hovered && clicked)
     {
         m_on_click.trigger();
+        m_callback();
     }
 }
 
@@ -136,7 +142,7 @@ b8 joj::JButton::is_hovered(const i32 x, const i32 y)
 
 void joj::JButton::on_click(const JEvent::Callback& callback)
 {
-    if (!callback)
+    if (!m_callback)
     {
         JDEBUG("No callback provided!");
         return;
@@ -144,14 +150,23 @@ void joj::JButton::on_click(const JEvent::Callback& callback)
     else
     {
         JDEBUG("Callback provided!");
-        m_on_click.set_callback(callback);
+        m_callback = callback;
+        // m_on_click.set_callback(callback);
     }
 }
 
 void joj::JButton::trigger()
 {
-    JDEBUG("Button clicked! Calling trigger...");
-    m_on_click.trigger();
+    JDEBUG("Triggering button callback.");
+    if (m_callback)
+    {
+        JDEBUG("Button callback is valid. Calling callback.");
+        m_callback();
+    }
+    else
+    {
+        JDEBUG("ButtonCallback is null in trigger!");
+    }
 }
 
 LRESULT joj::JButton::handle_message(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -159,7 +174,7 @@ LRESULT joj::JButton::handle_message(UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
     case WM_LBUTTONDOWN:
-        JDEBUG("Button message: %d", msg);
+        // JDEBUG("Button message: %d", msg);
         break;
     case WM_COMMAND:
         if (HIWORD(wParam) == BN_CLICKED)
@@ -174,12 +189,14 @@ LRESULT joj::JButton::handle_message(UINT msg, WPARAM wParam, LPARAM lParam)
 LRESULT CALLBACK joj::JButton::ButtonProc(HWND hWnd, UINT msg, WPARAM wParam,
     LPARAM lParam)
 {
+    JDEBUG("ButtonProc called with message: %d", msg);
+
     HWND parent_handle = GetParent(hWnd);
 
     switch (msg)
     {
     case WM_LBUTTONDOWN:
-        JDEBUG("Button message: %d", msg);
+        // JDEBUG("Button message: %d", msg);
         if (parent_handle)
         {
             // Enviar mensagem para a janela pai
@@ -189,7 +206,7 @@ LRESULT CALLBACK joj::JButton::ButtonProc(HWND hWnd, UINT msg, WPARAM wParam,
     case WM_COMMAND:
         if (HIWORD(wParam) == BN_CLICKED)
         {
-            JDEBUG("Button clicked");
+            // JDEBUG("Button clicked");
         }
         break;
     default:

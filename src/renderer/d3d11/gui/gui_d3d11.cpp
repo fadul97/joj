@@ -48,16 +48,6 @@ void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
     ParentData parent_data = { m_main_window.handle, app_id };
     m_factory = JWin32WidgetFactory(parent_data);
 
-    // Create a button
-    JButton* button = m_factory.create_button(10, 10, 100, 30, "Click Me!");
-    if (!button)
-    {
-        JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
-        return;
-    }
-
-    m_widgets.push_back(button);
-
     // SetWindowLongPtr(m_main_window.handle, GWLP_WNDPROC, (LONG_PTR)GUIWinProc);
     s_originalWndProc = (WNDPROC)SetWindowLongPtr(m_main_window.handle, GWLP_WNDPROC, (LONG_PTR)GUIWinProc);
 
@@ -88,6 +78,12 @@ void joj::D3D11GUI::update(const f32 dt, const i32 xmouse, const i32 ymouse, con
         {
             // JDEBUG("Mouse hovered");
         }
+    }
+
+    for (auto it = JWidget::get_widget_map().begin(); it != JWidget::get_widget_map().end(); ++it)
+    {
+        auto& widget = it->second;
+        widget->update(xmouse, ymouse, clicked);
     }
 }
 
@@ -133,8 +129,8 @@ void joj::D3D11GUI::add_widget(JWidget* widget)
 void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
     const std::string& label, const JEvent::Callback& callback)
 {
-    JButton* button = m_factory.create_button(10, 10, 100, 30, "Click Me!");
-    if (!button)
+    auto button = m_factory.create_button(10, 10, 100, 30, "Click Me!");
+    if (!button.get())
     {
         JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
         return;
@@ -144,13 +140,43 @@ void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
     {
         JDEBUG("Setting callback for button");
         button->on_click(callback);
+        button->set_callback(callback);
     }
     else
     {
         JDEBUG("Callback is null when adding button!");
     }
 
-    m_widgets.push_back(button);
+    // m_widgets.push_back(button);
+}
+
+void joj::D3D11GUI::add_button(const std::string& label, i32 x, i32 y, i32 width, i32 height,
+    const std::function<void()>& function)
+{
+    auto button = m_factory.create_button(10, 10, 100, 30, "Click Me!", function);
+    if (!button.get())
+    {
+        JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
+        return;
+    }
+
+    JDEBUG("Button created at address: %p", button.get());
+    
+    button->trigger();
+    JDEBUG("Called trigger!");
+    
+    // m_widgets.push_back(button);
+    
+    // Check the callback after adding the button to the list
+    if (button->m_callback)
+    {
+        button->trigger();
+        JDEBUG("Callback is still valid after adding button to list.");
+    } 
+    else
+    {
+        JDEBUG("Callback is null after adding button to list!");
+    }
 }
 
 
@@ -160,11 +186,13 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     // JDEBUG("Message: %d", msg);
 
     // Log Handle every 0.25s
+    /*
     if (time_elaped > 0.5f)
     {
         JDEBUG("Handle: %p", hWnd);
         time_elaped = 0.0f;
     }
+    */
 
     // Pass message to JWidgets
 
@@ -178,15 +206,20 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
 
         if (notification_code == BN_CLICKED)
         {
-            JDEBUG("Button clicked! Control ID: %d, Handle: %p", control_id, sender_handle);
+            // JDEBUG("Button clicked! Control ID: %d, Handle: %p", control_id, sender_handle);
             // Você pode procurar o widget no mapa aqui se necessário
             auto it = JWidget::get_widget_map().find(sender_handle);
             if (it != JWidget::get_widget_map().end())
             {
                 auto widget = it->second;
+                JDEBUG("Widget found in map. Address: %p", widget);
                 widget->trigger();
                 // return widget->handle_message(msg, wParam, lParam);
                 return 0;
+            }
+            else
+            {
+                JDEBUG("Widget not found in map for handle: %p", sender_handle);
             }
         }
         break;
@@ -242,8 +275,7 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     case WM_DESTROY:
     case WM_QUIT:
     case WM_CLOSE:
-        JDEBUG("Running = false");
-        ShowWindow(hWnd, SW_HIDE);
+        PostQuitMessage(0);
         return 0;
     default:
         break;

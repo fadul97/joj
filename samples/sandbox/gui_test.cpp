@@ -59,7 +59,7 @@ void GUITest::init()
     m_gui.init(windowData, renderer);
 
     // Create a button
-    m_gui.add_button(10, 10, 100, 30, "Click Me!", on_button_clicked);
+    m_gui.add_button("Click Me!", 10, 10, 100, 30, on_button_clicked);
 }
 
 void GUITest::update(const f32 dt)

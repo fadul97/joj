@@ -34,7 +34,7 @@ namespace joj
             const char* title);
         virtual ~JWidget() = default;
 
-        virtual void create(JWidgetCreationData& data) = 0;
+        virtual void create(JWidgetCreationData& data, const JEvent::Callback& callback) = 0;
         virtual void draw(CommandList& cmd_list) = 0;
         virtual void update(i32 xmouse, i32 ymouse, b8 clicked) = 0;
 
@@ -62,6 +62,11 @@ namespace joj
 
         static WidgetMap g_widget_map;
         static WNDPROC s_originalWndProc;
+
+        JWidget(const JWidget& other) = delete;
+        JWidget& operator=(const JWidget& other) = delete;
+        JWidget(JWidget&& other) noexcept = default;
+        JWidget& operator=(JWidget&& other) noexcept = default;
     };
 
     inline void JWidget::register_widget(WidgetHandle& handle)

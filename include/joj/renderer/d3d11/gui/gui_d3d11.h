@@ -41,6 +41,8 @@ namespace joj
         void add_widget(JWidget* widget);
         void add_button(i32 x, i32 y, i32 width, i32 height,
             const std::string& label, const JEvent::Callback& callback = nullptr) override;
+        void add_button(const std::string& label, i32 x, i32 y, i32 width, i32 height,
+            const std::function<void()>& function = nullptr);
 
     private:
         std::vector<JWidget*> m_widgets;

@@ -8,6 +8,7 @@
 #include "platform/window.h"
 #include <string>
 #include <Windows.h>
+#include "logger.h"
 
 namespace joj
 {
@@ -19,7 +20,12 @@ namespace joj
             const char* title);
         ~JButton();
 
-        void create(JWidgetCreationData& data) override;
+        JButton(const JButton& other) = delete;
+        JButton& operator=(const JButton& other) = delete;
+        JButton(JButton&& other) noexcept = default;
+        JButton& operator=(JButton&& other) noexcept = default;
+
+        void create(JWidgetCreationData& data, const JEvent::Callback& callback) override;
         void draw(CommandList& cmd_list) override;
         void update(i32 xmouse, i32 ymouse, b8 clicked) override;
 
@@ -28,16 +34,32 @@ namespace joj
         void on_click(const JEvent::Callback& callback) override;
         void trigger() override;
 
+        void set_callback(const std::function<void()>& callback);
+
         LRESULT handle_message(UINT msg, WPARAM wParam, LPARAM lParam) override;
 
         static LRESULT CALLBACK ButtonProc(HWND hWnd, UINT msg, WPARAM wParam,
             LPARAM lParam);
     
-    private:
+    public:
         WidgetHandle m_handle;
         WindowRect m_bounds;
         std::string m_label;
+        std::function<void()> m_callback;
     };
+
+    inline void JButton::set_callback(const std::function<void()>& callback)
+    {
+        if (callback)
+        {
+            JDEBUG("Setting callback for button.");
+            m_callback = callback;
+        }
+        else
+        {
+            JDEBUG("Callback is null when setting callback for button.");
+        }
+    }
 }
 
 #endif // _JOJ_JBUTTON_H
