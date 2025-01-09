@@ -4,6 +4,7 @@
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "defines.h"
 #include <functional>
+#include "logger.h"
 
 namespace joj
 {
@@ -15,14 +16,14 @@ namespace joj
         JEvent();
         virtual ~JEvent() = default;
 
-        void set_callback(Callback callback);
+        void set_callback(const Callback& callback);
         void trigger();
 
     private:
         Callback m_callback;
     };
 
-    inline void JEvent::set_callback(Callback callback)
+    inline void JEvent::set_callback(const Callback& callback)
     {
         m_callback = callback;
     }
@@ -30,7 +31,14 @@ namespace joj
     inline void JEvent::trigger()
     {
         if (m_callback)
+        {
+            JDEBUG("Executing callback...");
             m_callback();
+        }
+        else
+        {
+            JDEBUG("Callback is null!");
+        }
     }
 }
 

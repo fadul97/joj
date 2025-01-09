@@ -26,6 +26,7 @@ namespace joj
         b8 is_hovered(const i32 x, const i32 y) override;
 
         void on_click(const JEvent::Callback& callback) override;
+        void trigger() override;
 
         LRESULT handle_message(UINT msg, WPARAM wParam, LPARAM lParam) override;
 

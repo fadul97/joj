@@ -67,6 +67,8 @@ void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
     m_initialized = true;
 }
 
+static f32 time_elaped = 0.0f;
+
 void joj::D3D11GUI::update(const f32 dt, const i32 xmouse, const i32 ymouse, const b8 clicked)
 {
     if (m_initialized == false)
@@ -74,6 +76,8 @@ void joj::D3D11GUI::update(const f32 dt, const i32 xmouse, const i32 ymouse, con
         JERROR(ErrorCode::ERR_GUI_NOT_INITIALIZED, "GUI not initialized.");
         return;
     }
+
+    time_elaped += dt;
 
     for (auto it = m_widgets.begin(); it != m_widgets.end(); ++it)
     {
@@ -137,29 +141,56 @@ void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
     }
 
     if (callback)
+    {
+        JDEBUG("Setting callback for button");
         button->on_click(callback);
+    }
+    else
+    {
+        JDEBUG("Callback is null when adding button!");
+    }
 
     m_widgets.push_back(button);
 }
+
 
 LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     LPARAM lParam)
 {
     // JDEBUG("Message: %d", msg);
 
-    // Log Handle
-    // JDEBUG("Handle: %p", hWnd);
+    // Log Handle every 0.25s
+    if (time_elaped > 0.5f)
+    {
+        JDEBUG("Handle: %p", hWnd);
+        time_elaped = 0.0f;
+    }
 
     // Pass message to JWidgets
-    auto it = JWidget::get_widget_map().find(hWnd);
-    if (it != JWidget::get_widget_map().end())
-    {
-        auto widget = it->second;
-        return widget->handle_message(msg, wParam, lParam);
-    }
 
     switch (msg)
     {
+    case WM_COMMAND:
+    {
+        int control_id = LOWORD(wParam); // ID do controle
+        int notification_code = HIWORD(wParam); // Código de notificação
+        HWND sender_handle = (HWND)lParam; // Handle do controle que enviou
+
+        if (notification_code == BN_CLICKED)
+        {
+            JDEBUG("Button clicked! Control ID: %d, Handle: %p", control_id, sender_handle);
+            // Você pode procurar o widget no mapa aqui se necessário
+            auto it = JWidget::get_widget_map().find(sender_handle);
+            if (it != JWidget::get_widget_map().end())
+            {
+                auto widget = it->second;
+                widget->trigger();
+                // return widget->handle_message(msg, wParam, lParam);
+                return 0;
+            }
+        }
+        break;
+    }
     // Read Mouse Position
     case WM_MOUSEMOVE:
     {
@@ -208,18 +239,6 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
         break;
     }
 
-    case WM_COMMAND:
-    {
-        switch (LOWORD(wParam))
-        {
-        case IDC_BUTTON1:
-        {
-            JDEBUG("Button clicked");
-            break;
-        }
-        }
-        break;
-    }
     case WM_DESTROY:
     case WM_QUIT:
     case WM_CLOSE:

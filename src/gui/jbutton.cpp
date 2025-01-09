@@ -4,6 +4,33 @@
 #include <commctrl.h>
 #include "logger.h"
 
+LRESULT CALLBACK PanelProc(HWND hwnd, UINT msg,
+    WPARAM wParam, LPARAM lParam) {
+
+    switch (msg) {
+
+    case WM_LBUTTONUP:
+
+        MessageBeep(MB_OK);
+        break;
+    }
+
+    return DefWindowProcW(hwnd, msg, wParam, lParam);
+}
+
+void RegisterRedPanelClass(void) {
+
+    HBRUSH hbrush = CreateSolidBrush(RGB(255, 0, 0));
+
+    WNDCLASSW rwc = { 0 };
+
+    rwc.lpszClassName = L"RedPanelClass";
+    rwc.hbrBackground = hbrush;
+    rwc.lpfnWndProc = PanelProc;
+    rwc.hCursor = LoadCursor(0, IDC_ARROW);
+    RegisterClassW(&rwc);
+}
+
 joj::JButton::JButton()
     : JWidget(), m_label("Button"), m_bounds({ 0, 0, 0, 0 }), m_handle({ nullptr })
 {
@@ -28,6 +55,9 @@ joj::JButton::~JButton()
 static LRESULT CALLBACK ChildProc(HWND hwnd, UINT msg,
     WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR)
 {
+    int id = GetWindowLong(hwnd, GWL_ID);
+    JDEBUG("ChildProc: %d", id);
+
     switch (msg) {
     case WM_LBUTTONDOWN:
         JDEBUG("Button message: %d", msg);
@@ -63,9 +93,6 @@ void joj::JButton::create(JWidgetCreationData& data)
 
     if (m_handle.handle)
         register_widget(m_handle);
-
-    // Log Handle
-    JDEBUG("Button Handle: %p", m_handle.handle);
 
     s_originalWndProc = (WNDPROC)SetWindowLongPtr(m_handle.handle, GWLP_WNDPROC, (LONG_PTR)ButtonProc);
 
@@ -109,7 +136,22 @@ b8 joj::JButton::is_hovered(const i32 x, const i32 y)
 
 void joj::JButton::on_click(const JEvent::Callback& callback)
 {
-    m_on_click.set_callback(callback);
+    if (!callback)
+    {
+        JDEBUG("No callback provided!");
+        return;
+    }
+    else
+    {
+        JDEBUG("Callback provided!");
+        m_on_click.set_callback(callback);
+    }
+}
+
+void joj::JButton::trigger()
+{
+    JDEBUG("Button clicked! Calling trigger...");
+    m_on_click.trigger();
 }
 
 LRESULT joj::JButton::handle_message(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -132,17 +174,23 @@ LRESULT joj::JButton::handle_message(UINT msg, WPARAM wParam, LPARAM lParam)
 LRESULT CALLBACK joj::JButton::ButtonProc(HWND hWnd, UINT msg, WPARAM wParam,
     LPARAM lParam)
 {
-    // Encaminhar a mensagem para o procedimento de janela da janela principal
     HWND parent_handle = GetParent(hWnd);
-    if (parent_handle && msg != WM_PAINT && msg != WM_ERASEBKGND)
-    {
-        SendMessage(parent_handle, msg, wParam, lParam);
-    }
 
     switch (msg)
     {
     case WM_LBUTTONDOWN:
         JDEBUG("Button message: %d", msg);
+        if (parent_handle)
+        {
+            // Enviar mensagem para a janela pai
+            SendMessage(parent_handle, WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(hWnd), BN_CLICKED), (LPARAM)hWnd);
+        }
+        break;
+    case WM_COMMAND:
+        if (HIWORD(wParam) == BN_CLICKED)
+        {
+            JDEBUG("Button clicked");
+        }
         break;
     default:
         break;

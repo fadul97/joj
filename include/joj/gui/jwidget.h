@@ -7,6 +7,7 @@
 #include <Windows.h>
 #include "jevent.h"
 #include <unordered_map>
+#include <logger.h>
 
 #define IDC_BUTTON 201
 
@@ -40,9 +41,10 @@ namespace joj
         virtual b8 is_hovered(const i32 x, const i32 y) = 0;
 
         virtual void on_click(const JEvent::Callback& callback) = 0;
+        virtual void trigger() = 0;
 
-        void register_widget(WidgetHandle handle);
-        void unregister_widget(WidgetHandle handle);
+        void register_widget(WidgetHandle& handle);
+        void unregister_widget(WidgetHandle& handle);
 
         using WidgetMap = std::unordered_map<HWND, JWidget*>;
         static WidgetMap& get_widget_map();
@@ -62,12 +64,13 @@ namespace joj
         static WNDPROC s_originalWndProc;
     };
 
-    inline void JWidget::register_widget(WidgetHandle handle)
+    inline void JWidget::register_widget(WidgetHandle& handle)
     {
         g_widget_map[handle.handle] = this;
+        JDEBUG("Registered widget with handle: %p", handle.handle);
     }
 
-    inline void JWidget::unregister_widget(WidgetHandle handle)
+    inline void JWidget::unregister_widget(WidgetHandle& handle)
     {
         g_widget_map.erase(handle.handle);
     }

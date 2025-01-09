@@ -47,7 +47,7 @@ void GUITest::init_platform()
 }
 
 void on_button_clicked() {
-    std::cout << "Botão foi clicado!" << std::endl;
+    JINFO("Button clicked!")
 }
 
 void GUITest::init()
@@ -59,9 +59,7 @@ void GUITest::init()
     m_gui.init(windowData, renderer);
 
     // Create a button
-    m_gui.add_button(10, 10, 100, 30, "Click Me!", []() {
-        JDEBUG("Botão foi clicado!");
-    });
+    m_gui.add_button(10, 10, 100, 30, "Click Me!", on_button_clicked);
 }
 
 void GUITest::update(const f32 dt)
