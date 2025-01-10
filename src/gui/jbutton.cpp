@@ -1,6 +1,5 @@
 #include "gui/jbutton.h"
 
-#define _WIN32_WINNT 0x0501
 #include <commctrl.h>
 #include "logger.h"
 

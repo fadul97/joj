@@ -38,9 +38,9 @@ void GUITest::init_platform()
 
     // renderer_print();
 
-    /*
     if (renderer.initialize(window.get_data()) != joj::ErrorCode::OK)
         return;
+    /*
     */
 
     timer.start();
