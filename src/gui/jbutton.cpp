@@ -113,7 +113,13 @@ void joj::JButton::draw(CommandList& cmd_list)
 
 void joj::JButton::update(i32 xmouse, i32 ymouse, b8 clicked)
 {
-    RECT bounds = { m_bounds.left, m_bounds.top, m_bounds.right, m_bounds.bottom };
+    RECT bounds =
+    {
+        static_cast<LONG>(m_bounds.left),
+        static_cast<LONG>(m_bounds.top),
+        static_cast<LONG>(m_bounds.right),
+        static_cast<LONG>(m_bounds.bottom)
+    };
 
     m_is_hovered = is_hovered(xmouse, ymouse);
 

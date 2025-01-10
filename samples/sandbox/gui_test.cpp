@@ -20,7 +20,7 @@ GUITest::~GUITest()
 
 void GUITest::init_platform()
 {
-    if (window.create() != joj::ErrorCode::OK)
+    if JOJ_FAILED(window.create())
         return;
 
     u32 width = 0;
@@ -38,9 +38,9 @@ void GUITest::init_platform()
 
     // renderer_print();
 
-    if (renderer.initialize(window.get_data()) != joj::ErrorCode::OK)
-        return;
     /*
+    if JOJ_FAILED(renderer.initialize(window.get_data()))
+        return;
     */
 
     timer.start();

@@ -4,6 +4,9 @@
 
 #include "logger.h"
 #include <windowsx.h>
+#include "platform/window_registration_class.h"
+#include "platform/win32/window_factory_win32.h"
+#include "jmacros.h"
 
 joj::Win32Window::Win32Window()
     : Window{}
@@ -49,6 +52,23 @@ joj::Win32Window::~Win32Window()
 
 joj::ErrorCode joj::Win32Window::create()
 {
+    WindowRegistrationClass wnd_class;
+    wnd_class.styles = 
+        WindowStyles::DoubleClick | WindowStyles::OwnDC |
+        WindowStyles::Horizontal | WindowStyles::Vertical;
+    wnd_class.procedure = (void*)WinProc;
+    wnd_class.instance = GetModuleHandle(nullptr);
+    wnd_class.menu_name = "";
+    wnd_class.class_name = "JOJ_WINDOW_CLASS";
+
+    joj::Win32WindowFactory factory;
+    if JOJ_FAILED(factory.create_window_class(wnd_class))
+    {
+        JERROR(ErrorCode::ERR_WINDOW_REGISTRATION, "Failed to create window class.");
+        return ErrorCode::ERR_WINDOW_REGISTRATION;
+    }
+
+    /*
     const char* joj_wnd_class_name = "JOJ_WINDOW_CLASS";
 
     m_data.instance = GetModuleHandle(nullptr);
@@ -82,6 +102,7 @@ joj::ErrorCode joj::Win32Window::create()
             return ErrorCode::ERR_WINDOW_REGISTRATION;
         }
     }
+    */
 
     // Lock window size to minimum of 200x200
     if (m_width < 200)
@@ -159,7 +180,7 @@ joj::ErrorCode joj::Win32Window::create()
 
     m_data.handle = CreateWindowEx(
         0,
-        joj_wnd_class_name,
+        wnd_class.class_name.c_str(),
         m_title,
         m_style,
         0, 0,

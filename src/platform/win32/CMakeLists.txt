@@ -8,6 +8,8 @@ add_library(jojWin32Platform
 	window_win32.cpp
 	input_win32.cpp
 	timer_win32.cpp
+	window_factory_win32.cpp
+	window_procedure_win32.cpp
 )
 
 target_include_directories(jojWin32Platform

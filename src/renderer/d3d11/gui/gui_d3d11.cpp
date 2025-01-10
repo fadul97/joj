@@ -4,7 +4,6 @@
 
 #include "jmacros.h"
 #include "logger.h"
-// #include "renderer/d3d11/renderer_d3d11.h"
 #include "platform/win32/window_win32.h"
 #include <windowsx.h>
 #include "platform/win32/input_win32.h"
@@ -33,7 +32,6 @@ void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
 {
     s_renderer = &renderer;
 
-    /*
     m_main_window.handle = window.handle;
     m_main_window.hdc = window.hdc;
     m_main_window.window_mode = window.window_mode;
@@ -41,148 +39,14 @@ void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
     m_main_window.height = window.height;
 
     HINSTANCE app_id = window.instance;
-    */
-
-    // ---------------------------------------------------
-    // Create child window of Window
-    // ---------------------------------------------------
-
-    const char* gui_class_name = "JGUI_WINDOW_CLASS";
-
-    HINSTANCE app_id = GetModuleHandle(nullptr);
-    if (!app_id)
-    {
-        JFATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to get module handle.");
-        return;
-    }
-
-    WNDCLASSEX wnd_class;
-    if (!GetClassInfoExA(app_id, gui_class_name, &wnd_class))
-    {
-        wnd_class.cbSize = sizeof(WNDCLASSEX);
-        wnd_class.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-        wnd_class.lpfnWndProc = GUIWinProc;
-        wnd_class.cbClsExtra = 0;
-        wnd_class.cbWndExtra = 0;
-        wnd_class.hInstance = app_id;
-        wnd_class.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
-        wnd_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
-        wnd_class.hbrBackground = CreateSolidBrush(RGB(60, 60, 60));
-        wnd_class.lpszMenuName = nullptr;
-        wnd_class.lpszClassName = gui_class_name;
-        wnd_class.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-
-        // Register "JOJ_WINDOW_CLASS" class
-        if (RegisterClassEx(&wnd_class) != TRUE)
-        {
-            DWORD error_code = GetLastError();
-            char error_message[256];
-            FormatMessageA(
-                FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                nullptr,
-                error_code,
-                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                error_message,
-                sizeof(error_message),
-                nullptr
-            );
-
-            JERROR(ErrorCode::ERR_WINDOW_REGISTRATION, "Failed to register window class. Error %lu: %s",
-                error_code, error_message);
-            // return;
-        }
-    }
-
-    if (!GetClassInfoExA(app_id, gui_class_name, &wnd_class))
-    {
-        DWORD error_code = GetLastError();
-        JFATAL(ErrorCode::ERR_WINDOW_REGISTRATION,
-            "Class not found after registration. Error %lu", error_code);
-        return;
-    }
-    else
-    {
-        JINFO("Class already registered.");
-    }
-
-    u32 width = window.width / 4;
-    u32 height = window.height - 100;
-    DWORD style = WS_OVERLAPPED | WS_SYSMENU | WS_VISIBLE | WS_THICKFRAME;
-
-    JDEBUG("Using class name: %s", gui_class_name);
-    m_main_window.handle = CreateWindowEx(
-        0,
-        gui_class_name,
-        "GUIMainWindow",
-        style,
-        window.width - width, 0,
-        width, height,
-        window.handle,
-        nullptr,
-        app_id,
-        nullptr
-    );
-
-    if (!m_main_window.handle)
-    {
-        DWORD error_code = GetLastError();
-        char error_message[256];
-        FormatMessageA(
-            FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-            nullptr,
-            error_code,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            error_message,
-            sizeof(error_message),
-            nullptr
-        );
-
-        JFATAL(ErrorCode::ERR_WINDOW_HANDLE,
-            "Failed to create window. Error %lu: %s", error_code, error_message);
-        return;
-    }
-
-    RECT new_rect = { 0, 0, static_cast<LONG>(width), static_cast<LONG>(height) };
-    if (!AdjustWindowRectEx(&new_rect,
-        GetWindowStyle(m_main_window.handle),
-        GetMenu(m_main_window.handle) != nullptr,
-        GetWindowExStyle(m_main_window.handle)))
-    {
-        JERROR(ErrorCode::ERR_WINDOW_ADJUST, "Could not adjust window rect ex.");
-    }
-
-    m_main_window.x = (GetSystemMetrics(SM_CXSCREEN) / 2) - ((new_rect.right - new_rect.left) / 2);
-    m_main_window.y = (GetSystemMetrics(SM_CYSCREEN) / 2) - ((new_rect.bottom - new_rect.top) / 2);
-    if (!MoveWindow(
-        m_main_window.handle,
-        m_main_window.x + window.width / 3,
-        m_main_window.y + 10,
-        new_rect.right - new_rect.left,
-        new_rect.bottom - new_rect.top,
-        TRUE))
-    {
-        JERROR(ErrorCode::ERR_WINDOW_MOVE, "Could not move window.");
-    }
-
-    m_main_window.hdc = GetDC(m_main_window.handle);
-    if (!m_main_window.hdc)
-    {
-        JERROR(ErrorCode::ERR_WINDOW_DEVICE_CONTEXT, "Failed to get device context.");
-        return;
-    }
-
-    // ---------------------------------------------------
-    // Create Button for Main Window
-    // ---------------------------------------------------
 
     ParentData parent_data = { m_main_window.handle, app_id };
     m_factory = JWin32WidgetFactory(parent_data);
 
-    // SetWindowLongPtr(m_main_window.handle, GWLP_WNDPROC, (LONG_PTR)GUIWinProc);
-    s_originalWndProc = (WNDPROC)SetWindowLongPtr(m_main_window.handle, GWLP_WNDPROC, (LONG_PTR)GUIWinProc);
-
-    // Log Handle
-    JDEBUG("GUI Handle: %p", m_main_window.handle);
+    if (m_main_window.handle)
+    {
+        s_originalWndProc = (WNDPROC)SetWindowLongPtr(m_main_window.handle, GWLP_WNDPROC, (LONG_PTR)GUIWinProc);
+    }
 
     m_initialized = true;
 }
@@ -268,13 +132,8 @@ void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
 
     if (callback)
     {
-        JDEBUG("Setting callback for button");
         button->on_click(callback);
         button->set_callback(callback);
-    }
-    else
-    {
-        JDEBUG("Callback is null when adding button!");
     }
 
     // m_widgets.push_back(button);
@@ -291,10 +150,6 @@ void joj::D3D11GUI::add_button(const std::string& label, i32 x, i32 y, i32 width
     }
 
     button->trigger();
-    JDEBUG("Called trigger!");
-    
-    // m_widgets2.push_back(std::move(button));
-    
 }
 
 
@@ -305,8 +160,8 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     {
     case WM_COMMAND:
     {
-        int control_id = LOWORD(wParam); // ID do controle
-        int notification_code = HIWORD(wParam); // Código de notificação
+        i32 control_id = LOWORD(wParam); // ID do controle
+        i32 notification_code = HIWORD(wParam); // Código de notificação
         HWND sender_handle = (HWND)lParam; // Handle do controle que enviou
 
         if (notification_code == BN_CLICKED)
@@ -317,7 +172,6 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
             if (it != JWidget::get_widget_map().end())
             {
                 auto widget = it->second;
-                JDEBUG("Widget found in map. Address: %p", widget);
                 widget->trigger();
                 // return widget->handle_message(msg, wParam, lParam);
                 return 0;
@@ -387,7 +241,6 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     }
 
     return CallWindowProc(s_originalWndProc, hWnd, msg, wParam, lParam);
-    // return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 #endif // JPLATFORM_WINDOWS
