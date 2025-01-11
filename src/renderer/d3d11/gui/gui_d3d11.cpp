@@ -7,6 +7,8 @@
 #include "platform/win32/window_win32.h"
 #include <windowsx.h>
 #include "platform/win32/input_win32.h"
+#include "platform/window_registration_class.h"
+#include "platform/win32/window_factory_win32.h"
 
 joj::IRenderer* joj::D3D11GUI::s_renderer = nullptr;
 joj::Mouse joj::D3D11GUI::s_mouse = { 0 };
@@ -17,11 +19,17 @@ WNDPROC joj::D3D11GUI::s_originalWndProc = nullptr;
 joj::D3D11GUI::D3D11GUI()
     : m_initialized(false)
 {
-    m_main_window.handle = nullptr;
-    m_main_window.hdc = nullptr;
-    m_main_window.window_mode = WindowMode::Windowed;
-    m_main_window.width = 0;
-    m_main_window.height = 0;
+    m_parent_window.handle = nullptr;
+    m_parent_window.hdc = nullptr;
+    m_parent_window.window_mode = WindowMode::Windowed;
+    m_parent_window.width = 0;
+    m_parent_window.height = 0;
+
+    m_window.handle = nullptr;
+    m_window.hdc = nullptr;
+    m_window.window_mode = WindowMode::Windowed;
+    m_window.width = 0;
+    m_window.height = 0;
 }
 
 joj::D3D11GUI::~D3D11GUI()
@@ -32,21 +40,59 @@ void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
 {
     s_renderer = &renderer;
 
-    m_main_window.handle = window.handle;
-    m_main_window.hdc = window.hdc;
-    m_main_window.window_mode = window.window_mode;
-    m_main_window.width = window.width;
-    m_main_window.height = window.height;
+    WindowRegistrationClass wnd_class;
+    wnd_class.styles =
+        WindowStyles::DoubleClick | WindowStyles::OwnDC |
+        WindowStyles::Horizontal | WindowStyles::Vertical;
+    wnd_class.procedure = (void*)GUIWinProc;
+    wnd_class.instance = GetModuleHandle(nullptr);
+    wnd_class.menu_name = "";
+    wnd_class.class_name = "JGUI_WINDOW_CLASS";
+
+    joj::Win32WindowFactory factory;
+    if JOJ_FAILED(factory.create_window_class(wnd_class))
+    {
+        JERROR(ErrorCode::ERR_WINDOW_REGISTRATION, "Failed to create window class.");
+        return;
+    }
+
+    m_parent_window.handle = window.handle;
+    m_parent_window.hdc = window.hdc;
+    m_parent_window.window_mode = window.window_mode;
+    m_parent_window.width = window.width;
+    m_parent_window.height = window.height;
 
     HINSTANCE app_id = window.instance;
 
-    ParentData parent_data = { m_main_window.handle, app_id };
-    m_factory = JWin32WidgetFactory(parent_data);
-
-    if (m_main_window.handle)
+    if (m_parent_window.handle)
     {
-        s_originalWndProc = (WNDPROC)SetWindowLongPtr(m_main_window.handle, GWLP_WNDPROC, (LONG_PTR)GUIWinProc);
+        s_originalWndProc = (WNDPROC)SetWindowLongPtr(m_parent_window.handle, GWLP_WNDPROC, (LONG_PTR)GUIWinProc);
     }
+
+    i32 width = m_parent_window.width / 4;
+    i32 height = m_parent_window.height;
+
+    m_window.handle = CreateWindowEx(
+        0,
+        wnd_class.class_name.c_str(),
+        "GUI Window",
+        WS_OVERLAPPED | WS_SYSMENU | WS_VISIBLE,
+        0, 0,
+        width, height,
+        nullptr,
+        nullptr,
+        GetModuleHandle(nullptr),
+        nullptr
+    );
+
+    if (!m_window.handle)
+    {
+        JFATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to create window.");
+        return;
+    }
+
+    ParentData parent_data = { m_window.handle, app_id };
+    m_factory = JWin32WidgetFactory(parent_data);
 
     m_initialized = true;
 }
@@ -108,11 +154,11 @@ void joj::D3D11GUI::shutdown()
         delete widget;
     }
 
-    if (m_main_window.hdc != nullptr)
-        ReleaseDC(m_main_window.handle, m_main_window.hdc);
+    if (m_parent_window.hdc != nullptr)
+        ReleaseDC(m_parent_window.handle, m_parent_window.hdc);
 
-    if (m_main_window.handle != nullptr)
-        DestroyWindow(m_main_window.handle);
+    if (m_parent_window.handle != nullptr)
+        DestroyWindow(m_parent_window.handle);
 }
 
 void joj::D3D11GUI::add_widget(JWidget* widget)

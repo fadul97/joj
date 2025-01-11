@@ -50,7 +50,8 @@ namespace joj
         // std::vector<std::unique_ptr<JWidget>> m_widgets2;
         b8 m_initialized;
 
-        GUIWindow m_main_window;
+        GUIWindow m_parent_window;
+        GUIWindow m_window;
         JWin32WidgetFactory m_factory;
 
         static IRenderer* s_renderer;
