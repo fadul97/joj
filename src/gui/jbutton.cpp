@@ -2,6 +2,7 @@
 
 #include <commctrl.h>
 #include "logger.h"
+#include <Windowsx.h>
 
 LRESULT CALLBACK PanelProc(HWND hwnd, UINT msg,
     WPARAM wParam, LPARAM lParam) {
@@ -176,24 +177,53 @@ LRESULT joj::JButton::handle_message(UINT msg, WPARAM wParam, LPARAM lParam)
 LRESULT CALLBACK joj::JButton::ButtonProc(HWND hWnd, UINT msg, WPARAM wParam,
     LPARAM lParam)
 {
+    static b8 button_pressed = false;
     HWND parent_handle = GetParent(hWnd);
 
     switch (msg)
     {
     case WM_LBUTTONDOWN:
+        button_pressed = true;
+        // SetCapture(hWnd);
+        /*
         // JDEBUG("Button message: %d", msg);
         if (parent_handle)
         {
             // Enviar mensagem para a janela pai
             SendMessage(parent_handle, WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(hWnd), BN_CLICKED), (LPARAM)hWnd);
         }
+        */
         break;
+    case WM_LBUTTONUP:
+        // ReleaseCapture();
+        if (button_pressed)
+        {
+            button_pressed = false;
+            /*
+            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+            RECT rect;
+            GetClientRect(hWnd, &rect);
+            if (PtInRect(&rect, pt) && parent_handle)
+            {
+                SendMessage(parent_handle, WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(hWnd), BN_CLICKED), (LPARAM)hWnd);
+            }
+            */
+            /*
+            if (parent_handle)
+            {
+                SendMessage(parent_handle, WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(hWnd), BN_CLICKED), (LPARAM)hWnd);
+            }
+            */
+        }
+        break;
+        /*
     case WM_COMMAND:
         if (HIWORD(wParam) == BN_CLICKED)
         {
             // JDEBUG("Button clicked");
         }
         break;
+        */
     default:
         break;
     }

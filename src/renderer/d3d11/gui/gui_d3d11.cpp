@@ -200,8 +200,38 @@ void joj::D3D11GUI::add_button(const std::string& label, i32 x, i32 y, i32 width
 LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     LPARAM lParam)
 {
+    static HWND lastClicked = nullptr;
+
     switch (msg)
     {
+    case WM_COMMAND:
+    {
+        i32 control_id = LOWORD(wParam); // ID do controle
+        i32 notification_code = HIWORD(wParam); // Código de notificação
+        HWND sender_handle = (HWND)lParam; // Handle do controle que enviou
+
+        if (notification_code == BN_CLICKED)
+        {
+            if (lastClicked != sender_handle) // Garantir que processamos apenas uma vez
+            {
+                lastClicked = sender_handle;
+
+                auto it = JWidget::get_widget_map().find(sender_handle);
+                if (it != JWidget::get_widget_map().end())
+                {
+                    auto widget = it->second;
+                    widget->trigger();
+                }
+                else
+                {
+                    JDEBUG("Widget not found in map for handle: %p", sender_handle);
+                }
+            }
+            return 0;
+        }
+        break;
+    }
+    /*
     case WM_COMMAND:
     {
         i32 control_id = LOWORD(wParam); // ID do controle
@@ -227,6 +257,7 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
         }
         break;
     }
+    */
     // Read Mouse Position
     case WM_MOUSEMOVE:
     {
@@ -281,6 +312,7 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
         PostQuitMessage(0);
         return 0;
     default:
+        lastClicked = nullptr;
         break;
     }
 

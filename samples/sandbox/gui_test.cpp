@@ -46,7 +46,7 @@ void GUITest::init_platform()
 
 f32 red = 0.0f;
 void on_button_clicked() {
-    red = 1.0f;
+    red += 0.20f;
     JINFO("Button clicked!")
 }
 
