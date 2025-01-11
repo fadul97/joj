@@ -38,15 +38,15 @@ void GUITest::init_platform()
 
     // renderer_print();
 
-    /*
     if JOJ_FAILED(renderer.initialize(window.get_data()))
         return;
-    */
 
     timer.start();
 }
 
+f32 red = 0.0f;
 void on_button_clicked() {
+    red = 1.0f;
     JINFO("Button clicked!")
 }
 
@@ -73,13 +73,13 @@ void GUITest::update(const f32 dt)
 
 void GUITest::draw()
 {
-    // renderer.clear(0.0f, 0.0f, 1.0f, 1.0f);
+    renderer.clear(red, 0.0f, 1.0f, 1.0f);
 
     // renderer.disable_depth_test();
     m_gui.draw(renderer.get_cmd_list());
     // renderer.enable_depth_test();
 
-    // renderer.swap_buffers();
+    renderer.swap_buffers();
 }
 
 void GUITest::shutdown()

@@ -194,8 +194,6 @@ void joj::D3D11GUI::add_button(const std::string& label, i32 x, i32 y, i32 width
         JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
         return;
     }
-
-    button->trigger();
 }
 
 
