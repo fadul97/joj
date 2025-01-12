@@ -54,6 +54,10 @@ public:
     void draw() override;
     void shutdown() override;
 
+    void on_mouse_down(joj::Buttons button, i32 x, i32 y) override;
+    void on_mouse_up(joj::Buttons button, i32 x, i32 y) override;
+    void on_mouse_move(WPARAM button_state, i32 x, i32 y) override;
+
     void setup_camera();
     void build_shaders_and_input_layout();
     void load_meshes_and_models();
@@ -66,6 +70,7 @@ public:
     joj::D3D11BasicModel m_rock;
     std::vector<joj::BasicModelInstance> m_model_instances;
     joj::FreeCamera m_cam;
+    joj::JFloat2 m_last_mouse_pos;
     joj::D3D11Shader m_static_shader;
     joj::D3D11InputLayout m_static_layout;
     joj::D3D11ConstantBuffer cbObject;

@@ -160,6 +160,20 @@ void AppTest::update(const f32 dt)
 {
     if (m_input->is_key_pressed(joj::KEY_ESCAPE))
         joj::Engine::close();
+
+    if (m_input->is_key_down('W'))
+        m_cam.walk(dt * 35.0f);
+
+    if (m_input->is_key_down(joj::KEY_S))
+        m_cam.walk(dt * -35.0f);
+
+    if (m_input->is_key_down(joj::KEY_A))
+        m_cam.strafe(dt * -35.0f);
+
+    if (m_input->is_key_down(joj::KEY_D))
+        m_cam.strafe(dt * 35.0f);
+
+    m_cam.update_view_matrix();
 }
 
 void AppTest::draw()
@@ -257,4 +271,32 @@ void AppTest::draw_objects()
 
 void AppTest::shutdown()
 {
+}
+
+void AppTest::on_mouse_down(joj::Buttons button, i32 x, i32 y)
+{
+    m_last_mouse_pos.x = x;
+    m_last_mouse_pos.y = y;
+
+    SetCapture(m_window->get_data().handle);
+}
+
+void AppTest::on_mouse_up(joj::Buttons button, i32 x, i32 y)
+{
+    ReleaseCapture();
+}
+
+void AppTest::on_mouse_move(WPARAM button_state, i32 x, i32 y)
+{
+    if ((button_state & MK_RBUTTON) != 0)
+    {
+        f32 dx = DirectX::XMConvertToRadians(0.25f * static_cast<f32>(x - m_last_mouse_pos.x));
+        f32 dy = DirectX::XMConvertToRadians(0.25f * static_cast<f32>(y - m_last_mouse_pos.y));
+
+        m_cam.pitch(dy);
+        m_cam.rotateY(dx);
+    }
+
+    m_last_mouse_pos.x = x;
+    m_last_mouse_pos.y = y;
 }
