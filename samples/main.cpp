@@ -1,11 +1,12 @@
 #include "sandbox/gui_test.h"
+#include "sandbox/app_test.h"
 
 f32 frametime = 0.0f;
 b8 process_events();
 
 int main()
 {
-    GUITest app;
+    AppTest app;
     app.init();
 
     while (app.loop)

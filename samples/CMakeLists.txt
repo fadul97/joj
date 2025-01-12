@@ -5,6 +5,7 @@ project(jojSamples)
 
 add_executable(jojSamples
     main.cpp
+    sandbox/app_test.cpp
     sandbox/gui_test.cpp
     #test_app.cpp
 )
