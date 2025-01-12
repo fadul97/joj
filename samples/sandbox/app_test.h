@@ -2,11 +2,7 @@
 #define _JOJ_APP_TEST_H
 
 // Includes --------------------------------------------------------------------
-#include "joj/engine.h"
-#include "joj/platform/win32/window_win32.h"
-#include "joj/platform/win32/input_win32.h"
-#include "joj/platform/win32/timer_win32.h"
-#include "joj/renderer/d3d11/renderer_d3d11.h"
+#include "joj/application/app.h"
 
 #include "joj/resources/d3d11/model_manager_d3d11.h"
 #include "joj/resources/d3d11/basic_model_d3d11.h"
@@ -18,7 +14,7 @@
 #include "joj/renderer/d3d11/constant_buffer_d3d11.h"
 #include "joj/renderer/d3d11/sampler_state_d3d11.h"
 
-// Constants -------------------------------------------------------------------
+// Constant Objects ------------------------------------------------------------
 
 struct cbPerObject
 {
@@ -29,36 +25,35 @@ struct cbPerObject
     joj::JFloat4x4 gTexTransform = joj::float4x4_identity();
     joj::JFloat4x4 gShadowTransform = joj::float4x4_identity();
     joj::Material gMaterial;
-    u32 gUseTexure;
-    u32 gAlphaClip;
-    u32 gFogEnabled;
-    u32 gReflectionEnabled;
+    u32 gUseTexure = 0;
+    u32 gAlphaClip = 0;
+    u32 gFogEnabled = 0;
+    u32 gReflectionEnabled = 0;
 };
 
 struct cbPerFrame
 {
     joj::DirectionalLight gDirLights[3];
-    joj::JFloat3 gEyePosW;
+    joj::JFloat3 gEyePosW = { 1.0f, 1.0f, 1.0f };
 
-    f32  gFogStart;
-    f32  gFogRange;
-    joj::JFloat4 gFogColor;
+    f32  gFogStart = 0.0f;
+    f32  gFogRange = 0.0f;
+    joj::JFloat4 gFogColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 };
 
 // Class -----------------------------------------------------------------------
 
-class AppTest
+class AppTest : public joj::App
 {
 public:
     AppTest();
     ~AppTest();
 
-    void init();
-    void update(const f32 dt);
-    void draw();
-    void shutdown();
+    void init() override;
+    void update(const f32 dt) override;
+    void draw() override;
+    void shutdown() override;
 
-    void init_platform();
     void setup_camera();
     void build_shaders_and_input_layout();
     void load_meshes_and_models();
@@ -66,16 +61,7 @@ public:
     void build_sampler_state();
     void draw_objects();
 
-    f32 get_frametime();
-
-    joj::Win32Window window;
-    joj::Win32Input input;
-    joj::Win32Timer timer;
-    joj::D3D11Renderer renderer;
-    b8 loop = true;
-    f32 frametime = 0.0f;
-
-    // ---------------------------------------------------
+    // ----------------------------------------------------
     joj::D3D11ModelManager m_model_manager;
     joj::D3D11BasicModel m_rock;
     std::vector<joj::BasicModelInstance> m_model_instances;

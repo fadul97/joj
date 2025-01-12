@@ -39,9 +39,9 @@ namespace joj
 
     struct WindowRegistrationClass
     {
-        WindowStyles styles;
-        void* procedure;
-        void* instance;
+        WindowStyles styles = WindowStyles::None;
+        void* procedure = nullptr;
+        void* instance = nullptr;
         std::string menu_name;
         std::string class_name;
     };
