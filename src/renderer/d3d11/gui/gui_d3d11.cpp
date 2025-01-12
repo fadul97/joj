@@ -10,11 +10,143 @@
 #include "platform/window_registration_class.h"
 #include "platform/win32/window_factory_win32.h"
 
+#define IDC_BUTTON1 2010
+#define INPUT_FLOAT_ID 2011
+
+#include <tchar.h>
+
+static WNDPROC OriginalEditCtrlProc = NULL;
+
+LRESULT CALLBACK MyWindowProc(
+    HWND hwnd,
+    UINT uMsg,
+    WPARAM wParam,
+    LPARAM lParam)
+{
+    if (uMsg == WM_CHAR)
+    {
+        // Obter o texto atual do controle EDIT
+        int len = GetWindowTextLength(hwnd);
+        TCHAR text[256];
+        GetWindowText(hwnd, text, 256);
+
+        // Permitir teclas de controle
+        if (wParam == VK_BACK || wParam == VK_DELETE || wParam == VK_RETURN)
+        {
+            return CallWindowProc(OriginalEditCtrlProc, hwnd, uMsg, wParam, lParam);
+        }
+
+        // Permitir dígitos
+        if (wParam >= '0' && wParam <= '9')
+        {
+            return CallWindowProc(OriginalEditCtrlProc, hwnd, uMsg, wParam, lParam);
+        }
+
+        // Permitir ponto decimal, mas apenas um
+        if (wParam == '.' && _tcschr(text, '.') == NULL)
+        {
+            return CallWindowProc(OriginalEditCtrlProc, hwnd, uMsg, wParam, lParam);
+        }
+
+        // Permitir sinal de menos apenas na primeira posição
+        if (wParam == '-' && len == 0)
+        {
+            return CallWindowProc(OriginalEditCtrlProc, hwnd, uMsg, wParam, lParam);
+        }
+
+        // Bloquear qualquer outro caractere
+        return 0;
+    }
+    else if (uMsg == WM_KEYDOWN)
+    {
+        // Se o usuário pressionar Enter ou Tab, mudar o foco
+        if (wParam == VK_RETURN || wParam == VK_TAB)
+        {
+            HWND hParent = GetParent(hwnd);
+            if (hParent != NULL)
+            {
+                // Mudar o foco para a próxima janela (ou janela pai, se preferir)
+                SetFocus(hParent);
+            }
+            return 0; // Impedir processamento adicional da tecla
+        }
+    }
+    else if (uMsg == WM_KILLFOCUS)
+    {
+        // Verificar se o texto não termina em ".0"
+        TCHAR text[256];
+        GetWindowText(hwnd, text, 256);
+
+        if (_tcslen(text) > 0 && _tcschr(text, '.') == NULL)
+        {
+            _tcscat_s(text, _T(".0"));
+        }
+
+        f32 value = static_cast<f32>(_ttof(text));
+
+        // Notificar a janela pai com uma mensagem personalizada
+        HWND hParent = GetParent(hwnd);
+        if (hParent != NULL)
+        {
+            UINT id = GetDlgCtrlID(hwnd);
+            SendMessage(hParent, WM_USER + 1, static_cast<WPARAM>(id), *reinterpret_cast<LPARAM*>(&value));
+        }
+
+        SetWindowText(hwnd, text);
+    }
+
+    // Manter o processamento padrão para outras mensagens
+    return CallWindowProc(OriginalEditCtrlProc, hwnd, uMsg, wParam, lParam);
+}
+
+
+
+
+
+
+void CreateCustomEdit(HINSTANCE hInstance, HWND hParent, UINT id)
+{
+    CreateWindowEx(
+        0,
+        _T("STATIC"),
+        _T("Pos X:"),
+        WS_VISIBLE | WS_CHILD,
+        10, 80, 50, 25,
+        hParent,
+        NULL,
+        hInstance,
+        NULL);
+
+    HWND hwnd;
+
+    hwnd = CreateWindowEx(
+        WS_EX_CLIENTEDGE,
+        _T("EDIT"),
+        _T("0.0"),
+        WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_LEFT,
+        70, 80, 100, 25,
+        hParent,
+        reinterpret_cast<HMENU>(id),
+        hInstance,
+        NULL);
+
+    if (hwnd != NULL)
+    {
+        // Subclass the window so we can filter keystrokes
+        WNDPROC oldProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(
+            hwnd,
+            GWLP_WNDPROC,
+            reinterpret_cast<LONG_PTR>(MyWindowProc)));
+        if (OriginalEditCtrlProc == NULL)
+        {
+            OriginalEditCtrlProc = oldProc;
+        }
+    }
+}
+
 joj::IRenderer* joj::D3D11GUI::s_renderer = nullptr;
 joj::Mouse joj::D3D11GUI::s_mouse = { 0 };
 WNDPROC joj::D3D11GUI::s_originalWndProc = nullptr;
-
-#define IDC_BUTTON1 2010
 
 joj::D3D11GUI::D3D11GUI()
     : m_initialized(false)
@@ -93,6 +225,8 @@ void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
 
     ParentData parent_data = { m_window.handle, app_id };
     m_factory = JWin32WidgetFactory(parent_data);
+
+    CreateCustomEdit(app_id, m_window.handle, INPUT_FLOAT_ID);
 
     m_initialized = true;
 }
@@ -228,6 +362,23 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
                 }
             }
             return 0;
+        }
+        break;
+    }
+    case WM_USER + 1:
+    {
+        // 'wParam' contém o ID do controle que enviou a mensagem
+        u32 controlId = static_cast<u32>(wParam);
+
+        // 'lParam' contém o valor float (convertido para um ponteiro e enviado pela mensagem)
+        f32 value = *reinterpret_cast<f32*>(&lParam);
+
+        // Verificar qual controle enviou a mensagem
+        if (controlId == INPUT_FLOAT_ID)
+        {
+            // Fazer algo com o valor recebido
+            // Por exemplo, atualizar uma variável ou exibir o valor em um log
+            JDEBUG("Valor recebido do controle %u: %f", controlId, value);
         }
         break;
     }
