@@ -146,6 +146,9 @@ namespace joj
         ERR_GUI_NOT_INITIALIZED,
 
         ERR_GUI_BUTTON_WIN32_CREATION,
+        ERR_WIN32_WINDOW_CREATE,
+        ERR_WIN32_INPUT_CREATE,
+        ERR_WIN32_TIMER_CREATE,
     };
 
     // TODO: Add all cases.

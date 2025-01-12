@@ -20,6 +20,7 @@ add_subdirectory(renderer)
 add_subdirectory(systems)
 add_subdirectory(resources)
 add_subdirectory(gui)
+add_subdirectory(application)
 
 target_link_directories(
     joj
@@ -29,6 +30,7 @@ target_link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/systems/
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/
+    ${CMAKE_CURRENT_SOURCE_DIR}/appapplication/
 )
 
 target_link_libraries(
@@ -39,6 +41,7 @@ target_link_libraries(
     jojSystems
     jojResources
     jojGUI
+    jojApplication
 )
 
 target_compile_definitions(joj PRIVATE JOJ_DEBUG_MODE)
