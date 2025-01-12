@@ -8,6 +8,10 @@
 
 #include <Windows.h>
 #include "platform/keys.h"
+#include "platform/win32/window_win32.h"
+#include "platform/win32/input_win32.h"
+#include "platform/win32/timer_win32.h"
+#include "renderer/d3d11/renderer_d3d11.h"
 
 namespace joj
 {
@@ -36,7 +40,30 @@ namespace joj
         virtual void display() {}
 
         virtual void on_pause() { Sleep(10); }
+
+        void set_window(Win32Window* window);
+        void set_input(Win32Input* input);
+        void set_timer(Win32Timer* timer);
+        void set_renderer(D3D11Renderer* renderer);
+
+    protected:
+        Win32Window* m_window;
+        Win32Input* m_input;
+        Win32Timer* m_timer;
+        D3D11Renderer* m_renderer;
     };
+
+    inline void App::set_window(Win32Window* window)
+    { m_window = window; }
+
+    inline void App::set_input(Win32Input* input)
+    { m_input = input; }
+
+    inline void App::set_timer(Win32Timer* timer)
+    { m_timer = timer; }
+
+    inline void App::set_renderer(D3D11Renderer* renderer)
+    { m_renderer = renderer; }
 }
 
 #endif // JPLATFORM_WINDOWS

@@ -10,3 +10,5 @@ target_include_directories(
     PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
 )
+
+target_link_libraries(jojApplication PRIVATE jojPlatform)
