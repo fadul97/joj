@@ -1,4 +1,4 @@
-# PATH: joj/src/resources/CMakeLists.txt
+# PATH: src/resources/CMakeLists.txt
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 

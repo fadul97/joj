@@ -1,4 +1,4 @@
-# PATH: joj/src/systems/resources/d3d11/CMakeLists.txt
+# PATH: src/resources/d3d11/CMakeLists.txt
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
