@@ -1,7 +1,6 @@
 #include "app2d_test.h"
 
 #include "logger.h"
-#include <sstream>
 #include "joj/jmacros.h"
 #include "joj/renderer/vertex.h"
 #include "joj/engine.h"
@@ -14,10 +13,6 @@ App2DTest::App2DTest()
 App2DTest::~App2DTest()
 {
 
-}
-
-void App2DTest::setup_camera()
-{
 }
 
 void App2DTest::load_sprites()
@@ -49,8 +44,6 @@ void App2DTest::load_sprites()
     runAnim.frames = { 0, 1, 2, 3, 4 };  // Quadro 0, 1, 2, 3, 4 da SpriteSheet.
     runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
     m_sprite.add_animation(runAnim);
-
-    m_renderer->initialize_data2D();
 }
 
 void App2DTest::build_sampler_state()
@@ -78,7 +71,7 @@ void App2DTest::build_sampler_state()
 
 void App2DTest::init()
 {
-    setup_camera();
+    m_renderer->initialize_data2D();
     load_sprites();
     build_sampler_state();
     m_sprite.play_animation("Run");

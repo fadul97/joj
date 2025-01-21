@@ -4,18 +4,9 @@
 // Includes --------------------------------------------------------------------
 #include "joj/application/app.h"
 
-#include "joj/resources/d3d11/model_manager_d3d11.h"
-#include "joj/resources/d3d11/basic_model_d3d11.h"
-#include <vector>
-#include "joj/systems/camera/free_camera.h"
-#include "joj/renderer/d3d11/shader_d3d11.h"
-#include "joj/renderer/d3d11/input_layout_d3d11.h"
-#include "joj/systems/light/light.h"
-#include "joj/renderer/d3d11/constant_buffer_d3d11.h"
+#include "joj/renderer/d3d11/texture_manager_d3d11.h"
 #include "joj/renderer/d3d11/sampler_state_d3d11.h"
 #include "joj/renderer/d3d11/sprite_d3d11.h"
-#include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
-#include "joj/renderer/d3d11/index_buffer_d3d11.h"
 
 // Constant Objects ------------------------------------------------------------
 
@@ -33,7 +24,6 @@ public:
     void draw() override;
     void shutdown() override;
 
-    void setup_camera();
     void load_sprites();
     void build_sampler_state();
     void draw_objects();
