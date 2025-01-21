@@ -30,6 +30,7 @@ namespace joj
 
         void set_data(const TextureData2D& texture_data) override;
         SpriteSheetData& get_data() override;
+
     private:
         SpriteSheetData m_data;
     };

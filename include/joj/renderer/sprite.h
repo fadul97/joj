@@ -5,6 +5,8 @@
 #include "defines.h"
 
 #include "texture2d_data.h"
+#include "sprite_animation_data.h"
+#include <string>
 
 namespace joj
 {
@@ -24,6 +26,14 @@ namespace joj
         virtual void set_sprite_data(const SpriteData& data) = 0;
 
         virtual SpriteData& get_sprite_data() = 0;
+
+        virtual void play_animation(const std::string& animation_name);
+        void update(const f32 dt);
+
+    protected:
+        SpriteAnimationData* m_current_animation;
+        i32 m_current_frame_index;
+        f32 m_time_since_last_frame;
     };
 }
 

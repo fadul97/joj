@@ -10,6 +10,8 @@
 #include "math/jmath.h"
 #include "renderer/color.h"
 #include "texture2d_d3d11.h"
+#include "sprite_sheet_d3d11.h"
+#include "renderer/sprite_animation_data.h"
 
 namespace joj
 {
@@ -38,6 +40,7 @@ namespace joj
 
     private:
         SpriteData m_data;
+        SpriteSheetData m_sprite_sheet_data;
     };
 }
 
