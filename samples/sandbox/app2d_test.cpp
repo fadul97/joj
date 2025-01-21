@@ -61,7 +61,7 @@ void App2DTest::load_meshes_and_models()
     data->rotation = 0.0f;
     data->color = { 1.0f, 1.0f, 1.0f, 1.0f };
     joj::TextureData2D& tex = m_tex_manager.get_texture(L"textures/shipanimated.dds");
-    data->texture = tex.srv;
+    data->texture.srv = tex.srv;
     m_sprite.set_sprite_data(*data);
 
     using namespace joj;
@@ -183,7 +183,7 @@ void App2DTest::draw_objects()
     m_vb.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
     m_ib.bind(m_renderer->get_cmd_list(), joj::DataFormat::R32_UINT, offset);
 
-    m_renderer->get_cmd_list().device_context->PSSetShaderResources(0, 1, &sprite.texture);
+    m_renderer->get_cmd_list().device_context->PSSetShaderResources(0, 1, &sprite.texture.srv);
 
     m_renderer->get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_renderer->get_cmd_list().device_context->DrawIndexed(6, 0, 0);

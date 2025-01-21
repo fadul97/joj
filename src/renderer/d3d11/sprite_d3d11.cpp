@@ -8,7 +8,7 @@ joj::D3D11Sprite::D3D11Sprite()
     m_data.size = { 0.0f, 0.0f };
     m_data.rotation = 0.0f;
     m_data.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    m_data.texture = nullptr;
+    m_data.texture.srv = nullptr;
 }
 
 joj::D3D11Sprite::~D3D11Sprite()
@@ -35,9 +35,9 @@ void joj::D3D11Sprite::set_color(f32 r, f32 g, f32 b, f32 a)
     m_data.color = { r, g, b, a };
 }
 
-void joj::D3D11Sprite::set_texture(SpriteData& texture)
+void joj::D3D11Sprite::set_texture(const TextureData2D& texture)
 {
-    m_data.texture = texture.texture;
+    m_data.texture.srv = texture.srv;
 }
 
 void joj::D3D11Sprite::set_sprite_data(const SpriteData& data)
