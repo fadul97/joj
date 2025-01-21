@@ -14,6 +14,8 @@ namespace joj
     {
     public:
         SpriteSheet();
+        SpriteSheet(const i32 rows, const i32 columns,
+            const i32 frame_width, const i32 frame_height);
         virtual ~SpriteSheet();
 
         virtual void set_data(const TextureData2D& texture_data) = 0;

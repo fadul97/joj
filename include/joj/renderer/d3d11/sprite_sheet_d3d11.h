@@ -24,6 +24,8 @@ namespace joj
     {
     public:
         D3D11SpriteSheet();
+        D3D11SpriteSheet(const i32 rows, const i32 columns,
+            const i32 frame_width, const i32 frame_height);
         ~D3D11SpriteSheet();
 
         void set_data(const TextureData2D& texture_data) override;
