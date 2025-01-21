@@ -182,16 +182,19 @@ void App2DTest::draw_font()
 
     auto sprite = m_font.get_data();
 
+    f32 window_width = 800.0f;  // Largura da janela em pixels
+    f32 window_height = 600.0f; // Altura da janela em pixels
+
     f32 x = 0.0f; // posição de início do texto
     f32 y = 0.0f;
 
     // posição de início do texto
-    float posX = x;
-    float posY = y;
+    f32 posX = x;
+    f32 posY = y;
 
-    f32 char_scale = 0.5f;
+    f32 char_scale = 1.0f;
 
-    std::string text = "Hello, World!";
+    std::string text = "He";
     int textLength = int(text.size());
 
     // para cada caractere do texto
@@ -207,11 +210,17 @@ void App2DTest::draw_font()
         // se foi carregado o espaçamento proporcional
         if (m_font.m_proportional)
             m_font.m_char_width = m_font.m_spacing[frame];
+
+        int charWidth = m_font.m_proportional ? m_font.m_spacing[frame] : m_font.get_data().char_width;
+        charWidth /= 800.0f;
+
+        float x_ndc = (posX / window_width) * 2.0f - 0.5f;
+        float y_ndc = (posY / window_height) * -2.0f + 0.5f;
         
         // configura sprite
         joj::JMatrix4x4 scale = DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
         joj::JMatrix4x4 rotation = DirectX::XMMatrixRotationZ(0);
-        joj::JMatrix4x4 translation = DirectX::XMMatrixTranslation(posX / 50.0f, 0.0f, 0.0f);
+        joj::JMatrix4x4 translation = DirectX::XMMatrixTranslation(x_ndc + charWidth, 0.0f, 0.0f);
         joj::JMatrix4x4 world = scale * rotation * translation;
 
         CBFont cb_data;
@@ -224,11 +233,11 @@ void App2DTest::draw_font()
         // Calcular as coordenadas UV para o caractere
         float uv_min_x = float(col) / float(sprite.columns);
         float uv_min_y = float(row) / float(sprite.rows);
-        float uv_max_x = float(col + 1) / float(sprite.columns);
-        float uv_max_y = float(row + 1) / float(sprite.rows);
+        float uv_max_x = float(32) / float(512);
+        float uv_max_y = float(32) / float(512);
 
         // Definir o retângulo UV
-        cb_data.uv_rect = { uv_min_x, uv_min_y, uv_max_x, uv_max_y };
+        cb_data.uv_rect = { uv_min_x, uv_min_y, uv_min_x + uv_max_x, uv_min_y + uv_max_y };
         m_constant_buffer.update(m_renderer->get_cmd_list(), cb_data);
 
         u32 stride = sizeof(joj::Vertex::PosColorUVRect);
@@ -244,9 +253,10 @@ void App2DTest::draw_font()
 
         // calcula posição do próximo caractere
         posX += m_font.get_data().char_width * char_scale;
+        // posX += charWidth * char_scale;
         posY += m_font.get_data().char_width * char_scale;
 
-        JDEBUG("Char: %c, posX: %f, posY: %f, char_width: %d", text[i], posX, posY, m_font.get_data().char_width);
+        JDEBUG("Char: %c, posX: %f, posY: %f, charWidth: %d, x_ndc: %f", text[i], posX, posY, charWidth, x_ndc);
     }
 }
 
