@@ -16,8 +16,8 @@ namespace joj
         SpriteSheet();
         virtual ~SpriteSheet();
 
-        virtual void set_sprite_data(const TextureData2D& data) = 0;
-        virtual TextureData2D& get_sprite_data() = 0;
+        virtual void set_data(const TextureData2D& texture_data) = 0;
+        virtual SpriteSheetData& get_data() = 0;
     };
 }
 

@@ -18,6 +18,7 @@ add_library(
     texture_manager_d3d11.cpp
     DDSTextureLoader11.cpp
     sprite_d3d11.cpp
+    sprite_sheet_d3d11.cpp
 )
 
 if(WIN32)
