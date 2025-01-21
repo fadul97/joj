@@ -139,6 +139,22 @@ void App2DTest::update(const f32 dt)
         m_sprite.play_animation("Run");
         m_sprite.update(dt);
     }
+
+    if (m_input->is_key_down('D'))
+    {
+        m_sprite.play_animation("Run");
+        m_sprite.update(dt);
+        auto& sprite = m_sprite.get_sprite_data();
+        sprite.position.x += 0.01f;
+    }
+
+    if (m_input->is_key_down('A'))
+    {
+        m_sprite.play_animation("Run");
+        m_sprite.update(dt);
+        auto& sprite = m_sprite.get_sprite_data();
+        sprite.position.x -= 0.01f;
+    }
 }
 
 void App2DTest::draw()
