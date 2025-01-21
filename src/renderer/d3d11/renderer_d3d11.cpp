@@ -4,6 +4,7 @@
 
 #include "logger.h"
 #include "platform/win32/window_win32.h"
+#include "renderer/d3d11/sprite_d3d11.h"
 
 joj::D3D11Renderer::D3D11Renderer()
 {
@@ -767,6 +768,11 @@ void joj::D3D11Renderer::swap_buffers()
     }
 
     m_cmd_list.device_context->OMSetRenderTargets(1, &m_render_target_view, m_depth_stencil_view);
+}
+
+void joj::D3D11Renderer::draw_sprite(const SpriteData& sprite)
+{
+    JTODO();
 }
 
 #if JOJ_DEBUG_MODE

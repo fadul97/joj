@@ -7,6 +7,7 @@
 #include "error_code.h"
 #include "platform/window.h"
 #include "viewport.h"
+#include "sprite.h"
 
 JAPI void renderer_print();
 
@@ -62,6 +63,8 @@ namespace joj
 
         virtual void clear(f32 r = 0.23f, f32 g = 0.23f, f32 b = 0.23f, f32 a = 1.0f) = 0;
         virtual void swap_buffers() = 0;
+
+        virtual void draw_sprite(const SpriteData& sprite) = 0;
     };
 }
 

@@ -57,6 +57,8 @@ namespace joj
         void clear(f32 r = 0.23f, f32 g = 0.23f, f32 b = 0.23f, f32 a = 1.0f) override;
         void swap_buffers() override;
 
+        void draw_sprite(const SpriteData& sprite) override;
+
 #if JOJ_DEBUG_MODE
         void log_hardware_info();
 #endif // JOJ_DEBUG_MODE
