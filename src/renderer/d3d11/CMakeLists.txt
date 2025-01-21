@@ -19,6 +19,7 @@ add_library(
     DDSTextureLoader11.cpp
     sprite_d3d11.cpp
     sprite_sheet_d3d11.cpp
+    font_d3d11.cpp
 )
 
 if(WIN32)
