@@ -19,12 +19,6 @@
 
 // Constant Objects ------------------------------------------------------------
 
-struct CB2D
-{
-    joj::JFloat4x4 world;   // Transformação (escala, rotação, translação)
-    joj::JFloat4 color;      // Cor multiplicadora
-    joj::JFloat4 uv_rect;    // Retângulo de textura
-};
 
 // Class -----------------------------------------------------------------------
 
@@ -50,12 +44,9 @@ public:
     joj::D3D11TextureManager m_tex_manager;;
     joj::D3D11Shader m_sprite_shader;
     joj::D3D11InputLayout m_sprite_layout;
-    joj::D3D11ConstantBuffer cbObject;
     joj::D3D11SamplerState m_sampler_state;
     joj::D3D11Sprite m_sprite;
     joj::SpriteData* data;
-    joj::D3D11VertexBuffer m_vb;
-    joj::D3D11IndexBuffer m_ib;
 };
 
 #endif // _JOJ_2D_APP_TEST_H

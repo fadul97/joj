@@ -76,40 +76,15 @@ void App2DTest::load_sprites()
 
     joj::SpriteAnimationData runAnim;
     runAnim.name = "Run";
-    runAnim.frames = { 5, 6, 7, 8, 9 };  // Quadro 0, 1, 2, 3, 4 da SpriteSheet.
+    runAnim.frames = { 0, 1, 2, 3, 4 };  // Quadro 0, 1, 2, 3, 4 da SpriteSheet.
     runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
     m_sprite.add_animation(runAnim);
 
-    using namespace joj;
-    joj::Vertex::PosColorUVRect quad_vertices[] =
-    {
-        { JFloat3{ -0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f }, JFloat4{ 0.0f, 0.0f, 0.0f, 1.0f } }, // Top Left
-        { JFloat3{  0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 0.0f, 1.0f, 1.0f }, JFloat4{ 1.0f, 0.0f, 0.0f, 1.0f } }, // Top Right
-        { JFloat3{  0.5f, -0.5f, 0.0f }, JFloat4{ 1.0f, 1.0f, 1.0f, 1.0f }, JFloat4{ 1.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Right
-        { JFloat3{ -0.5f, -0.5f, 0.0f }, JFloat4{ 1.0f, 0.0f, 0.0f, 1.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Left
-    };
-
-    m_vb.setup(BufferUsage::Immutable, CPUAccessType::None,
-        sizeof(Vertex::PosColorUVRect) * 4, quad_vertices);
-    JOJ_LOG_IF_FAIL(m_vb.create(m_renderer->get_device()));
-
-    // Índices para formar dois triângulos
-    u32 quad_indices[] =
-    {
-        0, 1, 2,
-        0, 2, 3
-    };
-
-    m_ib.setup(sizeof(u32) * 6, quad_indices);
-    JOJ_LOG_IF_FAIL(m_ib.create(m_renderer->get_device()));
+    m_renderer->initialize_data2D();
 }
 
 void App2DTest::build_cbs()
 {
-    cbObject.setup(joj::calculate_cb_byte_size(sizeof(CB2D)), nullptr);
-    JOJ_LOG_IF_FAIL(cbObject.create(m_renderer->get_device()));
-    cbObject.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
-    cbObject.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
 }
 
 void App2DTest::build_sampler_state()
@@ -172,52 +147,10 @@ void App2DTest::draw()
     m_renderer->swap_buffers();
 }
 
-b8 printed = false;
 void App2DTest::draw_objects()
 {
-    joj::SpriteData& sprite = m_sprite.get_sprite_data();
-    if (!printed)
-    {
-        JDEBUG("Sprite Position: %f, %f", sprite.position.x, sprite.position.y);
-        JDEBUG("Sprite Size: %f, %f", sprite.size.x, sprite.size.y);
-        JDEBUG("Sprite Rotation: %f", sprite.rotation);
-    }
-    
-    joj::JMatrix4x4 scale = DirectX::XMMatrixScaling(sprite.size.x, sprite.size.y, 1.0f);
-    joj::JMatrix4x4 rotation = DirectX::XMMatrixRotationZ(sprite.rotation);
-    joj::JMatrix4x4 translation = DirectX::XMMatrixTranslation(sprite.position.x, sprite.position.y, 0.0f);
-    joj::JMatrix4x4 world = scale * rotation * translation;
-
-    // world = joj::matrix4x4_identity();
-    // world = world;
-    
-    if (!printed)
-    {
-        JDEBUG("World Matrix:");
-        joj::JFloat4x4 m;
-        XMStoreFloat4x4(&m, world);
-        joj::float4x4_print(m);
-        printed = true;
-    }
-
-    CB2D cbData;
-    XMStoreFloat4x4(&cbData.world, XMMatrixTranspose(world));
-    cbData.color = sprite.color;
-    cbData.uv_rect = m_sprite.get_sprite_data().uv_rect;
-    cbObject.update(m_renderer->get_cmd_list(), cbData);
-
     m_sprite.draw();
-
-    u32 stride = sizeof(joj::Vertex::PosColorUVRect);
-    u32 offset = 0;
-
-    m_vb.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
-    m_ib.bind(m_renderer->get_cmd_list(), joj::DataFormat::R32_UINT, offset);
-
-    m_renderer->get_cmd_list().device_context->PSSetShaderResources(0, 1, &sprite.texture.srv);
-
-    m_renderer->get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    m_renderer->get_cmd_list().device_context->DrawIndexed(6, 0, 0);
+    m_renderer->draw_sprite(m_sprite.get_sprite_data());
 }
 
 void App2DTest::shutdown()
