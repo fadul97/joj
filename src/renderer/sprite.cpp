@@ -6,15 +6,16 @@ joj::Sprite::Sprite()
     : m_current_animation(nullptr),
     m_current_frame_index(0), m_time_since_last_frame(0.0f)
 {
+    m_time_since_last_frame = 5.0f;
 }
 
 joj::Sprite::~Sprite()
 {
 }
 
-void joj::Sprite::add_animation(const std::string& animation_name, const SpriteAnimationData& animation)
+void joj::Sprite::add_animation(const SpriteAnimationData& animation)
 {
-    m_animations[animation_name] = animation;
+    m_animations[animation.name] = animation;
 }
 
 void joj::Sprite::play_animation(const std::string& animation_name)

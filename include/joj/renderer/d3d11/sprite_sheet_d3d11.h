@@ -18,6 +18,8 @@ namespace joj
         i32 columns;           // Número de colunas na SpriteSheet.
         i32 frame_width;       // Largura de cada quadro.
         i32 frame_height;      // Altura de cada quadro.
+        i32 texture_width;     // Largura da textura.
+        i32 texture_height;    // Altura da textura.
     };
 
     class JAPI D3D11SpriteSheet : public SpriteSheet

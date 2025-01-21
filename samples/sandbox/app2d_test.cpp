@@ -50,7 +50,7 @@ void App2DTest::build_shaders_and_input_layout()
     m_sprite_layout.bind(m_renderer->get_cmd_list());
 }
 
-void App2DTest::load_meshes_and_models()
+void App2DTest::load_sprites()
 {
     JOJ_LOG_IF_FAIL(m_tex_manager.create(m_renderer->get_device(), m_renderer->get_cmd_list(),
         L"textures/shipanimated.dds", joj::ImageType::DDS));
@@ -64,12 +64,29 @@ void App2DTest::load_meshes_and_models()
     data->texture.srv = tex.srv;
     m_sprite.set_sprite_data(*data);
 
+    joj::SpriteSheetData ssData;
+    ssData.texture = tex;
+    ssData.rows = 1;
+    ssData.columns = 4;
+    ssData.frame_width = 64;
+    ssData.frame_height = 64;
+    ssData.texture_width = 256;
+    ssData.texture_height = 64;
+    m_sprite.set_sprite_sheet_data(ssData);
+
+    joj::SpriteAnimationData runAnim;
+    runAnim.name = "Run";
+    runAnim.frames = { 0, 1, 2, 3 };  // Quadro 0, 1, 2, 3 da SpriteSheet.
+    runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
+
+    m_sprite.add_animation(runAnim);
+
     using namespace joj;
     joj::Vertex::PosColorUVRect quad_vertices[] =
     {
         { JFloat3{ -0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f }, JFloat4{ 0.0f, 0.0f, 0.0f, 1.0f } }, // Top Left
-        { JFloat3{  0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 0.0f, 1.0f, 1.0f }, JFloat4{ 1.0f / 4.0f, 0.0f, 0.0f, 1.0f } }, // Top Right
-        { JFloat3{  0.5f, -0.5f, 0.0f }, JFloat4{ 1.0f, 1.0f, 1.0f, 1.0f }, JFloat4{ 1.0f / 4.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Right
+        { JFloat3{  0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 0.0f, 1.0f, 1.0f }, JFloat4{ 1.0f, 0.0f, 0.0f, 1.0f } }, // Top Right
+        { JFloat3{  0.5f, -0.5f, 0.0f }, JFloat4{ 1.0f, 1.0f, 1.0f, 1.0f }, JFloat4{ 1.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Right
         { JFloat3{ -0.5f, -0.5f, 0.0f }, JFloat4{ 1.0f, 0.0f, 0.0f, 1.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Left
     };
 
@@ -123,15 +140,28 @@ void App2DTest::init()
 {
     setup_camera();
     build_shaders_and_input_layout();
-    load_meshes_and_models();
+    load_sprites();
     build_cbs();
     build_sampler_state();
+    m_sprite.play_animation("Run");
+
+    f32 x = m_sprite.get_sprite_data().uv_rect.x;
+    f32 y = m_sprite.get_sprite_data().uv_rect.y;
+    f32 z = m_sprite.get_sprite_data().uv_rect.z;
+    f32 w = m_sprite.get_sprite_data().uv_rect.w;
+    JDEBUG("UV Rect: (%f, %f, %f, %f)", x, y, z, w);
 }
 
 void App2DTest::update(const f32 dt)
 {
     if (m_input->is_key_pressed(joj::KEY_ESCAPE))
         joj::Engine::close();
+
+    if (m_input->is_key_down(joj::KEY_W))
+    {
+        m_sprite.play_animation("Run");
+        m_sprite.update(dt);
+    }
 }
 
 void App2DTest::draw()
@@ -174,8 +204,10 @@ void App2DTest::draw_objects()
     CB2D cbData;
     XMStoreFloat4x4(&cbData.world, XMMatrixTranspose(world));
     cbData.color = sprite.color;
-    cbData.uv_rect = { 0.0f, 0.0f, 1.0f, 1.0f };
+    cbData.uv_rect = m_sprite.get_sprite_data().uv_rect;
     cbObject.update(m_renderer->get_cmd_list(), cbData);
+
+    m_sprite.draw();
 
     u32 stride = sizeof(joj::Vertex::PosColorUVRect);
     u32 offset = 0;

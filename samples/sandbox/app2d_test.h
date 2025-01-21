@@ -41,7 +41,7 @@ public:
 
     void setup_camera();
     void build_shaders_and_input_layout();
-    void load_meshes_and_models();
+    void load_sprites();
     void build_cbs();
     void build_sampler_state();
     void draw_objects();
