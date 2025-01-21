@@ -69,7 +69,7 @@ void App2DTest::build_sampler_state()
     m_sampler_state.bind(m_renderer->get_cmd_list(), joj::SamplerType::Anisotropic, 0, 1);
 }
 
-void App2DTest::setup_font()
+void App2DTest::setup_buffers()
 {
     m_shader.compile_vertex_shader_from_file(
         "shaders/Font.hlsl",
@@ -121,17 +121,13 @@ void App2DTest::setup_font()
     JOJ_LOG_IF_FAIL(m_constant_buffer.create(m_renderer->get_device()));
     m_constant_buffer.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
     m_constant_buffer.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
-
-    m_font = D3D11Font();
-    m_font.set_font(m_renderer->get_device(), m_renderer->get_cmd_list(), "textures/verdana12.png");
-    m_font.read_spacing("textures/verdana12.dat");
 }
 
 void App2DTest::init()
 {
     m_renderer->initialize_data2D();
 
-    setup_font();
+    setup_buffers();
 
     load_sprites();
     build_sampler_state();
@@ -160,104 +156,15 @@ void App2DTest::draw()
 {
     m_renderer->clear();
 
-    // draw_objects();
-    draw_font();
+    draw_sprites();
 
     m_renderer->swap_buffers();
 }
 
-void App2DTest::draw_objects()
+void App2DTest::draw_sprites()
 {
     m_sprite.draw();
     m_renderer->draw_sprite(m_sprite.get_sprite_data());
-}
-
-void App2DTest::draw_font()
-{
-    m_shader.bind_vertex_shader(m_renderer->get_cmd_list());
-    m_shader.bind_pixel_shader(m_renderer->get_cmd_list());
-    m_input_layout.bind(m_renderer->get_cmd_list());
-    m_constant_buffer.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
-    m_constant_buffer.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
-
-    auto sprite = m_font.get_data();
-
-    f32 window_width = 800.0f;  // Largura da janela em pixels
-    f32 window_height = 600.0f; // Altura da janela em pixels
-
-    f32 x = 0.0f; // posição de início do texto
-    f32 y = 0.0f;
-
-    // posição de início do texto
-    f32 posX = x;
-    f32 posY = y;
-
-    f32 char_scale = 1.0f;
-
-    std::string text = "He";
-    int textLength = int(text.size());
-
-    // para cada caractere do texto
-    for (int i = 0; i < textLength; ++i)
-    {
-        // caractere a ser exibido
-        int frame = int(text[i]);
-
-        // caracteres acentuados tem código deslocado
-        if (frame < 0)
-            frame += 256;
-
-        // se foi carregado o espaçamento proporcional
-        if (m_font.m_proportional)
-            m_font.m_char_width = m_font.m_spacing[frame];
-
-        int charWidth = m_font.m_proportional ? m_font.m_spacing[frame] : m_font.get_data().char_width;
-        charWidth /= 800.0f;
-
-        float x_ndc = (posX / window_width) * 2.0f - 0.5f;
-        float y_ndc = (posY / window_height) * -2.0f + 0.5f;
-        
-        // configura sprite
-        joj::JMatrix4x4 scale = DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
-        joj::JMatrix4x4 rotation = DirectX::XMMatrixRotationZ(0);
-        joj::JMatrix4x4 translation = DirectX::XMMatrixTranslation(x_ndc + charWidth, 0.0f, 0.0f);
-        joj::JMatrix4x4 world = scale * rotation * translation;
-
-        CBFont cb_data;
-        XMStoreFloat4x4(&cb_data.world, XMMatrixTranspose(world));
-        cb_data.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-        // Calcular a linha e coluna no atlas
-        int row = frame / sprite.rows;
-        int col = frame % sprite.columns;
-
-        // Calcular as coordenadas UV para o caractere
-        float uv_min_x = float(col) / float(sprite.columns);
-        float uv_min_y = float(row) / float(sprite.rows);
-        float uv_max_x = float(32) / float(512);
-        float uv_max_y = float(32) / float(512);
-
-        // Definir o retângulo UV
-        cb_data.uv_rect = { uv_min_x, uv_min_y, uv_min_x + uv_max_x, uv_min_y + uv_max_y };
-        m_constant_buffer.update(m_renderer->get_cmd_list(), cb_data);
-
-        u32 stride = sizeof(joj::Vertex::PosColorUVRect);
-        u32 offset = 0;
-
-        m_vertex_buffer.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
-        m_index_buffer.bind(m_renderer->get_cmd_list(), joj::DataFormat::R32_UINT, offset);
-
-        m_renderer->get_cmd_list().device_context->PSSetShaderResources(0, 1, &sprite.texture.srv);
-
-        m_renderer->get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        m_renderer->get_cmd_list().device_context->DrawIndexed(6, 0, 0);
-
-        // calcula posição do próximo caractere
-        posX += m_font.get_data().char_width * char_scale;
-        // posX += charWidth * char_scale;
-        posY += m_font.get_data().char_width * char_scale;
-
-        JDEBUG("Char: %c, posX: %f, posY: %f, charWidth: %d, x_ndc: %f", text[i], posX, posY, charWidth, x_ndc);
-    }
 }
 
 void App2DTest::shutdown()

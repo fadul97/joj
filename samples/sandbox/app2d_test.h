@@ -12,7 +12,7 @@
 #include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
 #include "joj/renderer/d3d11/index_buffer_d3d11.h"
 #include "joj/renderer/d3d11/constant_buffer_d3d11.h"
-#include "joj/renderer/d3d11/font_d3d11.h"
+#include "joj/systems/physics/geometry.h"
 
 // Constant Objects ------------------------------------------------------------
 
@@ -38,10 +38,9 @@ public:
 
     void load_sprites();
     void build_sampler_state();
-    void draw_objects();
+    void draw_sprites();
 
-    void setup_font();
-    void draw_font();
+    void setup_buffers();
 
     // ----------------------------------------------------
     joj::D3D11TextureManager m_tex_manager;;
@@ -54,7 +53,6 @@ public:
     joj::D3D11VertexBuffer m_vertex_buffer;
     joj::D3D11IndexBuffer m_index_buffer;
     joj::D3D11ConstantBuffer m_constant_buffer;
-    joj::D3D11Font m_font;
 };
 
 #endif // _JOJ_2D_APP_TEST_H
