@@ -20,36 +20,6 @@ void App2DTest::setup_camera()
 {
 }
 
-void App2DTest::build_shaders_and_input_layout()
-{
-    m_sprite_shader.compile_vertex_shader_from_file(
-        "shaders/Sprite.hlsl",
-        "VS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_sprite_shader.create_vertex_shader(m_renderer->get_device()));
-
-    m_sprite_shader.compile_pixel_shader_from_file(
-        "shaders/Sprite.hlsl",
-        "PS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_sprite_shader.create_pixel_shader(m_renderer->get_device()));
-
-    m_sprite_shader.bind_vertex_shader(m_renderer->get_cmd_list());
-    m_sprite_shader.bind_pixel_shader(m_renderer->get_cmd_list());
-
-    joj::InputDesc layout[] = {
-        { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
-        { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 12, joj::InputClassification::PerVertexData, 0 },
-        { "TEXCOORD", 0, joj::DataFormat::R32G32_FLOAT,       0, 28, joj::InputClassification::PerVertexData, 0 },
-    };
-
-    for (auto& l : layout)
-    {
-        m_sprite_layout.add(l);
-    }
-
-    JOJ_LOG_IF_FAIL(m_sprite_layout.create(m_renderer->get_device(), m_sprite_shader.get_vertex_shader()));
-    m_sprite_layout.bind(m_renderer->get_cmd_list());
-}
-
 void App2DTest::load_sprites()
 {
     JOJ_LOG_IF_FAIL(m_tex_manager.create(m_renderer->get_device(), m_renderer->get_cmd_list(),
@@ -83,10 +53,6 @@ void App2DTest::load_sprites()
     m_renderer->initialize_data2D();
 }
 
-void App2DTest::build_cbs()
-{
-}
-
 void App2DTest::build_sampler_state()
 {
     // Describe a texture sampler.
@@ -113,9 +79,7 @@ void App2DTest::build_sampler_state()
 void App2DTest::init()
 {
     setup_camera();
-    build_shaders_and_input_layout();
     load_sprites();
-    build_cbs();
     build_sampler_state();
     m_sprite.play_animation("Run");
 

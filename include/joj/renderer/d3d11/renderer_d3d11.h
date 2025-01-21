@@ -17,6 +17,8 @@
 #include "vertex_buffer_d3d11.h"
 #include "index_buffer_d3d11.h"
 #include "constant_buffer_d3d11.h"
+#include "shader_d3d11.h"
+#include "input_layout_d3d11.h"
 
 namespace joj
 {
@@ -96,6 +98,8 @@ namespace joj
         D3D11VertexBuffer m_vertex_buffer2D;
         D3D11IndexBuffer m_index_buffer2D;
         D3D11ConstantBuffer m_constant_buffer2D;
+        D3D11Shader m_sprite_shader;
+        D3D11InputLayout m_sprite_layout;
 
 #if JOJ_DEBUG_MODE
         ID3D11Debug* m_debug;

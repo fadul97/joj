@@ -41,6 +41,8 @@ joj::D3D11Renderer::D3D11Renderer()
     m_vertex_buffer2D = D3D11VertexBuffer();
     m_index_buffer2D = D3D11IndexBuffer();
     m_constant_buffer2D = D3D11ConstantBuffer();
+    m_sprite_shader = D3D11Shader();
+    m_sprite_layout = D3D11InputLayout();
 
 #if JOJ_DEBUG_MODE
     m_debug = nullptr;
@@ -785,6 +787,29 @@ void joj::D3D11Renderer::swap_buffers()
 
 void joj::D3D11Renderer::initialize_data2D()
 {
+    m_sprite_shader.compile_vertex_shader_from_file(
+        "shaders/Sprite.hlsl",
+        "VS", joj::ShaderModel::Default);
+    JOJ_LOG_IF_FAIL(m_sprite_shader.create_vertex_shader(m_graphics_device));
+
+    m_sprite_shader.compile_pixel_shader_from_file(
+        "shaders/Sprite.hlsl",
+        "PS", joj::ShaderModel::Default);
+    JOJ_LOG_IF_FAIL(m_sprite_shader.create_pixel_shader(m_graphics_device));
+
+    joj::InputDesc layout[] = {
+        { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
+        { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 12, joj::InputClassification::PerVertexData, 0 },
+        { "TEXCOORD", 0, joj::DataFormat::R32G32_FLOAT,       0, 28, joj::InputClassification::PerVertexData, 0 },
+    };
+
+    for (auto& l : layout)
+    {
+        m_sprite_layout.add(l);
+    }
+
+    JOJ_LOG_IF_FAIL(m_sprite_layout.create(m_graphics_device, m_sprite_shader.get_vertex_shader()));
+
     joj::Vertex::PosColorUVRect quad_vertices[] =
     {
         { JFloat3{ -0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f }, JFloat4{ 0.0f, 0.0f, 0.0f, 1.0f } }, // Top Left
@@ -819,6 +844,10 @@ void joj::D3D11Renderer::draw_sprite(const SpriteData& sprite)
     JMatrix4x4 rotation = DirectX::XMMatrixRotationZ(sprite.rotation);
     JMatrix4x4 translation = DirectX::XMMatrixTranslation(sprite.position.x, sprite.position.y, 0.0f);
     JMatrix4x4 world = scale * rotation * translation;
+
+    m_sprite_shader.bind_vertex_shader(m_cmd_list);
+    m_sprite_shader.bind_pixel_shader(m_cmd_list);
+    m_sprite_layout.bind(m_cmd_list);
 
     m_constant_buffer2D.bind_to_vertex_shader(m_cmd_list, 0, 1);
     m_constant_buffer2D.bind_to_pixel_shader(m_cmd_list, 0, 1);

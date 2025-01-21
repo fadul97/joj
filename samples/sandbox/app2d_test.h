@@ -34,16 +34,12 @@ public:
     void shutdown() override;
 
     void setup_camera();
-    void build_shaders_and_input_layout();
     void load_sprites();
-    void build_cbs();
     void build_sampler_state();
     void draw_objects();
 
     // ----------------------------------------------------
     joj::D3D11TextureManager m_tex_manager;;
-    joj::D3D11Shader m_sprite_shader;
-    joj::D3D11InputLayout m_sprite_layout;
     joj::D3D11SamplerState m_sampler_state;
     joj::D3D11Sprite m_sprite;
     joj::SpriteData* data;
