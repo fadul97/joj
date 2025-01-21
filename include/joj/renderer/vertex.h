@@ -16,6 +16,13 @@ namespace joj
             JFloat3 pos;
             JFloat4 color;
 		};
+		
+		struct PosColorUVRect
+		{
+			JFloat3 pos;
+			JFloat4 color;
+			JFloat4 uv_rect;
+		};
 
 		struct PosNormalTex
 		{
