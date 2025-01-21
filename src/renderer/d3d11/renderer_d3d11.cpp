@@ -866,7 +866,8 @@ void joj::D3D11Renderer::draw_sprite(const SpriteData& sprite)
 
     m_cmd_list.device_context->PSSetShaderResources(0, 1, &sprite.texture.srv);
 
-    m_cmd_list.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    set_rasterizer_state(RasterizerState::Solid);
+    set_primitive_topology(PrimitiveTopology::TRIANGLE_LIST);
     m_cmd_list.device_context->DrawIndexed(6, 0, 0);
 }
 
