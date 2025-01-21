@@ -189,7 +189,7 @@ void App2DTest::draw_font()
     float posX = x;
     float posY = y;
 
-    f32 char_scale = 1.0f;
+    f32 char_scale = 0.5f;
 
     std::string text = "Hello, World!";
     int textLength = int(text.size());
@@ -207,15 +207,28 @@ void App2DTest::draw_font()
         // se foi carregado o espaçamento proporcional
         if (m_font.m_proportional)
             m_font.m_char_width = m_font.m_spacing[frame];
-
+        
         // configura sprite
         joj::JMatrix4x4 scale = DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
         joj::JMatrix4x4 rotation = DirectX::XMMatrixRotationZ(0);
-        joj::JMatrix4x4 translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+        joj::JMatrix4x4 translation = DirectX::XMMatrixTranslation(posX / 50.0f, 0.0f, 0.0f);
         joj::JMatrix4x4 world = scale * rotation * translation;
 
         CBFont cb_data;
-        XMStoreFloat4x4(&cb_data.wvp, XMMatrixTranspose(world));
+        XMStoreFloat4x4(&cb_data.world, XMMatrixTranspose(world));
+        cb_data.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        // Calcular a linha e coluna no atlas
+        int row = frame / sprite.rows;
+        int col = frame % sprite.columns;
+
+        // Calcular as coordenadas UV para o caractere
+        float uv_min_x = float(col) / float(sprite.columns);
+        float uv_min_y = float(row) / float(sprite.rows);
+        float uv_max_x = float(col + 1) / float(sprite.columns);
+        float uv_max_y = float(row + 1) / float(sprite.rows);
+
+        // Definir o retângulo UV
+        cb_data.uv_rect = { uv_min_x, uv_min_y, uv_max_x, uv_max_y };
         m_constant_buffer.update(m_renderer->get_cmd_list(), cb_data);
 
         u32 stride = sizeof(joj::Vertex::PosColorUVRect);
@@ -232,6 +245,8 @@ void App2DTest::draw_font()
         // calcula posição do próximo caractere
         posX += m_font.get_data().char_width * char_scale;
         posY += m_font.get_data().char_width * char_scale;
+
+        JDEBUG("Char: %c, posX: %f, posY: %f, char_width: %d", text[i], posX, posY, m_font.get_data().char_width);
     }
 }
 

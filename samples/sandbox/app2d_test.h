@@ -18,7 +18,9 @@
 
 struct CBFont
 {
-    joj::JFloat4x4 wvp;
+    joj::JFloat4x4 world;
+    joj::JFloat4 color;
+    joj::JFloat4 uv_rect;
 };
 
 // Class -----------------------------------------------------------------------
