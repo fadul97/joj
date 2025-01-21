@@ -4,7 +4,7 @@
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "defines.h"
 
-#include "texture2d.h"
+#include "texture2d_data.h"
 
 namespace joj
 {
@@ -16,8 +16,8 @@ namespace joj
         SpriteSheet();
         virtual ~SpriteSheet();
 
-        virtual void set_sprite_data(const Texture2D& data) = 0;
-        virtual Texture2D& get_sprite_data() = 0;
+        virtual void set_sprite_data(const TextureData2D& data) = 0;
+        virtual TextureData2D& get_sprite_data() = 0;
     };
 }
 
