@@ -17,6 +17,7 @@ add_library(jojRenderer
     viewport.cpp
     sprite.cpp
     sprite_sheet.cpp
+    font.cpp
 )
 
 target_include_directories(jojRenderer

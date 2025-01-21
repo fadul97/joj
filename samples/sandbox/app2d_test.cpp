@@ -12,7 +12,6 @@ App2DTest::App2DTest()
 
 App2DTest::~App2DTest()
 {
-
 }
 
 void App2DTest::load_sprites()
