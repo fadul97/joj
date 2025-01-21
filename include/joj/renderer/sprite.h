@@ -7,6 +7,7 @@
 #include "texture2d_data.h"
 #include "sprite_animation_data.h"
 #include <string>
+#include <unordered_map>
 
 namespace joj
 {
@@ -27,11 +28,14 @@ namespace joj
 
         virtual SpriteData& get_sprite_data() = 0;
 
+        virtual void add_animation(const std::string& animation_name, const SpriteAnimationData& animation);
+
         virtual void play_animation(const std::string& animation_name);
-        void update(const f32 dt);
+        virtual void update(const f32 dt);
 
     protected:
         SpriteAnimationData* m_current_animation;
+        std::unordered_map<std::string, SpriteAnimationData> m_animations;
         i32 m_current_frame_index;
         f32 m_time_since_last_frame;
     };

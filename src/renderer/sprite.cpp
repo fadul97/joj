@@ -12,9 +12,23 @@ joj::Sprite::~Sprite()
 {
 }
 
+void joj::Sprite::add_animation(const std::string& animation_name, const SpriteAnimationData& animation)
+{
+    m_animations[animation_name] = animation;
+}
+
 void joj::Sprite::play_animation(const std::string& animation_name)
 {
-    JTODO();
+    // Verifica se a animação solicitada existe.
+    if (m_current_animation != nullptr && m_current_animation->name == animation_name)
+        return; // Se já estamos na animação solicitada, não faz nada.
+
+    if (m_animations.find(animation_name) != m_animations.end())
+    {
+        m_current_animation = &m_animations[animation_name];
+        m_current_frame_index = 0;
+        m_time_since_last_frame = 0.0f;
+    }
 }
 
 void joj::Sprite::update(const f32 dt)
