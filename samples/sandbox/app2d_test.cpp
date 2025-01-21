@@ -21,7 +21,7 @@ void App2DTest::load_sprites()
         L"textures/GravityGuy.dds", joj::ImageType::DDS));
 
     data = new joj::SpriteData();
-    data->position = { 0.0f, 0.0f };
+    data->position = { 0.25f, 0.25f };
     data->size = { 1.0f, 1.0f };
     data->rotation = 0.0f;
     data->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -166,7 +166,8 @@ void App2DTest::draw_rect()
     m_constant_buffer.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
 
     joj::JMatrix4x4 world = joj::matrix4x4_identity();
-
+    auto sprite = m_sprite.get_sprite_data();
+    world = DirectX::XMMatrixTranslation(sprite.position.x, sprite.position.y, 0.0f);
     CBPhysics cb_data;
     XMStoreFloat4x4(&cb_data.wvp, XMMatrixTranspose(world));
     m_constant_buffer.update(m_renderer->get_cmd_list(), cb_data);
