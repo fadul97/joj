@@ -6,6 +6,7 @@ add_library(
     jojPhysics
     STATIC
     geometry.cpp
+    rect.cpp
 )
 
 target_include_directories(
