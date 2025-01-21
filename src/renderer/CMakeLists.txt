@@ -15,6 +15,7 @@ add_library(jojRenderer
     input_layout.cpp
     texture_manager.cpp
     viewport.cpp
+    sprite.cpp
 )
 
 target_include_directories(jojRenderer
