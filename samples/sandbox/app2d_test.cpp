@@ -6,6 +6,35 @@
 #include "joj/engine.h"
 #include <math.h>
 
+u32 i = 0;
+u32 j = 0;
+b8 on_rect_collision(joj::Rect& rect1, joj::Rect& rect2)
+{
+    bool overlapX = (rect1.get_left() <= rect2.get_right() && rect2.get_left() <= rect1.get_right());
+    // verificando sobreposição no eixo y
+    bool overlapY = (rect1.get_top() <= rect2.get_bottom() && rect2.get_top() <= rect1.get_bottom());
+
+    if (overlapX)
+    {
+        // JDEBUG("Overlap X: %d", i++);
+        return true;
+    }
+    if (overlapY)
+    {
+        JDEBUG("Overlap X: %d", j++);
+    }
+
+    // existe colisão se há sobreposição nos dois eixos
+    // return overlapX && overlapY;
+
+    if (rect1.get_right() < rect2.get_left() || rect1.get_left() > rect2.get_right())
+        return false;
+    if (rect1.get_bottom() < rect2.get_top() || rect1.get_top() > rect2.get_bottom())
+        return false;
+
+    return true;
+}
+
 App2DTest::App2DTest()
 {
     data = nullptr;
@@ -21,7 +50,7 @@ void App2DTest::load_sprites()
         L"textures/GravityGuy.dds", joj::ImageType::DDS));
 
     data = new joj::SpriteData();
-    data->position = { 0.25f, 0.25f };
+    data->position = { 0.0f, 0.0f };
     data->size = { 1.0f, 1.0f };
     data->rotation = 0.0f;
     data->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -44,6 +73,10 @@ void App2DTest::load_sprites()
     runAnim.frames = { 0, 1, 2, 3, 4 };  // Quadro 0, 1, 2, 3, 4 da SpriteSheet.
     runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
     m_sprite.add_animation(runAnim);
+
+    m_rect = joj::Rect(0.0f, 0.0f, 1.0f, 1.0f);
+    m_rect2 = joj::Rect(-0.5f, 0.5f, 0.5f, -0.5f);
+    m_rect.set_position(data->position);
 }
 
 void App2DTest::build_sampler_state()
@@ -146,6 +179,7 @@ void App2DTest::update(const f32 dt)
         m_sprite.update(dt);
         auto& sprite = m_sprite.get_sprite_data();
         sprite.position.x += 0.01f;
+        m_rect.set_position(sprite.position);
     }
 
     if (m_input->is_key_down('A'))
@@ -154,6 +188,7 @@ void App2DTest::update(const f32 dt)
         m_sprite.update(dt);
         auto& sprite = m_sprite.get_sprite_data();
         sprite.position.x -= 0.01f;
+        m_rect.set_position(sprite.position);
     }
 }
 
@@ -181,11 +216,20 @@ void App2DTest::draw_rect()
     m_constant_buffer.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
     m_constant_buffer.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
 
+    // Rect 1
+
     joj::JMatrix4x4 world = joj::matrix4x4_identity();
-    auto sprite = m_sprite.get_sprite_data();
-    world = DirectX::XMMatrixTranslation(sprite.position.x, sprite.position.y, 0.0f);
+    world = DirectX::XMMatrixTranslation(m_rect.get_position2D().x, m_rect.get_position2D().y, 0.0f);
     CBPhysics cb_data;
     XMStoreFloat4x4(&cb_data.wvp, XMMatrixTranspose(world));
+    if (on_rect_collision(m_rect, m_rect2))
+    {
+        cb_data.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+    }
+    else
+    {
+        cb_data.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+    }
     m_constant_buffer.update(m_renderer->get_cmd_list(), cb_data);
 
     u32 stride = sizeof(joj::Vertex::PosColor);
@@ -195,6 +239,18 @@ void App2DTest::draw_rect()
     m_renderer->set_rasterizer_state(joj::RasterizerState::Wireframe);
     m_renderer->set_primitive_topology(joj::PrimitiveTopology::TRIANGLE_STRIP);
     m_renderer->get_cmd_list().device_context->Draw(4, 0);
+
+    // Rect 2
+
+    world = DirectX::XMMatrixTranslation(m_rect2.get_position2D().x, m_rect2.get_position2D().y, 0.0f);
+    XMStoreFloat4x4(&cb_data.wvp, XMMatrixTranspose(world));
+    m_constant_buffer.update(m_renderer->get_cmd_list(), cb_data);
+    m_renderer->get_cmd_list().device_context->Draw(4, 0);
+}
+
+void App2DTest::draw_rect2()
+{
+
 }
 
 void App2DTest::shutdown()

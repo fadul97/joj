@@ -18,7 +18,8 @@
 
 struct CBPhysics
 {
-    joj::JFloat4x4 wvp;
+    joj::JFloat4x4 wvp = joj::float4x4_identity();
+    joj::JFloat4 color = { 0.0f, 1.0f, 0.0f, 1.0f };
 };
 
 // Class -----------------------------------------------------------------------
@@ -41,6 +42,7 @@ public:
     void setup_buffers();
 
     void draw_rect();
+    void draw_rect2();
 
     // ----------------------------------------------------
     joj::D3D11TextureManager m_tex_manager;;
@@ -53,6 +55,7 @@ public:
     joj::D3D11VertexBuffer m_vertex_buffer;
     joj::D3D11ConstantBuffer m_constant_buffer;
     joj::Rect m_rect;
+    joj::Rect m_rect2;
 };
 
 #endif // _JOJ_2D_APP_TEST_H

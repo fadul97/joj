@@ -1,6 +1,7 @@
 cbuffer CB2D : register(b0)
 {
     float4x4 gWorldViewProj; // Matriz de transformação (mundo -> view -> projeção)
+    float4 gColor;
 };
 
 struct VS_INPUT
@@ -24,7 +25,7 @@ PS_INPUT VS(VS_INPUT input)
     output.position = mul(worldPosition, gWorldViewProj);
 
     // Ajustar coordenadas UV com base no retângulo UV fornecido
-    output.color = input.color;
+    output.color = gColor;
 
     return output;
 }
