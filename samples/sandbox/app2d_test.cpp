@@ -160,6 +160,9 @@ void App2DTest::init()
     f32 z = m_sprite.get_sprite_data().uv_rect.z;
     f32 w = m_sprite.get_sprite_data().uv_rect.w;
     JDEBUG("UV Rect: (%f, %f, %f, %f)", x, y, z, w);
+
+    m_camera2D = joj::Camera2D(0, 800, 600, 0);
+    m_camera2D.set_position({ 0.0f, 0.0f, 0.0f });
 }
 
 void App2DTest::update(const f32 dt)
@@ -167,13 +170,7 @@ void App2DTest::update(const f32 dt)
     if (m_input->is_key_pressed(joj::KEY_ESCAPE))
         joj::Engine::close();
 
-    if (m_input->is_key_down(joj::KEY_W))
-    {
-        m_sprite.play_animation("Run");
-        m_sprite.update(dt);
-    }
-
-    if (m_input->is_key_down('D'))
+    if (m_input->is_key_down('K'))
     {
         m_sprite.play_animation("Run");
         m_sprite.update(dt);
@@ -182,7 +179,7 @@ void App2DTest::update(const f32 dt)
         m_rect.set_position(sprite.position);
     }
 
-    if (m_input->is_key_down('A'))
+    if (m_input->is_key_down('J'))
     {
         m_sprite.play_animation("Run");
         m_sprite.update(dt);
@@ -190,13 +187,47 @@ void App2DTest::update(const f32 dt)
         sprite.position.x -= 0.01f;
         m_rect.set_position(sprite.position);
     }
+
+    if (m_input->is_key_down('D'))
+    {
+        m_rect.translate(0.5f, 0.0f);
+    }
+    if (m_input->is_key_down('A'))
+    {
+        m_rect.translate(-0.5f, 0.0f);
+    }
+    if (m_input->is_key_down('W'))
+    {
+        m_rect.translate(0.0f, -0.5f);
+    }
+    if (m_input->is_key_down('S'))
+    {
+        m_rect.translate(0.0f, +0.5f);
+    }
+
+    if (m_input->is_key_down(joj::KEY_RIGHT))
+    {
+        m_rect2.translate(0.5f, 0.0f);
+    }
+    if (m_input->is_key_down(joj::KEY_LEFT))
+    {
+        m_rect2.translate(-0.5f, 0.0f);
+    }
+    if (m_input->is_key_down(joj::KEY_UP))
+    {
+        m_rect2.translate(0.0f, -0.5f);
+    }
+    if (m_input->is_key_down(joj::KEY_DOWN))
+    {
+        m_rect2.translate(0.0f, +0.5f);
+    }
 }
 
 void App2DTest::draw()
 {
     m_renderer->clear();
 
-    draw_sprites();
+    // draw_sprites();
     draw_rect();
 
     m_renderer->swap_buffers();
@@ -218,10 +249,16 @@ void App2DTest::draw_rect()
 
     // Rect 1
 
-    joj::JMatrix4x4 world = joj::matrix4x4_identity();
+    auto world = joj::matrix4x4_identity();
     world = DirectX::XMMatrixTranslation(m_rect.get_position2D().x, m_rect.get_position2D().y, 0.0f);
+    auto scaleMatrix = DirectX::XMMatrixScaling(20.0f, 20.0f, 0.0f);
+    world = scaleMatrix * world;
+    auto view = DirectX::XMLoadFloat4x4(&m_camera2D.get_view());
+    auto proj = DirectX::XMLoadFloat4x4(&m_camera2D.get_proj());
+    auto wvp = world * view * proj;
+
     CBPhysics cb_data;
-    XMStoreFloat4x4(&cb_data.wvp, XMMatrixTranspose(world));
+    XMStoreFloat4x4(&cb_data.wvp, XMMatrixTranspose(wvp));
     if (on_rect_collision(m_rect, m_rect2))
     {
         cb_data.color = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -236,14 +273,20 @@ void App2DTest::draw_rect()
     u32 offset = 0;
     m_vertex_buffer.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
 
-    m_renderer->set_rasterizer_state(joj::RasterizerState::Wireframe);
+    // m_renderer->set_rasterizer_state(joj::RasterizerState::Wireframe);
     m_renderer->set_primitive_topology(joj::PrimitiveTopology::TRIANGLE_STRIP);
     m_renderer->get_cmd_list().device_context->Draw(4, 0);
 
     // Rect 2
-
+    world = joj::matrix4x4_identity();
     world = DirectX::XMMatrixTranslation(m_rect2.get_position2D().x, m_rect2.get_position2D().y, 0.0f);
-    XMStoreFloat4x4(&cb_data.wvp, XMMatrixTranspose(world));
+    scaleMatrix = DirectX::XMMatrixScaling(20.0f, 20.0f, 0.0f);
+    world = scaleMatrix * world;
+    view = DirectX::XMLoadFloat4x4(&m_camera2D.get_view());
+    proj = DirectX::XMLoadFloat4x4(&m_camera2D.get_proj());
+    wvp = world * view * proj;
+
+    XMStoreFloat4x4(&cb_data.wvp, XMMatrixTranspose(wvp));
     m_constant_buffer.update(m_renderer->get_cmd_list(), cb_data);
     m_renderer->get_cmd_list().device_context->Draw(4, 0);
 }

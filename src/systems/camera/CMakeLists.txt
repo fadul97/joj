@@ -6,6 +6,8 @@ add_library(
     jojCamera
     STATIC
     free_camera.cpp
+    camera.cpp
+    camera2d.cpp
 )
 
 target_include_directories(
