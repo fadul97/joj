@@ -174,6 +174,11 @@ void App2DTest::update(const f32 dt)
         m_rect.set_position(sprite.position);
     }
 
+    if (m_input->is_key_down('I'))
+    {
+        m_rect.set_size(200.0f, 200.0f);
+    }
+
     if (m_input->is_key_down('D'))
     {
         m_rect.translate(0.5f, 0.0f);
@@ -241,8 +246,8 @@ void App2DTest::draw_rect()
     auto world = joj::matrix4x4_identity();
     world = DirectX::XMMatrixTranslation(m_rect.get_position2D().x, m_rect.get_position2D().y, 0.0f);
     auto scaleMatrix = DirectX::XMMatrixScaling(
-        m_rect.get_right() - m_rect.get_left(),
-        m_rect.get_bottom() - m_rect.get_top(),
+        m_rect.get_size().x,
+        m_rect.get_size().y,
         1.0f);
     world = scaleMatrix * world;
     auto view = DirectX::XMLoadFloat4x4(&m_camera2D.get_view());
@@ -273,8 +278,8 @@ void App2DTest::draw_rect()
     world = joj::matrix4x4_identity();
     world = DirectX::XMMatrixTranslation(m_rect2.get_position2D().x, m_rect2.get_position2D().y, 0.0f);
     scaleMatrix = DirectX::XMMatrixScaling(
-        m_rect2.get_right() - m_rect2.get_left(),
-        m_rect2.get_bottom() - m_rect2.get_top(),
+        m_rect2.get_size().x,
+        m_rect2.get_size().y,
         1.0f);
     world = scaleMatrix * world;
     view = DirectX::XMLoadFloat4x4(&m_camera2D.get_view());
