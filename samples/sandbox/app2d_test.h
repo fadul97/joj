@@ -52,6 +52,7 @@ public:
     joj::Camera2D m_camera2D;
 
     joj::D3D11Scene m_scene;
+    b8 m_debug_draw = false;
 };
 
 #endif // _JOJ_2D_APP_TEST_H

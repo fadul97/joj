@@ -6,21 +6,6 @@
 #include "joj/engine.h"
 #include <math.h>
 
-b8 on_rect_collision(joj::Rect& rect1, joj::Rect& rect2)
-{
-    // Verificar sobreposição no eixo X
-    b8 overlapX = rect1.get_right() >= rect2.get_left() &&
-        rect1.get_left() <= rect2.get_right();
-
-    // Verificar sobreposição no eixo Y
-    b8 overlapY = rect1.get_bottom() >= rect2.get_top() &&
-        rect1.get_top() <= rect2.get_bottom();
-
-    // Existe colisão se há sobreposição nos dois eixos
-    return overlapX && overlapY;
-}
-
-
 App2DTest::App2DTest()
 {
     data = nullptr;
@@ -99,12 +84,6 @@ void App2DTest::init()
     build_sampler_state();
     m_sprite.play_animation("Run");
 
-    f32 x = m_sprite.get_sprite_data().uv_rect.x;
-    f32 y = m_sprite.get_sprite_data().uv_rect.y;
-    f32 z = m_sprite.get_sprite_data().uv_rect.z;
-    f32 w = m_sprite.get_sprite_data().uv_rect.w;
-    JDEBUG("UV Rect: (%f, %f, %f, %f)", x, y, z, w);
-
     m_camera2D = joj::Camera2D(0, 800, 600, 0);
     m_camera2D.set_position({ 0.0f, 0.0f, 0.0f });
 
@@ -119,6 +98,9 @@ void App2DTest::update(const f32 dt)
 {
     if (m_input->is_key_pressed(joj::KEY_ESCAPE))
         joj::Engine::close();
+
+    if (m_input->is_key_pressed('B'))
+        m_debug_draw = !m_debug_draw;
 
     if (m_input->is_key_down('K'))
     {
@@ -196,7 +178,9 @@ void App2DTest::draw()
     m_renderer->clear();
 
     draw_sprites();
-    m_scene.draw_collisions(*m_renderer);
+
+    if (m_debug_draw)
+        m_scene.draw_collisions(*m_renderer);
 
     m_renderer->swap_buffers();
 }
