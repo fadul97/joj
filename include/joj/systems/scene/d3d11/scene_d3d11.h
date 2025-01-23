@@ -26,12 +26,19 @@ namespace joj
         void draw(IRenderer& renderer) override;
         void shutdown() override;
 
+        void draw_collisions(IRenderer& renderer) override;
+
     protected:
         D3D11VertexBuffer m_sprite_vertex_buffer2D;
         D3D11IndexBuffer m_sprite_index_buffer2D;
         D3D11ConstantBuffer m_sprite_constant_buffer;
         D3D11Shader m_sprite_shader;
         D3D11InputLayout m_sprite_layout;
+
+        joj::D3D11Shader m_collision_shader;
+        joj::D3D11InputLayout m_collision_input_layout;
+        joj::D3D11VertexBuffer m_collision_vertex_buffer;
+        joj::D3D11ConstantBuffer m_collision_constant_buffer;
     };
 }
 

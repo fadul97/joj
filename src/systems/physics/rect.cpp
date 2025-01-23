@@ -20,3 +20,23 @@ joj::Rect::Rect(const f32 width, const f32 height)
 joj::Rect::~Rect()
 {
 }
+
+b8 joj::Rect::check_collision(const Geometry& geometry)
+{
+    switch (geometry.get_type())
+    {
+    case GeometryType::Rectangle:
+    {
+        auto rect = static_cast<const Rect*>(&geometry);
+        m_colliding = get_right() >= rect->get_left() &&
+            get_left() <= rect->get_right() &&
+            get_bottom() >= rect->get_top() &&
+            get_top() <= rect->get_bottom();
+        return m_colliding;
+    }
+    case GeometryType::Unknown:
+        return false;
+    default:
+        return false;
+    }
+}

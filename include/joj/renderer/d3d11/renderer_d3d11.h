@@ -64,6 +64,7 @@ namespace joj
         void swap_buffers() override;
 
         void draw_sprite(const SpriteData& sprite) override;
+        void draw_rect(const Rect& rect) override;
 
 #if JOJ_DEBUG_MODE
         void log_hardware_info();

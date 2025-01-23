@@ -15,6 +15,8 @@ namespace joj
         Rect(const f32 width, const f32 height);
         ~Rect();
 
+        b8 check_collision(const Geometry& geometry) override;
+
         void set_width(const f32 width);
         void set_height(const f32 height);
         void set_size(const f32 width, const f32 height);

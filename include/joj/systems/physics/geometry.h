@@ -30,10 +30,15 @@ namespace joj
         virtual void translate(const f32 dx, const f32 dy);
         virtual void move_to(const f32 x, const f32 y);
 
+        virtual b8 check_collision(const Geometry& geometry) = 0;
+        virtual b8 is_colliding() const;
+
     protected:
         f32 m_x;
         f32 m_y;
         GeometryType m_type;
+
+        b8 m_colliding;
     };
 
     inline void Geometry::set_position(const f32 x, const f32 y)
@@ -56,6 +61,9 @@ namespace joj
 
     inline void Geometry::move_to(const f32 x, const f32 y)
     { m_x = x; m_y = y; }
+
+    inline b8 Geometry::is_colliding() const
+    { return m_colliding; }
 }
 
 #endif // _JOJ_GEOMETRY_H
