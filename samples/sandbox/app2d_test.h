@@ -41,21 +41,12 @@ public:
     void build_sampler_state();
     void draw_sprites();
 
-    void setup_buffers();
-
-    void draw_rect();
-    void draw_rect2();
-
     // ----------------------------------------------------
     joj::D3D11TextureManager m_tex_manager;;
     joj::D3D11SamplerState m_sampler_state;
     joj::D3D11Sprite m_sprite;
     joj::SpriteData* data;
 
-    joj::D3D11Shader m_shader;
-    joj::D3D11InputLayout m_input_layout;
-    joj::D3D11VertexBuffer m_vertex_buffer;
-    joj::D3D11ConstantBuffer m_constant_buffer;
     joj::Rect m_rect;
     joj::Rect m_rect2;
     joj::Camera2D m_camera2D;

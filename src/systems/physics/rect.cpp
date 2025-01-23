@@ -28,10 +28,26 @@ b8 joj::Rect::check_collision(const Geometry& geometry)
     case GeometryType::Rectangle:
     {
         auto rect = static_cast<const Rect*>(&geometry);
-        m_colliding = get_right() >= rect->get_left() &&
-            get_left() <= rect->get_right() &&
-            get_bottom() >= rect->get_top() &&
+        /*
+        
+        // Verificar sobreposição no eixo X
+        b8 overlapX = get_right() >= rect->get_left() &&
+            get_left() <= rect->get_right();
+
+        // Verificar sobreposição no eixo Y
+        b8 overlapY = get_bottom() >= rect->get_top() &&
             get_top() <= rect->get_bottom();
+
+        // Existe colisão se há sobreposição nos dois eixos
+        m_colliding = overlapX && overlapY;
+        
+        return m_colliding;
+        */
+
+        m_colliding = get_right() >= rect->get_left() &&
+                      get_left() <= rect->get_right() &&
+                      get_bottom() >= rect->get_top() &&
+                      get_top() <= rect->get_bottom();
         return m_colliding;
     }
     case GeometryType::Unknown:

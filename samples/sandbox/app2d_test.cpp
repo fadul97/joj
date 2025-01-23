@@ -93,53 +93,8 @@ void App2DTest::build_sampler_state()
     m_sampler_state.bind(m_renderer->get_cmd_list(), joj::SamplerType::Anisotropic, 0, 1);
 }
 
-void App2DTest::setup_buffers()
-{
-    m_shader.compile_vertex_shader_from_file(
-        "shaders/Physics.hlsl",
-        "VS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_shader.create_vertex_shader(m_renderer->get_device()));
-
-    m_shader.compile_pixel_shader_from_file(
-        "shaders/Physics.hlsl",
-        "PS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_shader.create_pixel_shader(m_renderer->get_device()));
-
-    joj::InputDesc layout[] = {
-        { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
-        { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 12, joj::InputClassification::PerVertexData, 0 },
-    };
-
-    for (auto& l : layout)
-    {
-        m_input_layout.add(l);
-    }
-
-    JOJ_LOG_IF_FAIL(m_input_layout.create(m_renderer->get_device(), m_shader.get_vertex_shader()));
-
-    using namespace joj;
-    joj::Vertex::PosColor quad_vertices[] =
-    {
-        { JFloat3{ -0.5f, -0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Left
-        { JFloat3{  0.5f, -0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Right
-        { JFloat3{ -0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Top Left
-        { JFloat3{  0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Top Right
-    };
-
-    m_vertex_buffer.setup(BufferUsage::Immutable, CPUAccessType::None,
-        sizeof(Vertex::PosColorUVRect) * 4, quad_vertices);
-    JOJ_LOG_IF_FAIL(m_vertex_buffer.create(m_renderer->get_device()));
-
-    m_constant_buffer.setup(joj::calculate_cb_byte_size(sizeof(CBPhysics)), nullptr);
-    JOJ_LOG_IF_FAIL(m_constant_buffer.create(m_renderer->get_device()));
-    m_constant_buffer.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
-    m_constant_buffer.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
-}
-
 void App2DTest::init()
 {
-    setup_buffers();
-
     load_sprites();
     build_sampler_state();
     m_sprite.play_animation("Run");
@@ -155,6 +110,9 @@ void App2DTest::init()
 
     m_scene.init(m_renderer->get_device(), m_camera2D);
     m_scene.add_sprite(&m_sprite);
+
+    m_scene.add_geometry(&m_rect);
+    m_scene.add_geometry(&m_rect2);
 }
 
 void App2DTest::update(const f32 dt)
@@ -228,6 +186,9 @@ void App2DTest::update(const f32 dt)
     {
         m_rect2.translate(0.0f, +0.5f);
     }
+
+    m_rect.check_collision(m_rect2);
+    m_rect2.check_collision(m_rect);
 }
 
 void App2DTest::draw()
@@ -235,7 +196,7 @@ void App2DTest::draw()
     m_renderer->clear();
 
     draw_sprites();
-    draw_rect();
+    m_scene.draw_collisions(*m_renderer);
 
     m_renderer->swap_buffers();
 }
@@ -243,68 +204,6 @@ void App2DTest::draw()
 void App2DTest::draw_sprites()
 {
     m_scene.draw(*m_renderer);
-}
-
-void App2DTest::draw_rect()
-{
-    m_shader.bind_vertex_shader(m_renderer->get_cmd_list());
-    m_shader.bind_pixel_shader(m_renderer->get_cmd_list());
-    m_input_layout.bind(m_renderer->get_cmd_list());
-    m_constant_buffer.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
-    m_constant_buffer.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
-
-    // Rect 1
-
-    auto world = joj::matrix4x4_identity();
-    world = DirectX::XMMatrixTranslation(m_rect.get_position2D().x, m_rect.get_position2D().y, 0.0f);
-    auto scaleMatrix = DirectX::XMMatrixScaling(
-        m_rect.get_size().x,
-        m_rect.get_size().y,
-        1.0f);
-    world = scaleMatrix * world;
-    auto view = DirectX::XMLoadFloat4x4(&m_camera2D.get_view());
-    auto proj = DirectX::XMLoadFloat4x4(&m_camera2D.get_proj());
-    auto wvp = world * view * proj;
-
-    CBPhysics cb_data;
-    XMStoreFloat4x4(&cb_data.wvp, XMMatrixTranspose(wvp));
-    if (on_rect_collision(m_rect, m_rect2))
-    {
-        cb_data.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-    }
-    else
-    {
-        cb_data.color = { 0.0f, 1.0f, 0.0f, 1.0f };
-    }
-    m_constant_buffer.update(m_renderer->get_cmd_list(), cb_data);
-
-    u32 stride = sizeof(joj::Vertex::PosColor);
-    u32 offset = 0;
-    m_vertex_buffer.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
-
-    m_renderer->set_rasterizer_state(joj::RasterizerState::Wireframe);
-    m_renderer->set_primitive_topology(joj::PrimitiveTopology::TRIANGLE_STRIP);
-    m_renderer->get_cmd_list().device_context->Draw(4, 0);
-
-    // Rect 2
-    world = joj::matrix4x4_identity();
-    world = DirectX::XMMatrixTranslation(m_rect2.get_position2D().x, m_rect2.get_position2D().y, 0.0f);
-    scaleMatrix = DirectX::XMMatrixScaling(
-        m_rect2.get_size().x,
-        m_rect2.get_size().y,
-        1.0f);
-    world = scaleMatrix * world;
-    view = DirectX::XMLoadFloat4x4(&m_camera2D.get_view());
-    proj = DirectX::XMLoadFloat4x4(&m_camera2D.get_proj());
-    wvp = world * view * proj;
-
-    XMStoreFloat4x4(&cb_data.wvp, XMMatrixTranspose(wvp));
-    m_constant_buffer.update(m_renderer->get_cmd_list(), cb_data);
-    m_renderer->get_cmd_list().device_context->Draw(4, 0);
-}
-
-void App2DTest::draw_rect2()
-{
 }
 
 void App2DTest::shutdown()
