@@ -6,34 +6,20 @@
 #include "joj/engine.h"
 #include <math.h>
 
-u32 i = 0;
-u32 j = 0;
 b8 on_rect_collision(joj::Rect& rect1, joj::Rect& rect2)
 {
-    bool overlapX = (rect1.get_left() <= rect2.get_right() && rect2.get_left() <= rect1.get_right());
-    // verificando sobreposição no eixo y
-    bool overlapY = (rect1.get_top() <= rect2.get_bottom() && rect2.get_top() <= rect1.get_bottom());
+    // Verificar sobreposição no eixo X
+    b8 overlapX = rect1.get_right() >= rect2.get_left() &&
+        rect1.get_left() <= rect2.get_right();
 
-    if (overlapX)
-    {
-        // JDEBUG("Overlap X: %d", i++);
-        return true;
-    }
-    if (overlapY)
-    {
-        JDEBUG("Overlap X: %d", j++);
-    }
+    // Verificar sobreposição no eixo Y
+    b8 overlapY = rect1.get_bottom() >= rect2.get_top() &&
+        rect1.get_top() <= rect2.get_bottom();
 
-    // existe colisão se há sobreposição nos dois eixos
-    // return overlapX && overlapY;
-
-    if (rect1.get_right() < rect2.get_left() || rect1.get_left() > rect2.get_right())
-        return false;
-    if (rect1.get_bottom() < rect2.get_top() || rect1.get_top() > rect2.get_bottom())
-        return false;
-
-    return true;
+    // Existe colisão se há sobreposição nos dois eixos
+    return overlapX && overlapY;
 }
+
 
 App2DTest::App2DTest()
 {
@@ -74,8 +60,8 @@ void App2DTest::load_sprites()
     runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
     m_sprite.add_animation(runAnim);
 
-    m_rect = joj::Rect(0.0f, 0.0f, 1.0f, 1.0f);
-    m_rect2 = joj::Rect(-0.5f, 0.5f, 0.5f, -0.5f);
+    m_rect = joj::Rect(100.0f, 40.0f);
+    m_rect2 = joj::Rect(50.0f, 50.0f);
     m_rect.set_position(data->position);
 }
 
@@ -129,10 +115,10 @@ void App2DTest::setup_buffers()
     using namespace joj;
     joj::Vertex::PosColor quad_vertices[] =
     {
-        { JFloat3{ -0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Top Left
-        { JFloat3{  0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Top Right
         { JFloat3{ -0.5f, -0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Left
         { JFloat3{  0.5f, -0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Right
+        { JFloat3{ -0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Top Left
+        { JFloat3{  0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Top Right
     };
 
     m_vertex_buffer.setup(BufferUsage::Immutable, CPUAccessType::None,
@@ -227,7 +213,7 @@ void App2DTest::draw()
 {
     m_renderer->clear();
 
-    // draw_sprites();
+    draw_sprites();
     draw_rect();
 
     m_renderer->swap_buffers();
@@ -236,6 +222,9 @@ void App2DTest::draw()
 void App2DTest::draw_sprites()
 {
     m_sprite.draw();
+    // auto& sprite = m_sprite.get_sprite_data();
+    // sprite.size.x = 20.0f;
+    // sprite.size.y = 20.0f;
     m_renderer->draw_sprite(m_sprite.get_sprite_data());
 }
 
@@ -251,7 +240,10 @@ void App2DTest::draw_rect()
 
     auto world = joj::matrix4x4_identity();
     world = DirectX::XMMatrixTranslation(m_rect.get_position2D().x, m_rect.get_position2D().y, 0.0f);
-    auto scaleMatrix = DirectX::XMMatrixScaling(20.0f, 20.0f, 0.0f);
+    auto scaleMatrix = DirectX::XMMatrixScaling(
+        m_rect.get_right() - m_rect.get_left(),
+        m_rect.get_bottom() - m_rect.get_top(),
+        1.0f);
     world = scaleMatrix * world;
     auto view = DirectX::XMLoadFloat4x4(&m_camera2D.get_view());
     auto proj = DirectX::XMLoadFloat4x4(&m_camera2D.get_proj());
@@ -273,14 +265,17 @@ void App2DTest::draw_rect()
     u32 offset = 0;
     m_vertex_buffer.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
 
-    // m_renderer->set_rasterizer_state(joj::RasterizerState::Wireframe);
+    m_renderer->set_rasterizer_state(joj::RasterizerState::Wireframe);
     m_renderer->set_primitive_topology(joj::PrimitiveTopology::TRIANGLE_STRIP);
     m_renderer->get_cmd_list().device_context->Draw(4, 0);
 
     // Rect 2
     world = joj::matrix4x4_identity();
     world = DirectX::XMMatrixTranslation(m_rect2.get_position2D().x, m_rect2.get_position2D().y, 0.0f);
-    scaleMatrix = DirectX::XMMatrixScaling(20.0f, 20.0f, 0.0f);
+    scaleMatrix = DirectX::XMMatrixScaling(
+        m_rect2.get_right() - m_rect2.get_left(),
+        m_rect2.get_bottom() - m_rect2.get_top(),
+        1.0f);
     world = scaleMatrix * world;
     view = DirectX::XMLoadFloat4x4(&m_camera2D.get_view());
     proj = DirectX::XMLoadFloat4x4(&m_camera2D.get_proj());
