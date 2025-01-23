@@ -14,6 +14,7 @@
 #include "joj/renderer/d3d11/constant_buffer_d3d11.h"
 #include "joj/systems/physics/rect.h"
 #include "joj/systems/camera/camera2d.h"
+#include "joj/systems/scene/d3d11/scene_d3d11.h"
 
 // Constant Objects ------------------------------------------------------------
 
@@ -58,6 +59,8 @@ public:
     joj::Rect m_rect;
     joj::Rect m_rect2;
     joj::Camera2D m_camera2D;
+
+    joj::D3D11Scene m_scene;
 };
 
 #endif // _JOJ_2D_APP_TEST_H

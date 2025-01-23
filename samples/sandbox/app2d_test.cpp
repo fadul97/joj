@@ -36,8 +36,8 @@ void App2DTest::load_sprites()
         L"textures/GravityGuy.dds", joj::ImageType::DDS));
 
     data = new joj::SpriteData();
-    data->position = { 0.0f, 0.0f };
-    data->size = { 1.0f, 1.0f };
+    data->position = { 400.0f, 300.0f };
+    data->size = { 100.0f, 100.0f };
     data->rotation = 0.0f;
     data->color = { 1.0f, 1.0f, 1.0f, 1.0f };
     joj::TextureData2D& tex = m_tex_manager.get_texture(L"textures/GravityGuy.dds");
@@ -56,11 +56,16 @@ void App2DTest::load_sprites()
 
     joj::SpriteAnimationData runAnim;
     runAnim.name = "Run";
-    runAnim.frames = { 0, 1, 2, 3, 4 };  // Quadro 0, 1, 2, 3, 4 da SpriteSheet.
+    runAnim.frames = { 1, 2, 3, 4 };  // Quadro 0, 1, 2, 3, 4 da SpriteSheet.
     runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
     m_sprite.add_animation(runAnim);
 
-    m_rect = joj::Rect(100.0f, 40.0f);
+    runAnim.name = "IdleNormal";
+    runAnim.frames = { 0 };  // Quadro 0 da SpriteSheet.
+    runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
+    m_sprite.add_animation(runAnim);
+
+    m_rect = joj::Rect(data->size.x, data->size.y);
     m_rect2 = joj::Rect(50.0f, 50.0f);
     m_rect.set_position(data->position);
 }
@@ -133,8 +138,6 @@ void App2DTest::setup_buffers()
 
 void App2DTest::init()
 {
-    m_renderer->initialize_data2D();
-
     setup_buffers();
 
     load_sprites();
@@ -149,6 +152,9 @@ void App2DTest::init()
 
     m_camera2D = joj::Camera2D(0, 800, 600, 0);
     m_camera2D.set_position({ 0.0f, 0.0f, 0.0f });
+
+    m_scene.init(m_renderer->get_device(), m_camera2D);
+    m_scene.add_sprite(&m_sprite);
 }
 
 void App2DTest::update(const f32 dt)
@@ -161,7 +167,7 @@ void App2DTest::update(const f32 dt)
         m_sprite.play_animation("Run");
         m_sprite.update(dt);
         auto& sprite = m_sprite.get_sprite_data();
-        sprite.position.x += 0.01f;
+        sprite.position.x += 100.0f * dt;
         m_rect.set_position(sprite.position);
     }
 
@@ -170,8 +176,13 @@ void App2DTest::update(const f32 dt)
         m_sprite.play_animation("Run");
         m_sprite.update(dt);
         auto& sprite = m_sprite.get_sprite_data();
-        sprite.position.x -= 0.01f;
+        sprite.position.x -= 100.0f * dt;
         m_rect.set_position(sprite.position);
+    }
+
+    if (m_input->is_key_up('K') && m_input->is_key_up('J'))
+    {
+        m_sprite.play_animation("IdleNormal");
     }
 
     if (m_input->is_key_down('I'))
@@ -231,11 +242,7 @@ void App2DTest::draw()
 
 void App2DTest::draw_sprites()
 {
-    m_sprite.draw();
-    // auto& sprite = m_sprite.get_sprite_data();
-    // sprite.size.x = 20.0f;
-    // sprite.size.y = 20.0f;
-    m_renderer->draw_sprite(m_sprite.get_sprite_data());
+    m_scene.draw(*m_renderer);
 }
 
 void App2DTest::draw_rect()
@@ -298,7 +305,6 @@ void App2DTest::draw_rect()
 
 void App2DTest::draw_rect2()
 {
-
 }
 
 void App2DTest::shutdown()
