@@ -36,7 +36,7 @@ void joj::D3D11IndexBuffer::setup(u32 byte_width, const void* data)
         m_data.init_data.pSysMem = data;
 }
 
-joj::ErrorCode joj::D3D11IndexBuffer::create(GraphicsDevice& device)
+joj::ErrorCode joj::D3D11IndexBuffer::create(const GraphicsDevice& device)
 {
     if (device.device->CreateBuffer(
         &m_data.ibd,

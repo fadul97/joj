@@ -20,7 +20,7 @@ namespace joj
 
         virtual void setup(u32 byte_width, const void* data) = 0;
 
-        virtual ErrorCode create(GraphicsDevice& device) = 0;
+        virtual ErrorCode create(const GraphicsDevice& device) = 0;
 
         virtual void bind(CommandList& cmd_list, DataFormat format,
             const u32 offset) = 0;

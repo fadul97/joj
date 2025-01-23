@@ -33,7 +33,7 @@ void joj::D3D11ConstantBuffer::setup(const u32 byte_width, const void* data)
         m_data.init_data.pSysMem = data;
 }
 
-joj::ErrorCode joj::D3D11ConstantBuffer::create(GraphicsDevice& device)
+joj::ErrorCode joj::D3D11ConstantBuffer::create(const GraphicsDevice& device)
 {
     if (device.device->CreateBuffer(
         &m_data.cbd,
@@ -48,13 +48,13 @@ joj::ErrorCode joj::D3D11ConstantBuffer::create(GraphicsDevice& device)
     return ErrorCode::OK;
 }
 
-void joj::D3D11ConstantBuffer::bind_to_vertex_shader(CommandList& cmd_list,
+void joj::D3D11ConstantBuffer::bind_to_vertex_shader(const CommandList& cmd_list,
     u32 start_slot, u32 num_buffers)
 {
     cmd_list.device_context->VSSetConstantBuffers(start_slot, num_buffers, &m_data.buffer);
 }
 
-void joj::D3D11ConstantBuffer::bind_to_pixel_shader(CommandList& cmd_list,
+void joj::D3D11ConstantBuffer::bind_to_pixel_shader(const CommandList& cmd_list,
     u32 start_slot, u32 num_buffers)
 {
     cmd_list.device_context->PSSetConstantBuffers(start_slot, num_buffers, &m_data.buffer);

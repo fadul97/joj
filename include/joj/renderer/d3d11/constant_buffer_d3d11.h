@@ -42,11 +42,11 @@ namespace joj
 
         void setup(const u32 byte_width, const void* data) override;
 
-        ErrorCode create(GraphicsDevice& device) override;
+        ErrorCode create(const GraphicsDevice& device) override;
 
-        void bind_to_vertex_shader(CommandList& cmd_list,
+        void bind_to_vertex_shader(const CommandList& cmd_list,
             u32 start_slot, u32 num_buffers) override;
-        void bind_to_pixel_shader(CommandList& cmd_list,
+        void bind_to_pixel_shader(const CommandList& cmd_list,
             u32 start_slot, u32 num_buffers) override;
 
         CBData& get_data() override;

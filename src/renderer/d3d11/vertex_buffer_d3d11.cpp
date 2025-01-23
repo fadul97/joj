@@ -75,7 +75,7 @@ void joj::D3D11VertexBuffer::setup(BufferUsage usage, CPUAccessType cpu_access_f
     m_filled = true;
 }
 
-joj::ErrorCode joj::D3D11VertexBuffer::create(GraphicsDevice& device)
+joj::ErrorCode joj::D3D11VertexBuffer::create(const GraphicsDevice& device)
 {
     if (device.device->CreateBuffer(
         &m_data.vbd,

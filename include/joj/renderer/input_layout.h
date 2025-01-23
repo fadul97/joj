@@ -40,7 +40,7 @@ namespace joj
 
         void add(InputDesc& desc);
 
-        virtual ErrorCode create(GraphicsDevice& device, VertexShader& shader) = 0;
+        virtual ErrorCode create(const GraphicsDevice& device, VertexShader& shader) = 0;
 
         virtual void bind(CommandList& cmd_list) = 0;
 

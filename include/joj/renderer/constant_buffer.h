@@ -19,11 +19,11 @@ namespace joj
 
         virtual void setup(const u32 byte_width, const void* data) = 0;
 
-        virtual ErrorCode create(GraphicsDevice& device) = 0;
+        virtual ErrorCode create(const GraphicsDevice& device) = 0;
 
-        virtual void bind_to_vertex_shader(CommandList& cmd_list,
+        virtual void bind_to_vertex_shader(const CommandList& cmd_list,
             u32 start_slot, u32 num_buffers) = 0;
-        virtual void bind_to_pixel_shader(CommandList& cmd_list,
+        virtual void bind_to_pixel_shader(const CommandList& cmd_list,
             u32 start_slot, u32 num_buffers) = 0;
 
         template <typename T>

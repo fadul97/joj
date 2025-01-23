@@ -8,13 +8,6 @@
 #include "renderer/vertex.h"
 #include "jmacros.h"
 
-struct ConstantBuffer2D
-{
-    joj::JFloat4x4 world;
-    joj::JFloat4 color;
-    joj::JFloat4 uv_rect;
-};
-
 joj::D3D11Renderer::D3D11Renderer()
 {
     m_graphics_device.device = nullptr;
@@ -37,12 +30,6 @@ joj::D3D11Renderer::D3D11Renderer()
     m_blend_state = nullptr;                   // Color mix settings
     m_rasterizer_state_solid = nullptr;        // Solid Rasterizer state
     m_rasterizer_state_wireframe = nullptr;    // Wireframe Rasterizer state
-
-    m_vertex_buffer2D = D3D11VertexBuffer();
-    m_index_buffer2D = D3D11IndexBuffer();
-    m_constant_buffer2D = D3D11ConstantBuffer();
-    m_sprite_shader = D3D11Shader();
-    m_sprite_layout = D3D11InputLayout();
 
 #if JOJ_DEBUG_MODE
     m_debug = nullptr;
@@ -785,85 +772,8 @@ void joj::D3D11Renderer::swap_buffers()
     m_cmd_list.device_context->OMSetRenderTargets(1, &m_render_target_view, m_depth_stencil_view);
 }
 
-void joj::D3D11Renderer::initialize_data2D()
-{
-    m_sprite_shader.compile_vertex_shader_from_file(
-        "shaders/Sprite.hlsl",
-        "VS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_sprite_shader.create_vertex_shader(m_graphics_device));
-
-    m_sprite_shader.compile_pixel_shader_from_file(
-        "shaders/Sprite.hlsl",
-        "PS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_sprite_shader.create_pixel_shader(m_graphics_device));
-
-    joj::InputDesc layout[] = {
-        { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
-        { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 12, joj::InputClassification::PerVertexData, 0 },
-        { "TEXCOORD", 0, joj::DataFormat::R32G32_FLOAT,       0, 28, joj::InputClassification::PerVertexData, 0 },
-    };
-
-    for (auto& l : layout)
-    {
-        m_sprite_layout.add(l);
-    }
-
-    JOJ_LOG_IF_FAIL(m_sprite_layout.create(m_graphics_device, m_sprite_shader.get_vertex_shader()));
-
-    joj::Vertex::PosColorUVRect quad_vertices[] =
-    {
-        { JFloat3{ -0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f }, JFloat4{ 0.0f, 0.0f, 0.0f, 1.0f } }, // Top Left
-        { JFloat3{  0.5f,  0.5f, 0.0f }, JFloat4{ 0.0f, 0.0f, 1.0f, 1.0f }, JFloat4{ 1.0f, 0.0f, 0.0f, 1.0f } }, // Top Right
-        { JFloat3{  0.5f, -0.5f, 0.0f }, JFloat4{ 1.0f, 1.0f, 1.0f, 1.0f }, JFloat4{ 1.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Right
-        { JFloat3{ -0.5f, -0.5f, 0.0f }, JFloat4{ 1.0f, 0.0f, 0.0f, 1.0f }, JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Left
-    };
-
-    m_vertex_buffer2D.setup(BufferUsage::Immutable, CPUAccessType::None,
-        sizeof(Vertex::PosColorUVRect) * 4, quad_vertices);
-    JOJ_LOG_IF_FAIL(m_vertex_buffer2D.create(m_graphics_device));
-
-    // Índices para formar dois triângulos
-    u32 quad_indices[] =
-    {
-        0, 1, 2,
-        0, 2, 3
-    };
-
-    m_index_buffer2D.setup(sizeof(u32) * 6, quad_indices);
-    JOJ_LOG_IF_FAIL(m_index_buffer2D.create(m_graphics_device));
-
-    m_constant_buffer2D.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer2D)), nullptr);
-    JOJ_LOG_IF_FAIL(m_constant_buffer2D.create(m_graphics_device));
-    m_constant_buffer2D.bind_to_vertex_shader(m_cmd_list, 0, 1);
-    m_constant_buffer2D.bind_to_pixel_shader(m_cmd_list, 0, 1);
-}
-
 void joj::D3D11Renderer::draw_sprite(const SpriteData& sprite)
 {
-    JMatrix4x4 scale = DirectX::XMMatrixScaling(sprite.size.x, sprite.size.y, 1.0f);
-    JMatrix4x4 rotation = DirectX::XMMatrixRotationZ(sprite.rotation);
-    JMatrix4x4 translation = DirectX::XMMatrixTranslation(sprite.position.x, sprite.position.y, 0.0f);
-    JMatrix4x4 world = scale * rotation * translation;
-
-    m_sprite_shader.bind_vertex_shader(m_cmd_list);
-    m_sprite_shader.bind_pixel_shader(m_cmd_list);
-    m_sprite_layout.bind(m_cmd_list);
-
-    m_constant_buffer2D.bind_to_vertex_shader(m_cmd_list, 0, 1);
-    m_constant_buffer2D.bind_to_pixel_shader(m_cmd_list, 0, 1);
-
-    ConstantBuffer2D cb_data;
-    XMStoreFloat4x4(&cb_data.world, XMMatrixTranspose(world));
-    cb_data.color = sprite.color;
-    cb_data.uv_rect = sprite.uv_rect;
-    m_constant_buffer2D.update(m_cmd_list, cb_data);
-
-    u32 stride = sizeof(Vertex::PosColorUVRect);
-    u32 offset = 0;
-
-    m_vertex_buffer2D.bind(m_cmd_list, 0, 1, &stride, &offset);
-    m_index_buffer2D.bind(m_cmd_list, joj::DataFormat::R32_UINT, offset);
-
     m_cmd_list.device_context->PSSetShaderResources(0, 1, &sprite.texture.srv);
 
     set_rasterizer_state(RasterizerState::Solid);

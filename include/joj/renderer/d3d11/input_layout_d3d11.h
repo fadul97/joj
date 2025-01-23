@@ -22,7 +22,7 @@ namespace joj
         D3D11InputLayout();
         ~D3D11InputLayout();
 
-        ErrorCode create(GraphicsDevice& device, VertexShader& shader) override;
+        ErrorCode create(const GraphicsDevice& device, VertexShader& shader) override;
 
         void bind(CommandList& cmd_list) override;
 

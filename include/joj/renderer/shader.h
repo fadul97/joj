@@ -49,8 +49,8 @@ namespace joj
         virtual void compile_compute_shader_from_file(const std::string& compute_path,
             const std::string& entry_point, const ShaderModel shader_model) = 0;
 
-        virtual ErrorCode create_vertex_shader(GraphicsDevice& device) = 0;
-        virtual ErrorCode create_pixel_shader(GraphicsDevice& device) = 0;
+        virtual ErrorCode create_vertex_shader(const GraphicsDevice& device) = 0;
+        virtual ErrorCode create_pixel_shader(const GraphicsDevice& device) = 0;
 
         virtual void bind_vertex_shader(CommandList& cmd_list) = 0;
         virtual void bind_pixel_shader(CommandList& cmd_list) = 0;

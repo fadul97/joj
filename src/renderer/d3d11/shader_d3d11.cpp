@@ -376,7 +376,7 @@ void joj::D3D11Shader::compile_compute_shader_from_file(const std::string& compu
 	}
 }
 
-joj::ErrorCode joj::D3D11Shader::create_vertex_shader(GraphicsDevice& device)
+joj::ErrorCode joj::D3D11Shader::create_vertex_shader(const GraphicsDevice& device)
 {
 	if (device.device->CreateVertexShader(
 		m_vertex_shader.vsblob->GetBufferPointer(),
@@ -392,7 +392,7 @@ joj::ErrorCode joj::D3D11Shader::create_vertex_shader(GraphicsDevice& device)
 	return ErrorCode::OK;
 }
 
-joj::ErrorCode joj::D3D11Shader::create_pixel_shader(GraphicsDevice& device)
+joj::ErrorCode joj::D3D11Shader::create_pixel_shader(const GraphicsDevice& device)
 {
 	if (device.device->CreatePixelShader(
 		m_pixel_shader.psblob->GetBufferPointer(),

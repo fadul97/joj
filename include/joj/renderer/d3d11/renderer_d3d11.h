@@ -63,7 +63,6 @@ namespace joj
         void clear(f32 r = 0.23f, f32 g = 0.23f, f32 b = 0.23f, f32 a = 1.0f) override;
         void swap_buffers() override;
 
-        void initialize_data2D() override;
         void draw_sprite(const SpriteData& sprite) override;
 
 #if JOJ_DEBUG_MODE
@@ -93,13 +92,6 @@ namespace joj
         ID3D11BlendState* m_blend_state;                            // Color mix settings
         ID3D11RasterizerState* m_rasterizer_state_solid;            // Solid Rasterizer state
         ID3D11RasterizerState* m_rasterizer_state_wireframe;        // Wireframe Rasterizer state
-
-        // 2D Data 
-        D3D11VertexBuffer m_vertex_buffer2D;
-        D3D11IndexBuffer m_index_buffer2D;
-        D3D11ConstantBuffer m_constant_buffer2D;
-        D3D11Shader m_sprite_shader;
-        D3D11InputLayout m_sprite_layout;
 
 #if JOJ_DEBUG_MODE
         ID3D11Debug* m_debug;

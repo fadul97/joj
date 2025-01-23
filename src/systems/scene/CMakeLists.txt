@@ -8,8 +8,16 @@ add_library(
     scene.cpp
 )
 
+if (WIN32)
+    add_subdirectory(d3d11)
+endif()
+
 target_include_directories(
     jojScene
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/
 )
+
+if (WIN32)
+    target_link_libraries(jojScene PUBLIC jojD3D11Scene)
+endif()

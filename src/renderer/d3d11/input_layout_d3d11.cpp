@@ -21,7 +21,7 @@ joj::D3D11InputLayout::~D3D11InputLayout()
     }
 }
 
-joj::ErrorCode joj::D3D11InputLayout::create(GraphicsDevice& device,
+joj::ErrorCode joj::D3D11InputLayout::create(const GraphicsDevice& device,
     VertexShader& shader)
 {
     std::vector<D3D11_INPUT_ELEMENT_DESC> input_desc;

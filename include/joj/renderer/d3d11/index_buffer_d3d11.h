@@ -26,7 +26,7 @@ namespace joj
 
         void setup(u32 byte_width, const void* data) override;
 
-        ErrorCode create(GraphicsDevice& device) override;
+        ErrorCode create(const GraphicsDevice& device) override;
 
         void bind(CommandList& cmd_list, DataFormat format,
             const u32 offset) override;

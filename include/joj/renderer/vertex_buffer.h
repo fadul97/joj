@@ -35,7 +35,7 @@ namespace joj
         virtual void setup(BufferUsage usage, CPUAccessType cpu_access_flags,
             u32 byte_width, const void* data) = 0;
 
-        virtual ErrorCode create(GraphicsDevice& device) = 0;
+        virtual ErrorCode create(const GraphicsDevice& device) = 0;
 
         virtual void bind(CommandList& cmd_list, u32 start_slot,
             u32 num_buffers, const u32* stride, const u32* offset) = 0;
