@@ -12,6 +12,7 @@ add_subdirectory(camera)
 add_subdirectory(light)
 add_subdirectory(material)
 add_subdirectory(physics)
+add_subdirectory(scene)
 
 target_include_directories(
     jojSystems
@@ -27,6 +28,7 @@ target_link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/light/
     ${CMAKE_CURRENT_SOURCE_DIR}/material/
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/
+    ${CMAKE_CURRENT_SOURCE_DIR}/scene/
 )
 
-target_link_libraries(jojSystems PUBLIC jojMath jojCamera jojLight jojMaterial jojPhysics)
+target_link_libraries(jojSystems PUBLIC jojMath jojCamera jojLight jojMaterial jojPhysics jojScene)

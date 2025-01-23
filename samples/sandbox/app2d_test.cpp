@@ -179,6 +179,11 @@ void App2DTest::update(const f32 dt)
         m_rect.set_size(200.0f, 200.0f);
     }
 
+    if (m_input->is_key_down('R'))
+    {
+        m_rect2.set_size(200.0f, 10.0f);
+    }
+
     if (m_input->is_key_down('D'))
     {
         m_rect.translate(0.5f, 0.0f);
