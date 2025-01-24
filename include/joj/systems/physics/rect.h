@@ -22,6 +22,8 @@ namespace joj
         void set_size(const f32 width, const f32 height);
         void set_size(const JFloat2& size);
 
+        f32 get_rotation() override;
+
         f32 get_width() const;
         f32 get_height() const;
 

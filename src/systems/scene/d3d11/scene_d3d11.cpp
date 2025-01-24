@@ -210,7 +210,7 @@ void joj::D3D11Scene::draw_collisions(IRenderer& renderer)
         {
             auto rect = static_cast<Rect*>(geometry);
             JMatrix4x4 scale = DirectX::XMMatrixScaling(rect->get_size().x, rect->get_size().y, 1.0f);
-            JMatrix4x4 rotation = DirectX::XMMatrixRotationZ(0);
+            JMatrix4x4 rotation = DirectX::XMMatrixRotationZ(rect->get_rotation());
             JMatrix4x4 translation = DirectX::XMMatrixTranslation(rect->get_position2D().x, rect->get_position2D().y, 0.0f);
             JMatrix4x4 world = scale * rotation * translation;
 

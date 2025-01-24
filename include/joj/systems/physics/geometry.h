@@ -27,6 +27,8 @@ namespace joj
         virtual JFloat2 get_position2D() const;
         virtual GeometryType get_type() const;
 
+        virtual f32 get_rotation() = 0;
+
         virtual void translate(const f32 dx, const f32 dy);
         virtual void move_to(const f32 x, const f32 y);
 
@@ -39,6 +41,8 @@ namespace joj
         GeometryType m_type;
 
         b8 m_colliding;
+
+        f32 m_rotation;
     };
 
     inline void Geometry::set_position(const f32 x, const f32 y)

@@ -56,3 +56,8 @@ b8 joj::Rect::check_collision(const Geometry& geometry)
         return false;
     }
 }
+
+f32 joj::Rect::get_rotation()
+{
+    return m_rotation;
+}
