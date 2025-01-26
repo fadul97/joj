@@ -648,16 +648,24 @@ void joj::D3D11Renderer::shutdown()
 
 void joj::D3D11Renderer::enable_depth_test()
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+    JOJ_ASSERT(m_depth_stencil_state, "Depth stencil state is nullptr.");
     m_cmd_list.device_context->OMSetDepthStencilState(m_depth_stencil_state, 1);
 }
 
 void joj::D3D11Renderer::disable_depth_test()
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+    JOJ_ASSERT(m_depth_disabled_stencil_state, "Depth disabled stencil state is nullptr.");
     m_cmd_list.device_context->OMSetDepthStencilState(m_depth_disabled_stencil_state, 1);
 }
 
 void joj::D3D11Renderer::set_rasterizer_state(const RasterizerState state)
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+    JOJ_ASSERT(m_rasterizer_state_wireframe, "Wireframe rasterizer state is nullptr.");
+    JOJ_ASSERT(m_rasterizer_state_solid, "Solid rasterizer state is nullptr.");
+
     switch (state)
     {
     case RasterizerState::Wireframe:
@@ -673,6 +681,8 @@ void joj::D3D11Renderer::set_rasterizer_state(const RasterizerState state)
 
 void joj::D3D11Renderer::set_primitive_topology(const PrimitiveTopology topology)
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+
     switch (topology)
     {
     case PrimitiveTopology::UNDEFINED:
@@ -700,6 +710,8 @@ void joj::D3D11Renderer::set_primitive_topology(const PrimitiveTopology topology
 
 void joj::D3D11Renderer::set_viewport(f32 x, f32 y, f32 width, f32 height, f32 min_depth, f32 max_depth)
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+
     m_viewport.TopLeftX = x;
     m_viewport.TopLeftY = y;
     m_viewport.Width = width;
@@ -712,17 +724,22 @@ void joj::D3D11Renderer::set_viewport(f32 x, f32 y, f32 width, f32 height, f32 m
 
 void joj::D3D11Renderer::set_viewport(const Viewport& viewport)
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+
     m_viewport.TopLeftX = viewport.m_x;
     m_viewport.TopLeftY = viewport.m_y;
     m_viewport.Width = viewport.m_width;
     m_viewport.Height = viewport.m_height;
     m_viewport.MinDepth = viewport.m_min_depth;
     m_viewport.MaxDepth = viewport.m_max_depth;
+
     m_cmd_list.device_context->RSSetViewports(1, &m_viewport);
 }
 
 void joj::D3D11Renderer::set_viewport_size(const u32 width, const u32 height)
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+
     m_viewport.Width = static_cast<f32>(width);
     m_viewport.Height = static_cast<f32>(height);
 
@@ -731,6 +748,8 @@ void joj::D3D11Renderer::set_viewport_size(const u32 width, const u32 height)
 
 void joj::D3D11Renderer::resize(i32 width, i32 height)
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+
     // Describe Viewport
     m_viewport.TopLeftX = 0.0f;
     m_viewport.TopLeftY = 0.0f;
@@ -745,16 +764,22 @@ void joj::D3D11Renderer::resize(i32 width, i32 height)
 
 joj::GraphicsDevice& joj::D3D11Renderer::get_device()
 {
+    JOJ_ASSERT(m_graphics_device.device, "Graphics device is nullptr.");
     return m_graphics_device;
 }
 
 joj::CommandList& joj::D3D11Renderer::get_cmd_list()
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
     return m_cmd_list;
 }
 
 void joj::D3D11Renderer::clear(f32 r, f32 g, f32 b, f32 a)
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+    JOJ_ASSERT(m_render_target_view, "Render target view is nullptr.");
+    JOJ_ASSERT(m_depth_stencil_view, "Depth stencil view is nullptr.");
+
     // Background color of the backbuffer = window background color
     f32 bgcolor[4]{ r, g, b, a };
     m_cmd_list.device_context->ClearRenderTargetView(m_render_target_view, bgcolor);
@@ -763,6 +788,9 @@ void joj::D3D11Renderer::clear(f32 r, f32 g, f32 b, f32 a)
 
 void joj::D3D11Renderer::swap_buffers()
 {
+    JOJ_ASSERT(m_swapchain, "SwapChain is nullptr.");
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+
     if (m_swapchain->Present(m_vsync, NULL) != S_OK)
     {
         JERROR(ErrorCode::ERR_RENDERER_D3D11_SWAPCHAIN_PRESENT, "Failed to present SwapChain.");
@@ -774,6 +802,8 @@ void joj::D3D11Renderer::swap_buffers()
 
 void joj::D3D11Renderer::draw_sprite(const SpriteData& sprite)
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+
     m_cmd_list.device_context->PSSetShaderResources(0, 1, &sprite.texture.srv);
 
     set_rasterizer_state(RasterizerState::Solid);
@@ -783,6 +813,8 @@ void joj::D3D11Renderer::draw_sprite(const SpriteData& sprite)
 
 void joj::D3D11Renderer::draw_rect(const Rect& rect)
 {
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+
     set_rasterizer_state(RasterizerState::Wireframe);
     set_primitive_topology(PrimitiveTopology::TRIANGLE_STRIP);
     m_cmd_list.device_context->Draw(4, 0);

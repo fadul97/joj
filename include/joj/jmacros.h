@@ -32,11 +32,35 @@
 }
 #endif // JOJ_RETURN_INT_IF_FAIL
 
+#ifndef JOJ_RETURN_VOID_IF_FAIL
+#define JOJ_RETURN_VOID_IF_FAIL(x)                                                                                 \
+{                                                                                                                  \
+    joj::ErrorCode result = (x);                                                                                   \
+    if(result != joj::ErrorCode::OK) {                                                                             \
+        joj::Logger::log(joj::LogLevel::LOG_LEVEL_ERROR, result, __FILE__, __LINE__, "Function: %s", __func__);    \
+        return;                                                                                                    \
+    }                                                                                                              \
+}
+#endif // JOJ_RETURN_VOID_IF_FAIL
+
+#ifndef JOJ_ASSERT
+#define JOJ_ASSERT(condition, ...)                                                                                 \
+    do {                                                                                                           \
+        if (!(condition)) {                                                                                        \
+            joj::Logger::log(joj::LogLevel::LOG_LEVEL_ERROR, joj::ErrorCode::ASSERTION_FAILED,                     \
+                    __FILE__, __LINE__, "Assertion failed in function: %s | Message: " __VA_ARGS__, __func__);     \
+            std::terminate(); /* Encerra o programa em caso de falha crítica */                                    \
+        }                                                                                                          \
+    } while (0)
+#endif // JOJ_ASSERT
+
 #else // JOJ_DEBUG_MODE not defined (Release mode)
 
 #define JOJ_FAILED(x)
+#define JOJ_LOG_IF_FAIL(x)
 #define JOJ_RETURN_INT_IF_FAIL(x)
-#define JOJ_RETURN_INT_IF_FAIL(x)
+#define JOJ_RETURN_VOID_IF_FAIL(x)
+#define JOJ_ASSERT(condition, ...)
 
 #endif // JOJ_DEBUG_MODE
 

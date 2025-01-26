@@ -29,6 +29,9 @@ namespace joj
         /** @brief Generic error code, should be used when the operation failed. */
         FAILED,
 
+        /** @brief Assertion error code, should be used when an assertion fails. */
+        ASSERTION_FAILED,
+
         /** @brief Window Error code, should be used for invalid window handle. */
         ERR_WINDOW_HANDLE,
 
