@@ -3,8 +3,10 @@
 #if JPLATFORM_WINDOWS
 
 #include "renderer/d3d11/DDSTextureLoader11.h"
+#include <renderer/d3d11/WICTextureLoader.h>
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "logger.h"
+#include <codecvt>
 
 joj::D3D11TextureManager::D3D11TextureManager()
 {
@@ -25,21 +27,67 @@ joj::ErrorCode joj::D3D11TextureManager::create(GraphicsDevice& device,
 {
     ID3D11ShaderResourceView* srv = nullptr;
 
-    /*
-    if (m_texture_SRV.find(filename) != m_texture_SRV.end())
+    switch (type)
     {
-        JWARN("Texture '%ls' was already loaded and will not be loaded again.",
-            filename.c_str());
-        return ErrorCode::OK;
-    }
-    */
+    case joj::ImageType::PNG:
+    {
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        std::string str = converter.to_bytes(filename);
+        const char* file = str.c_str();
 
-    if (DirectX::CreateDDSTextureFromFile(device.device, filename.c_str(),
-        nullptr, &srv) != S_OK)
+        u32 width = 0;
+        u32 height = 0;
+
+        if (D3D11CreateTextureFromFile(
+            device.device,
+            cmd_list.device_context,
+            file,
+            nullptr,
+            &srv,
+            width,
+            height) != S_OK)
+        {
+            JERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
+                "Failed to create texture from PNG file '%s'.", filename);
+            return ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION;
+        }
+    }
+        break;
+    case joj::ImageType::JPG:
     {
-        JERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
-            "Failed to load DDS file '%ls'.", filename.c_str());
-        return ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION;
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        std::string str = converter.to_bytes(filename);
+        const char* file = str.c_str();
+
+        u32 width = 0;
+        u32 height = 0;
+
+        if (D3D11CreateTextureFromFile(
+            device.device,
+            cmd_list.device_context,
+            file,
+            nullptr,
+            &srv,
+            width,
+            height) != S_OK)
+        {
+            JERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
+                "Failed to create texture from JPG file '%s'.", filename);
+            return ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION;
+        }
+    }
+        break;
+    case joj::ImageType::DDS:
+        if (DirectX::CreateDDSTextureFromFile(device.device, filename.c_str(),
+            nullptr, &srv) != S_OK)
+        {
+            JERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
+                "Failed to load DDS file '%ls'.", filename.c_str());
+            return ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION;
+        }
+        break;
+    default:
+        break;
     }
 
     m_texture_SRV[filename].srv = srv;

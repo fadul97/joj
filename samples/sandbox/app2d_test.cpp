@@ -18,30 +18,30 @@ App2DTest::~App2DTest()
 void App2DTest::load_sprites()
 {
     JOJ_LOG_IF_FAIL(m_tex_manager.create(m_renderer->get_device(), m_renderer->get_cmd_list(),
-        L"textures/GravityGuy.dds", joj::ImageType::DDS));
+        L"textures/test-ase.png", joj::ImageType::PNG));
 
     data = new joj::SpriteData();
     data->position = { 400.0f, 300.0f };
     data->size = { 100.0f, 100.0f };
     data->rotation = 0.0f;
     data->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    joj::TextureData2D& tex = m_tex_manager.get_texture(L"textures/GravityGuy.dds");
+    joj::TextureData2D& tex = m_tex_manager.get_texture(L"textures/test-ase.png");
     data->texture.srv = tex.srv;
     m_sprite.set_sprite_data(*data);
 
     joj::SpriteSheetData ssData;
     ssData.texture = tex;
-    ssData.rows = 2;
-    ssData.columns = 5;
+    ssData.rows = 8;
+    ssData.columns = 8;
     ssData.frame_width = 32;
-    ssData.frame_height = 48;
-    ssData.texture_width = 160;
-    ssData.texture_height = 96;
+    ssData.frame_height = 32;
+    ssData.texture_width = 256;
+    ssData.texture_height = 256;
     m_sprite.set_sprite_sheet_data(ssData);
 
     joj::SpriteAnimationData runAnim;
     runAnim.name = "Run";
-    runAnim.frames = { 1, 2, 3, 4 };  // Quadro 0, 1, 2, 3, 4 da SpriteSheet.
+    runAnim.frames = { 0, 1, 2, 3 };  // Quadro 0, 1, 2, 3 da SpriteSheet.
     runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
     m_sprite.add_animation(runAnim);
 
