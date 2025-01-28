@@ -18,35 +18,40 @@ App2DTest::~App2DTest()
 void App2DTest::load_sprites()
 {
     JOJ_LOG_IF_FAIL(m_tex_manager.create(m_renderer->get_device(), m_renderer->get_cmd_list(),
-        L"textures/test-ase.png", joj::ImageType::PNG));
+        L"textures/char_purple.png", joj::ImageType::PNG));
 
     data = new joj::SpriteData();
     data->position = { 400.0f, 300.0f };
     data->size = { 100.0f, 100.0f };
     data->rotation = 0.0f;
     data->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    joj::TextureData2D& tex = m_tex_manager.get_texture(L"textures/test-ase.png");
+    joj::TextureData2D& tex = m_tex_manager.get_texture(L"textures/char_purple.png");
     data->texture.srv = tex.srv;
     m_sprite.set_sprite_data(*data);
 
     joj::SpriteSheetData ssData;
     ssData.texture = tex;
-    ssData.rows = 8;
+    ssData.rows = 10;
     ssData.columns = 8;
-    ssData.frame_width = 32;
-    ssData.frame_height = 32;
-    ssData.texture_width = 256;
-    ssData.texture_height = 256;
+    ssData.frame_width = 56;
+    ssData.frame_height = 56;
+    ssData.texture_width = 448;
+    ssData.texture_height = 616;
     m_sprite.set_sprite_sheet_data(ssData);
 
     joj::SpriteAnimationData runAnim;
     runAnim.name = "Run";
-    runAnim.frames = { 0, 1, 2, 3 };  // Quadro 0, 1, 2, 3 da SpriteSheet.
+    runAnim.frames = { 16, 17, 18, 19, 20, 21, 22, 23 };  // Quadro 0, 1, 2, 3 da SpriteSheet.
     runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
     m_sprite.add_animation(runAnim);
 
-    runAnim.name = "IdleNormal";
-    runAnim.frames = { 0 };  // Quadro 0 da SpriteSheet.
+    runAnim.name = "Idle";
+    runAnim.frames = { 0, 1, 2, 3, 4, 5 };  // Quadro 0 da SpriteSheet.
+    runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
+    m_sprite.add_animation(runAnim);
+
+    runAnim.name = "Jump";
+    runAnim.frames = { 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39 };  // Quadro 0 da SpriteSheet.
     runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
     m_sprite.add_animation(runAnim);
 
@@ -103,10 +108,12 @@ void App2DTest::update(const f32 dt)
     if (m_input->is_key_pressed('B'))
         m_debug_draw = !m_debug_draw;
 
+    // m_sprite.play_animation("Idle");
+    m_sprite.update(dt);
+
     if (m_input->is_key_down('K'))
     {
         m_sprite.play_animation("Run");
-        m_sprite.update(dt);
         auto& sprite = m_sprite.get_sprite_data();
         sprite.position.x += 100.0f * dt;
         m_rect.set_position(sprite.position);
@@ -115,15 +122,19 @@ void App2DTest::update(const f32 dt)
     if (m_input->is_key_down('J'))
     {
         m_sprite.play_animation("Run");
-        m_sprite.update(dt);
         auto& sprite = m_sprite.get_sprite_data();
         sprite.position.x -= 100.0f * dt;
         m_rect.set_position(sprite.position);
     }
 
-    if (m_input->is_key_up('K') && m_input->is_key_up('J'))
+    if (m_input->is_key_down(joj::KEY_SPACE))
     {
-        m_sprite.play_animation("IdleNormal");
+        m_sprite.play_animation("Jump");
+    }
+
+    if (m_input->is_key_up('K') && m_input->is_key_up('J') && m_input->is_key_up(joj::KEY_SPACE))
+    {
+        m_sprite.play_animation("Idle");
     }
 
     if (m_input->is_key_down('I'))
