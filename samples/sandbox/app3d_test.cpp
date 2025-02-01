@@ -6,6 +6,14 @@
 #include "joj/engine.h"
 #include <math.h>
 
+// Read file
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <string>
+#include <cstdlib> // rand()
+
 App3DTest::App3DTest()
 {
     m_last_mouse_pos = { 0, 0 };
@@ -58,48 +66,77 @@ void App3DTest::build_input_layout()
     JOJ_LOG_IF_FAIL(m_input_layout.create(m_renderer->get_device(), m_shader.get_vertex_shader()));
 }
 
+struct MeshData
+{
+    std::vector<joj::Vertex::PosColor> vertices;
+    std::vector<u32> indices;
+};
+
+static u32 total_indices = 0;
 void App3DTest::build_buffers()
 {
     JINFO("Building buffers...");
 
-    // Position, Color
-    joj::Vertex::PosColor vertices[] =
+    const char* filename = "models/monkey1.txt";
+    std::ifstream file(filename);
+
+    if (!file.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo: " << filename << std::endl;
+        return;
+    }
+
+    std::vector<joj::JFloat3> positions;
+    std::string line;
+    MeshData mesh;
+
+    while (std::getline(file, line))
     {
-        { joj::JFloat3{ -1.0f,  1.0f,  1.0f }, joj::JFloat4{ 1.0f, 0.0f, 0.0f, 1.0f } }, // 0
-        { joj::JFloat3{ -1.0f, -1.0f,  1.0f }, joj::JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // 1
-        { joj::JFloat3{ -1.0f,  1.0f, -1.0f }, joj::JFloat4{ 0.0f, 0.0f, 1.0f, 1.0f } }, // 2
-        { joj::JFloat3{ -1.0f, -1.0f, -1.0f }, joj::JFloat4{ 1.0f, 1.0f, 0.0f, 1.0f } }, // 3
-        { joj::JFloat3{  1.0f,  1.0f,  1.0f }, joj::JFloat4{ 1.0f, 0.0f, 1.0f, 1.0f } }, // 4
-        { joj::JFloat3{  1.0f, -1.0f,  1.0f }, joj::JFloat4{ 0.0f, 1.0f, 1.0f, 1.0f } }, // 5
-        { joj::JFloat3{  1.0f,  1.0f, -1.0f }, joj::JFloat4{ 1.0f, 1.0f, 1.0f, 1.0f } }, // 6
-        { joj::JFloat3{  1.0f, -1.0f, -1.0f }, joj::JFloat4{ 0.5f, 0.5f, 0.5f, 1.0f } }  // 7
-    };
+        std::istringstream iss(line);
+        std::string type;
+        iss >> type;
+
+        if (type == "v")
+        {
+            f32 x, y, z;
+            iss >> x >> y >> z;
+            positions.push_back({ x, y, z });
+        }
+        else if (type == "f")
+        {
+            u32 a, b, c;
+            iss >> a >> b >> c;
+            mesh.indices.push_back(a); // Convertendo de 1-based para 0-based
+            mesh.indices.push_back(b);
+            mesh.indices.push_back(c);
+        }
+    }
+
+    // Criando os vértices com cores aleatórias
+    for (const auto& pos : positions)
+    {
+        joj::JFloat4 color =
+        {
+            // 1.0f, 1.0f, 0.0f,
+            static_cast<f32>(rand()) / RAND_MAX, // Vermelho aleatório
+            static_cast<f32>(rand()) / RAND_MAX, // Verde aleatório
+            static_cast<f32>(rand()) / RAND_MAX, // Azul aleatório
+            1.0f  // Alfa (sempre 1)
+        };
+
+        mesh.vertices.push_back({ pos, color });
+    }
 
     m_vertex_buffer.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
-        sizeof(vertices), vertices);
+        sizeof(joj::Vertex::PosColor) * mesh.vertices.size(), mesh.vertices.data());
     JOJ_LOG_IF_FAIL(m_vertex_buffer.create(m_renderer->get_device()));
 
-    u32 indices[] =
-    {
-        0, 4, 6,
-        0, 6, 2,
-        3, 2, 6,
-        3, 6, 7,
-        7, 6, 4,
-        7, 4, 5,
-        5, 1, 3,
-        5, 3, 7,
-        1, 0, 2,
-        1, 2, 3,
-        5, 4, 0,
-        5, 0, 1
-    };
-
-    m_index_buffer.setup(sizeof(indices), indices);
+    m_index_buffer.setup(sizeof(u32) * mesh.indices.size(), mesh.indices.data());
     JOJ_LOG_IF_FAIL(m_index_buffer.create(m_renderer->get_device()));
 
     m_constant_buffer.setup(joj::calculate_cb_byte_size(sizeof(CameraCB)), nullptr);
     JOJ_LOG_IF_FAIL(m_constant_buffer.create(m_renderer->get_device()));
+
+    total_indices = mesh.indices.size();
 }
 
 void App3DTest::init()
@@ -147,7 +184,7 @@ void App3DTest::draw()
     m_vertex_buffer.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
     m_index_buffer.bind(m_renderer->get_cmd_list(), joj::DataFormat::R32_UINT, offset);
 
-    m_renderer->get_cmd_list().device_context->DrawIndexed(36, 0, 0);
+    m_renderer->get_cmd_list().device_context->DrawIndexed(total_indices, 0, 0);
 
     m_renderer->swap_buffers();
 }
