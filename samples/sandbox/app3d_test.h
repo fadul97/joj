@@ -4,17 +4,13 @@
 // Includes --------------------------------------------------------------------
 #include "joj/application/app.h"
 
-#include "joj/renderer/d3d11/texture_manager_d3d11.h"
-#include "joj/renderer/d3d11/sampler_state_d3d11.h"
-#include "joj/renderer/d3d11/sprite_d3d11.h"
 #include "joj/renderer/d3d11/shader_d3d11.h"
 #include "joj/renderer/d3d11/input_layout_d3d11.h"
 #include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
 #include "joj/renderer/d3d11/index_buffer_d3d11.h"
 #include "joj/renderer/d3d11/constant_buffer_d3d11.h"
-#include "joj/systems/physics/rect.h"
-#include "joj/systems/camera/camera2D.h"
-#include "joj/systems/scene/d3d11/scene_d3d11.h"
+
+#include "joj/resources/d3d11/model_manager_d3d11.h"
 
 // Constant Objects ------------------------------------------------------------
 
@@ -31,13 +27,18 @@ public:
     void draw() override;
     void shutdown() override;
 
-    void build_sampler_state();
+    void build_shader();
+    void build_input_layout();
+    void build_buffers();
 
     // ----------------------------------------------------
-    joj::D3D11TextureManager m_tex_manager;;
-    joj::D3D11SamplerState m_sampler_state;
+    joj::D3D11Shader m_shader;
+    joj::D3D11InputLayout m_input_layout;
+    joj::D3D11VertexBuffer m_vertex_buffer;
+    joj::D3D11IndexBuffer m_index_buffer;
+    joj::D3D11ConstantBuffer m_constant_buffer;
 
-    joj::D3D11Scene m_scene;
+    joj::D3D11ModelManager m_model_mgr;
 };
 
 #endif // _JOJ_3D_APP_TEST_H

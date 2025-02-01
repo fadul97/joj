@@ -567,6 +567,8 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     // Set Solid rasterizer state as default
     m_cmd_list.device_context->RSSetState(m_rasterizer_state_solid);
 
+    set_primitive_topology(PrimitiveTopology::TRIANGLE_LIST);
+
     // ---------------------------------------------------
     //	Release Resources
     // ---------------------------------------------------
