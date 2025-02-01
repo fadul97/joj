@@ -1,4 +1,4 @@
-#include "app3d_test.h"
+﻿#include "app3d_test.h"
 
 #include "logger.h"
 #include "joj/jmacros.h"
@@ -62,25 +62,40 @@ void App3DTest::build_buffers()
 {
     JINFO("Building buffers...");
 
-    joj::Vertex::PosColor quad_vertices[] =
+    // Position, Color
+    joj::Vertex::PosColor vertices[] =
     {
-        { joj::JFloat3{ -0.5f, -0.5f, 0.0f }, joj::JFloat4{ 1.0f, 0.0f, 0.0f, 1.0f } }, // Bottom Left
-        { joj::JFloat3{  0.5f, -0.5f, 0.0f }, joj::JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // Bottom Right
-        { joj::JFloat3{ -0.5f,  0.5f, 0.0f }, joj::JFloat4{ 0.0f, 0.0f, 1.0f, 1.0f } }, // Top Left
-        { joj::JFloat3{  0.5f,  0.5f, 0.0f }, joj::JFloat4{ 1.0f, 1.0f, 0.0f, 1.0f } }, // Top Right
+        { joj::JFloat3{ -1.0f,  1.0f,  1.0f }, joj::JFloat4{ 1.0f, 0.0f, 0.0f, 1.0f } }, // 0
+        { joj::JFloat3{ -1.0f, -1.0f,  1.0f }, joj::JFloat4{ 0.0f, 1.0f, 0.0f, 1.0f } }, // 1
+        { joj::JFloat3{ -1.0f,  1.0f, -1.0f }, joj::JFloat4{ 0.0f, 0.0f, 1.0f, 1.0f } }, // 2
+        { joj::JFloat3{ -1.0f, -1.0f, -1.0f }, joj::JFloat4{ 1.0f, 1.0f, 0.0f, 1.0f } }, // 3
+        { joj::JFloat3{  1.0f,  1.0f,  1.0f }, joj::JFloat4{ 1.0f, 0.0f, 1.0f, 1.0f } }, // 4
+        { joj::JFloat3{  1.0f, -1.0f,  1.0f }, joj::JFloat4{ 0.0f, 1.0f, 1.0f, 1.0f } }, // 5
+        { joj::JFloat3{  1.0f,  1.0f, -1.0f }, joj::JFloat4{ 1.0f, 1.0f, 1.0f, 1.0f } }, // 6
+        { joj::JFloat3{  1.0f, -1.0f, -1.0f }, joj::JFloat4{ 0.5f, 0.5f, 0.5f, 1.0f } }  // 7
     };
 
     m_vertex_buffer.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
-        sizeof(joj::Vertex::PosColor) * 4, quad_vertices);
+        sizeof(vertices), vertices);
     JOJ_LOG_IF_FAIL(m_vertex_buffer.create(m_renderer->get_device()));
 
     u32 indices[] =
     {
-        0, 1, 2,
-        2, 1, 3
+        0, 4, 6,
+        0, 6, 2,
+        3, 2, 6,
+        3, 6, 7,
+        7, 6, 4,
+        7, 4, 5,
+        5, 1, 3,
+        5, 3, 7,
+        1, 0, 2,
+        1, 2, 3,
+        5, 4, 0,
+        5, 0, 1
     };
 
-    m_index_buffer.setup(sizeof(u32) * 6, indices);
+    m_index_buffer.setup(sizeof(indices), indices);
     JOJ_LOG_IF_FAIL(m_index_buffer.create(m_renderer->get_device()));
 
     m_constant_buffer.setup(joj::calculate_cb_byte_size(sizeof(CameraCB)), nullptr);
@@ -89,6 +104,7 @@ void App3DTest::build_buffers()
 
 void App3DTest::init()
 {
+    setup_camera();
     build_shader();
     build_input_layout();
     build_buffers();
@@ -130,7 +146,7 @@ void App3DTest::draw()
     m_vertex_buffer.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
     m_index_buffer.bind(m_renderer->get_cmd_list(), joj::DataFormat::R32_UINT, offset);
 
-    m_renderer->get_cmd_list().device_context->DrawIndexed(6, 0, 0);
+    m_renderer->get_cmd_list().device_context->DrawIndexed(36, 0, 0);
 
     m_renderer->swap_buffers();
 }
@@ -169,17 +185,19 @@ void App3DTest::on_mouse_move(WPARAM button_state, i32 x, i32 y)
 
 void App3DTest::process_mouse_input(const f32 dt)
 {
+    const f32 speed = dt * 20.0f;
+
     if (m_input->is_key_down('W'))
-        m_camera.walk(dt * 35.0f);
+        m_camera.walk(speed);
 
     if (m_input->is_key_down(joj::KEY_S))
-        m_camera.walk(dt * -35.0f);
+        m_camera.walk(-speed);
 
     if (m_input->is_key_down(joj::KEY_A))
-        m_camera.strafe(dt * -35.0f);
+        m_camera.strafe(-speed);
 
     if (m_input->is_key_down(joj::KEY_D))
-        m_camera.strafe(dt * 35.0f);
+        m_camera.strafe(speed);
 
     m_camera.update_view_matrix();
 }
