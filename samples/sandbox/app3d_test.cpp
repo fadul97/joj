@@ -56,6 +56,7 @@ void App3DTest::build_input_layout()
     joj::InputDesc sprite_layout[] = {
         { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
         { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 12, joj::InputClassification::PerVertexData, 0 },
+        { "NORMAL",   0, joj::DataFormat::R32G32B32_FLOAT,    0, 28, joj::InputClassification::PerVertexData, 0 }
     };
 
     for (auto& l : sprite_layout)
@@ -68,7 +69,7 @@ void App3DTest::build_input_layout()
 
 struct MeshData
 {
-    std::vector<joj::Vertex::PosColor> vertices;
+    std::vector<joj::Vertex::PosColorNormal> vertices;
     std::vector<u32> indices;
 };
 
@@ -80,12 +81,14 @@ void App3DTest::build_buffers()
     const char* filename = "models/simpleSpaceShip1.txt";
     std::ifstream file(filename);
 
-    if (!file.is_open()) {
+    if (!file.is_open())
+    {
         std::cerr << "Erro ao abrir o arquivo: " << filename << std::endl;
         return;
     }
 
     std::vector<joj::JFloat3> positions;
+    std::vector<joj::JFloat3> normals;
     std::string line;
     MeshData mesh;
 
@@ -101,6 +104,12 @@ void App3DTest::build_buffers()
             iss >> x >> y >> z;
             positions.push_back({ x, y, z });
         }
+        else if (type == "vn")
+        {
+            f32 x, y, z;
+            iss >> x >> y >> z;
+            normals.push_back({ x, y, z });
+        }
         else if (type == "f")
         {
             u32 a, b, c;
@@ -110,24 +119,25 @@ void App3DTest::build_buffers()
             mesh.indices.push_back(c);
         }
     }
-
+    
     // Criando os vértices com cores aleatórias
-    for (const auto& pos : positions)
+    for (size_t i = 0; i < positions.size() && i < normals.size(); ++i)
     {
         joj::JFloat4 color =
         {
-            // 1.0f, 1.0f, 0.0f,
             static_cast<f32>(rand()) / RAND_MAX, // Vermelho aleatório
             static_cast<f32>(rand()) / RAND_MAX, // Verde aleatório
             static_cast<f32>(rand()) / RAND_MAX, // Azul aleatório
             1.0f  // Alfa (sempre 1)
         };
 
-        mesh.vertices.push_back({ pos, color });
+        joj::JFloat3 normal = (i < normals.size()) ? normals[i] : joj::JFloat3{ 0.0f, 0.0f, 0.0f };  // Garantindo que temos uma normal
+
+        mesh.vertices.push_back({ positions[i], color, normal });
     }
 
     m_vertex_buffer.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
-        sizeof(joj::Vertex::PosColor) * mesh.vertices.size(), mesh.vertices.data());
+        sizeof(joj::Vertex::PosColorNormal) * mesh.vertices.size(), mesh.vertices.data());
     JOJ_LOG_IF_FAIL(m_vertex_buffer.create(m_renderer->get_device()));
 
     m_index_buffer.setup(sizeof(u32) * mesh.indices.size(), mesh.indices.data());
@@ -178,7 +188,7 @@ void App3DTest::draw()
         m_constant_buffer.update(m_renderer->get_cmd_list(), cb);
     }
 
-    u32 stride = sizeof(joj::Vertex::PosColor);
+    u32 stride = sizeof(joj::Vertex::PosColorNormal);
     u32 offset = 0;
 
     m_vertex_buffer.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);

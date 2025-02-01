@@ -26,7 +26,18 @@ if obj.type == 'MESH':
         # Export vertices
         f.write(f"Vertices: {len(mesh.vertices)}\n")
         for v in mesh.vertices:
-            f.write(f"v {v.co.x} {v.co.y} {v.co.z}\n")
+            # Convert coordinates (Blender -> JOJ)
+            x = v.co.x
+            y = v.co.z   # Blender Y -> JOJ Z
+            z = -v.co.y  # Blender Z -> JOJ -Z
+            f.write(f"v {x} {y} {z}\n")
+        
+        # Export normals (already interpolated if Auto Smooth is enabled)
+        f.write(f"Normals: {len(mesh.vertices)}\n")
+        for v in mesh.vertices:
+            normal = v.normal  # This is the normal that Blender calculates
+            x, y, z = normal.x, normal.y, normal.z
+            f.write(f"vn {x} {y} {z}\n")
 
         # Export triangulated faces
         f.write(f"Faces: {len(mesh.loop_triangles)}\n")
