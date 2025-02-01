@@ -8,6 +8,7 @@ add_executable(jojSamples
     sandbox/app_test.cpp
     sandbox/gui_test.cpp
     sandbox/app2d_test.cpp
+    sandbox/app3d_test.cpp
     #test_app.cpp
 )
 
