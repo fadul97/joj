@@ -108,6 +108,7 @@ void App3DTest::init()
     build_shader();
     build_input_layout();
     build_buffers();
+    m_renderer->set_rasterizer_state(joj::RasterizerState::Solid);
 }
 
 void App3DTest::update(const f32 dt)
