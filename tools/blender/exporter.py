@@ -11,13 +11,18 @@ obj = bpy.context.object
 
 # Make sure it's a mesh
 if obj.type == 'MESH':
+    # Apply the mirror modifier (if exists)
+    for modifier in obj.modifiers:
+        if modifier.type == 'MIRROR':
+            bpy.ops.object.modifier_apply(modifier=modifier.name)
+
     # Create a copy to avoid modifying the original mesh
     mesh = obj.data.copy()
     
     # Convert to triangles
     mesh.calc_loop_triangles()
 
-    with open("C:/Users/fadul/Downloads/uvSphere1.txt", "w") as f:
+    with open("C:/Users/fadul/Downloads/simpleSpaceShip1.txt", "w") as f:
         # Export vertices
         f.write(f"Vertices: {len(mesh.vertices)}\n")
         for v in mesh.vertices:

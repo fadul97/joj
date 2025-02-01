@@ -77,7 +77,7 @@ void App3DTest::build_buffers()
 {
     JINFO("Building buffers...");
 
-    const char* filename = "models/monkey1.txt";
+    const char* filename = "models/simpleSpaceShip1.txt";
     std::ifstream file(filename);
 
     if (!file.is_open()) {
