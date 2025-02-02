@@ -12,16 +12,30 @@
 
 #include "joj/resources/d3d11/model_manager_d3d11.h"
 #include "joj/systems/camera/free_camera.h"
+#include "joj/systems/light/light.h"
 
 // Constant Objects ------------------------------------------------------------
 
 struct CameraCB
 {
+    joj::JFloat4x4 world;
+    joj::JFloat4x4 inverse_world;
     joj::JFloat4x4 view;
     joj::JFloat4x4 proj;
     joj::JFloat4x4 view_proj;
     joj::JFloat4x4 wvp;
     joj::JFloat3 eye_pos_w;
+};
+
+struct LightCB
+{
+    joj::DirectionalLight dir_light;
+};
+
+struct MeshData
+{
+    std::vector<joj::Vertex::PosColorNormal> vertices;
+    std::vector<u32> indices;
 };
 
 // Class -----------------------------------------------------------------------
@@ -48,6 +62,9 @@ public:
 
     void process_mouse_input(const f32 dt);
 
+    void load_custom_format(const std::string& filename, MeshData& mesh);
+    void load_obj_format(const std::string& filename, MeshData& mesh);
+
     // ----------------------------------------------------
     joj::D3D11Shader m_shader;
     joj::D3D11InputLayout m_input_layout;
@@ -58,6 +75,8 @@ public:
     joj::D3D11ModelManager m_model_mgr;
     joj::FreeCamera m_camera;
     joj::JFloat2 m_last_mouse_pos;
+
+    joj::D3D11ConstantBuffer m_light_buffer;
 };
 
 #endif // _JOJ_3D_APP_TEST_H

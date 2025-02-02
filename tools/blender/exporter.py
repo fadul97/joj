@@ -36,7 +36,9 @@ if obj.type == 'MESH':
         f.write(f"Normals: {len(mesh.vertices)}\n")
         for v in mesh.vertices:
             normal = v.normal  # This is the normal that Blender calculates
-            x, y, z = normal.x, normal.y, normal.z
+            x = normal.x
+            y = normal.z   # Blender Y -> JOJ Z
+            z = -normal.y  # Blender Z -> JOJ -Z
             f.write(f"vn {x} {y} {z}\n")
 
         # Export triangulated faces
