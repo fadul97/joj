@@ -20,6 +20,7 @@ namespace joj
 
 #if JPLATFORM_WINDOWS
         JVector4(const DirectX::XMFLOAT4& v) : x(v.x), y(v.y), z(v.z), w(v.w) {}
+        JVector4(const DirectX::XMVECTOR& v) : x(DirectX::XMVectorGetX(v)), y(DirectX::XMVectorGetY(v)), z(DirectX::XMVectorGetZ(v)), w(DirectX::XMVectorGetW(v)) {}
 #endif
 
         // Binary operators
@@ -79,6 +80,7 @@ namespace joj
         };
 
 #if JPLATFORM_WINDOWS
+        // DirectX::XMFLOAT4
         DirectX::XMFLOAT4 to_XMFLOAT4() const { return DirectX::XMFLOAT4(x, y, z, w); }
         void from_XMFLOAT4(const DirectX::XMFLOAT4& v) { x = v.x; y = v.y; z = v.z; w = v.w; }
         b8 operator==(const DirectX::XMFLOAT4& other) const { return x == other.x && y == other.y && z == other.z && w == other.w; }
@@ -89,18 +91,42 @@ namespace joj
                 std::abs(z - other.z) < epsilon &&
                 std::abs(w - other.w) < epsilon;
         }
+
+        // DirectX::XMVECTOR
+        DirectX::XMVECTOR to_XMVECTOR() const { return DirectX::XMVectorSet(x, y, z, w); }
+        void from_XMVECTOR(const DirectX::XMVECTOR& v) { x = DirectX::XMVectorGetX(v); y = DirectX::XMVectorGetY(v); z = DirectX::XMVectorGetZ(v); w = DirectX::XMVectorGetW(v); }
+        b8 operator==(const DirectX::XMVECTOR& other) const { return x == DirectX::XMVectorGetX(other) && y == DirectX::XMVectorGetY(other) && z == DirectX::XMVectorGetZ(other) && w == DirectX::XMVectorGetW(other); }
+        b8 is_equal_to_XMVECTOR(const DirectX::XMVECTOR& other, f32 epsilon = 0.0001f) const
+        {
+            return std::abs(x - DirectX::XMVectorGetX(other)) < epsilon &&
+                std::abs(y - DirectX::XMVectorGetY(other)) < epsilon &&
+                std::abs(z - DirectX::XMVectorGetZ(other)) < epsilon &&
+                std::abs(w - DirectX::XMVectorGetW(other)) < epsilon;
+        }
 #endif
     };
 
 #if JPLATFORM_WINDOWS
-    DirectX::XMFLOAT4 JVector4_to_XMFLOAT4(const JVector4& v) { return DirectX::XMFLOAT4(v.x, v.y, v.z, v.w); }
-    JVector4 XMFLOAT4_to_JVector4(const DirectX::XMFLOAT4& v) { return JVector4(v.x, v.y, v.z, v.w); }
-    b8 is_JVector4_equal_to_XMFLOAT4(const JVector4& v1, const DirectX::XMFLOAT4& v2, f32 epsilon = 0.0001f)
+    // DirectX::XMFLOAT4
+    inline DirectX::XMFLOAT4 JVector4_to_XMFLOAT4(const JVector4& v) { return DirectX::XMFLOAT4(v.x, v.y, v.z, v.w); }
+    inline JVector4 XMFLOAT4_to_JVector4(const DirectX::XMFLOAT4& v) { return JVector4(v.x, v.y, v.z, v.w); }
+    inline b8 is_JVector4_equal_to_XMFLOAT4(const JVector4& v1, const DirectX::XMFLOAT4& v2, f32 epsilon = 0.0001f)
     {
         return std::abs(v1.x - v2.x) < epsilon &&
             std::abs(v1.y - v2.y) < epsilon &&
             std::abs(v1.z - v2.z) < epsilon &&
             std::abs(v1.w - v2.w) < epsilon;
+    }
+
+    // DirectX::XMVECTOR
+    inline DirectX::XMVECTOR JVector4_to_XMVECTOR(const JVector4& v) { return DirectX::XMVectorSet(v.x, v.y, v.z, v.w); }
+    inline JVector4 XMVECTOR_to_JVector4(const DirectX::XMVECTOR& v) { return JVector4(DirectX::XMVectorGetX(v), DirectX::XMVectorGetY(v), DirectX::XMVectorGetZ(v), DirectX::XMVectorGetW(v)); }
+    inline b8 is_JVector4_equal_to_XMVECTOR(const JVector4& v1, const DirectX::XMVECTOR& v2, f32 epsilon = 0.0001f)
+    {
+        return std::abs(v1.x - DirectX::XMVectorGetX(v2)) < epsilon &&
+            std::abs(v1.y - DirectX::XMVectorGetY(v2)) < epsilon &&
+            std::abs(v1.z - DirectX::XMVectorGetZ(v2)) < epsilon &&
+            std::abs(v1.w - DirectX::XMVectorGetW(v2)) < epsilon;
     }
 #endif
 }
