@@ -26,8 +26,9 @@ struct VertexIn
 struct VertexOut
 {
     float4 PosH : SV_POSITION;
+    float3 PosW : TEXCOORD0;
     float4 Color : COLOR;
-    float3 Normal : NORMAL;
+    float3 Normal : TEXCOORD1;
 };
 
 VertexOut VS(VertexIn vin)
@@ -77,5 +78,3 @@ float4 PS(VertexOut pin) : SV_Target
     // Garantir que a cor está dentro do limite de 0 a 1
     return saturate(finalColor);
 }
-
-

@@ -6,6 +6,7 @@
 #include "joj/engine.h"
 #include <math.h>
 #include "logger.h"
+#include "joj/math/jvector3.h"
 
 // Read file
 #include <iostream>
@@ -14,6 +15,29 @@
 #include <vector>
 #include <string>
 #include <cstdlib> // rand()
+
+joj::JFloat3 cross(const joj::JFloat3& v1, const joj::JFloat3& v2) {
+    return joj::JFloat3(
+        v1.y * v2.z - v1.z * v2.y,
+        v1.z * v2.x - v1.x * v2.z,
+        v1.x * v2.y - v1.y * v2.x
+    );
+}
+
+joj::JFloat3 normalize(const joj::JFloat3& v) {
+    f32 len = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    if (len > 0.0f)
+        return joj::JFloat3(v.x / len, v.y / len, v.z / len);
+
+    return joj::JFloat3(0.0f, 0.0f, 0.0f); // Retorna um vetor nulo se o comprimento for zero
+}
+
+joj::JFloat3 calculateFaceNormal(const joj::JFloat3& v0, const joj::JFloat3& v1, const joj::JFloat3& v2)
+{
+    joj::JFloat3 edge1 = { v1.x - v0.x, v1.y - v0.y, v1.z - v0.z };
+    joj::JFloat3 edge2 = { v2.x - v0.x, v2.y - v0.y, v2.z - v0.z };
+    return normalize(cross(edge1, edge2));
+}
 
 App3DTest::App3DTest()
 {
@@ -73,10 +97,11 @@ void App3DTest::build_buffers()
 {
     JINFO("Building buffers...");
 
-    const char* filename = "models/cube1.txt";
+    const char* filename1 = "models/cube1.txt";
+    const char* filename2 = "models/customCube.obj";
     MeshData mesh;
-    load_custom_format(filename, mesh);
-    // load_obj_format(filename, mesh);
+    // load_custom_format(filename1, mesh);
+    load_obj_format(filename2, mesh);
 
     m_vertex_buffer.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
         sizeof(joj::Vertex::PosColorNormal) * mesh.vertices.size(), mesh.vertices.data());
