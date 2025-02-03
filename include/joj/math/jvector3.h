@@ -18,6 +18,10 @@ namespace joj
         JVector3(f32 value) : x(value), y(value), z(value) {}
         JVector3(f32 x, f32 y, f32 z) : x(x), y(y), z(z) {}
 
+#if JPLATFORM_WINDOWS
+        JVector3(const DirectX::XMFLOAT3& v) : x(v.x), y(v.y), z(v.z) {}
+#endif
+
         // Binary operators
         JVector3 operator+(const JVector3& other) const { return JVector3(x + other.x, y + other.y, z + other.z); }
         JVector3 operator-(const JVector3& other) const { return JVector3(x - other.x, y - other.y, z - other.z); }
@@ -79,7 +83,7 @@ namespace joj
         {
             struct { f32 x, y, z; }; // Vector components
             struct { f32 r, g, b; }; // RGB components
-            struct { f32 u, v, w; }; // Componentes UVW
+            struct { f32 u, v, w; }; // UVW components
         };
 
 #if JPLATFORM_WINDOWS
