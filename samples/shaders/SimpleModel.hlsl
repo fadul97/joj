@@ -1,80 +1,79 @@
 #include "LightHelper.hlsl"
 
-cbuffer cameraCB : register(b0)
+cbuffer ConstantBuffer : register(b0)
 {
-    float4x4 gWorld;
-    float4x4 gInverseWorld;
-    float4x4 gView;
-    float4x4 gProj;
-    float4x4 gViewProj;
-    float4x4 gWVP;
-    float3 gEyePosW;
+    float4x4 wvp;
+    float4x4 worldMatrix;
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
 };
 
-cbuffer lightCB : register(b1)
+cbuffer LightBuffer : register(b1)
 {
-    DirectionalLight gDirectionalLight;
+    float4 diffuseColor;
+    float3 lightDirection;
+    float padding;
 };
 
-struct VertexIn
+struct VS_INPUT
 {
-    float3 PosL : POSITION;
-    float4 Color : COLOR;
-    float3 Normal : NORMAL;
+    float4 position : POSITION;
+    float4 color : COLOR;
+    float3 normal : NORMAL;
 };
 
-struct VertexOut
+struct PS_INPUT
 {
-    float4 PosH : SV_POSITION;
-    float3 PosW : TEXCOORD0;
-    float4 Color : COLOR;
-    float3 Normal : TEXCOORD1;
+    float4 position : SV_POSITION;
+    float4 color : COLOR;
+    float3 normal : NORMAL;
 };
 
-VertexOut VS(VertexIn vin)
+PS_INPUT VS(VS_INPUT input)
 {
-    VertexOut vout;
+    PS_INPUT output;
+        
+    // Change the position vector to be 4 units for proper matrix calculations.
+    input.position.w = 1.0f;
 
-    // Transformar posição para o espaço de recorte (clip space)
-    vout.PosH = mul(float4(vin.PosL, 1.0f), gWVP);
+    // Calculate the position of the vertex against the world, view, and projection matrices.
+    output.position = mul(input.position, worldMatrix);
+    output.position = mul(output.position, viewMatrix);
+    output.position = mul(output.position, projectionMatrix);
 
-    // Transformar a normal para o espaço do mundo
-    // Usamos apenas a matriz 3x3 de gWorld para a normal, ignorando a translação
-    vout.Normal = normalize(mul((float3x3)gWorld, vin.Normal));
+    // Calculate the normal vector against the world matrix only.
+    output.normal = mul(input.normal, (float3x3) worldMatrix);
 
-    // Passar a cor para o Pixel Shader
-    vout.Color = vin.Color;
+    // Normalize the normal vector.
+    output.normal = normalize(output.normal);
+    
+    output.color = input.color;
 
-    return vout;
+    return output;
 }
 
 
-float4 PS(VertexOut pin) : SV_Target
+float4 PS(PS_INPUT input) : SV_TARGET
 {
-    // return pin.Color;
-    
-    // Normalizar a normal interpolada
-    pin.Normal = normalize(pin.Normal);
+    float4 textureColor;
+    float3 lightDir;
+    float lightIntensity;
+    float4 color;
 
-    // Inverter a direção da luz para garantir que a luz está vindo da direção correta
-    float3 L = -normalize(gDirectionalLight.Direction);
+    // Sample the pixel color from the texture using the sampler at this texture coordinate location.
+    textureColor = input.color;
+        
+    // Invert the light direction for calculations.
+    lightDir = -lightDirection;
 
-    // Calcular iluminação difusa (Lambert)
-    float diff = max(dot(pin.Normal, L), 0.0f);
+    // Calculate the amount of light on this pixel.
+    lightIntensity = saturate(dot(input.normal, lightDir));
 
-    // Calcular a iluminação especular (Phong)
-    float3 V = normalize(gEyePosW - pin.PosH.xyz); // Vetor de visão
-    float3 R = reflect(L, pin.Normal); // Vetor de reflexão
-    float spec = pow(max(dot(V, R), 0.0f), 32.0f); // Especular com um valor de "specular power" arbitrário (32)
+    // Determine the final amount of diffuse color based on the diffuse color combined with the light intensity.
+    color = saturate(diffuseColor * lightIntensity);
 
-    // Combinar luz ambiente, difusa e especular
-    float4 ambient = gDirectionalLight.Ambient * pin.Color;
-    float4 diffuse = gDirectionalLight.Diffuse * diff * pin.Color;
-    float4 specular = gDirectionalLight.Specular * spec * pin.Color;
+    // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
+    color = color * textureColor;
 
-    // Finalizar o cálculo de cor com todas as contribuições de luz
-    float4 finalColor = ambient + diffuse + specular;
-
-    // Garantir que a cor está dentro do limite de 0 a 1
-    return saturate(finalColor);
+    return color;
 }

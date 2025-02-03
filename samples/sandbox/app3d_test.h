@@ -16,20 +16,19 @@
 
 // Constant Objects ------------------------------------------------------------
 
-struct CameraCB
+struct ConstantBuffer
 {
-    joj::JFloat4x4 world;
-    joj::JFloat4x4 inverse_world;
-    joj::JFloat4x4 view;
-    joj::JFloat4x4 proj;
-    joj::JFloat4x4 view_proj;
     joj::JFloat4x4 wvp;
-    joj::JFloat3 eye_pos_w;
+    joj::JFloat4x4 worldMatrix;
+    joj::JFloat4x4 viewMatrix;
+    joj::JFloat4x4 projectionMatrix;
 };
 
 struct LightCB
 {
-    joj::DirectionalLight dir_light;
+    joj::JVector4 diffuseColor;
+    joj::JVector3 lightDirection;
+    f32 padding;
 };
 
 struct MeshData
@@ -63,6 +62,7 @@ public:
     void process_mouse_input(const f32 dt);
 
     void load_custom_format(const std::string& filename, MeshData& mesh);
+    void load_custom_format_with_flat_shading(const std::string& filename, MeshData& mesh);
     void load_obj_format(const std::string& filename, MeshData& mesh);
 
     // ----------------------------------------------------

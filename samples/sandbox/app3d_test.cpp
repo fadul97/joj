@@ -100,8 +100,9 @@ void App3DTest::build_buffers()
     const char* filename1 = "models/cube1.txt";
     const char* filename2 = "models/customCube.obj";
     MeshData mesh;
+    load_custom_format_with_flat_shading(filename1, mesh);
     // load_custom_format(filename1, mesh);
-    load_obj_format(filename2, mesh);
+    // load_obj_format(filename2, mesh);
 
     m_vertex_buffer.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
         sizeof(joj::Vertex::PosColorNormal) * mesh.vertices.size(), mesh.vertices.data());
@@ -110,7 +111,7 @@ void App3DTest::build_buffers()
     m_index_buffer.setup(sizeof(u32) * mesh.indices.size(), mesh.indices.data());
     JOJ_LOG_IF_FAIL(m_index_buffer.create(m_renderer->get_device()));
 
-    m_constant_buffer.setup(joj::calculate_cb_byte_size(sizeof(CameraCB)), nullptr);
+    m_constant_buffer.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
     JOJ_LOG_IF_FAIL(m_constant_buffer.create(m_renderer->get_device()));
 
     m_light_buffer.setup(joj::calculate_cb_byte_size(sizeof(LightCB)), nullptr);
@@ -145,39 +146,30 @@ void App3DTest::draw()
     m_shader.bind_pixel_shader(m_renderer->get_cmd_list());
     m_input_layout.bind(m_renderer->get_cmd_list());
 
-    angleY += 0.001f;
+    static f32 rotation = 0.0f;
+    // Update the rotation variable each frame.
+    rotation -= 0.0174532925f * 0.1f;
+    if (rotation < 0.0f)
+        rotation += 360.0f;
+
+    static f32 angle = 0.0f;
+    angle += 0.01f;
     {
         m_constant_buffer.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
-        CameraCB cb{};
+        joj::JMatrix4x4 W = DirectX::XMMatrixRotationY(rotation); // XMMatrixIdentity();
+        joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
+        joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
+        joj::JMatrix4x4 WVP = W * V * P;
 
-        // World Matrix
-        joj::JMatrix4x4 rotationY = DirectX::XMMatrixRotationY(angleY);
-        joj::JMatrix4x4 world = joj::matrix4x4_identity();
-        world = DirectX::XMMatrixMultiply(world, rotationY);
-        DirectX::XMStoreFloat4x4(&cb.world, XMMatrixTranspose(world));
+        ConstantBuffer cb{};
+        XMStoreFloat4x4(&cb.worldMatrix, XMMatrixTranspose(W));
 
-        // Inverse World Matrix
-        joj::JMatrix4x4 inverseWorld = DirectX::XMMatrixInverse(nullptr, world);
-        DirectX::XMStoreFloat4x4(&cb.inverse_world, inverseWorld);
+        XMStoreFloat4x4(&cb.wvp, XMMatrixTranspose(WVP));
 
-        // View Matrix
-        joj::JMatrix4x4 view = DirectX::XMLoadFloat4x4(&m_camera.get_view());
-        DirectX::XMStoreFloat4x4(&cb.view, XMMatrixTranspose(view));
-        
-        // Proj Matrix
-        joj::JMatrix4x4 proj = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
-        DirectX::XMStoreFloat4x4(&cb.proj, XMMatrixTranspose(proj));
-        
-        // ViewProj Matrix
-        joj::JMatrix4x4 view_proj = XMLoadFloat4x4(&cb.view) * XMLoadFloat4x4(&cb.proj);
-        DirectX::XMStoreFloat4x4(&cb.view_proj, XMMatrixTranspose(view_proj));
-        
-        // WVP Matrix
-        auto wvp = world * view * proj;
-        DirectX::XMStoreFloat4x4(&cb.wvp, XMMatrixTranspose(wvp));
-        
-        // Camera position
-        cb.eye_pos_w = m_camera.get_pos();
+        // joj::JMatrix4x4 I = DirectX::XMMatrixIdentity();
+        // XMStoreFloat4x4(&cb.worldMatrix, XMMatrixTranspose(I));
+        XMStoreFloat4x4(&cb.viewMatrix, XMMatrixTranspose(V));
+        XMStoreFloat4x4(&cb.projectionMatrix, XMMatrixTranspose(P));
         
         // Update CameraCB
         m_constant_buffer.update(m_renderer->get_cmd_list(), cb);
@@ -191,10 +183,8 @@ void App3DTest::draw()
         */
         m_light_buffer.bind_to_pixel_shader(m_renderer->get_cmd_list(), 1, 1);
         LightCB lightBuffer{};
-        lightBuffer.dir_light.ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
-        lightBuffer.dir_light.diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
-        lightBuffer.dir_light.specular = { 0.7f, 0.7f, 0.7f, 1.0f };
-        lightBuffer.dir_light.direction = { 1.0f, -1.0f, 0.0f };
+        lightBuffer.diffuseColor = joj::JVector4(0.0f, 0.7f, 0.7f, 1.0);
+        lightBuffer.lightDirection = joj::JVector3(0.0f, 0.0f, 1.0f);
         m_light_buffer.update(m_renderer->get_cmd_list(), lightBuffer);
     }
 
@@ -442,5 +432,82 @@ void App3DTest::load_obj_format(const std::string& filename, MeshData& mesh)
     for (size_t i = 0; i < mesh.vertices.size(); ++i)
     {
         std::cout << "Normal " << i << ": " << mesh.vertices[i].normal.x << " " << mesh.vertices[i].normal.y << " " << mesh.vertices[i].normal.z << std::endl;
+    }
+}
+
+void App3DTest::load_custom_format_with_flat_shading(const std::string& filename, MeshData& mesh)
+{
+    std::ifstream file(filename);
+    if (!file.is_open())
+    {
+        std::cerr << "Erro ao abrir o arquivo: " << filename << std::endl;
+        return;
+    }
+
+    std::vector<joj::JVector3> positions;
+    std::string line;
+
+    while (std::getline(file, line))
+    {
+        std::istringstream iss(line);
+        std::string type;
+        iss >> type;
+
+        if (type == "v")
+        {
+            f32 x, y, z;
+            iss >> x >> y >> z;
+            positions.push_back({ x, y, z });
+        }
+        else if (type == "f")
+        {
+            u32 a, b, c;
+            iss >> a >> b >> c;
+
+            // Pega as posições dos vértices
+            joj::JVector3 v0 = positions[a];
+            joj::JVector3 v1 = positions[b];
+            joj::JVector3 v2 = positions[c];
+
+            // Calcula o vetor normal da face (produto vetorial)
+            joj::JVector3 edge1 = { v1.x - v0.x, v1.y - v0.y, v1.z - v0.z };
+            joj::JVector3 edge2 = { v2.x - v0.x, v2.y - v0.y, v2.z - v0.z };
+
+            joj::JVector3 normal = {
+                edge1.y * edge2.z - edge1.z * edge2.y,
+                edge1.z * edge2.x - edge1.x * edge2.z,
+                edge1.x * edge2.y - edge1.y * edge2.x
+            };
+
+            // Normaliza a normal
+            f32 length = std::sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
+            if (length > 0.0f)
+            {
+                normal.x /= length;
+                normal.y /= length;
+                normal.z /= length;
+            }
+
+            // Cria os vértices com a mesma normal para cada face
+            joj::JVector4 color = { 0.5f, 0.5f, 0.5f, 1.0f }; // Cinza
+
+            mesh.vertices.push_back({ v0, color, normal });
+            mesh.vertices.push_back({ v1, color, normal });
+            mesh.vertices.push_back({ v2, color, normal });
+
+            // Atualiza os índices (agora temos que usar novos índices para cada face)
+            mesh.indices.push_back((u32)mesh.vertices.size() - 3);
+            mesh.indices.push_back((u32)mesh.vertices.size() - 2);
+            mesh.indices.push_back((u32)mesh.vertices.size() - 1);
+        }
+    }
+
+    // Print normals
+    for (size_t i = 0; i < mesh.vertices.size(); ++i)
+    {
+        std::cout << "Normal " << i << ": "
+            << mesh.vertices[i].normal.x << " "
+            << mesh.vertices[i].normal.y << " "
+            << mesh.vertices[i].normal.z << std::endl;
     }
 }

@@ -6,6 +6,8 @@
 
 #include "math/jmath.h"
 #include <wtypes.h>
+#include "math/jvector3.h"
+#include "math/jvector4.h"
 
 namespace joj
 {
@@ -26,24 +28,23 @@ namespace joj
 
         struct PosColorNormal
         {
-            JFloat3 pos;
-            JFloat4 color;
-            JFloat3 normal;
+            JVector3 pos;
+            JVector4 color;
+            JVector3 normal;
 
-			bool operator==(const PosColorNormal& other) const
-			{
-				using namespace DirectX;
-				return	pos.x == other.pos.x &&
-						pos.y == other.pos.y &&
-						pos.z == other.pos.z &&
-						normal.x == other.normal.x &&
-						normal.y == other.normal.y &&
-						normal.z == other.normal.z &&
-						color.x == other.color.x &&
-						color.y == other.color.y &&
-						color.z == other.color.z &&
-						color.w == other.color.w;
-			}
+            bool operator==(const PosColorNormal& other) const
+            {
+                return pos.x == other.pos.x &&
+                    pos.y == other.pos.y &&
+                    pos.z == other.pos.z &&
+                    color.x == other.color.x &&
+                    color.y == other.color.y &&
+                    color.z == other.color.z &&
+                    color.w == other.color.w &&
+                    normal.x == other.normal.x &&
+                    normal.y == other.normal.y &&
+                    normal.z == other.normal.z;
+            }
         };
 
 		struct PosNormalTex
