@@ -112,13 +112,13 @@ void joj::FreeCamera::set_lens(const f32 yfov, const f32 aspect, const f32 znear
 
 void joj::FreeCamera::look_at(const JFloat3& pos, const JFloat3& target, const JFloat3& world_up)
 {
-    JVector4 vpos = DirectX::XMLoadFloat3(&pos);
-    JVector4 vtarget = DirectX::XMLoadFloat3(&target);
-    JVector4 vup = DirectX::XMLoadFloat3(&world_up);
+    JXMVector4 vpos = DirectX::XMLoadFloat3(&pos);
+    JXMVector4 vtarget = DirectX::XMLoadFloat3(&target);
+    JXMVector4 vup = DirectX::XMLoadFloat3(&world_up);
 
-    JVector4 L = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(vtarget, vpos));
-    JVector4 R = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(vup, L));
-    JVector4 U = DirectX::XMVector3Cross(L, R);
+    JXMVector4 L = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(vtarget, vpos));
+    JXMVector4 R = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(vup, L));
+    JXMVector4 U = DirectX::XMVector3Cross(L, R);
 
     DirectX::XMStoreFloat3(&m_position, vpos);
     DirectX::XMStoreFloat3(&m_target, L);
@@ -141,11 +141,11 @@ const joj::JFloat4x4& joj::FreeCamera::get_proj()
 
 void joj::FreeCamera::strafe(const f32 d)
 {
-    JVector4 s = DirectX::XMVectorReplicate(d);
-    JVector4 r = DirectX::XMLoadFloat3(&m_right);
-    JVector4 p = DirectX::XMLoadFloat3(&m_position);
+    JXMVector4 s = DirectX::XMVectorReplicate(d);
+    JXMVector4 r = DirectX::XMLoadFloat3(&m_right);
+    JXMVector4 p = DirectX::XMLoadFloat3(&m_position);
 
-    JVector4 srp = DirectX::XMVectorMultiplyAdd(s, r, p);
+    JXMVector4 srp = DirectX::XMVectorMultiplyAdd(s, r, p);
     DirectX::XMStoreFloat3(&m_position, srp);
 
     m_view_dirty = true;
@@ -153,11 +153,11 @@ void joj::FreeCamera::strafe(const f32 d)
 
 void joj::FreeCamera::walk(const f32 d)
 {
-    JVector4 s = DirectX::XMVectorReplicate(d);
-    JVector4 l = DirectX::XMLoadFloat3(&m_target);
-    JVector4 p = DirectX::XMLoadFloat3(&m_position);
+    JXMVector4 s = DirectX::XMVectorReplicate(d);
+    JXMVector4 l = DirectX::XMLoadFloat3(&m_target);
+    JXMVector4 p = DirectX::XMLoadFloat3(&m_position);
 
-    JVector4 slp = DirectX::XMVectorMultiplyAdd(s, l, p);
+    JXMVector4 slp = DirectX::XMVectorMultiplyAdd(s, l, p);
     DirectX::XMStoreFloat3(&m_position, slp);
 
     m_view_dirty = true;
@@ -166,9 +166,9 @@ void joj::FreeCamera::walk(const f32 d)
 void joj::FreeCamera::move(CameraMovement direction, f32 dt)
 {
     const f32 velocity = m_movement_speed * dt;
-    JVector4 p;
-    JVector4 f;
-    JVector4 r;
+    JXMVector4 p;
+    JXMVector4 f;
+    JXMVector4 r;
     switch (direction)
     {
     case joj::CameraMovement::FORWARD:
@@ -227,15 +227,15 @@ void joj::FreeCamera::pitch(const f32 angle)
     assert(!DirectX::XMVector3Equal(XMLoadFloat3(&m_up), DirectX::XMVectorZero()));
     assert(!DirectX::XMVector3Equal(XMLoadFloat3(&m_target), DirectX::XMVectorZero()));
 
-    JVector4 vright = DirectX::XMLoadFloat3(&m_right);
+    JXMVector4 vright = DirectX::XMLoadFloat3(&m_right);
     vright = DirectX::XMVector3Normalize(vright);
     JMatrix4x4 R = DirectX::XMMatrixRotationAxis(vright, angle);
 
-    JVector4 vup = DirectX::XMLoadFloat3(&m_up);
-    JVector4 vtarget = DirectX::XMLoadFloat3(&m_target);
+    JXMVector4 vup = DirectX::XMLoadFloat3(&m_up);
+    JXMVector4 vtarget = DirectX::XMLoadFloat3(&m_target);
 
-    JVector4 up_normal = DirectX::XMVector3TransformNormal(vup, R);
-    JVector4 target_normal = DirectX::XMVector3TransformNormal(vtarget, R);
+    JXMVector4 up_normal = DirectX::XMVector3TransformNormal(vup, R);
+    JXMVector4 target_normal = DirectX::XMVector3TransformNormal(vtarget, R);
 
     DirectX::XMStoreFloat3(&m_up, up_normal);
     DirectX::XMStoreFloat3(&m_target, target_normal);
@@ -252,13 +252,13 @@ void joj::FreeCamera::rotateY(const f32 angle)
 
     JMatrix4x4 R = DirectX::XMMatrixRotationY(angle);
 
-    JVector4 vright = DirectX::XMLoadFloat3(&m_right);
-    JVector4 vup = DirectX::XMLoadFloat3(&m_up);
-    JVector4 vtarget = DirectX::XMLoadFloat3(&m_target);
+    JXMVector4 vright = DirectX::XMLoadFloat3(&m_right);
+    JXMVector4 vup = DirectX::XMLoadFloat3(&m_up);
+    JXMVector4 vtarget = DirectX::XMLoadFloat3(&m_target);
 
-    JVector4 right_normal = DirectX::XMVector3TransformNormal(vright, R);
-    JVector4 up_normal = DirectX::XMVector3TransformNormal(vup, R);
-    JVector4 target_normal = DirectX::XMVector3TransformNormal(vtarget, R);
+    JXMVector4 right_normal = DirectX::XMVector3TransformNormal(vright, R);
+    JXMVector4 up_normal = DirectX::XMVector3TransformNormal(vup, R);
+    JXMVector4 target_normal = DirectX::XMVector3TransformNormal(vtarget, R);
 
     DirectX::XMStoreFloat3(&m_right, right_normal);
     DirectX::XMStoreFloat3(&m_up, up_normal);
@@ -271,10 +271,10 @@ void joj::FreeCamera::update_view_matrix()
 {
     if (m_view_dirty)
     {
-        JVector4 R = DirectX::XMLoadFloat3(&m_right);
-        JVector4 U = DirectX::XMLoadFloat3(&m_up);
-        JVector4 L = DirectX::XMLoadFloat3(&m_target);
-        JVector4 P = DirectX::XMLoadFloat3(&m_position);
+        JXMVector4 R = DirectX::XMLoadFloat3(&m_right);
+        JXMVector4 U = DirectX::XMLoadFloat3(&m_up);
+        JXMVector4 L = DirectX::XMLoadFloat3(&m_target);
+        JXMVector4 P = DirectX::XMLoadFloat3(&m_position);
 
         L = DirectX::XMVector3Normalize(L);
         U = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(L, R));
