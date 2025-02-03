@@ -84,11 +84,13 @@ namespace joj
 
 #if JPLATFORM_WINDOWS
         DirectX::XMFLOAT3 to_XMFLOAT3() const { return DirectX::XMFLOAT3(x, y, z); }
+        void from_XMFLOAT3(const DirectX::XMFLOAT3& v) { x = v.x; y = v.y; z = v.z; }
 #endif
     };
 
 #if JPLATFORM_WINDOWS
     DirectX::XMFLOAT3 JVector3_to_XMFLOAT3(const JVector3& v) { return DirectX::XMFLOAT3(v.x, v.y, v.z); }
+    JVector3 XMFLOAT3_to_JVector3(const DirectX::XMFLOAT3& v) { return JVector3(v.x, v.y, v.z); }
 #endif
 }
 
