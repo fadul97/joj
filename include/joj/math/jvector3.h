@@ -89,12 +89,25 @@ namespace joj
 #if JPLATFORM_WINDOWS
         DirectX::XMFLOAT3 to_XMFLOAT3() const { return DirectX::XMFLOAT3(x, y, z); }
         void from_XMFLOAT3(const DirectX::XMFLOAT3& v) { x = v.x; y = v.y; z = v.z; }
+        b8 operator==(const DirectX::XMFLOAT3& other) const { return x == other.x && y == other.y && z == other.z; }
+        b8 is_equal_to_XMFLOAT3(const DirectX::XMFLOAT3& other, f32 epsilon = 0.0001f) const
+        {
+            return std::abs(x - other.x) < epsilon &&
+                   std::abs(y - other.y) < epsilon &&
+                   std::abs(z - other.z) < epsilon;
+        }
 #endif
     };
 
 #if JPLATFORM_WINDOWS
     DirectX::XMFLOAT3 JVector3_to_XMFLOAT3(const JVector3& v) { return DirectX::XMFLOAT3(v.x, v.y, v.z); }
     JVector3 XMFLOAT3_to_JVector3(const DirectX::XMFLOAT3& v) { return JVector3(v.x, v.y, v.z); }
+    b8 is_JVector3_equal_to_XMFLOAT3(const JVector3& v1, const DirectX::XMFLOAT3& v2, f32 epsilon = 0.0001f)
+    {
+        return std::abs(v1.x - v2.x) < epsilon &&
+               std::abs(v1.y - v2.y) < epsilon &&
+               std::abs(v1.z - v2.z) < epsilon;
+    }
 #endif
 }
 

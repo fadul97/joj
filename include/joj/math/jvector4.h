@@ -81,12 +81,27 @@ namespace joj
 #if JPLATFORM_WINDOWS
         DirectX::XMFLOAT4 to_XMFLOAT4() const { return DirectX::XMFLOAT4(x, y, z, w); }
         void from_XMFLOAT4(const DirectX::XMFLOAT4& v) { x = v.x; y = v.y; z = v.z; w = v.w; }
+        b8 operator==(const DirectX::XMFLOAT4& other) const { return x == other.x && y == other.y && z == other.z && w == other.w; }
+        b8 is_equal_to_XMFLOAT4(const DirectX::XMFLOAT4& other, f32 epsilon = 0.0001f) const
+        {
+            return std::abs(x - other.x) < epsilon &&
+                std::abs(y - other.y) < epsilon &&
+                std::abs(z - other.z) < epsilon &&
+                std::abs(w - other.w) < epsilon;
+        }
 #endif
     };
 
 #if JPLATFORM_WINDOWS
     DirectX::XMFLOAT4 JVector4_to_XMFLOAT4(const JVector4& v) { return DirectX::XMFLOAT4(v.x, v.y, v.z, v.w); }
     JVector4 XMFLOAT4_to_JVector4(const DirectX::XMFLOAT4& v) { return JVector4(v.x, v.y, v.z, v.w); }
+    b8 is_JVector4_equal_to_XMFLOAT4(const JVector4& v1, const DirectX::XMFLOAT4& v2, f32 epsilon = 0.0001f)
+    {
+        return std::abs(v1.x - v2.x) < epsilon &&
+            std::abs(v1.y - v2.y) < epsilon &&
+            std::abs(v1.z - v2.z) < epsilon &&
+            std::abs(v1.w - v2.w) < epsilon;
+    }
 #endif
 }
 

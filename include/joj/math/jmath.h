@@ -8,6 +8,7 @@
 
 #include <DirectXMath.h>
 #include <iostream>
+#include <cmath>
 
 #define J_PI DirectX::XM_PI
 #define J_2PI DirectX::XM_2PI
@@ -24,7 +25,7 @@ namespace joj
     using JFloat2 = DirectX::XMFLOAT2;
     using JFloat3 = DirectX::XMFLOAT3;
     using JFloat4 = DirectX::XMFLOAT4;
-    using JVector4 = DirectX::XMVECTOR;
+    using JXMVector4 = DirectX::XMVECTOR;
 
     // Matrix types
     using JFloat4x4 = DirectX::XMFLOAT4X4;
@@ -68,7 +69,7 @@ namespace joj
         JMatrix4x4 A = M;
         A.r[3] = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 
-        JVector4 det = DirectX::XMMatrixDeterminant(A);
+        JXMVector4 det = DirectX::XMMatrixDeterminant(A);
         return DirectX::XMMatrixTranspose(XMMatrixInverse(&det, A));
     }
 
@@ -97,6 +98,11 @@ namespace joj
         };
         
         return { tangent.x, tangent.y, tangent.z, 1.0f };
+    }
+
+    inline b8 are_floats_equal(const f32 a, const f32 b, const f32 epsilon = 0.0001f)
+    {
+        return std::fabs(a - b) <= epsilon;
     }
 }
 
