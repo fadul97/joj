@@ -64,6 +64,7 @@ public:
     void load_custom_format(const std::string& filename, MeshData& mesh);
     void load_custom_format_with_flat_shading(const std::string& filename, MeshData& mesh);
     void load_obj_format(const std::string& filename, MeshData& mesh);
+    void load_obj_format_new(const std::string& filename, MeshData& mesh);
 
     // ----------------------------------------------------
     joj::D3D11Shader m_shader;

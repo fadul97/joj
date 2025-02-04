@@ -100,9 +100,10 @@ void App3DTest::build_buffers()
     const char* filename1 = "models/cube1.txt";
     const char* filename2 = "models/customCube.obj";
     MeshData mesh;
-    load_custom_format_with_flat_shading(filename1, mesh);
+    // load_custom_format_with_flat_shading(filename1, mesh);
     // load_custom_format(filename1, mesh);
     // load_obj_format(filename2, mesh);
+    load_obj_format_new(filename2, mesh);
 
     m_vertex_buffer.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
         sizeof(joj::Vertex::PosColorNormal) * mesh.vertices.size(), mesh.vertices.data());
@@ -509,5 +510,86 @@ void App3DTest::load_custom_format_with_flat_shading(const std::string& filename
             << mesh.vertices[i].normal.x << " "
             << mesh.vertices[i].normal.y << " "
             << mesh.vertices[i].normal.z << std::endl;
+    }
+}
+
+void App3DTest::load_obj_format_new(const std::string& filename, MeshData& mesh)
+{
+    std::ifstream file(filename);
+    if (!file.is_open())
+    {
+        std::cerr << "Erro ao abrir o arquivo: " << filename << std::endl;
+        return;
+    }
+
+    std::vector<joj::JVector3> temp_positions;
+    std::vector<joj::JVector3> temp_normals;
+    std::string line;
+
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string prefix;
+        iss >> prefix;
+
+        // Vértices
+        if (prefix == "v") {
+            joj::JVector3 position;
+            iss >> position.x >> position.y >> position.z;
+            temp_positions.push_back(position);
+        }
+        // Normais
+        else if (prefix == "vn") {
+            joj::JVector3 normal;
+            iss >> normal.x >> normal.y >> normal.z;
+            temp_normals.push_back(normal);
+        }
+        // Faces
+        else if (prefix == "f") {
+            std::string vertexData;
+            // Lê os três vértices da face
+            for (int i = 0; i < 3; ++i) {
+                iss >> vertexData;
+                std::istringstream vertexStream(vertexData);
+                std::string v, t, n;
+                unsigned int posIndex = 0, texIndex = 0, normIndex = 0;
+
+                // Lê o índice do vértice
+                std::getline(vertexStream, v, '/');
+                if (!v.empty()) posIndex = std::stoi(v) - 1;
+
+                // Lê o índice da coordenada de textura (não usado neste exemplo)
+                if (std::getline(vertexStream, t, '/')) {
+                    if (!t.empty()) texIndex = std::stoi(t) - 1;
+                }
+
+                // Lê o índice da normal
+                if (std::getline(vertexStream, n)) {
+                    if (!n.empty()) normIndex = std::stoi(n) - 1;
+                }
+
+                joj::Vertex::PosColorNormal vertex = {};
+                if (posIndex < temp_positions.size()) vertex.pos = temp_positions[posIndex];
+                if (normIndex < temp_normals.size()) vertex.normal = temp_normals[normIndex];
+
+                // Verifica se o vértice já foi adicionado e usa o índice existente
+                auto it = std::find(mesh.vertices.begin(), mesh.vertices.end(), vertex);
+                if (it != mesh.vertices.end()) {
+                    mesh.indices.push_back(static_cast<unsigned int>(std::distance(mesh.vertices.begin(), it)));
+                }
+                else {
+                    mesh.vertices.push_back(vertex);
+                    mesh.indices.push_back(static_cast<unsigned int>(mesh.vertices.size() - 1));
+                }
+            }
+        }
+    }
+
+    for (size_t i = 0; i < mesh.vertices.size(); ++i)
+    {
+        std::cout << "Normal " << i << ": "
+            << mesh.vertices[i].normal.x << " "
+            << mesh.vertices[i].normal.y << " "
+            << mesh.vertices[i].normal.z << std::endl;
+        mesh.vertices[i].color = { 0.5f, 0.5f, 0.5f, 1.0f };
     }
 }
