@@ -106,6 +106,18 @@ namespace joj
     }
 }
 
+#elif JPLATFORM_LINUX
+
+#include <cmath>
+
+namespace joj
+{
+    inline b8 are_floats_equal(const f32 a, const f32 b, const f32 epsilon = 0.0001f)
+    {
+        return std::fabs(a - b) <= epsilon;
+    }
+}
+
 #endif // JPLATFORM_WINDOWS
 
 #endif // _JOJ_MATH_H

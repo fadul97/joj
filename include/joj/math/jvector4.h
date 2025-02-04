@@ -4,6 +4,8 @@
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "defines.h"
 
+#include <cmath>
+
 #if JPLATFORM_WINDOWS
 #include "DirectXMath.h"
 #endif

@@ -52,4 +52,17 @@ elseif(LINUX)
     add_executable(jojSamples
         main_x11.cpp
     )
+
+    # Link only jojPlatform
+    target_include_directories(jojSamples
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/
+    )
+
+    target_link_directories(jojSamples
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/platform/
+    )
+
+    target_link_libraries(jojSamples jojPlatform)
 endif()
