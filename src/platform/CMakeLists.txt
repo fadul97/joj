@@ -11,7 +11,7 @@ add_library(jojPlatform
 )
 
 target_include_directories(jojPlatform
-    PRIVATE
+    PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
 )
 
@@ -25,4 +25,14 @@ if(WIN32)
     )
 
     target_link_libraries(jojPlatform PUBLIC jojWin32Platform)
+elseif (LINUX)
+    add_subdirectory(x11)
+
+    target_link_directories(
+        jojPlatform
+        PUBLIC 
+        ${CMAKE_CURRENT_SOURCE_DIR}/x11/
+    )
+
+    target_link_libraries(jojPlatform PUBLIC jojX11Platform)
 endif()

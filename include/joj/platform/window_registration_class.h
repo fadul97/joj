@@ -9,7 +9,7 @@
 
 namespace joj
 {
-    enum class WindowStyles : u32
+    enum class WindowStyles
     {
         None = 0,
         DoubleClick = 1 << 0, // CS_DBLCLKS

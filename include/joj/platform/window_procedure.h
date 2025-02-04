@@ -7,11 +7,9 @@
 #include <functional>
 
 #if JPLATFORM_WINDOWS
-#if _WIN64
 typedef __int64 RESULT;
-#else
+#elif JPLATFORM_LINUX
 typedef long RESULT;
-#endif
 #endif
 
 namespace joj

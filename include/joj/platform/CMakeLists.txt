@@ -5,4 +5,6 @@ project(joj)
 
 if (WIN32)
 	add_subdirectory(win32)
+elseif (LINUX)
+	add_subdirectory(x11)
 endif()

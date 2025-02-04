@@ -15,7 +15,12 @@
 #define _JOJ_LOGGER_H
 
 #include "error_code.h"
+
+#if JPLATFORM_WINDOWS
 #include <vadefs.h>
+#elif JPLATFORM_LINUX
+#include <cstdarg>
+#endif
 
 /** @brief Change to 1 when exporting. */
 #define JRELEASE 0
