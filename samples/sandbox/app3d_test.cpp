@@ -42,6 +42,7 @@ joj::JFloat3 calculateFaceNormal(const joj::JFloat3& v0, const joj::JFloat3& v1,
 App3DTest::App3DTest()
 {
     m_last_mouse_pos = { 0, 0 };
+    joj_print();
 }
 
 App3DTest::~App3DTest()

@@ -5,9 +5,17 @@
 #include "jmacros.h"
 #include <windowsx.h>
 
+#include <stdio.h>
+
 void joj_print()
 {
-    std::cout << "Hello, Joj!" << std::endl;
+	printf("Hello from %s JOJ Library!\n",
+#ifdef JAPI
+		"shared"
+#else
+		"static"
+#endif
+	);
 }
 
 joj::Win32Window* joj::Engine::s_window = nullptr;
