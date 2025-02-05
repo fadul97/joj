@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.22)
 project(jojTests)
 
 # -----------------------------------------------------------------------------
-# JVector3 Tests
 
+# JVector3 Tests
 add_executable(jojTestsJVec3
     joj_tests_vec3.cpp
 )
@@ -24,7 +24,6 @@ target_link_libraries(jojTestsJVec3 joj)
 # -----------------------------------------------------------------------------
 
 # JVector4 Tests
-
 add_executable(jojTestsJVec4
     joj_tests_vec4.cpp
 )
