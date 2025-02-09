@@ -25,7 +25,7 @@ namespace joj
         ~JWin32WidgetFactory() = default;
 
         JButton* create_button(i32 x, i32 y, i32 width, i32 height,
-            const std::string& label, const JEvent::Callback& callback = nullptr) override;
+            const std::string& label, const JGUIEvent::Callback& callback = nullptr) override;
 
     private:
         ParentData m_parent_data;

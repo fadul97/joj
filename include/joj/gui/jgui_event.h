@@ -1,5 +1,5 @@
-#ifndef _JOJ_EVENT_H
-#define _JOJ_EVENT_H
+#ifndef _JOJ_GUI_EVENT_H
+#define _JOJ_GUI_EVENT_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
@@ -8,13 +8,13 @@
 
 namespace joj
 {
-    class JAPI JEvent
+    class JAPI JGUIEvent
     {
     public:
         using Callback = std::function<void()>;
         
-        JEvent();
-        virtual ~JEvent() = default;
+        JGUIEvent();
+        virtual ~JGUIEvent() = default;
 
         void set_callback(const Callback& callback);
         void trigger();
@@ -23,12 +23,12 @@ namespace joj
         Callback m_callback;
     };
 
-    inline void JEvent::set_callback(const Callback& callback)
+    inline void JGUIEvent::set_callback(const Callback& callback)
     {
         m_callback = callback;
     }
 
-    inline void JEvent::trigger()
+    inline void JGUIEvent::trigger()
     {
         if (m_callback)
         {
@@ -42,4 +42,4 @@ namespace joj
     }
 }
 
-#endif // _JOJ_EVENT_H
+#endif // _JOJ_GUI_EVENT_H

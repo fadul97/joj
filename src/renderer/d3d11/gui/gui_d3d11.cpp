@@ -301,7 +301,7 @@ void joj::D3D11GUI::add_widget(JWidget* widget)
 }
 
 void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
-    const std::string& label, const JEvent::Callback& callback)
+    const std::string& label, const JGUIEvent::Callback& callback)
 {
     JButton* button = m_factory.create_button(10, 10, 100, 30, "Click Me!");
     if (!button)

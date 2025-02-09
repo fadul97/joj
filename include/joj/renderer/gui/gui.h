@@ -26,7 +26,7 @@ namespace joj
 
         virtual void add_widget(JWidget* widget) = 0;
         virtual void add_button(i32 x, i32 y, i32 width, i32 height,
-            const std::string& label, const JEvent::Callback& callback = nullptr) = 0;
+            const std::string& label, const JGUIEvent::Callback& callback = nullptr) = 0;
     };
 }
 

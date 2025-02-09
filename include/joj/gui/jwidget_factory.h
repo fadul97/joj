@@ -6,7 +6,7 @@
 
 #include "jbutton.h"
 #include <string>
-#include "jevent.h"
+#include "jgui_event.h"
 
 namespace joj
 {
@@ -17,7 +17,7 @@ namespace joj
         virtual ~JWidgetFactory() = default;
 
         virtual JButton* create_button(i32 x, i32 y, i32 width, i32 height,
-            const std::string& label, const JEvent::Callback& callback = nullptr) = 0;
+            const std::string& label, const JGUIEvent::Callback& callback = nullptr) = 0;
     };
 }
 

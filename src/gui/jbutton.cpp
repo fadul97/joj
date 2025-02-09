@@ -75,7 +75,7 @@ static LRESULT CALLBACK ChildProc(HWND hwnd, UINT msg,
     return DefSubclassProc(hwnd, msg, wParam, lParam);
 }
 
-void joj::JButton::create(JWidgetCreationData& data, const JEvent::Callback& callback)
+void joj::JButton::create(JWidgetCreationData& data, const JGUIEvent::Callback& callback)
 {
     m_handle.handle = CreateWindowEx(
         0,
@@ -136,7 +136,7 @@ b8 joj::JButton::is_hovered(const i32 x, const i32 y)
     return x >= m_x && x <= m_x + m_width && y >= m_y && y <= m_y + m_height;
 }
 
-void joj::JButton::on_click(const JEvent::Callback& callback)
+void joj::JButton::on_click(const JGUIEvent::Callback& callback)
 {
     if (!m_callback)
     {

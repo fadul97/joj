@@ -20,13 +20,13 @@ namespace joj
             const char* title);
         ~JButton();
 
-        void create(JWidgetCreationData& data, const JEvent::Callback& callback) override;
+        void create(JWidgetCreationData& data, const JGUIEvent::Callback& callback) override;
         void draw(CommandList& cmd_list) override;
         void update(i32 xmouse, i32 ymouse, b8 clicked) override;
 
         b8 is_hovered(const i32 x, const i32 y) override;
 
-        void on_click(const JEvent::Callback& callback) override;
+        void on_click(const JGUIEvent::Callback& callback) override;
         void trigger() override;
 
         void set_callback(const std::function<void()>& callback);

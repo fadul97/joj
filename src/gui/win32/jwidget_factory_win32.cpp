@@ -16,7 +16,7 @@ joj::JWin32WidgetFactory::JWin32WidgetFactory(const ParentData& parent_data)
 }
 
 joj::JButton* joj::JWin32WidgetFactory::create_button(i32 x, i32 y, i32 width,
-    i32 height, const std::string& label, const JEvent::Callback& callback)
+    i32 height, const std::string& label, const JGUIEvent::Callback& callback)
 {
     JButton* button = new JButton(x, y, width, height, label.c_str());
     if (!button)

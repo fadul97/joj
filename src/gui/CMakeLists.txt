@@ -7,7 +7,7 @@ add_library(jojGUI
 	STATIC
 	jwidget.cpp
 	jbutton.cpp
-    jevent.cpp
+    jgui_event.cpp
 )
 
 target_include_directories(jojGUI
