@@ -80,17 +80,15 @@ namespace joj
             }
         }
 
-        // Access to components as RGB or UVW
-        union
-        {
-            struct { f32 x, y, z; }; // Vector components
-            struct { f32 r, g, b; }; // RGB components
-            struct { f32 u, v, w; }; // UVW components
-        };
+        // TODO: Union to access to components as RGB or UVW
+        f32 x;
+        f32 y;
+        f32 z;
+
 
 #if JPLATFORM_WINDOWS
         DirectX::XMFLOAT3 to_XMFLOAT3() const { return DirectX::XMFLOAT3(x, y, z); }
-        void from_XMFLOAT3(const DirectX::XMFLOAT3& v) { x = v.x; y = v.y; z = v.z; }
+        void from_XMFLOAT3(const DirectX::XMFLOAT3& other) { x = other.x; y = other.y; z = other.z; }
         b8 operator==(const DirectX::XMFLOAT3& other) const { return x == other.x && y == other.y && z == other.z; }
         b8 is_equal_to_XMFLOAT3(const DirectX::XMFLOAT3& other, f32 epsilon = 0.0001f) const
         {

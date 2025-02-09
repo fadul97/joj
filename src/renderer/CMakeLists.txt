@@ -37,5 +37,5 @@ if(WIN32)
         ${CMAKE_CURRENT_SOURCE_DIR}/gui/
     )
 
-    target_link_libraries(jojRenderer PRIVATE jojPlatform jojGUIRenderer jojD3D11Renderer)
+    target_link_libraries(jojRenderer PRIVATE jojPlatform jojD3D11Renderer jojGUIRenderer)
 endif()

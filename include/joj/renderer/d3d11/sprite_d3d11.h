@@ -15,7 +15,7 @@
 
 namespace joj
 {
-    struct SpriteData
+    struct JAPI SpriteData
     {
         TextureData2D texture;
         JFloat2 position;

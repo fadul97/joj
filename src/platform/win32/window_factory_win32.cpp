@@ -4,6 +4,7 @@
 
 #include "platform/window_registration_class.h"
 #include "core/logger.h"
+#include "core/jmacros.h"
 
 joj::Win32WindowFactory::Win32WindowFactory()
     : WindowFactory<Win32Window>()
@@ -17,7 +18,14 @@ joj::Win32WindowFactory::~Win32WindowFactory()
 joj::Win32Window* joj::Win32WindowFactory::create_window(const char* title, const u32 width,
     const u32 height, const WindowMode mode)
 {
-    return nullptr;
+    Win32Window* window = new Win32Window(title, width, height, mode);
+    if JOJ_FAILED(window->create())
+    {
+        delete window;
+        return nullptr;
+    }
+
+    return window;
 }
 
 joj::ErrorCode joj::Win32WindowFactory::create_window_class(WindowRegistrationClass& window_class)

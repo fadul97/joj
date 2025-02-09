@@ -17,7 +17,7 @@ namespace joj
         HINSTANCE instance;
     };
 
-    class JWin32WidgetFactory : public JWidgetFactory
+    class JAPI JWin32WidgetFactory : public JWidgetFactory
     {
     public:
         JWin32WidgetFactory();

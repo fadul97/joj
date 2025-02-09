@@ -303,7 +303,7 @@ void joj::D3D11GUI::add_widget(JWidget* widget)
 void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
     const std::string& label, const JGUIEvent::Callback& callback)
 {
-    JButton* button = m_factory.create_button(10, 10, 100, 30, "Click Me!");
+    JButton* button = m_factory.create_button(x, x, width, height, label);
     if (!button)
     {
         JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
@@ -322,7 +322,7 @@ void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
 void joj::D3D11GUI::add_button(const std::string& label, i32 x, i32 y, i32 width, i32 height,
     const std::function<void()>& function)
 {
-    JButton* button = m_factory.create_button(10, 10, 100, 30, "Click Me!", function);
+    JButton* button = m_factory.create_button(x, y, width, height, label, function);
     if (!button)
     {
         JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
@@ -340,7 +340,6 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     {
     case WM_COMMAND:
     {
-        i32 control_id = LOWORD(wParam); // ID do controle
         i32 notification_code = HIWORD(wParam); // Código de notificação
         HWND sender_handle = (HWND)lParam; // Handle do controle que enviou
 

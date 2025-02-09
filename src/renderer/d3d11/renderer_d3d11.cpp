@@ -815,6 +815,8 @@ void joj::D3D11Renderer::draw_sprite(const SpriteData& sprite)
 
 void joj::D3D11Renderer::draw_rect(const Rect& rect)
 {
+    (void)rect;
+
     JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
 
     set_rasterizer_state(RasterizerState::Wireframe);

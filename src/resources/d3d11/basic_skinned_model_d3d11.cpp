@@ -69,10 +69,10 @@ joj::ErrorCode joj::D3D11BasicSkinnedModel::load_m3d(GraphicsDevice& device,
         }
         else
         {
-            TextureData2D& diffuse_map_SRV = tex_mgr.get_texture(texture_path + mats[i].diffuse_map_name);
-            if (diffuse_map_SRV.srv != nullptr)
+            TextureData2D* diffuse_map_SRV = tex_mgr.get_texture(texture_path + mats[i].diffuse_map_name);
+            if (diffuse_map_SRV->srv != nullptr)
             {
-                m_diffuse_map_SRV.push_back(&diffuse_map_SRV);
+                m_diffuse_map_SRV.push_back(diffuse_map_SRV);
             }
         }
 
@@ -85,10 +85,10 @@ joj::ErrorCode joj::D3D11BasicSkinnedModel::load_m3d(GraphicsDevice& device,
         }
         else
         {
-            TextureData2D& normal_map_SRV = tex_mgr.get_texture(texture_path + mats[i].diffuse_map_name);
-            if (normal_map_SRV.srv != nullptr)
+            TextureData2D* normal_map_SRV = tex_mgr.get_texture(texture_path + mats[i].diffuse_map_name);
+            if (normal_map_SRV->srv != nullptr)
             {
-                m_normal_map_SRV.push_back(&normal_map_SRV);
+                m_normal_map_SRV.push_back(normal_map_SRV);
             }
         }
     }

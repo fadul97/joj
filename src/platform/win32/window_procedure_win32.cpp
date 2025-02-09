@@ -10,8 +10,13 @@ joj::Win32WindowProcedure::~Win32WindowProcedure()
 {
 }
 
-RESULT joj::Win32WindowProcedure::handle_message(void* hWnd, u32 message, unsigned long wParam, long lParam)
+JRESULT joj::Win32WindowProcedure::handle_message(void* hWnd, u32 message, unsigned long wParam, long lParam)
 {
+    (void)hWnd;
+    (void)message;
+    (void)wParam;
+    (void)lParam;
+
     return 0;
 }
 

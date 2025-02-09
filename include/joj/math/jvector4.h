@@ -73,13 +73,11 @@ namespace joj
             }
         }
 
-        // Access to components as RGBA or STPQ
-        union
-        {
-            struct { f32 x, y, z, w; }; // Vector components
-            struct { f32 r, g, b, a; }; // RGBA components
-            struct { f32 s, t, p, q; }; // STPQ components
-        };
+        // TODO: Union to access to components as RGBA or STPQ
+        f32 x;
+        f32 y;
+        f32 z;
+        f32 w;
 
 #if JPLATFORM_WINDOWS
         // DirectX::XMFLOAT4

@@ -20,9 +20,9 @@ void joj::Sprite::add_animation(const SpriteAnimationData& animation)
 
 void joj::Sprite::play_animation(const std::string& animation_name)
 {
-    // Verifica se a animação solicitada existe.
+    // Verifica se a animaï¿½ï¿½o solicitada existe.
     if (m_current_animation != nullptr && m_current_animation->name == animation_name)
-        return; // Se já estamos na animação solicitada, não faz nada.
+        return; // Se jï¿½ estamos na animaï¿½ï¿½o solicitada, nï¿½o faz nada.
 
     if (m_animations.find(animation_name) != m_animations.end())
     {
@@ -39,7 +39,7 @@ void joj::Sprite::update(const f32 dt)
 
     m_time_since_last_frame += dt;
 
-    if (m_time_since_last_frame >= m_current_animation->frameDuration)
+    if (m_time_since_last_frame >= m_current_animation->frame_duration)
     {
         ++m_current_frame_index;
 

@@ -24,7 +24,7 @@ namespace joj
             const std::wstring& filename, ImageType type) = 0;
         virtual void destroy() = 0;
 
-        virtual TextureData2D& get_texture(const std::wstring& filename) = 0;
+        virtual TextureData2D* get_texture(const std::wstring& filename) = 0;
 
         /*
     protected:

@@ -18,6 +18,8 @@ joj::D3D11Font::D3D11Font()
 
 joj::D3D11Font::D3D11Font(const char* filename)
 {
+    (void)filename;
+
     m_data.texture.srv = nullptr;
     m_data.char_width = 0;
     m_data.char_height = 0;

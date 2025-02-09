@@ -8,6 +8,16 @@ project(
 	LANGUAGES CXX
 )
 
+option(USE_WARNING_FLAGS "Enable warning flags" OFF)
+
+if (USE_WARNING_FLAGS)
+    if (MSVC)  # Visual Studio Compiler (cl.exe)
+        add_compile_options(/W4 /WX)  # Max warnings and treat warnings as errors
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")  # GCC or Clang
+        add_compile_options(-Wall -Wextra -Wpedantic -Werror)  # Max warnings + errors
+    endif()
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 

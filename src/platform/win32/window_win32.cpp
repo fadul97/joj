@@ -97,8 +97,8 @@ joj::ErrorCode joj::Win32Window::create()
     if (m_mode == WindowMode::Windowed)
     {
         // If screen and width parameters are higher than Screen size
-        i32 screen_width = GetSystemMetrics(SM_CXSCREEN);
-        i32 screen_height = GetSystemMetrics(SM_CYSCREEN);
+        u32 screen_width = static_cast<u32>(GetSystemMetrics(SM_CXSCREEN));
+        u32 screen_height = static_cast<u32>(GetSystemMetrics(SM_CYSCREEN));
 
         if (m_width >= screen_width)
         {
@@ -137,8 +137,8 @@ joj::ErrorCode joj::Win32Window::create()
         m_style = WS_EX_TOPMOST | WS_POPUP | WS_VISIBLE;
 
         // If screen and width parameters are higher than Screen size
-        i32 screen_width = GetSystemMetrics(SM_CXSCREEN);
-        i32 screen_height = GetSystemMetrics(SM_CYSCREEN);
+        u32 screen_width = static_cast<u32>(GetSystemMetrics(SM_CXSCREEN));
+        u32 screen_height = static_cast<u32>(GetSystemMetrics(SM_CYSCREEN));
 
         if (m_width >= screen_width)
         {

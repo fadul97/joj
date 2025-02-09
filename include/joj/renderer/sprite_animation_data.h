@@ -4,16 +4,17 @@
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
-#include <string>
-#include <vector>
+#include "core/jstring.h"
+#include "core/jvector.h"
 
 namespace joj
 {
-    struct SpriteAnimationData
+
+    struct JAPI SpriteAnimationData
     {
-        std::string name;         // Nome da animação (ex: "Run", "Idle").
-        std::vector<i32> frames;  // Lista dos índices dos quadros.
-        f32 frameDuration;        // Tempo que cada quadro deve ser exibido.
+        JString name;                 // Nome da animação (ex: "Run", "Idle").
+        JVectorI32 frames;            // Lista dos índices dos quadros.
+        f32 frame_duration{ 0.0f };    // Tempo que cada quadro deve ser exibido.
     };
 }
 

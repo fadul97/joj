@@ -144,6 +144,8 @@ b8 joj::D3D11Widget::is_hovered(const i32 x, const i32 y)
 
 void joj::D3D11Widget::update(const i32 xmouse, const i32 ymouse, const b8 clicked)
 {
+    (void)clicked;
+
     if (xmouse < 0 || ymouse < 0)
         return;
 

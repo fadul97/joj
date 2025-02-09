@@ -8,27 +8,16 @@
 #include "joj/renderer/d3d11/renderer_d3d11.h"
 #include "joj/renderer/d3d11/gui/gui_d3d11.h"
 
-class GUITest
+class GUITest : public joj::App
 {
 public:
     GUITest();
     ~GUITest();
 
-    void init();
-    void update(const f32 dt);
-    void draw();
-    void shutdown();
-
-    void init_platform();
-
-    f32 get_frametime();
-
-    joj::Win32Window window;
-    joj::Win32Input input;
-    joj::Win32Timer timer;
-    joj::D3D11Renderer renderer;
-    b8 loop = true;
-    f32 frametime = 0.0f;
+    void init() override;
+    void update(const f32 dt) override;
+    void draw() override;
+    void shutdown() override;
 
     // ---------------------------------------------------
     joj::D3D11GUI m_gui;

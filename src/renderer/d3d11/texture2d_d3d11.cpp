@@ -8,6 +8,26 @@
 #include <locale>
 #include <codecvt>
 
+#include <windows.h>
+#include <string>
+
+std::string convert_wide_to_UTF8(const std::wstring& wide_str)
+{
+    int size_needed = WideCharToMultiByte(CP_UTF8, 0, wide_str.c_str(), (int)wide_str.size(), NULL, 0, NULL, NULL);
+    std::string strTo(size_needed, 0);
+    WideCharToMultiByte(CP_UTF8, 0, wide_str.c_str(), (int)wide_str.size(), &strTo[0], size_needed, NULL, NULL);
+    return strTo;
+}
+
+std::wstring convert_UTF8_to_wide(const std::string& str)
+{
+    int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.size(), NULL, 0);
+    std::wstring wide_str(size_needed, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.size(), &wide_str[0], size_needed);
+    return wide_str;
+}
+
+
 joj::D3D11Texture2D::D3D11Texture2D()
     : Texture2D()
 {
@@ -31,8 +51,7 @@ joj::ErrorCode joj::D3D11Texture2D::create(GraphicsDevice& device,
     {
     case ImageType::PNG:
     {
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-        std::string str = converter.to_bytes(filepath);
+        std::string str = convert_wide_to_UTF8(filepath);
         const char* filename = str.c_str();
 
         if (D3D11CreateTextureFromFile(
@@ -52,8 +71,7 @@ joj::ErrorCode joj::D3D11Texture2D::create(GraphicsDevice& device,
     break;
     case ImageType::JPG:
     {
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-        std::string str = converter.to_bytes(filepath);
+        std::string str = convert_wide_to_UTF8(filepath);
         const char* filename = str.c_str();
 
         if (D3D11CreateTextureFromFile(

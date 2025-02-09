@@ -25,12 +25,12 @@ void App2DTest::load_sprites()
     data->size = { 100.0f, 100.0f };
     data->rotation = 0.0f;
     data->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    joj::TextureData2D& tex = m_tex_manager.get_texture(L"textures/char_purple.png");
-    data->texture.srv = tex.srv;
+    joj::TextureData2D* tex = m_tex_manager.get_texture(L"textures/char_purple.png");
+    data->texture.srv = tex->srv;
     m_sprite.set_sprite_data(*data);
 
     joj::SpriteSheetData ssData;
-    ssData.texture = tex;
+    ssData.texture = *tex;
     ssData.rows = 10;
     ssData.columns = 8;
     ssData.frame_width = 56;
@@ -42,17 +42,17 @@ void App2DTest::load_sprites()
     joj::SpriteAnimationData runAnim;
     runAnim.name = "Run";
     runAnim.frames = { 16, 17, 18, 19, 20, 21, 22, 23 };  // Quadro 0, 1, 2, 3 da SpriteSheet.
-    runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
+    runAnim.frame_duration = 0.1f;  // Cada quadro fica 0.1 segundos.
     m_sprite.add_animation(runAnim);
 
     runAnim.name = "Idle";
     runAnim.frames = { 0, 1, 2, 3, 4, 5 };  // Quadro 0 da SpriteSheet.
-    runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
+    runAnim.frame_duration = 0.1f;  // Cada quadro fica 0.1 segundos.
     m_sprite.add_animation(runAnim);
 
     runAnim.name = "Jump";
     runAnim.frames = { 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39 };  // Quadro 0 da SpriteSheet.
-    runAnim.frameDuration = 0.1f;  // Cada quadro fica 0.1 segundos.
+    runAnim.frame_duration = 0.1f;  // Cada quadro fica 0.1 segundos.
     m_sprite.add_animation(runAnim);
 
     m_rect = joj::Rect(data->size.x, data->size.y);

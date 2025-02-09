@@ -7,9 +7,9 @@
 #include <functional>
 
 #if JPLATFORM_WINDOWS
-typedef __int64 RESULT;
+typedef __int64 JRESULT;
 #elif JPLATFORM_LINUX
-typedef long RESULT;
+typedef long JRESULT;
 #endif
 
 namespace joj
@@ -22,7 +22,7 @@ namespace joj
         WindowProcedureBase() = default;
         virtual ~WindowProcedureBase() = default;
 
-        virtual RESULT handle_message(void* hWnd, u32 message, unsigned long wParam, long lParam) = 0;
+        virtual JRESULT handle_message(void* hWnd, u32 message, unsigned long wParam, long lParam) = 0;
     };
 }
 

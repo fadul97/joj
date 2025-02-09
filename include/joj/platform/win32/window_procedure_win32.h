@@ -16,7 +16,7 @@ namespace joj
         Win32WindowProcedure();
         ~Win32WindowProcedure();
 
-        RESULT handle_message(void* hWnd, u32 message, unsigned long wParam, long lParam) override;
+        JRESULT handle_message(void* hWnd, u32 message, unsigned long wParam, long lParam) override;
     };
 }
 

@@ -146,14 +146,12 @@ JSTATIC_ASSERT(sizeof(b32) == 4, "Expected f64 to be 4 bytes.");
 /* Dynamic libraries */
 #ifdef JPLATFORM_WINDOWS
 #ifdef JOJ_ENGINE_IMPLEMENTATION
-#define JAPI __declspec(dllexport)
+#define JAPI __declspec(dllexport)  // Exporta quando você estiver construindo a DLL
 #else
-#define JAPI __declspec(dllimport)
+#define JAPI __declspec(dllimport)  // Importa quando você for usar a DLL
 #endif
-// #elif defined(__GNUC__)
-// #define JAPI __attribute__((visibility("default")))
 #else
-#define JAPI
+#define JAPI  // Não aplica modificadores para outras plataformas
 #endif
 
 // Debug mode */

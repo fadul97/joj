@@ -19,7 +19,7 @@ namespace joj
             const std::wstring& filename, ImageType type) override;
         void destroy() override;
 
-        TextureData2D& get_texture(const std::wstring& filename) override;
+        TextureData2D* get_texture(const std::wstring& filename) override;
 
     private:
         std::map<std::wstring, TextureData2D> m_texture_SRV;

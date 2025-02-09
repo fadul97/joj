@@ -12,7 +12,7 @@ namespace joj
 {
     struct TextureData2D
     {
-        ID3D11ShaderResourceView* srv;
+        ID3D11ShaderResourceView* srv = nullptr;
     };
 }
 

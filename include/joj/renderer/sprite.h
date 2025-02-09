@@ -12,7 +12,10 @@
 
 namespace joj
 {
-    struct SpriteData;
+    template <typename Key, typename Value>
+    using JUnorderedMap = std::unordered_map<Key, Value>;
+
+    struct JAPI SpriteData;
 
     class JAPI Sprite
     {
@@ -39,7 +42,7 @@ namespace joj
 
     protected:
         SpriteAnimationData* m_current_animation;
-        std::unordered_map<std::string, SpriteAnimationData> m_animations;
+        JUnorderedMap<std::string, SpriteAnimationData> m_animations;
         i32 m_current_frame_index;
         f32 m_time_since_last_frame;
     };

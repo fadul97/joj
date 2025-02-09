@@ -50,6 +50,7 @@ joj::ErrorCode joj::D3D11InputLayout::create(const GraphicsDevice& device,
             break;
         case DataFormat::R8G8B8A8_UINT:
             d3d11_desc.Format = DXGI_FORMAT_R8G8B8A8_UINT;
+            break;
         default:
             break;
         }
@@ -74,7 +75,7 @@ joj::ErrorCode joj::D3D11InputLayout::create(const GraphicsDevice& device,
         input_desc.push_back(d3d11_desc);
     }
 
-    if (device.device->CreateInputLayout(input_desc.data(), input_desc.size(),
+    if (device.device->CreateInputLayout(input_desc.data(), static_cast<u32>(input_desc.size()),
         shader.vsblob->GetBufferPointer(),
         shader.vsblob->GetBufferSize(), &m_data.input_layout) != S_OK)
     {
