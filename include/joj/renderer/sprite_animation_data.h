@@ -5,7 +5,7 @@
 #include "core/defines.h"
 
 #include "core/jstring.h"
-#include "core/jvector.h"
+#include "core/vector.h"
 
 namespace joj
 {

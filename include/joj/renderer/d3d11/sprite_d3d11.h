@@ -18,11 +18,11 @@ namespace joj
     struct JAPI SpriteData
     {
         TextureData2D texture;
-        JFloat2 position;
-        JFloat2 size;
-        f32 rotation;
-        JFloat4 color;
-        JFloat4 uv_rect;
+        JFloat2 position{ 0.0f, 0.0f };
+        JFloat2 size{ 1.0f, 1.0f };
+        f32 rotation{ 0.0f };
+        JFloat4 color{ 1.0f, 1.0f, 0.0f, 1.0f };
+        JFloat4 uv_rect{ 1.0f, 1.0f, 0.0f, 1.0f };
     };
 
     class JAPI D3D11Sprite : public Sprite

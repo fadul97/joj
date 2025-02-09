@@ -51,7 +51,7 @@ namespace joj
         std::string formatted_name = "[" + std::to_string(index + 1) + "] " + m_name;
 
         // Define the minimum width for the test name
-        const size_t name_width = 30;
+        const size_t name_width = 50;
         const size_t status_width = 10;
 
         // Display the test name aligned to the left

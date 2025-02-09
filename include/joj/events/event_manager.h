@@ -7,6 +7,7 @@
 #include <functional>
 #include "jevent.h"
 #include <unordered_map>
+#include "core/vector.h"
 
 namespace joj
 {
@@ -21,7 +22,7 @@ namespace joj
 		void publish(const JEvent& event);
 
 	private:
-		std::unordered_map<EventType, std::vector<Callback>> m_listeners;
+		std::unordered_map<EventType, Vector<Callback>> m_listeners;
 
 		EventManager();
 		~EventManager();
