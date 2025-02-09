@@ -9,10 +9,10 @@
 #include <string>
 #include <stdexcept>
 #include <algorithm>
-#include "logger.h"
+#include "core/logger.h"
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "renderer/d3d11/shader_library_d3d11.h"
-#include "jmacros.h"
+#include "core/jmacros.h"
 
 joj::D3D11MeshGeometryOld::D3D11MeshGeometryOld()
     : MeshGeometryOld()

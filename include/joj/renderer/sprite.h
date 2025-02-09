@@ -2,7 +2,7 @@
 #define _JOJ_SPRITE_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include "texture2d_data.h"
 #include "sprite_animation_data.h"

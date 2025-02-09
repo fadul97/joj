@@ -2,7 +2,7 @@
 
 #if JPLATFORM_WINDOWS
 
-#include "jmacros.h"
+#include "core/jmacros.h"
 #include "renderer/d3d11/sprite_d3d11.h"
 #include "renderer/vertex.h"
 #include "renderer/d3d11/renderer_d3d11.h"

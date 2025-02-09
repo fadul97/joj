@@ -3,7 +3,7 @@
 #if JPLATFORM_WINDOWS
 
 #include <d3dcompiler.h>
-#include "logger.h"
+#include "core/logger.h"
 #include "renderer/d3d11/renderer_d3d11.h"
 
 joj::D3D11Shader::D3D11Shader()

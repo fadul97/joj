@@ -3,7 +3,7 @@
 #if JPLATFORM_WINDOWS
 
 #include "platform/window_registration_class.h"
-#include "logger.h"
+#include "core/logger.h"
 
 joj::Win32WindowFactory::Win32WindowFactory()
     : WindowFactory<Win32Window>()

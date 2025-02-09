@@ -2,11 +2,11 @@
 
 #if JPLATFORM_WINDOWS
 
-#include "logger.h"
+#include "core/logger.h"
 #include <windowsx.h>
 #include "platform/window_registration_class.h"
 #include "platform/win32/window_factory_win32.h"
-#include "jmacros.h"
+#include "core/jmacros.h"
 
 joj::Win32Window::Win32Window()
     : Window{}

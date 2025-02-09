@@ -2,7 +2,7 @@
 
 #if JPLATFORM_WINDOWS
 
-#include "logger.h"
+#include "core/logger.h"
 #include "renderer/d3d11/WICTextureLoader.h"
 #include "renderer/d3d11/renderer_d3d11.h"
 #include <fstream>

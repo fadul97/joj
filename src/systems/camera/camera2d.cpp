@@ -1,6 +1,6 @@
 #include "systems/camera/camera2d.h"
 
-#include "jmacros.h"
+#include "core/jmacros.h"
 
 joj::Camera2D::Camera2D()
     : Camera()

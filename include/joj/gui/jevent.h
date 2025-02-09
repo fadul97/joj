@@ -2,9 +2,9 @@
 #define _JOJ_EVENT_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 #include <functional>
-#include "logger.h"
+#include "core/logger.h"
 
 namespace joj
 {

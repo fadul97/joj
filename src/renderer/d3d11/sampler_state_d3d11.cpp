@@ -3,7 +3,7 @@
 #if JPLATFORM_WINDOWS
 
 #include "renderer/d3d11/renderer_d3d11.h"
-#include "logger.h"
+#include "core/logger.h"
 
 joj::D3D11SamplerState::D3D11SamplerState()
 {

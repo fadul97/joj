@@ -2,8 +2,8 @@
 
 #if JPLATFORM_WINDOWS
 
-#include "logger.h"
-#include "jmacros.h"
+#include "core/logger.h"
+#include "core/jmacros.h"
 
 joj::JWin32WidgetFactory::JWin32WidgetFactory()
     : m_parent_data{ nullptr, nullptr }

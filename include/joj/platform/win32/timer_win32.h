@@ -2,7 +2,7 @@
 #define _JOJ_WIN32_TIMER_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #if JPLATFORM_WINDOWS
 

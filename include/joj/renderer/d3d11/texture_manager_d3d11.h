@@ -2,7 +2,7 @@
 #define _JOJ_D3D11_TEXTURE_MANAGER_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include "renderer/texture_manager.h"
 #include "texture2d_data_d3d11.h"

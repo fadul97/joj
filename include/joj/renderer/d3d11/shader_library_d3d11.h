@@ -2,7 +2,7 @@
 #define _JOJ_D3D11_SHADER_LIBRARY_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 namespace joj
 {

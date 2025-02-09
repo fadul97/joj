@@ -2,7 +2,7 @@
 
 #if JPLATFORM_WINDOWS
 
-#include "logger.h"
+#include "core/logger.h"
 
 joj::D3D11Sprite::D3D11Sprite()
 {

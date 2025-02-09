@@ -4,7 +4,7 @@
 
 #include "renderer/d3d11/renderer_d3d11.h"
 #include <renderer/d3d11/WICTextureLoader.h>
-#include "logger.h"
+#include "core/logger.h"
 #include <locale>
 #include <codecvt>
 

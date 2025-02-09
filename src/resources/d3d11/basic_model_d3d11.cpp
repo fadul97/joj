@@ -5,7 +5,7 @@
 #include "renderer/d3d11/texture2d_data_d3d11.h"
 #include "resources/m3d_loader.h"
 #include "resources/d3d11/mesh_d3d11.h"
-#include "jmacros.h"
+#include "core/jmacros.h"
 #include <fstream>
 #include <sstream>
 #include <unordered_map>

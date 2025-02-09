@@ -1,8 +1,8 @@
 #ifndef _JOJ_MACROS_H
 #define _JOJ_MACROS_H
 
-#include "error_code.h"
-#include "logger.h"
+#include "core/error_code.h"
+#include "core/logger.h"
 
 #if JOJ_DEBUG_MODE
 

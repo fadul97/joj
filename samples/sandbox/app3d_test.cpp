@@ -1,11 +1,11 @@
 ﻿#include "app3d_test.h"
 
-#include "logger.h"
-#include "joj/jmacros.h"
+#include "joj/core/logger.h"
+#include "joj/core/jmacros.h"
 #include "joj/renderer/vertex.h"
 #include "joj/engine.h"
 #include <math.h>
-#include "logger.h"
+#include "core/logger.h"
 #include "joj/math/jvector3.h"
 
 // Read file
@@ -100,11 +100,13 @@ void App3DTest::build_buffers()
 
     const char* filename1 = "models/cube1.txt";
     const char* filename2 = "models/customCube.obj";
+    const char* filename3 = "models/cubeNew1.txt";
     MeshData mesh;
     // load_custom_format_with_flat_shading(filename1, mesh);
     // load_custom_format(filename1, mesh);
     // load_obj_format(filename2, mesh);
-    load_obj_format_new(filename2, mesh);
+    // load_obj_format_new(filename2, mesh);
+    load_new_custom_format(filename3, mesh);
 
     m_vertex_buffer.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
         sizeof(joj::Vertex::PosColorNormal) * mesh.vertices.size(), mesh.vertices.data());
@@ -504,6 +506,8 @@ void App3DTest::load_custom_format_with_flat_shading(const std::string& filename
         }
     }
 
+    file.close();
+
     // Print normals
     for (size_t i = 0; i < mesh.vertices.size(); ++i)
     {
@@ -511,6 +515,33 @@ void App3DTest::load_custom_format_with_flat_shading(const std::string& filename
             << mesh.vertices[i].normal.x << " "
             << mesh.vertices[i].normal.y << " "
             << mesh.vertices[i].normal.z << std::endl;
+    }
+
+    // Write MeshData into a new file
+    std::ofstream f("output.txt");
+    if (!f.is_open())
+    {
+        std::cout << "Failed to open output.txt file\n";
+        return;
+    }
+
+    f << "Vertices: " << mesh.vertices.size() << "\n";
+    for (const auto& v : mesh.vertices)
+    {
+        f << "v " << v.pos.x << " " << v.pos.y << " " << v.pos.z << "\n";
+    }
+
+    f << "Normals: " << mesh.vertices.size() << "\n";
+    for (const auto& v : mesh.vertices)
+    {
+        f << "vn " << v.normal.x << " " << v.normal.y << " " << v.normal.z << "\n";
+    }
+
+    f << "Faces: " << mesh.indices.size() << "\n";
+    u32 index = 0;
+    for (const i32 i : mesh.indices)
+    {
+        f << "index " << index++ << ": " << i << "\n";
     }
 }
 
@@ -592,5 +623,84 @@ void App3DTest::load_obj_format_new(const std::string& filename, MeshData& mesh)
             << mesh.vertices[i].normal.y << " "
             << mesh.vertices[i].normal.z << std::endl;
         mesh.vertices[i].color = { 0.5f, 0.5f, 0.5f, 1.0f };
+    }
+
+    // Write MeshData into a new file
+    std::ofstream f("outputOBJ.txt");
+    if (!f.is_open())
+    {
+        std::cout << "Failed to open output.txt file\n";
+        return;
+    }
+
+    f << "Vertices: " << mesh.vertices.size() << "\n";
+    for (const auto& v : mesh.vertices)
+    {
+        f << "v " << v.pos.x << " " << v.pos.y << " " << v.pos.z << "\n";
+    }
+
+    f << "Normals: " << mesh.vertices.size() << "\n";
+    for (const auto& v : mesh.vertices)
+    {
+        f << "vn " << v.normal.x << " " << v.normal.y << " " << v.normal.z << "\n";
+    }
+
+    f << "Faces: " << mesh.indices.size() << "\n";
+    u32 index = 0;
+    for (const i32 i : mesh.indices)
+    {
+        f << "index " << index++ << ": " << i << "\n";
+    }
+}
+
+void App3DTest::load_new_custom_format(const std::string& filename, MeshData& mesh)
+{
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo: " << filename << std::endl;
+        return;
+    }
+
+    std::vector<joj::JVector3> positions;
+    std::vector<joj::JVector3> normals;
+    std::vector<std::vector<u32>> faces;
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string type;
+        iss >> type;
+
+        if (type == "v") {
+            joj::JVector3 pos;
+            iss >> pos.x >> pos.y >> pos.z;
+            positions.push_back(pos);
+        }
+        else if (type == "vn") {
+            joj::JVector3 normal;
+            iss >> normal.x >> normal.y >> normal.z;
+            normals.push_back(normal);
+        }
+        else if (type == "f") {
+            std::vector<u32> face;
+            u32 idx;
+            while (iss >> idx) {
+                face.push_back(idx); // Ajuste para índice baseado em 0
+            }
+            faces.push_back(face);
+        }
+    }
+
+    // Preencher os vértices e índices
+    for (const auto& face : faces) {
+        for (size_t i = 0; i < face.size(); ++i) {
+            unsigned int idx = face[i];
+            joj::Vertex::PosColorNormal vertex;
+            vertex.pos = positions[idx];
+            vertex.color = { 0.5f, 0.5f, 0.5f, 1.0f }; // Cor cinza
+            vertex.normal = normals[idx];
+            mesh.vertices.push_back(vertex);
+            mesh.indices.push_back(mesh.vertices.size() - 1);
+        }
     }
 }

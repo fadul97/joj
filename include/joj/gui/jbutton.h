@@ -2,13 +2,13 @@
 #define _JOJ_JBUTTON_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include "jwidget.h"
 #include "platform/window.h"
 #include <string>
 #include <Windows.h>
-#include "logger.h"
+#include "core/logger.h"
 
 namespace joj
 {

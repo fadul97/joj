@@ -2,10 +2,10 @@
 #define _JOJ_WIDGET_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include "renderer/color.h"
-#include "error_code.h"
+#include "core/error_code.h"
 #include "renderer/renderer.h"
 
 namespace joj

@@ -2,14 +2,14 @@
 #define _JOJ_M3D_LOADER_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include <string>
 #include <vector>
 #include "renderer/vertex.h"
 #include "submesh.h"
 #include "systems/material/material.h"
-#include "error_code.h"
+#include "core/error_code.h"
 #include "skinned_data.h"
 
 namespace joj

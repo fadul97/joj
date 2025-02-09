@@ -3,7 +3,7 @@
 #include "sandbox/app2d_test.h"
 #include "sandbox/app3d_test.h"
 #include "joj/engine.h"
-#include "joj/jmacros.h"
+#include "joj/core/jmacros.h"
 
 int main()
 {

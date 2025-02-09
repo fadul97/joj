@@ -3,8 +3,8 @@
 #if JPLATFORM_WINDOWS
 
 #include "renderer/d3d11/renderer_d3d11.h"
-#include "logger.h"
-#include "jmacros.h"
+#include "core/logger.h"
+#include "core/jmacros.h"
 #include "renderer/vertex.h"
 
 joj::D3D11Widget::D3D11Widget()

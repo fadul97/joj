@@ -2,7 +2,7 @@
 #define _JOJ_WINDOW_REGISTRATION_CLASS_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include "window_procedure.h"
 #include <string>

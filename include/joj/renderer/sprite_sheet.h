@@ -2,7 +2,7 @@
 #define _JOJ_SPRITE_SHEET_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include "texture2d_data.h"
 

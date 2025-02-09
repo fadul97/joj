@@ -15,7 +15,7 @@
 #define _JOJ_ENGINE_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include <memory>
 #include "application/app.h"
@@ -23,7 +23,7 @@
 #include "platform/win32/input_win32.h"
 #include "platform/win32/timer_win32.h"
 #include "renderer/d3d11/renderer_d3d11.h"
-#include "error_code.h"
+#include "core/error_code.h"
 
 JAPI void joj_print();
 

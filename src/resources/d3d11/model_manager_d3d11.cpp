@@ -2,7 +2,7 @@
 
 #if JPLATFORM_WINDOWS
 
-#include "jmacros.h"
+#include "core/jmacros.h"
 
 joj::D3D11ModelManager::D3D11ModelManager()
 {

@@ -2,7 +2,7 @@
 #define _JOJ_JTEST_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include <string>
 #include <functional>

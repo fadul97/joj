@@ -2,9 +2,9 @@
 #define _JOJ_TEXTURE_2D_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
-#include "error_code.h"
+#include "core/error_code.h"
 #include <string>
 #include "renderer.h"
 #include "image_type.h"

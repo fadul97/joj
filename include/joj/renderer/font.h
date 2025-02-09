@@ -2,7 +2,7 @@
 #define _JOJ_FONT_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include <string>
 #include "renderer.h"

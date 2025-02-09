@@ -2,9 +2,9 @@
 #define _JOJ_WINDOW_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
-#include "error_code.h"
+#include "core/error_code.h"
 
 JAPI void window_print();
 

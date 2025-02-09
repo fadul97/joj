@@ -2,8 +2,8 @@
 
 #if JPLATFORM_WINDOWS
 
-#include "jmacros.h"
-#include "logger.h"
+#include "core/jmacros.h"
+#include "core/logger.h"
 #include "platform/win32/window_win32.h"
 #include <windowsx.h>
 #include "platform/win32/input_win32.h"

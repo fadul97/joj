@@ -2,7 +2,7 @@
 #define _JOJ_D3D11_GUI_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #if JPLATFORM_WINDOWS
 

@@ -2,12 +2,12 @@
 #define _JOJ_JWIDGET_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include <Windows.h>
 #include "jevent.h"
 #include <unordered_map>
-#include <logger.h>
+#include "core/logger.h"
 
 #define IDC_BUTTON 201
 

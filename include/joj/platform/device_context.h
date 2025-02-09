@@ -2,7 +2,7 @@
 #define _JOJ_DEVICE_CONTEXT_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 namespace joj
 {

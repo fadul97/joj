@@ -14,7 +14,7 @@
 #ifndef _JOJ_LOGGER_H
 #define _JOJ_LOGGER_H
 
-#include "error_code.h"
+#include "core/error_code.h"
 
 #if JPLATFORM_WINDOWS
 #include <vadefs.h>

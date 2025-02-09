@@ -1,8 +1,8 @@
 #include "gui_test.h"
 
-#include "logger.h"
+#include "joj/core/logger.h"
 #include <sstream>
-#include "joj/jmacros.h"
+#include "joj/core/jmacros.h"
 #include "joj/renderer/vertex.h"
 
 GUITest::GUITest()

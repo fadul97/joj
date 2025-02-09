@@ -2,7 +2,7 @@
 #define _JOJ_WIN32_WIDGET_FACTORY_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #if JPLATFORM_WINDOWS
 

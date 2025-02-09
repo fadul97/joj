@@ -1,7 +1,7 @@
 #include "app2d_test.h"
 
-#include "logger.h"
-#include "joj/jmacros.h"
+#include "joj/core/logger.h"
+#include "joj/core/jmacros.h"
 #include "joj/renderer/vertex.h"
 #include "joj/engine.h"
 #include <math.h>

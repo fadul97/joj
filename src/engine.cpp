@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "jmacros.h"
+#include "core/jmacros.h"
 #include <windowsx.h>
 
 #include <stdio.h>

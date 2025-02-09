@@ -2,7 +2,7 @@
 #define _JOJ_BASIC_MODEL_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #include "renderer/renderer.h"
 #include "renderer/texture_manager.h"

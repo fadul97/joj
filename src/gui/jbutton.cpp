@@ -1,7 +1,7 @@
 #include "gui/jbutton.h"
 
 #include <commctrl.h>
-#include "logger.h"
+#include "core/logger.h"
 #include <Windowsx.h>
 
 LRESULT CALLBACK PanelProc(HWND hwnd, UINT msg,

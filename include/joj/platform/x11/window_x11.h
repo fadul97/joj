@@ -2,7 +2,7 @@
 #define _JOJ_X11_WINDOW_H
 
 #define JOJ_ENGINE_IMPLEMENTATION
-#include "defines.h"
+#include "core/defines.h"
 
 #if JPLATFORM_LINUX
 
