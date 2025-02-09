@@ -22,9 +22,10 @@ if(WIN32)
         jojPlatform
         PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}/win32/
+        ${CMAKE_CURRENT_SOURCE_DIR}../events/
     )
 
-    target_link_libraries(jojPlatform PUBLIC jojWin32Platform)
+    target_link_libraries(jojPlatform PUBLIC jojWin32Platform jojEvents)
 elseif (LINUX)
     add_subdirectory(x11)
 

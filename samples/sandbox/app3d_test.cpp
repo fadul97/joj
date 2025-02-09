@@ -8,6 +8,8 @@
 #include "core/logger.h"
 #include "joj/math/jvector3.h"
 
+#include "joj/events/event_manager.h"
+
 // Read file
 #include <iostream>
 #include <fstream>
@@ -126,6 +128,35 @@ void App3DTest::build_buffers()
 
 void App3DTest::init()
 {
+    joj::EventManager::instance().subscribe(joj::EventType::KeyPressed, [](const joj::JEvent& event) {
+            auto& keyEvent = static_cast<const joj::KeyPressedEvent&>(event);
+            JDEBUG("Keypressed! %c", keyEvent.key);
+        }
+    );
+
+    joj::EventManager::instance().subscribe(joj::EventType::WindowClose, [](const joj::JEvent& event) {
+        auto& windowCloseEvent = static_cast<const joj::WindowCloseEvent&>(event);
+        JDEBUG("windowCloseEvent!");
+        }
+    );
+
+    joj::EventManager::instance().subscribe(joj::EventType::MouseClicked, [](const joj::JEvent& event) {
+        auto& mouseClicked = static_cast<const joj::MouseClickedEvent&>(event);
+        switch (mouseClicked.button)
+        {
+        case joj::Buttons::BUTTON_LEFT:
+            JINFO("BUTTON_LEFT!");
+            break;
+        case joj::Buttons::BUTTON_MIDDLE:
+            JINFO("BUTTON_MIDDLE!");
+            break;
+        case joj::Buttons::BUTTON_RIGHT:
+            JINFO("BUTTON_RIGHT!");
+            break;
+        }
+        }
+    );
+
     setup_camera();
     build_shader();
     build_input_layout();

@@ -22,6 +22,7 @@ if (WIN32)
     add_subdirectory(resources)
     add_subdirectory(gui)
     add_subdirectory(application)
+    add_subdirectory(events)
 
     target_link_directories(
         joj
@@ -31,7 +32,8 @@ if (WIN32)
         ${CMAKE_CURRENT_SOURCE_DIR}/systems/
         ${CMAKE_CURRENT_SOURCE_DIR}/resources/
         ${CMAKE_CURRENT_SOURCE_DIR}/gui/
-        ${CMAKE_CURRENT_SOURCE_DIR}/appapplication/
+        ${CMAKE_CURRENT_SOURCE_DIR}/application/
+        ${CMAKE_CURRENT_SOURCE_DIR}/events/
     )
 
     target_link_libraries(
@@ -43,6 +45,7 @@ if (WIN32)
         jojResources
         jojGUI
         jojApplication
+        jojEvents
     )
 
     target_compile_definitions(joj PRIVATE JOJ_DEBUG_MODE)
