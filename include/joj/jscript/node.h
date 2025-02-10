@@ -33,8 +33,8 @@ namespace joj
         Expression(Token* t);
         Expression(NodeType ntype, ExpressionType etype, Token* t);
 
-        std::string get_token_lexeme();
-        ExpressionType get_expr_type();
+        std::string get_lexeme();
+        ExpressionType get_type();
 
     protected:
         ExpressionType expr_type;

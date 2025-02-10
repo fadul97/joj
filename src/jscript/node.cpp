@@ -41,12 +41,12 @@ joj::Expression::Expression(NodeType ntype, ExpressionType etype, Token* t)
 {
 }
 
-std::string joj::Expression::get_token_lexeme()
+std::string joj::Expression::get_lexeme()
 {
     return token->lexeme;
 }
 
-joj::ExpressionType joj::Expression::get_expr_type()
+joj::ExpressionType joj::Expression::get_type()
 {
     return expr_type;
 }
@@ -68,12 +68,12 @@ joj::Logical::Logical(Token* t, Expression* e1, Expression* e2)
     : Expression{ NodeType::LOG, ExpressionType::BOOL, t }, expr1{ e1 }, expr2{ e2 }
 {
     // Check types
-    if (expr1->get_expr_type() != ExpressionType::BOOL ||
-        expr2->get_expr_type() != ExpressionType::BOOL)
+    if (expr1->get_type() != ExpressionType::BOOL ||
+        expr2->get_type() != ExpressionType::BOOL)
     {
         std::cout << "\'" << token->lexeme << "\' used with non bool operands "
-            << "(" << expr1->get_token_lexeme() << ":" << exprtype_to_string(expr1->get_expr_type()) << ") ("
-            << "(" << expr2->get_token_lexeme() << ":" << exprtype_to_string(expr2->get_expr_type()) << ").\n";
+            << "(" << expr1->get_lexeme() << ":" << exprtype_to_string(expr1->get_type()) << ") ("
+            << "(" << expr2->get_lexeme() << ":" << exprtype_to_string(expr2->get_type()) << ").\n";
     }
 }
 
@@ -82,11 +82,11 @@ joj::Relational::Relational(Token* t, Expression* e1, Expression* e2)
     : Expression{ NodeType::REL, ExpressionType::BOOL, t }, expr1{ e1 }, expr2{ e2 }
 {
     // Check types
-    if (expr1->get_expr_type() != expr2->get_expr_type())
+    if (expr1->get_type() != expr2->get_type())
     {
         std::cout << "\'" << token->lexeme << "\' used with different types "
-            << "(" << expr1->get_token_lexeme() << ":" << exprtype_to_string(expr1->get_expr_type()) << ") ("
-            << "(" << expr2->get_token_lexeme() << ":" << exprtype_to_string(expr2->get_expr_type()) << ").\n";
+            << "(" << expr1->get_lexeme() << ":" << exprtype_to_string(expr1->get_type()) << ") ("
+            << "(" << expr2->get_lexeme() << ":" << exprtype_to_string(expr2->get_type()) << ").\n";
     }
 }
 
@@ -95,11 +95,11 @@ joj::Arithmetic::Arithmetic(ExpressionType etype, Token* t, Expression* e1, Expr
     : Expression{ NodeType::ARI, etype, t }, expr1{ e1 }, expr2{ e2 }
 {
     // Check types
-    if (expr1->get_expr_type() != expr2->get_expr_type())
+    if (expr1->get_type() != expr2->get_type())
     {
         std::cout << "\'" << token->lexeme << "\' used with different types "
-            << "(" << expr1->get_token_lexeme() << ":" << exprtype_to_string(expr1->get_expr_type()) << ") ("
-            << "(" << expr2->get_token_lexeme() << ":" << exprtype_to_string(expr2->get_expr_type()) << ").\n";
+            << "(" << expr1->get_lexeme() << ":" << exprtype_to_string(expr1->get_type()) << ") ("
+            << "(" << expr2->get_lexeme() << ":" << exprtype_to_string(expr2->get_type()) << ").\n";
     }
 }
 
@@ -108,10 +108,10 @@ joj::UnaryExpr::UnaryExpr(ExpressionType etype, Token* t, Expression* e)
     : Expression{ NodeType::UNARY, etype, t }, expr{ e }
 {
     // Check types
-    if (expr->get_expr_type() != ExpressionType::BOOL)
+    if (expr->get_type() != ExpressionType::BOOL)
     {
         std::cout << "\'" << token->lexeme << "\' used with non boolean "
-            << "(" << expr->get_token_lexeme() << ":" << exprtype_to_string(expr->get_expr_type()) << ").\n";
+            << "(" << expr->get_lexeme() << ":" << exprtype_to_string(expr->get_type()) << ").\n";
     }
 }
 
@@ -126,11 +126,11 @@ joj::Assignment::Assignment(Expression* i, Expression* e)
     : Statement{ NodeType::ASSIGNMENT }, id{ i }, expr{ e }
 {
     // Check types
-    if (id->get_expr_type() != expr->get_expr_type())
+    if (id->get_type() != expr->get_type())
     {
         std::cout << "\'=\' used with different types "
-            << "(" << id->get_token_lexeme() << ":" << exprtype_to_string(id->get_expr_type()) << ") ("
-            << "(" << expr->get_token_lexeme() << ":" << exprtype_to_string(expr->get_expr_type()) << ").\n";
+            << "(" << id->get_lexeme() << ":" << exprtype_to_string(id->get_type()) << ") ("
+            << "(" << expr->get_lexeme() << ":" << exprtype_to_string(expr->get_type()) << ").\n";
     }
 }
 

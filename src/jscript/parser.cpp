@@ -324,29 +324,110 @@ joj::Expression* joj::Parser::rel()
 
 joj::Expression* joj::Parser::ari()
 {
-    // equality -> rel eqdif
-    // eqdif    -> == rel eqdif
-    //           | != rel eqdif
-    //           | empty
-    return nullptr;
+    // ari  -> term oper
+    // oper -> + term oper
+    //       | - term oper
+    //       | empty
+
+    Expression* expr1 = term();
+
+    // Function oper()
+    while (true)
+    {
+        Token t = *m_lookahead;
+
+        // oper -> + term oper
+        if (m_lookahead->type == TokenType::ADD_SIGN)
+        {
+            match(TokenType::ADD_SIGN);
+            Expression* expr2 = term();
+            expr1 = new Arithmetic(expr1->get_type(), new Token{t}, expr1, expr2);
+        }
+        // oper -> - term oper
+        else if (m_lookahead->type == TokenType::SUB_SIGN)
+        {
+            match(TokenType::SUB_SIGN);
+            Expression* expr2 = term();
+            expr1 = new Arithmetic(expr1->get_type(), new Token{ t }, expr1, expr2);
+        }
+        // oper -> empty
+        else
+        {
+            break;
+        }
+    }
+
+    return expr1;
 }
 
 joj::Expression* joj::Parser::term()
 {
-    // equality -> rel eqdif
-    // eqdif    -> == rel eqdif
-    //           | != rel eqdif
-    //           | empty
+    // term -> unary calc
+    // calc -> * unary calc
+    //       | / unary calc
+    //       | empty
+
+    Expression* expr1 = unary();
+
+    // Function calc()
+    while (true)
+    {
+        Token t = *m_lookahead;
+
+        // calc -> * unary calc
+        if (m_lookahead->type == TokenType::MUL_SIGN)
+        {
+            match(TokenType::MUL_SIGN);
+            Expression* expr2 = unary();
+            expr1 = new Arithmetic(expr1->get_type(), new Token{t}, expr1, expr2);
+        }
+        // calc -> / unary calc
+        else if (m_lookahead->type == TokenType::DIV_SIGN)
+        {
+            match(TokenType::DIV_SIGN);
+            Expression* expr2 = unary();
+            expr1 = new Arithmetic(expr1->get_type(), new Token{ t }, expr1, expr2);
+        }
+        // calc -> empty
+        else
+        {
+            break;
+        }
+    }
+
     return nullptr;
 }
 
 joj::Expression* joj::Parser::unary()
 {
-    // equality -> rel eqdif
-    // eqdif    -> == rel eqdif
-    //           | != rel eqdif
-    //           | empty
-    return nullptr;
+    // unary -> !unary
+    //        | -unary
+    //        | factor
+
+    Expression* unary_expr = nullptr;
+
+    // unary -> !unary
+    if (m_lookahead->type == TokenType::EXCLAMATION)
+    {
+        Token t = *m_lookahead;
+        match(TokenType::EXCLAMATION);
+        Expression* expr = unary();
+        unary_expr = new UnaryExpr(ExpressionType::BOOL, new Token(t), expr);
+    }
+    // unary -> -unary
+    else if (m_lookahead->type == TokenType::SUB_SIGN)
+    {
+        Token t = *m_lookahead;
+        match(TokenType::SUB_SIGN);
+        Expression* expr = unary();
+        unary_expr = new UnaryExpr(expr->get_type(), new Token{t}, expr);
+    }
+    else
+    {
+        unary_expr = factor();
+    }
+
+    return unary_expr;
 }
 
 joj::Expression* joj::Parser::factor()
