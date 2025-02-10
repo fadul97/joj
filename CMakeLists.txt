@@ -21,6 +21,13 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+option(LANGUAGE_PORTUGUESE "Use Portuguese keywords in JScript" OFF)
+if(LANGUAGE_PORTUGUESE)
+    add_definitions(-DLANGUAGE_PORTUGUESE)
+else()
+    add_definitions(-DLANGUAGE_ENGLISH)
+endif()
+
 if (WIN32)
 	add_subdirectory(include)
 	add_subdirectory(src)

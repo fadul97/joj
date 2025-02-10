@@ -1,5 +1,5 @@
 #include "joj/test/jtest_macros.h"
-#include "core/jvector.h"
+#include "core/vector.h"
 
 #include <iostream>
 
@@ -123,7 +123,6 @@ JOJ_TEST(Clear)
     assert(vec.get_size() == 0);
     assert(vec.get_capacity() > 0); // Capacidade pode ser mantida
 }
-
 
 int main()
 {

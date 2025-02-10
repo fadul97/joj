@@ -41,7 +41,7 @@ target_link_directories(jojTestsJVec4
 target_link_libraries(jojTestsJVec4 joj)
 # -----------------------------------------------------------------------------
 
-# JVector4 Tests
+# Vector Tests
 add_executable(jojTestsVector
     joj_tests_vector.cpp
 )
@@ -57,4 +57,37 @@ target_link_directories(jojTestsVector
 )
 
 target_link_libraries(jojTestsVector joj)
+# -----------------------------------------------------------------------------
+
+# JScript Tests
+add_executable(jojTestsJScript
+    joj_tests_jscript.cpp
+)
+
+# Resource folders
+set(SCRIPTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+    
+# Executable directory
+set(OUTPUT_DIR $<TARGET_FILE_DIR:jojTestsJScript>)
+    
+# Create custom target to copy resources 
+add_custom_target(copy_scripts ALL
+    COMMAND ${CMAKE_COMMAND} -E echo "Copying jscripts to '${OUTPUT_DIR}'..."
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${SCRIPTS_DIR} ${OUTPUT_DIR}/scripts
+)
+    
+# Add copy_scripts target to jojTestsJScript (resources will be copied before running executable)
+add_dependencies(jojTestsJScript copy_scripts)
+
+target_include_directories(jojTestsJScript
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/
+)
+
+target_link_directories(jojTestsJScript
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/
+)
+
+target_link_libraries(jojTestsJScript joj)
 # -----------------------------------------------------------------------------
