@@ -187,43 +187,227 @@ void joj::Parser::declaration()
 
 }
 
-void joj::Parser::statements()
+joj::Statement* joj::Parser::statements()
 {
     // statements -> statement statements
     //             | empty
-    //
-    // statement  -> block
-    //             | fact;
 
-    while (true)
+    Statement* seq = nullptr;
+
+    switch (m_lookahead->type)
     {
-        switch (m_lookahead->type)
-        {
-            // statement -> block
-        case TokenType::OPEN_CURLY_BRAC:
-            block();
-            break;
-            // statement -> fact;
-        case TokenType::ID:
-            fact();
-            if (!match(TokenType::SEMICOLON))
-            {
-                std::cout << "Found \"" << m_lookahead->lexeme
-                    << "\" instead of ';' in line " << m_lexer.get_line() << ".\n";
-            }
-            break;
-        case TokenType::VAR_DECLARATION:
-            declarations();
-            break;
-            // statements -> empty
-        default: return;
-        }
+    case TokenType::ID:
+    case TokenType::IF:
+    case TokenType::WHILE:
+    case TokenType::LOOP:
+    case TokenType::OPEN_CURLY_BRAC:
+    {
+        Statement* st = statement();
+        Statement* sts = statements();
+        seq = new Seq(st, sts);
     }
+        break;
+    default:
+        break;
+    }
+
+    return seq;
 }
 
-void joj::Parser::statement()
+joj::Statement* joj::Parser::statement()
 {
+    // statement  -> local = bool;
+    //             | if (bool) statement
+    //             | while (bool) statement
+    //             | loop statement
+    //             | block
 
+    Statement* stmt = nullptr;
+
+    switch (m_lookahead->type)
+    {
+    // Statement -> local = bool
+    case TokenType::ID:
+    {
+        Expression* left = local();
+        if (!match(TokenType::ASSIGN))
+        {
+            std::cout << "Expected '=' instead of '" << m_lookahead->lexeme << "\n";
+            return stmt;
+        }
+
+        Expression* right = Bool();
+        stmt = new Assignment(left, right);
+        if (!match(TokenType::SEMICOLON))
+        {
+            std::cout << "Expected ';' instead of '" << m_lookahead->lexeme << "\n";
+            return stmt;
+        }
+    }
+    default:
+        break;
+    }
+
+    return stmt;
+}
+
+joj::Expression* joj::Parser::local()
+{
+    // local -> local[bool]
+    //        | id
+
+    Expression* expr = nullptr;
+
+    switch (m_lookahead->type)
+    {
+    case TokenType::ID:
+    {
+        // Find variable type in symbol table
+        Token* t = m_symtable->find(m_lookahead->lexeme);
+        if (!t)
+        {
+            std::cout << "Undeclared variable '" << m_lookahead->lexeme << "'.\n";
+            return expr;
+        }
+
+        // Get type of expression
+        ExpressionType etype = string_to_exprtype(m_lookahead->lexeme);
+
+        // ID
+        expr = new Identifier(etype, new Token(*m_lookahead));
+        match(TokenType::ID);
+    }
+        break;
+    default:
+        std::cout << "Expected L-Value.\n";
+        break;
+    }
+
+    return expr;
+}
+
+joj::Expression* joj::Parser::Bool()
+{
+    // bool -> join lor
+    // lor  -> || join lor
+    //       | empty
+    return nullptr;
+}
+
+joj::Expression* joj::Parser::join()
+{
+    // join -> equality land
+    // land -> && equality land
+    //       | empty
+
+    Expression* expr1 = equality();
+    return nullptr;
+}
+
+joj::Expression* joj::Parser::equality()
+{
+    // equality -> rel eqdif
+    // eqdif    -> == rel eqdif
+    //           | != rel eqdif
+    //           | empty
+    return nullptr;
+}
+
+joj::Expression* joj::Parser::rel()
+{
+    // equality -> rel eqdif
+    // eqdif    -> == rel eqdif
+    //           | != rel eqdif
+    //           | empty
+    return nullptr;
+}
+
+joj::Expression* joj::Parser::ari()
+{
+    // equality -> rel eqdif
+    // eqdif    -> == rel eqdif
+    //           | != rel eqdif
+    //           | empty
+    return nullptr;
+}
+
+joj::Expression* joj::Parser::term()
+{
+    // equality -> rel eqdif
+    // eqdif    -> == rel eqdif
+    //           | != rel eqdif
+    //           | empty
+    return nullptr;
+}
+
+joj::Expression* joj::Parser::unary()
+{
+    // equality -> rel eqdif
+    // eqdif    -> == rel eqdif
+    //           | != rel eqdif
+    //           | empty
+    return nullptr;
+}
+
+joj::Expression* joj::Parser::factor()
+{
+    // factor -> (bool)
+    //         | local
+    //         | integer
+    //         | float
+    //         | true
+    //         | false
+
+    Expression* expr = nullptr;
+
+    switch (m_lookahead->type)
+    {
+    // factor -> (bool)
+    case TokenType::OPEN_PAR:
+    {
+        match(TokenType::OPEN_PAR);
+        expr = Bool();
+        if (!match(TokenType::CLOSE_PAR))
+        {
+            std::cout << "Expected ')' instead of '" << m_lookahead->lexeme << "\n";
+            return expr;
+        }
+    }
+        break;
+    // factor -> integer
+    case TokenType::VALUE_INT:
+    {
+        expr = new Constant(ExpressionType::INT, new Token{ *m_lookahead });
+        match(TokenType::VALUE_INT);
+    }
+        break;
+    // factor -> float
+    case TokenType::VALUE_FLOAT:
+    {
+        expr = new Constant(ExpressionType::FLOAT, new Token{ *m_lookahead });
+        match(TokenType::VALUE_FLOAT);
+    }
+        break;
+    // factor -> true
+    case TokenType::TRUE:
+    {
+        expr = new Constant(ExpressionType::BOOL, new Token{ *m_lookahead });
+        match(TokenType::TRUE);
+    }
+        break;
+    // factor -> true
+    case TokenType::FALSE:
+    {
+        expr = new Constant(ExpressionType::BOOL, new Token{ *m_lookahead });
+        match(TokenType::FALSE);
+    }
+        break;
+    default:
+        std::cout << "Expected expression instead of '" << m_lookahead->lexeme << "\n";
+        break;
+    }
+
+    return expr;
 }
 
 void joj::Parser::expr()
@@ -251,57 +435,6 @@ void joj::Parser::expr()
         else return;
     }
 
-}
-
-void joj::Parser::term()
-{
-    // term -> fact mult
-    fact();
-
-    while (true)
-    {
-        // mult -> * fact { print(*) }
-        if (m_lookahead->type == TokenType::MUL_SIGN)
-        {
-            match(TokenType::MUL_SIGN);
-            std::cout << '*';
-            fact();
-        }
-        // mult -> / fact { print(/) }
-        else if (m_lookahead->type == TokenType::DIV_SIGN)
-        {
-            match(TokenType::DIV_SIGN);
-            std::cout << '/';
-            fact();
-        }
-        // mult -> empty
-        else return;
-    }
-}
-
-
-void joj::Parser::fact()
-{
-    // fact -> id
-    if (m_lookahead->type == TokenType::ID)
-    {
-        // Look for variable in symbol table
-        Token* t = m_symtable->find(m_lookahead->lexeme);
-        if (t)
-        {
-            std::cout << t->lexeme << ':' << tokentype_to_string(t->type) << ";\n";
-            match(TokenType::ID);
-        }
-        else
-        {
-            std::cout << "Undefined variable \"" << m_lookahead->lexeme << "\".\n";
-            m_lookahead = m_lexer.scan();
-        }
-    }
-    else
-    {
-        std::cout << "Invalid symbol \"" << m_lookahead->lexeme << "\" in expression.\n";
-    }
 }
 
 // void joj::Parser::fact()

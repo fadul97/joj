@@ -7,6 +7,7 @@
 #include "core/vector.h"
 #include "lexer.h"
 #include "symbol_table.h"
+#include "node.h"
 
 namespace joj
 {
@@ -27,12 +28,22 @@ namespace joj
         void block();
         void declarations();
         void declaration();
-        void statements();
-        void statement();
+        Statement* statements();
+        Statement* statement();
+
+        Expression* local();
+        Expression* Bool();
+
+        Expression* join();
+        Expression* equality();
+
+        Expression* rel();
+        Expression* ari();
+        Expression* term();
+        Expression* unary();
+        Expression* factor();
 
         void expr();
-        void term();
-        void fact();
         b8 match(TokenType type);
     };
 }

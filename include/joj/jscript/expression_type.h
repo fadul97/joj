@@ -2,6 +2,7 @@
 #define _JOJ_EXPRESSION_TYPE_H
 
 #include "keywords.h"
+#include <string>
 
 namespace joj
 {
@@ -23,6 +24,23 @@ namespace joj
         case ExpressionType::BOOL:  return KEYWORD_BOOL;
         default:                    return KEYWORD_VOID;
         }
+    }
+
+    inline ExpressionType string_to_exprtype(const std::string& lexeme)
+    {
+        if (lexeme == KEYWORD_VOID)
+            return ExpressionType::VOID;
+
+        if (lexeme == KEYWORD_INT)
+            return ExpressionType::INT;
+
+        if (lexeme == KEYWORD_FLOAT)
+            return ExpressionType::FLOAT;
+
+        if (lexeme == KEYWORD_BOOL)
+            return ExpressionType::BOOL;
+
+        return ExpressionType::VOID;
     }
 }
 
