@@ -56,10 +56,10 @@
 
 #else // JOJ_DEBUG_MODE not defined (Release mode)
 
-#define JOJ_FAILED(x)
-#define JOJ_LOG_IF_FAIL(x)
-#define JOJ_RETURN_INT_IF_FAIL(x)
-#define JOJ_RETURN_VOID_IF_FAIL(x)
+#define JOJ_FAILED(x) (((joj::ErrorCode)(x)) != joj::ErrorCode::OK)
+#define JOJ_LOG_IF_FAIL(x) (void)(x)
+#define JOJ_RETURN_INT_IF_FAIL(x) (void)(x)
+#define JOJ_RETURN_VOID_IF_FAIL(x) (void)(x)
 #define JOJ_ASSERT(condition, ...)
 
 #endif // JOJ_DEBUG_MODE
