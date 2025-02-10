@@ -68,6 +68,8 @@ void joj::Lexer::start()
             "Check file name and location. Check if it is read - protected.",
             m_source.c_str());
     }
+
+    m_peek = ' ';
 }
 
 joj::Token* joj::Lexer::scan()
@@ -109,14 +111,14 @@ joj::Token* joj::Lexer::scan()
 
         if (dot)
         {
-            Token t{ TokenType::NUMBER_FLOAT, ss.str() };
+            Token t{ TokenType::VALUE_FLOAT, ss.str() };
 
             m_token = t;
             return &m_token;
         }
         else
         {
-            Token t{ TokenType::NUMBER_INT, ss.str() };
+            Token t{ TokenType::VALUE_INT, ss.str() };
 
             m_token = t;
             return &m_token;

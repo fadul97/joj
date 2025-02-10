@@ -1,2 +1,6 @@
-let x = 10;
-let y : float = 20.05;
+func main() {
+	let x = 10;
+	let y : float = 20.05;
+	let z;
+	let a : char;
+}

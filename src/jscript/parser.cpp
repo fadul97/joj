@@ -13,6 +13,8 @@ joj::Parser::~Parser()
 
 void joj::Parser::start()
 {
+    m_lexer.start();
+    m_lookahead = m_lexer.scan();
     program();
 }
 
@@ -78,50 +80,58 @@ void joj::Parser::declarations()
         // LET x : TYPE;
         if (match(TokenType::COLON))
         {
-            TokenType tag{ string_to_tokentype(m_lookahead->lexeme) };
-            if (!match(TokenType::INT) || !match(TokenType::FLOAT)   ||
-                !match(TokenType::CHAR) || !match(TokenType::STRING) ||
-                !match(TokenType::BOOLEAN))
-                std::cout << "[Syntax Error]: Unknown type \'" << m_lookahead->lexeme << "\'.\n";
-
-            Token t{ tag, var_name };
-
-            // Insert new variable in symbol table
-            if (!m_symtable->insert(var_name, t))
+            TokenType ttype{ string_to_tokentype(m_lookahead->lexeme) };
+            if (match(TokenType::INT) || match(TokenType::FLOAT) ||
+                match(TokenType::CHAR) || match(TokenType::STRING) ||
+                match(TokenType::BOOLEAN))
             {
-                // Failed if variable already in table
-                std::cout << "\nVariable \"" << var_name << "\" already defined.\n";
-            }
+                Token t{ ttype, var_name };
 
-            // LET x : TYPE = VALUE;
-            if (match(TokenType::ASSIGN))
-            {
-                std::string value = m_lookahead->lexeme;
-                tag = m_lookahead->type;
-                if (!match(tag))
-                    std::cout << "[Syntax Error]: Unknown type \'" << m_lookahead->lexeme << "\'.\n";
-
-                if (match(TokenType::SEMICOLON))
+                // Insert new variable in symbol table
+                if (!m_symtable->insert(var_name, t))
                 {
-                    std::cout << "--> [NEW VARIABLE]: " << var_name << " : " << tokentype_to_string(tag)
-                        << " = " << value << " .\n";
+                    // Failed if variable already in table
+                    std::cout << "\nVariable \"" << var_name << "\" already defined.\n";
                 }
+
+                // LET x : TYPE = VALUE;
+                if (match(TokenType::ASSIGN))
+                {
+                    std::string value = m_lookahead->lexeme;
+                    ttype = m_lookahead->type;
+                    if (!match(ttype))
+                        std::cout << "[Syntax Error]: Unknown type \'" << m_lookahead->lexeme << "\'.\n";
+
+                    if (match(TokenType::SEMICOLON))
+                    {
+                        std::cout << "--> [NEW VARIABLE]: " << var_name << " : " << tokentype_to_string(ttype)
+                            << " = " << value << ".\n";
+                    }
+                    else
+                    {
+                        std::cout << "Found \"" << m_lookahead->lexeme
+                            << "\" instead of ';' in line " << m_lexer.get_line() << ".\n";
+                    }
+                }
+                // LET x : TYPE;
                 else
                 {
-                    std::cout << "Found \"" << m_lookahead->lexeme
-                        << "\" instead of ';' in line " << m_lexer.get_line() << ".\n";
+                    if (match(TokenType::SEMICOLON))
+                    {
+                        std::cout << "--> [NEW VARIABLE]: " << var_name << " : " << tokentype_to_string(ttype)
+                            << ".\n";
+                    }
+                    else
+                    {
+                        std::cout << "Found \"" << m_lookahead->lexeme
+                            << "\" instead of ';' in line " << m_lexer.get_line() << ".\n";
+                    }
                 }
             }
-            // LET x : TYPE;
             else
             {
-                if (!match(TokenType::SEMICOLON))
-                {
-                    std::cout << "Found \"" << m_lookahead->lexeme
-                        << "\" instead of ';' in line " << m_lexer.get_line() << ".\n";
-                }
+                std::cout << "[Syntax Error]: Unknown type \'" << m_lookahead->lexeme << "\'.\n";
             }
-
         }
         // LET x;
         else if (match(TokenType::SEMICOLON))
@@ -134,6 +144,35 @@ void joj::Parser::declarations()
                 // Failed if variable already in table
                 std::cout << "\nVariable \"" << var_name << "\" already defined.\n";
             }
+
+            std::cout << "--> [NEW VARIABLE]: " << var_name << " : " << tokentype_to_string(t.type)
+                << ".\n";
+        }
+        // LET x = 10;
+        else if (match(TokenType::ASSIGN))
+        {
+            std::string value = m_lookahead->lexeme;
+            Token t{ TokenType::ASSIGN, value };
+            if (match(TokenType::VALUE_INT) || match(TokenType::VALUE_FLOAT) ||
+                match(TokenType::VALUE_CHAR) || match(TokenType::VALUE_STRING) ||
+                match(TokenType::VALUE_BOOLEAN))
+            {
+                if (match(TokenType::SEMICOLON))
+                {
+                    std::cout << "--> [NEW VARIABLE]: " << var_name << " : "
+                        << " = " << value << ".\n";
+                }
+                else
+                {
+                    std::cout << "Found \"" << m_lookahead->lexeme
+                        << "\" instead of ';' in line " << m_lexer.get_line() << ".\n";
+                }
+            }
+            else
+            {
+                std::cout << "[Syntax Error]: Expected value, found unknown lexeme \'" << m_lookahead->lexeme << "\'.\n";
+            }
+
         }
         else
         {

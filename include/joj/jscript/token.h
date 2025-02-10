@@ -28,8 +28,11 @@ namespace joj
         case TokenType::BOOLEAN:          return "BOOLEAN";
         case TokenType::STRING:           return "STRING";
         case TokenType::ASSIGN:           return "ASSIGN";
-        case TokenType::NUMBER_INT:       return "NUMBER_INT";
-        case TokenType::NUMBER_FLOAT:     return "NUMBER_FLOAT";
+        case TokenType::VALUE_INT:        return "NUMBER_INT";
+        case TokenType::VALUE_FLOAT:      return "NUMBER_FLOAT";
+        case TokenType::VALUE_CHAR:       return "NUMBER_CHAR";
+        case TokenType::VALUE_STRING:     return "NUMBER_STRING";
+        case TokenType::VALUE_BOOLEAN:    return "VALUE_BOOLEAN";
         case TokenType::SEMICOLON:        return "SEMICOLON";
         case TokenType::FUNC_DECLARATION: return "FUNC_DECLARATION";
         case TokenType::MAIN_FUNC:        return "MAIN_FUNC";
