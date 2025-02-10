@@ -1,6 +1,8 @@
 #ifndef _JOJ_EXPRESSION_TYPE_H
 #define _JOJ_EXPRESSION_TYPE_H
 
+#include "keywords.h"
+
 namespace joj
 {
     enum class ExpressionType
@@ -15,11 +17,11 @@ namespace joj
     {
         switch (etype)
         {
-        case ExpressionType::VOID:  return "void";
-        case ExpressionType::INT:   return "int";
-        case ExpressionType::FLOAT: return "dec";
-        case ExpressionType::BOOL:  return "bool";
-        default: return "void";
+        case ExpressionType::VOID:  return KEYWORD_VOID;
+        case ExpressionType::INT:   return KEYWORD_INT;
+        case ExpressionType::FLOAT: return KEYWORD_FLOAT;
+        case ExpressionType::BOOL:  return KEYWORD_BOOL;
+        default:                    return KEYWORD_VOID;
         }
     }
 }
