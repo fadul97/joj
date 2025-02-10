@@ -44,6 +44,7 @@
 #define KEYWORD_BREAK "quebre"
 #define KEYWORD_TRUE "verdade"
 #define KEYWORD_FALSE "falso"
+#define KEYWORD_VOID "vazio"
 #elif defined(LANGUAGE_ENGLISH)
 #define KEYWORD_MAIN_FUNC "main"
 #define KEYWORD_BOOL "boolean"
@@ -64,6 +65,7 @@
 #define KEYWORD_BREAK "break"
 #define KEYWORD_TRUE "true"
 #define KEYWORD_FALSE "false"
+#define KEYWORD_VOID "void"
 #else // English is the Default Language
 #define KEYWORD_MAIN_FUNC "main"
 #define KEYWORD_BOOL "boolean"

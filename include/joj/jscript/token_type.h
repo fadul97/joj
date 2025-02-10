@@ -1,6 +1,9 @@
 #ifndef _JOJ_TOKEN_TYPE_H
 #define _JOJ_TOKEN_TYPE_H
 
+#include "keywords.h"
+#include <string>
+
 namespace joj
 {
     // var x : int = 10;
@@ -55,6 +58,30 @@ namespace joj
         EXCLAMATION,
         PIPE
     };
+
+    inline TokenType string_to_tokentype(const std::string& str)
+    {
+        if (str == KEYWORD_CHAR)
+        {
+            return TokenType::CHAR;
+        }
+        else if (str == KEYWORD_INT)
+        {
+            return TokenType::INT;
+        }
+        else if (str == KEYWORD_FLOAT)
+        {
+            return TokenType::FLOAT;
+        }
+        else if (str == KEYWORD_STRING)
+        {
+            return TokenType::STRING;
+        }
+        else
+        {
+            return TokenType::UNKNOWN;
+        }
+    }
 }
 
 
