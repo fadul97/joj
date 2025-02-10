@@ -5,8 +5,8 @@
 #include "joj/renderer/vertex.h"
 #include "joj/engine.h"
 #include <math.h>
-#include "core/logger.h"
 #include "joj/math/jvector3.h"
+#include "joj/joj.h"
 
 #include "joj/events/event_manager.h"
 

@@ -25,8 +25,6 @@
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "core/error_code.h"
 
-JAPI void joj_print();
-
 namespace joj
 {
     class JAPI Engine

@@ -5,19 +5,6 @@
 #include "core/jmacros.h"
 #include <windowsx.h>
 
-#include <stdio.h>
-
-void joj_print()
-{
-	printf("Hello from %s JOJ Library!\n",
-#ifdef JAPI
-		"shared"
-#else
-		"static"
-#endif
-	);
-}
-
 joj::Win32Window* joj::Engine::s_window = nullptr;
 joj::Win32Input* joj::Engine::s_input = nullptr;
 joj::Win32Timer* joj::Engine::s_timer = nullptr;
