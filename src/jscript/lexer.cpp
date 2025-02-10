@@ -377,5 +377,12 @@ joj::Token* joj::Lexer::scan()
 
 joj::Vector<joj::Token> joj::Lexer::tokenize()
 {
-    return Vector<Token>();
+    Vector<Token> tokens;
+    start();
+
+    Token* token = nullptr;
+    while ((token = scan()) != nullptr)
+        tokens.push_back(*token);
+
+    return tokens;
 }

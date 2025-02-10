@@ -15,7 +15,7 @@ namespace joj
         std::string lexeme;
     };
 
-    inline const char* tokentype_to_string(TokenType t)
+    inline const char* tokentype_to_string(const TokenType t)
     {
         switch (t)
         {
