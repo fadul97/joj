@@ -244,6 +244,7 @@ joj::Statement* joj::Parser::statement()
             return stmt;
         }
     }
+        break;
     default:
         break;
     }

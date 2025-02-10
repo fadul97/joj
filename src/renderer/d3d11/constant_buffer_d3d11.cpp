@@ -4,6 +4,7 @@
 
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "core/logger.h"
+#include "core/jmacros.h"
 
 joj::D3D11ConstantBuffer::D3D11ConstantBuffer()
 {
@@ -67,17 +68,27 @@ joj::CBData& joj::D3D11ConstantBuffer::get_data()
 
 void joj::D3D11ConstantBuffer::update_internal(CommandList& cmd_list, const void* data, const u32 sizeof_data)
 {
+    JOJ_ASSERT(data != nullptr);
+    JOJ_ASSERT(cmd_list.device_context != nullptr);
+
     // Data to be copied
     D3D11_MAPPED_SUBRESOURCE mapped_buffer = {};
+    mapped_buffer.pData = nullptr;
 
     // Get a pointer to the constant buffer data and lock it
-    cmd_list.device_context->Map(m_data.buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_buffer);
+    if (cmd_list.device_context->Map(m_data.buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_buffer) != S_OK)
+    {
+        JERROR(ErrorCode::FAILED, "Failed to map constant buffer.");
+        return;
+    }
+    else
+    {
+        // Copy the new data to the constant buffer data.
+        memcpy(mapped_buffer.pData, data, sizeof_data);
 
-    // Copy the new data to the constant buffer data.
-    memcpy(mapped_buffer.pData, data, sizeof_data);
-
-    // Release the pointer to the constant buffer data.
-    cmd_list.device_context->Unmap(m_data.buffer, 0);
+        // Release the pointer to the constant buffer data.
+        cmd_list.device_context->Unmap(m_data.buffer, 0);
+    }
 }
 
 #endif // JPLATFORM_WINDOWS
