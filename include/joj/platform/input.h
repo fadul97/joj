@@ -20,7 +20,7 @@ namespace joj
     {
     public:
         Input();
-        virtual ~Input();
+        virtual ~Input() = default;
 
         virtual void set_window(WindowData window) = 0;
 

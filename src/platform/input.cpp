@@ -6,10 +6,6 @@ joj::Input::Input()
 {
 }
 
-joj::Input::~Input()
-{
-}
-
 b8 joj::Input::is_key_pressed(const u32 key)
 {
     if (m_data.ctrl.keys[key])

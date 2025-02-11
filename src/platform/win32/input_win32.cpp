@@ -9,10 +9,6 @@ joj::Win32Input::Win32Input()
 {
 }
 
-joj::Win32Input::~Win32Input()
-{
-}
-
 void joj::Win32Input::set_window(WindowData window)
 {
     SetWindowLongPtr(window.handle, GWLP_WNDPROC, (LONG_PTR)InputProc);

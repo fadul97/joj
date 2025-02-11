@@ -226,7 +226,7 @@ void joj::D3D11Scene::draw_collisions(IRenderer& renderer)
                 cb_data.color = { 0.0f, 1.0f, 0.0f, 1.0f };
             m_collision_constant_buffer.update(renderer.get_cmd_list(), cb_data);
 
-            renderer.draw_rect(*rect);
+            renderer.draw_rect();
         }
             break;
         case GeometryType::Unknown:

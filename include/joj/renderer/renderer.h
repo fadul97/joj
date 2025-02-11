@@ -8,8 +8,6 @@
 #include "platform/window.h"
 #include "viewport.h"
 #include "sprite.h"
-// #include "systems/physics/rect.h"
-
 
 namespace joj
 {
@@ -68,7 +66,7 @@ namespace joj
 
         virtual void draw_sprite(const SpriteData& sprite) = 0;
 
-        // virtual void draw_rect(const Rect& rect) = 0;
+        virtual void draw_rect() = 0;
     };
 }
 

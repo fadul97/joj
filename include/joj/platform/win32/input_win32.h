@@ -17,7 +17,7 @@ namespace joj
     {
     public:
         Win32Input();
-        ~Win32Input();
+        ~Win32Input() = default;
 
         void set_window(WindowData window);
 

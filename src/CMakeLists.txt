@@ -22,12 +22,20 @@ if (WIN32)
     add_subdirectory(core)
     add_subdirectory(platform)
     add_subdirectory(renderer)
+    add_subdirectory(events)
+    add_subdirectory(jscript)
+    add_subdirectory(application)
+    # add_subdirectory(systems)
 
     target_link_directories(joj
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/core/
         ${CMAKE_CURRENT_SOURCE_DIR}/platform/
         ${CMAKE_CURRENT_SOURCE_DIR}/renderer/
+        ${CMAKE_CURRENT_SOURCE_DIR}/events/
+        ${CMAKE_CURRENT_SOURCE_DIR}/jscript/
+        ${CMAKE_CURRENT_SOURCE_DIR}/application/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/systems/
     )
 
     target_link_libraries(joj
@@ -35,6 +43,10 @@ if (WIN32)
         jojCore
         jojPlatform
         jojRenderer
+        jojEvents
+        jojScript
+        jojApplication
+        # jojSystems
     )
 
     target_compile_definitions(joj PRIVATE JOJ_DEBUG_MODE)

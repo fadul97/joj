@@ -7,8 +7,8 @@ add_library(jojEvents STATIC jevent.cpp event_manager.cpp)
 
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(jojEvents PRIVATE BUILDING_JOJ_DLL) # Export
-else()
-    target_compile_definitions(jojEvents PRIVATE USING_JOJ_DLL) # Import
+# else()
+    # target_compile_definitions(jojEvents PRIVATE USING_JOJ_DLL) # Import
 endif()
 
 # Specify include directories for 
