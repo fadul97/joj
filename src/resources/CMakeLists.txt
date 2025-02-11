@@ -2,8 +2,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
-add_library(
-    jojResources
+add_library(jojResources
     mesh_old.cpp
     submesh.cpp
     mesh.cpp
@@ -22,36 +21,23 @@ add_library(
 )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojResources PUBLIC BUILDING_JOJ_DLL) # Export
-# else()
-    # target_compile_definitions(jojResources PRIVATE USING_JOJ_DLL) # Import
+    target_compile_definitions(jojResources PRIVATE BUILDING_JOJ_DLL) # Export
 endif()
 
-if (WIN32)
-    add_subdirectory(d3d11)
-endif()
-
-target_include_directories(
-    jojResources
+target_include_directories(jojResources
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
 )
 
 target_link_directories(
     jojResources
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/core/
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/math/
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/renderer/
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/systems/material/
-    # ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/systems/
-    # ${CMAKE_CURRENT_SOURCE_DIR}/../../src/systems/
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../src/systems/material/
+    PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../core/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../renderer/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../systems/
 )
 
-if (WIN32)
-    target_link_libraries(jojResources PRIVATE jojCore jojMath jojRenderer jojMaterial)
-endif()
+target_link_libraries(jojResources PUBLIC jojCore jojRenderer jojSystems)
 
 set_target_properties(jojResources PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

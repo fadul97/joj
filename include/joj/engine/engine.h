@@ -71,15 +71,6 @@ namespace joj
 
         f32 get_frametime();
     };
-
-    inline void Engine::pause()
-    { s_paused = true; s_timer->stop(); }
-
-    inline void Engine::resume()
-    { s_paused = false; s_timer->start(); }
-
-    inline void Engine::close()
-    { s_running = false; }
 }
 
 #endif // _JOJ_ENGINE_H

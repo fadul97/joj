@@ -1,17 +1,16 @@
 ﻿# PATH: src/core/CMakeLists.txt
-
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
-add_library(jojCore STATIC error_code.cpp logger_win32.cpp)
+add_library(jojCore error_code.cpp logger_win32.cpp)
 
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(jojCore PRIVATE BUILDING_JOJ_DLL) # Export
-# else()
-    # target_compile_definitions(jojCore PRIVATE USING_JOJ_DLL) # Import
+    add_custom_command(TARGET jojCore POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:jojCore> ${CMAKE_BINARY_DIR})
 endif()
 
-# Specify include directories for jojApplication
+# Specify include directories for jojCore
 target_include_directories(
     jojCore
     PUBLIC

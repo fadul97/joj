@@ -56,12 +56,13 @@ if (WIN32)
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     )
 
+    
     # Se for uma DLL, copiar automaticamente para o diretório do executável
     if(BUILD_SHARED_LIBS)
         add_custom_command(TARGET jojSamples POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                $<TARGET_RUNTIME_DLLS:jojSamples>  # Sem aspas para evitar lista como string única
-                $<TARGET_FILE_DIR:jojSamples>
+                "$<TARGET_RUNTIME_DLLS:jojSamples>"  # Sem aspas para evitar lista como string única
+                "$<TARGET_FILE_DIR:jojSamples>"
             COMMAND_EXPAND_LISTS  # Faz expandir corretamente a lista de DLLs
         )
     endif()

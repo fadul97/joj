@@ -1,25 +1,28 @@
 ﻿# PATH: src/events/CMakeLists.txt
-
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
-add_library(jojEvents STATIC jevent.cpp event_manager.cpp)
+add_library(jojEvents
+    jevent.cpp
+    event_manager.cpp
+)
 
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(jojEvents PRIVATE BUILDING_JOJ_DLL) # Export
-# else()
-    # target_compile_definitions(jojEvents PRIVATE USING_JOJ_DLL) # Import
 endif()
 
-# Specify include directories for 
-target_include_directories(
-    jojEvents
-    PUBLIC
+target_include_directories(jojEvents
+    PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/core/
 )
 
-target_link_libraries(jojEvents PRIVATE jojCore jojPlatform)
+target_link_directories(
+    jojEvents
+    PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../core/
+)
+
+target_link_libraries(jojEvents PRIVATE jojCore)
 
 set_target_properties(jojEvents PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

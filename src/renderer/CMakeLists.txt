@@ -1,10 +1,9 @@
 # PATH: src/renderer/CMakeLists.txt
-
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
 add_library(jojRenderer
-	renderer.cpp
+    renderer.cpp
     vertex_buffer.cpp
     constant_buffer.cpp
     shader.cpp
@@ -34,31 +33,24 @@ add_library(jojRenderer
 )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojRenderer PUBLIC BUILDING_JOJ_DLL) # Export
-# else()
-    # target_compile_definitions(jojRenderer PUBLIC USING_JOJ_DLL) # Import
+    target_compile_definitions(jojRenderer PRIVATE BUILDING_JOJ_DLL) # Export
 endif()
 
+add_subdirectory(d3d11)
 
 target_include_directories(jojRenderer
-    PUBLIC
+    PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
 )
 
-if(WIN32)
-    add_subdirectory(d3d11)
-    # add_subdirectory(gui)
+target_link_directories(
+    jojRenderer
+    PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../core/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../platform/
+)
 
-    target_link_directories(
-        jojRenderer 
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../core/
-        ${CMAKE_CURRENT_SOURCE_DIR}/../platform/
-        ${CMAKE_CURRENT_SOURCE_DIR}/d3d11/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/gui/
-    )
-
-    target_link_libraries(jojRenderer PRIVATE
+target_link_libraries(jojRenderer PUBLIC
         jojCore
         jojPlatform
         # jojD3D11GUIRenderer
@@ -69,9 +61,8 @@ if(WIN32)
         # jojGUIRenderer
     )
 
-    set_target_properties(jojRenderer PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    )
-endif()
+set_target_properties(jojRenderer PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+)

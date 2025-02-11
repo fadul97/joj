@@ -316,3 +316,20 @@ LRESULT CALLBACK joj::Engine::EngineProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 
 	return CallWindowProc(joj::Win32Input::InputProc, hWnd, msg, wParam, lParam);
 }
+
+void joj::Engine::pause()
+{
+	s_paused = true;
+	s_timer->stop();
+}
+
+void joj::Engine::resume()
+{
+	s_paused = false;
+	s_timer->start();
+}
+
+void joj::Engine::close()
+{
+	s_running = false;
+}

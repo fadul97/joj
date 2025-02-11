@@ -13,7 +13,7 @@ namespace joj
     typedef JAPI std::vector<i32> JVectorI32;  // Define vector with DLL interface
 
     template <typename T>
-    class JAPI Vector
+    class Vector
     {
     public:
         Vector();
