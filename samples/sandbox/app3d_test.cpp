@@ -104,7 +104,7 @@ void App3DTest::build_buffers()
     const char* filename1 = "models/cube1.txt";
     const char* filename2 = "models/customCube.obj";
     const char* filename3 = "models/cubeNew1.txt";
-    MeshData meshData;
+    // MeshData meshData;
     // load_custom_format_with_flat_shading(filename1, meshData);
     // load_custom_format(filename1, meshData);
     // load_obj_format(filename2, meshData);
@@ -115,45 +115,16 @@ void App3DTest::build_buffers()
     mesh = loader.load("models/customCube.obj");
     if (mesh)
     {
-        for (size_t i = 0; i < mesh->positions.size(); ++i)
+        for (i32 i = 0; i < mesh->vertices.size(); ++i)
         {
-            joj::Vertex::PosColorNormal vertex;
-            vertex.pos = mesh->positions[i];
-
-            // Se a cor estiver disponível, usa a cor
-            if (i < mesh->colors.size())
-            {
-                vertex.color = mesh->colors[i];
-            }
-            else
-            {
-                // Se não houver cor, você pode definir uma cor padrão
-                vertex.color = joj::JFloat4(1.0f, 1.0f, 1.0f, 1.0f); // Cor branca por padrão
-            }
-
-            // Normal já está presente
-            if (i < mesh->normals.size())
-            {
-                vertex.normal = mesh->normals[i];
-            }
-            else
-            {
-                // Se não houver normal, defina uma normal padrão (por exemplo, (0, 0, 0))
-                vertex.normal = joj::JFloat3(0.0f, 0.0f, 0.0f);
-            }
-
-            // Adiciona o vértice ao vetor de vértices
-            meshData.vertices.push_back(vertex);
+            mesh->vertices[i].color = joj::JVector4(1.0f, 1.0f, 0.0f, 1.0f);
         }
 
-        // Agora, copie os índices diretamente de InternalMesh para MeshData
-        meshData.indices = mesh->indices;
-
         m_vertex_buffer.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
-            sizeof(joj::Vertex::PosColorNormal) * meshData.vertices.size(), meshData.vertices.data());
+            sizeof(joj::Vertex::PosColorNormal) * mesh->vertices.size(), mesh->vertices.data());
         JOJ_LOG_IF_FAIL(m_vertex_buffer.create(m_renderer->get_device()));
 
-        m_index_buffer.setup(sizeof(u32) * meshData.indices.size(), meshData.indices.data());
+        m_index_buffer.setup(sizeof(u32) * mesh->indices.size(), mesh->indices.data());
         JOJ_LOG_IF_FAIL(m_index_buffer.create(m_renderer->get_device()));
 
         m_constant_buffer.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
@@ -162,7 +133,7 @@ void App3DTest::build_buffers()
         m_light_buffer.setup(joj::calculate_cb_byte_size(sizeof(LightCB)), nullptr);
         JOJ_LOG_IF_FAIL(m_light_buffer.create(m_renderer->get_device()));
 
-        total_indices = meshData.indices.size();
+        total_indices = mesh->indices.size();
     }
 }
 
@@ -258,7 +229,7 @@ void App3DTest::draw()
         */
         m_light_buffer.bind_to_pixel_shader(m_renderer->get_cmd_list(), 1, 1);
         LightCB lightBuffer{};
-        lightBuffer.diffuseColor = joj::JVector4(0.0f, 0.7f, 0.7f, 1.0);
+        lightBuffer.diffuseColor = joj::JVector4(0.7f, 0.7f, 0.7f, 1.0);
         lightBuffer.lightDirection = joj::JVector3(0.0f, 0.0f, 1.0f);
         m_light_buffer.update(m_renderer->get_cmd_list(), lightBuffer);
     }

@@ -110,19 +110,15 @@ joj::InternalMesh* joj::OBJLoader::load(const char* filename)
                 }
 
                 // Check if vertice was already added, if yes, use index
-                auto it = std::find(mesh->positions.begin(), mesh->positions.end(), vertex.pos);
-                if (it != mesh->positions.end())
+                auto it = std::find(mesh->vertices.begin(), mesh->vertices.end(), vertex);
+                if (it != mesh->vertices.end())
                 {
-                    mesh->indices.push_back(static_cast<u32>(std::distance(mesh->positions.begin(), it)));
+                    mesh->indices.push_back(static_cast<u32>(std::distance(mesh->vertices.begin(), it)));
                 }
                 else
                 {
-                    mesh->positions.push_back(vertex.pos);
-                    mesh->normals.push_back(vertex.normal);
-                    // TODO: Add texture coordinates and color
-                    // mesh->texCoords.push_back(vertex.texCoord);
-                    // mesh->colors.push_back(vertex.color);
-                    mesh->indices.push_back(static_cast<u32>(mesh->positions.size() - 1));
+                    mesh->vertices.push_back(vertex);
+                    mesh->indices.push_back(static_cast<u32>(mesh->vertices.size() - 1));
                 }
             }
         }
@@ -136,16 +132,16 @@ joj::InternalMesh* joj::OBJLoader::load(const char* filename)
         return nullptr;
     }
 
-    f << "Vertices: " << mesh->positions.size() << "\n";
-    for (const auto& v : mesh->positions)
+    f << "Vertices: " << mesh->vertices.size() << "\n";
+    for (const auto& v : mesh->vertices)
     {
-        f << "v " << v.x << " " << v.y << " " << v.z << "\n";
+        f << "v " << v.pos.x << " " << v.pos.y << " " << v.pos.z << "\n";
     }
 
-    f << "Normals: " << mesh->normals.size() << "\n";
-    for (const auto& v : mesh->normals)
+    f << "Normals: " << mesh->vertices.size() << "\n";
+    for (const auto& v : mesh->vertices)
     {
-        f << "vn " << v.x << " " << v.y << " " << v.z << "\n";
+        f << "vn " << v.normal.x << " " << v.normal.y << " " << v.normal.z << "\n";
     }
 
     f << "Faces: " << mesh->indices.size() << "\n";
