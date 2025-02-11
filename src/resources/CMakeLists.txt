@@ -18,6 +18,7 @@ add_library(jojResources
     d3d11/basic_model_d3d11.cpp
     d3d11/basic_skinned_model_d3d11.cpp
     d3d11/model_manager_d3d11.cpp
+    obj_loader.cpp
 )
 
 if(BUILD_SHARED_LIBS)

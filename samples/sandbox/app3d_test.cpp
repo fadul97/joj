@@ -7,6 +7,7 @@
 #include <math.h>
 #include "joj/math/jvector3.h"
 #include "joj/joj.h"
+#include "joj/resources/obj_loader.h"
 
 #include "joj/events/event_manager.h"
 
@@ -103,27 +104,66 @@ void App3DTest::build_buffers()
     const char* filename1 = "models/cube1.txt";
     const char* filename2 = "models/customCube.obj";
     const char* filename3 = "models/cubeNew1.txt";
-    MeshData mesh;
-    // load_custom_format_with_flat_shading(filename1, mesh);
-    // load_custom_format(filename1, mesh);
-    // load_obj_format(filename2, mesh);
-    // load_obj_format_new(filename2, mesh);
-    load_new_custom_format(filename3, mesh);
+    MeshData meshData;
+    // load_custom_format_with_flat_shading(filename1, meshData);
+    // load_custom_format(filename1, meshData);
+    // load_obj_format(filename2, meshData);
+    // load_obj_format_new(filename2, meshData);
+    // load_new_custom_format(filename3, meshData);
+    joj::OBJLoader loader;
+    joj::InternalMesh* mesh = nullptr;
+    mesh = loader.load("models/customCube.obj");
+    if (mesh)
+    {
+        for (size_t i = 0; i < mesh->positions.size(); ++i)
+        {
+            joj::Vertex::PosColorNormal vertex;
+            vertex.pos = mesh->positions[i];
 
-    m_vertex_buffer.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
-        sizeof(joj::Vertex::PosColorNormal) * mesh.vertices.size(), mesh.vertices.data());
-    JOJ_LOG_IF_FAIL(m_vertex_buffer.create(m_renderer->get_device()));
+            // Se a cor estiver disponível, usa a cor
+            if (i < mesh->colors.size())
+            {
+                vertex.color = mesh->colors[i];
+            }
+            else
+            {
+                // Se não houver cor, você pode definir uma cor padrão
+                vertex.color = joj::JFloat4(1.0f, 1.0f, 1.0f, 1.0f); // Cor branca por padrão
+            }
 
-    m_index_buffer.setup(sizeof(u32) * mesh.indices.size(), mesh.indices.data());
-    JOJ_LOG_IF_FAIL(m_index_buffer.create(m_renderer->get_device()));
+            // Normal já está presente
+            if (i < mesh->normals.size())
+            {
+                vertex.normal = mesh->normals[i];
+            }
+            else
+            {
+                // Se não houver normal, defina uma normal padrão (por exemplo, (0, 0, 0))
+                vertex.normal = joj::JFloat3(0.0f, 0.0f, 0.0f);
+            }
 
-    m_constant_buffer.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
-    JOJ_LOG_IF_FAIL(m_constant_buffer.create(m_renderer->get_device()));
+            // Adiciona o vértice ao vetor de vértices
+            meshData.vertices.push_back(vertex);
+        }
 
-    m_light_buffer.setup(joj::calculate_cb_byte_size(sizeof(LightCB)), nullptr);
-    JOJ_LOG_IF_FAIL(m_light_buffer.create(m_renderer->get_device()));
+        // Agora, copie os índices diretamente de InternalMesh para MeshData
+        meshData.indices = mesh->indices;
 
-    total_indices = mesh.indices.size();
+        m_vertex_buffer.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
+            sizeof(joj::Vertex::PosColorNormal) * meshData.vertices.size(), meshData.vertices.data());
+        JOJ_LOG_IF_FAIL(m_vertex_buffer.create(m_renderer->get_device()));
+
+        m_index_buffer.setup(sizeof(u32) * meshData.indices.size(), meshData.indices.data());
+        JOJ_LOG_IF_FAIL(m_index_buffer.create(m_renderer->get_device()));
+
+        m_constant_buffer.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
+        JOJ_LOG_IF_FAIL(m_constant_buffer.create(m_renderer->get_device()));
+
+        m_light_buffer.setup(joj::calculate_cb_byte_size(sizeof(LightCB)), nullptr);
+        JOJ_LOG_IF_FAIL(m_light_buffer.create(m_renderer->get_device()));
+
+        total_indices = meshData.indices.size();
+    }
 }
 
 void App3DTest::init()
