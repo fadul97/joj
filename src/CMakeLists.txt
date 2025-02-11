@@ -26,7 +26,7 @@ if (WIN32)
     add_subdirectory(jscript)
     add_subdirectory(application)
     add_subdirectory(resources)
-    # add_subdirectory(systems)
+    add_subdirectory(systems)
 
     target_link_directories(joj
         PUBLIC
@@ -37,7 +37,7 @@ if (WIN32)
         ${CMAKE_CURRENT_SOURCE_DIR}/jscript/
         ${CMAKE_CURRENT_SOURCE_DIR}/application/
         ${CMAKE_CURRENT_SOURCE_DIR}/resources/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/systems/
+        ${CMAKE_CURRENT_SOURCE_DIR}/systems/
     )
 
     target_link_libraries(joj
@@ -49,7 +49,7 @@ if (WIN32)
         jojScript
         jojApplication
         jojResources
-        # jojSystems
+        jojSystems
     )
 
     target_compile_definitions(joj PRIVATE JOJ_DEBUG_MODE)

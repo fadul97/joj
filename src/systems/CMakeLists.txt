@@ -8,9 +8,9 @@ add_library(
 )
 
 add_subdirectory(camera)
-# add_subdirectory(light)
-# add_subdirectory(material)
-# add_subdirectory(physics)
+add_subdirectory(light)
+add_subdirectory(material)
+add_subdirectory(physics)
 # add_subdirectory(scene)
 
 target_include_directories(
@@ -32,14 +32,14 @@ target_link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/math/
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/renderer/
     ${CMAKE_CURRENT_SOURCE_DIR}/camera/
-    # ${CMAKE_CURRENT_SOURCE_DIR}/light/
-    # ${CMAKE_CURRENT_SOURCE_DIR}/material/
-    # ${CMAKE_CURRENT_SOURCE_DIR}/physics/
+    ${CMAKE_CURRENT_SOURCE_DIR}/light/
+    ${CMAKE_CURRENT_SOURCE_DIR}/material/
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/
     # ${CMAKE_CURRENT_SOURCE_DIR}/scene/
 )
 
 # target_link_libraries(jojSystems PUBLIC jojCore jojMath jojCamera jojLight jojMaterial jojPhysics jojScene jojRenderer)
-target_link_libraries(jojSystems PUBLIC jojCore jojMath jojCamera)
+target_link_libraries(jojSystems PUBLIC jojCore jojMath jojCamera jojLight jojMaterial jojPhysics)
 
 set_target_properties(jojSystems PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
