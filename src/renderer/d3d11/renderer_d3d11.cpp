@@ -813,6 +813,7 @@ void joj::D3D11Renderer::draw_sprite(const SpriteData& sprite)
     m_cmd_list.device_context->DrawIndexed(6, 0, 0);
 }
 
+/*
 void joj::D3D11Renderer::draw_rect(const Rect& rect)
 {
     (void)rect;
@@ -823,6 +824,7 @@ void joj::D3D11Renderer::draw_rect(const Rect& rect)
     set_primitive_topology(PrimitiveTopology::TRIANGLE_STRIP);
     m_cmd_list.device_context->Draw(4, 0);
 }
+*/
 
 #if JOJ_DEBUG_MODE
 void joj::D3D11Renderer::log_hardware_info()

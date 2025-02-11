@@ -1,10 +1,17 @@
 #include "renderer/renderer.h"
 
-#include <iostream>
 
-void renderer_print()
+#include <stdio.h>
+
+void joj::renderer_print()
 {
-    std::cout << "Hello from renderer!" << std::endl;
+	printf("Hello from %s jojPlatform!\n",
+#ifdef BUILDING_JOJ_DLL
+		"shared"
+#else
+		"static"
+#endif
+	);
 }
 
 joj::IRenderer::IRenderer()

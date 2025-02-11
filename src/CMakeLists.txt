@@ -21,17 +21,20 @@ if (WIN32)
 
     add_subdirectory(core)
     add_subdirectory(platform)
+    add_subdirectory(renderer)
 
     target_link_directories(joj
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/core/
         ${CMAKE_CURRENT_SOURCE_DIR}/platform/
+        ${CMAKE_CURRENT_SOURCE_DIR}/renderer/
     )
 
     target_link_libraries(joj
         PUBLIC
         jojCore
         jojPlatform
+        jojRenderer
     )
 
     target_compile_definitions(joj PRIVATE JOJ_DEBUG_MODE)
@@ -42,7 +45,7 @@ if (WIN32)
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     )
 
-elseif  (LINUX)
+elseif (LINUX)
     add_library(joj
         STATIC
         error_code.cpp

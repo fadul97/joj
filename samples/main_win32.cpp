@@ -4,11 +4,13 @@
 
 #include "joj/joj.h"
 #include "joj/platform/window.h"
+#include "joj/renderer/renderer.h"
 
 int main()
 {
     joj_print();
     joj::window_print();
+    joj::renderer_print();
     return 0;
 }
 
