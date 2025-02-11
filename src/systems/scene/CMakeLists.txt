@@ -6,12 +6,11 @@ project(joj)
 add_library(
     jojScene
     scene.cpp
+    d3d11/scene_d3d11.cpp
 )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojScene PUBLIC BUILDING_JOJ_DLL) # Export
-# else()
-    # target_compile_definitions(jojScene PUBLIC USING_JOJ_DLL) # Import
+    target_compile_definitions(jojScene PRIVATE BUILDING_JOJ_DLL) # Export
 endif()
 
 if (WIN32)
@@ -28,10 +27,17 @@ target_link_directories(
     jojScene
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/core/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/math/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/systems/camera/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/systems/light/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/systems/material/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/systems/physics/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/renderer/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/systems/material/
 )
 
 if (WIN32)
-    target_link_libraries(jojScene PUBLIC jojCore jojD3D11Scene)
+    target_link_libraries(jojScene PRIVATE jojCore jojMath jojCamera jojLight jojMaterial jojPhysics jojRenderer)
 endif()
 
 set_target_properties(jojScene PROPERTIES

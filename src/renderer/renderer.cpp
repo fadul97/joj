@@ -5,7 +5,7 @@
 
 void joj::renderer_print()
 {
-	printf("Hello from %s jojPlatform!\n",
+	printf("Hello from %s jojRenderer!\n",
 #ifdef BUILDING_JOJ_DLL
 		"shared"
 #else

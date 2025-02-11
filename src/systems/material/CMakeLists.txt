@@ -22,10 +22,11 @@ target_include_directories(
 target_link_directories(
     jojMaterial
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../include/joj/core/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/core/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/math/
 )
 
-target_link_libraries(jojMaterial PRIVATE jojCore)
+target_link_libraries(jojMaterial PRIVATE jojCore jojMath)
 
 set_target_properties(jojMaterial PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

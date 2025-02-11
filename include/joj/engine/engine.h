@@ -17,16 +17,17 @@
 #define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
-#include <memory>
-#include "application/app.h"
 #include "platform/win32/window_win32.h"
 #include "platform/win32/input_win32.h"
 #include "platform/win32/timer_win32.h"
 #include "renderer/d3d11/renderer_d3d11.h"
+#include "application/app.h"
 #include "core/error_code.h"
 
 namespace joj
 {
+    JAPI void engine_print();
+
     class JAPI Engine
     {
     public:

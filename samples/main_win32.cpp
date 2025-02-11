@@ -11,6 +11,7 @@
 #include "joj/math/jvector3.h"
 #include "joj/math/jvector4.h"
 #include <iostream>
+#include "joj/engine/engine.h"
 
 int main()
 {
@@ -24,6 +25,7 @@ int main()
     joj::window_print();
     joj::renderer_print();
     event_print();
+    joj::engine_print();
     return 0;
 }
 

@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.22)
 project(joj)
 
 add_library(jojScript
+    STATIC
     lexer.cpp
     node.cpp
     symbol_table.cpp

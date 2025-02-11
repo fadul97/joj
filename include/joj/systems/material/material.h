@@ -6,18 +6,18 @@
 
 #if JPLATFORM_WINDOWS
 
-#include "math/jmath.h"
+#include "math/jvector4.h"
 
 namespace joj
 {
-	struct Material
+	struct JAPI Material
 	{
 		Material();
 
-		JFloat4 ambient;
-		JFloat4 diffuse;
-		JFloat4 specular; // w = SpecPower
-		JFloat4 reflect;
+		JVector4 ambient;
+		JVector4 diffuse;
+		JVector4 specular; // w = SpecPower
+		JVector4 reflect;
 	};
 }
 

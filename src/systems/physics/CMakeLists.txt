@@ -23,11 +23,15 @@ target_include_directories(
 target_link_directories(
     jojPhysics
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../include/joj/core/
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../src/core/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/core/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/math/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/core/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/systems/material/
 )
 
-target_link_libraries(jojPhysics PRIVATE jojCore)
+add_dependencies(jojPhysics jojMaterial)
+
+target_link_libraries(jojPhysics PRIVATE jojCore jojMath jojMaterial)
 
 set_target_properties(jojPhysics PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

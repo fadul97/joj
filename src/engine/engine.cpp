@@ -1,4 +1,4 @@
-#include "engine.h"
+#include "engine/engine.h"
 
 #include <iostream>
 #include <sstream>
@@ -20,6 +20,19 @@ b8 joj::Engine::s_minimized = false;
 b8 joj::Engine::s_maximized = false;
 u32 joj::Engine::s_client_width = 0;
 u32 joj::Engine::s_client_height = 0;
+
+#include <stdio.h>
+
+void joj::engine_print()
+{
+	printf("Hello from %s Engine!\n",
+#ifdef BUILDING_JOJ_DLL
+		"shared"
+#else
+		"static"
+#endif
+	);
+}
 
 joj::Engine::Engine()
 {
@@ -132,6 +145,7 @@ i32 joj::Engine::run(App* app)
 			// Pause/Resume Game
 			// -----------------------------------------------
 			// P key pauses engine
+			/*
 			if (s_input->is_key_pressed('P'))
 			{
 				if (s_paused)
@@ -139,6 +153,7 @@ i32 joj::Engine::run(App* app)
 				else
 					pause();
 			}
+			*/
 
 			if (!s_paused)
 			{

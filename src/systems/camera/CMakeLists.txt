@@ -25,8 +25,8 @@ target_include_directories(
 target_link_directories(
     jojCamera
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../include/joj/core/
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../include/joj/math/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/core/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/math/
 )
 
 target_link_libraries(jojCamera PRIVATE jojCore jojMath)
