@@ -15,8 +15,8 @@ if (WIN32)
 
     if(BUILD_SHARED_LIBS)
         target_compile_definitions(joj PRIVATE BUILDING_JOJ_DLL) # Export
-    else()
-        target_compile_definitions(joj PRIVATE USING_JOJ_DLL) # Import
+    # else()
+        # target_compile_definitions(joj PRIVATE USING_JOJ_DLL) # Import
     endif()
 
     add_subdirectory(core)

@@ -19,8 +19,8 @@ if(WIN32)
 
     if(BUILD_SHARED_LIBS)
         target_compile_definitions(jojPlatform PUBLIC BUILDING_JOJ_DLL) # Export
-    else()
-        target_compile_definitions(jojPlatform PUBLIC USING_JOJ_DLL) # Import
+    # else()
+        # target_compile_definitions(jojPlatform PUBLIC USING_JOJ_DLL) # Import
     endif()
 
     target_include_directories(jojPlatform
