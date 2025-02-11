@@ -80,7 +80,7 @@ namespace joj
          * @param message The message to be logged.
          * @param args Any additional arguments (data) to be logged.
          */
-        void write_log(LogLevel level, joj::ErrorCode err, const char* file, i32 line, const char* message, va_list args);
+        JAPI void write_log(LogLevel level, joj::ErrorCode err, const char* file, i32 line, const char* message, va_list args);
 
         /**
          * @brief Writes the log to the console. This is called when the macro is used.
@@ -92,7 +92,7 @@ namespace joj
          * @param message The message to be logged.
          * @param ... Any additional arguments (data) to be logged.
          */
-        void log(LogLevel level, joj::ErrorCode err, const char* file, i32 line, const char* message, ...);
+        JAPI void log(LogLevel level, joj::ErrorCode err, const char* file, i32 line, const char* message, ...);
     }
 }
 

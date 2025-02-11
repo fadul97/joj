@@ -159,14 +159,14 @@ namespace joj
      *  @param err The error code to convert.
      *  @return The integer index of the error code.
      */
-    i32 err_to_int(ErrorCode err);
+    JAPI i32 err_to_int(ErrorCode err);
 
     // TODO: Add all cases.
     /** @brief Get the name of the ErrorCode.
      *  @param err The error code to convert.
      *  @return The string representation of the error code.
      */
-    const char* err_to_str(ErrorCode err);
+    JAPI const char* err_to_str(ErrorCode err);
 }
 
 #endif // _JOJ_ERROR_CODE_H

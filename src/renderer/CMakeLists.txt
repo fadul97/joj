@@ -2,9 +2,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/)
-
-target_sources(joj PUBLIC
+add_library(jojRenderer
     renderer.cpp
     vertex_buffer.cpp
     constant_buffer.cpp
@@ -32,4 +30,39 @@ target_sources(joj PUBLIC
     d3d11/sprite_d3d11.cpp
     d3d11/sprite_sheet_d3d11.cpp
     d3d11/font_d3d11.cpp
+)
+
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(jojRenderer PRIVATE BUILDING_JOJ_DLL) # Export
+endif()
+
+add_subdirectory(d3d11)
+
+target_include_directories(jojRenderer
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
+)
+
+target_link_directories(
+    jojRenderer
+    PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../core/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../platform/
+)
+
+target_link_libraries(jojRenderer PUBLIC
+        jojCore
+        jojPlatform
+        # jojD3D11GUIRenderer
+        dxgi.lib
+        dxguid.lib
+        d3d11.lib
+        D3DCompiler.lib
+        # jojGUIRenderer
+    )
+
+set_target_properties(jojRenderer PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
