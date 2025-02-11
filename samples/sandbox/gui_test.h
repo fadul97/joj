@@ -1,7 +1,7 @@
 #ifndef _JOJ_GUI_TEST_H
 #define _JOJ_GUI_TEST_H
 
-#include "joj/engine.h"
+#include "joj/engine/engine.h"
 #include "joj/platform/win32/window_win32.h"
 #include "joj/platform/win32/input_win32.h"
 #include "joj/platform/win32/timer_win32.h"

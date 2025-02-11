@@ -3,17 +3,13 @@
 #include "core/logger.h"
 #include <sstream>
 #include <d3d11.h>
-#include "joj/jmacros.h"
+#include "joj/core/jmacros.h"
+#include "joj/renderer/sampler_state.h"
 
 using namespace DirectX;
 
 TestApp::TestApp()
 {
-    window = joj::Win32Window{ "jojWindow", 800, 600, joj::WindowMode::Windowed };
-    input = joj::Win32Input();
-    timer = joj::Win32Timer();
-    renderer = joj::D3D11Renderer();
-
     using namespace DirectX;
     mDirLights[0].ambient = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
     mDirLights[0].diffuse = XMFLOAT4(0.8f, 0.7f, 0.7f, 1.0f);
@@ -36,32 +32,6 @@ TestApp::~TestApp()
 
 }
 
-void TestApp::init_platform()
-{
-    if (window.create() != joj::ErrorCode::OK)
-        return;
-
-    u32 width = 0;
-    u32 height = 0;
-
-    window.get_window_size(width, height);
-    JDEBUG("Window size: %dx%d", width, height);
-
-    window.get_client_size(width, height);
-    JDEBUG("Client size: %dx%d", width, height);
-
-    input.set_window(window.get_data());
-
-    timer.begin_period();
-
-    renderer_print();
-
-    if (renderer.initialize(window.get_data()) != joj::ErrorCode::OK)
-        return;
-
-    timer.start();
-}
-
 void TestApp::setup_camera()
 {
     m_cam.update_view_matrix();
@@ -78,15 +48,15 @@ void TestApp::build_shaders_and_input_layout()
     m_static_shader.compile_vertex_shader_from_file(
         "shaders/JSFTest.hlsl",
         "VS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_static_shader.create_vertex_shader(renderer.get_device()));
+    JOJ_LOG_IF_FAIL(m_static_shader.create_vertex_shader(m_renderer->get_device()));
 
     m_static_shader.compile_pixel_shader_from_file(
         "shaders/JSFTest.hlsl",
         "PS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_static_shader.create_pixel_shader(renderer.get_device()));
+    JOJ_LOG_IF_FAIL(m_static_shader.create_pixel_shader(m_renderer->get_device()));
 
-    m_static_shader.bind_vertex_shader(renderer.get_cmd_list());
-    m_static_shader.bind_pixel_shader(renderer.get_cmd_list());
+    m_static_shader.bind_vertex_shader(m_renderer->get_cmd_list());
+    m_static_shader.bind_pixel_shader(m_renderer->get_cmd_list());
 
     joj::InputDesc layout[] = {
         { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT, 0,  0, joj::InputClassification::PerVertexData, 0 },
@@ -100,14 +70,14 @@ void TestApp::build_shaders_and_input_layout()
         m_static_layout.add(l);
     }
 
-    JOJ_LOG_IF_FAIL(m_static_layout.create(renderer.get_device(), m_static_shader.get_vertex_shader()));
-    m_static_layout.bind(renderer.get_cmd_list());
+    JOJ_LOG_IF_FAIL(m_static_layout.create(m_renderer->get_device(), m_static_shader.get_vertex_shader()));
+    m_static_layout.bind(m_renderer->get_cmd_list());
 }
 
 void TestApp::load_meshes_and_models()
 {
-    JOJ_LOG_IF_FAIL(m_model_manager.load_model(renderer.get_device(),
-        renderer.get_cmd_list(),
+    JOJ_LOG_IF_FAIL(m_model_manager.load_model(m_renderer->get_device(),
+        m_renderer->get_cmd_list(),
         "models/rock.m3d",
         L"textures/"));
 
@@ -147,14 +117,14 @@ void TestApp::load_meshes_and_models()
 void TestApp::build_cbs()
 {
     cbObject.setup(joj::calculate_cb_byte_size(sizeof(cbPerObject)), nullptr);
-    JOJ_LOG_IF_FAIL(cbObject.create(renderer.get_device()));
-    cbObject.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
-    cbObject.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
+    JOJ_LOG_IF_FAIL(cbObject.create(m_renderer->get_device()));
+    cbObject.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
+    cbObject.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
 
     cbFrame.setup(joj::calculate_cb_byte_size(sizeof(cbPerFrame)), nullptr);
-    JOJ_LOG_IF_FAIL(cbFrame.create(renderer.get_device()));
-    cbFrame.bind_to_vertex_shader(renderer.get_cmd_list(), 1, 1);
-    cbFrame.bind_to_pixel_shader(renderer.get_cmd_list(), 1, 1);
+    JOJ_LOG_IF_FAIL(cbFrame.create(m_renderer->get_device()));
+    cbFrame.bind_to_vertex_shader(m_renderer->get_cmd_list(), 1, 1);
+    cbFrame.bind_to_pixel_shader(m_renderer->get_cmd_list(), 1, 1);
 }
 
 void TestApp::build_sampler_state()
@@ -176,14 +146,12 @@ void TestApp::build_sampler_state()
     samplerDesc.max_LOD = joj::LODValue::Float32_MAX;
 
     // Create Sampler State
-    JOJ_LOG_IF_FAIL(m_sampler_state.create(renderer.get_device(), samplerDesc));
-    m_sampler_state.bind(renderer.get_cmd_list(), joj::SamplerType::Anisotropic, 0, 1);
+    JOJ_LOG_IF_FAIL(m_sampler_state.create(m_renderer->get_device(), samplerDesc));
+    m_sampler_state.bind(m_renderer->get_cmd_list(), joj::SamplerType::Anisotropic, 0, 1);
 }
 
 void TestApp::init()
 {
-    init_platform();
-
     setup_camera();
     build_shaders_and_input_layout();
     load_meshes_and_models();
@@ -193,7 +161,7 @@ void TestApp::init()
 
 void TestApp::update(const f32 dt)
 {
-    if (input.is_key_pressed('1'))
+    if (m_input->is_key_pressed('1'))
     {
         if (m_raster_state == joj::RasterizerState::Solid)
             m_raster_state = joj::RasterizerState::Wireframe;
@@ -201,30 +169,30 @@ void TestApp::update(const f32 dt)
             m_raster_state = joj::RasterizerState::Solid;
     }
 
-    if (input.is_key_down(joj::KEY_SPACE))
+    if (m_input->is_key_down(joj::KEY_SPACE))
         JDEBUG("Space down.");
 
-    if (input.is_key_pressed(joj::KEY_ESCAPE))
-        loop = false;
+    if (m_input->is_key_pressed(joj::KEY_ESCAPE))
+        joj::Engine::close();
 }
 
 void TestApp::draw()
 {
-    renderer.clear();
+    m_renderer->clear();
 
-    renderer.set_primitive_topology(joj::PrimitiveTopology::TRIANGLE_LIST);
+    m_renderer->set_primitive_topology(joj::PrimitiveTopology::TRIANGLE_LIST);
 
-    renderer.set_rasterizer_state(m_raster_state);
+    m_renderer->set_rasterizer_state(m_raster_state);
     
     draw_objects();
 
-    renderer.swap_buffers();
+    m_renderer->swap_buffers();
 }
 
 void TestApp::draw_one_object(u32 model_index)
 {
-    m_static_shader.bind_vertex_shader(renderer.get_cmd_list());
-    m_static_shader.bind_pixel_shader(renderer.get_cmd_list());
+    m_static_shader.bind_vertex_shader(m_renderer->get_cmd_list());
+    m_static_shader.bind_pixel_shader(m_renderer->get_cmd_list());
 
     using namespace DirectX;
 
@@ -239,10 +207,10 @@ void TestApp::draw_one_object(u32 model_index)
     cbPF.gDirLights[1] = mDirLights[1];
     cbPF.gDirLights[2] = mDirLights[2];
     cbPF.gEyePosW = m_cam.get_pos();
-    cbFrame.update(renderer.get_cmd_list(), cbPF);
+    cbFrame.update(m_renderer->get_cmd_list(), cbPF);
 
-    m_static_layout.bind(renderer.get_cmd_list());
-    renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    m_static_layout.bind(m_renderer->get_cmd_list());
+    m_renderer->get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     XMMATRIX world;
     XMMATRIX worldInvTranspose;
@@ -282,32 +250,32 @@ void TestApp::draw_one_object(u32 model_index)
     for (u32 subset = 0; subset < mModelInstances[model_index].model->get_submesh_count(); ++subset)
     {
         cbPO.gMaterial = mModelInstances[model_index].model->get_mat()[subset];
-        cbObject.update(renderer.get_cmd_list(), cbPO);
+        cbObject.update(m_renderer->get_cmd_list(), cbPO);
 
         /*
         auto& diffuse_map_SRV = mModelInstances[model_index].model->get_diffuse_map_SRV()[subset];
         auto& normal_map_SRV = mModelInstances[model_index].model->get_normal_map_SRV()[subset];
         */
 
-        renderer.get_cmd_list().device_context->PSSetShaderResources(0, 1,
+        m_renderer->get_cmd_list().device_context->PSSetShaderResources(0, 1,
             &mModelInstances[model_index].model->get_diffuse_map_SRV()[subset]->srv);
 
-        renderer.get_cmd_list().device_context->PSSetShaderResources(1, 1,
+        m_renderer->get_cmd_list().device_context->PSSetShaderResources(1, 1,
             &mModelInstances[model_index].model->get_normal_map_SRV()[subset]->srv);
 
-        mModelInstances[model_index].model->get_mesh()->draw(renderer.get_cmd_list(), subset);
+        mModelInstances[model_index].model->get_mesh()->draw(m_renderer->get_cmd_list(), subset);
     }
 }
 
 void TestApp::draw_objects()
 {
-    m_static_shader.bind_vertex_shader(renderer.get_cmd_list());
-    m_static_shader.bind_pixel_shader(renderer.get_cmd_list());
+    m_static_shader.bind_vertex_shader(m_renderer->get_cmd_list());
+    m_static_shader.bind_pixel_shader(m_renderer->get_cmd_list());
 
-    cbObject.bind_to_vertex_shader(renderer.get_cmd_list(), 0, 1);
-    cbObject.bind_to_pixel_shader(renderer.get_cmd_list(), 0, 1);
-    cbFrame.bind_to_vertex_shader(renderer.get_cmd_list(), 1, 1);
-    cbFrame.bind_to_pixel_shader(renderer.get_cmd_list(), 1, 1);
+    cbObject.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
+    cbObject.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
+    cbFrame.bind_to_vertex_shader(m_renderer->get_cmd_list(), 1, 1);
+    cbFrame.bind_to_pixel_shader(m_renderer->get_cmd_list(), 1, 1);
 
     XMMATRIX view = XMLoadFloat4x4(&m_cam.get_view());
     XMMATRIX proj = XMLoadFloat4x4(&m_cam.get_proj());
@@ -320,10 +288,10 @@ void TestApp::draw_objects()
     cbPF.gDirLights[1] = mDirLights[1];
     cbPF.gDirLights[2] = mDirLights[2];
     cbPF.gEyePosW = m_cam.get_pos();
-    cbFrame.update(renderer.get_cmd_list(), cbPF);
+    cbFrame.update(m_renderer->get_cmd_list(), cbPF);
 
-    m_static_layout.bind(renderer.get_cmd_list());
-    renderer.get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    m_static_layout.bind(m_renderer->get_cmd_list());
+    m_renderer->get_cmd_list().device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     XMMATRIX world;
     XMMATRIX worldInvTranspose;
@@ -365,63 +333,24 @@ void TestApp::draw_objects()
         for (u32 subset = 0; subset < mModelInstances[model_index].model->get_submesh_count(); ++subset)
         {
             cbPO.gMaterial = mModelInstances[model_index].model->get_mat()[subset];
-            cbObject.update(renderer.get_cmd_list(), cbPO);
+            cbObject.update(m_renderer->get_cmd_list(), cbPO);
 
             /*
             auto& diffuse_map_SRV = mModelInstances[model_index].model->get_diffuse_map_SRV()[subset];
             auto& normal_map_SRV = mModelInstances[model_index].model->get_normal_map_SRV()[subset];
             */
 
-            renderer.get_cmd_list().device_context->PSSetShaderResources(0, 1,
+            m_renderer->get_cmd_list().device_context->PSSetShaderResources(0, 1,
                 &mModelInstances[model_index].model->get_diffuse_map_SRV()[subset]->srv);
 
-            renderer.get_cmd_list().device_context->PSSetShaderResources(1, 1,
+            m_renderer->get_cmd_list().device_context->PSSetShaderResources(1, 1,
                 &mModelInstances[model_index].model->get_normal_map_SRV()[subset]->srv);
 
-            mModelInstances[model_index].model->get_mesh()->draw(renderer.get_cmd_list(), subset);
+            mModelInstances[model_index].model->get_mesh()->draw(m_renderer->get_cmd_list(), subset);
         }
     }
 }
 
 void TestApp::shutdown()
 {
-    timer.end_period();
-}
-
-f32 TestApp::get_frametime()
-{
-#ifdef JOJ_DEBUG_MODE
-    static f32 total_time = 0.0f;	// Total time elapsed
-    static u32  frame_count = 0;	// Elapsed frame counter
-#endif // JOJ_DEBUG_MODE
-
-    // Current frame time
-    frametime = timer.reset();
-
-#ifdef JOJ_DEBUG_MODE
-    // Accumulated frametime
-    total_time += frametime;
-
-    // Increment frame counter
-    frame_count++;
-
-    // Updates FPS indicator in the window every 1000ms (1 second)
-    if (total_time >= 1.0f)
-    {
-        std::stringstream text;		// Text flow for messages
-        text << std::fixed;			// Always show the fractional part
-        text.precision(3);			// three numbers after comma
-
-        text << "Joj Engine v0.0.1" << "    "
-            << "FPS: " << frame_count << "    "
-            << "Frametime: " << frametime * 1000 << " (ms)";
-
-        window.set_title(text.str().c_str());
-
-        frame_count = 0;
-        total_time -= 1.0f;
-    }
-#endif // JOJ_DEBUG_MODE
-
-    return frametime;
 }

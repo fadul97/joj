@@ -4,7 +4,7 @@
 #include <sstream>
 #include "joj/core/jmacros.h"
 #include "joj/renderer/vertex.h"
-#include "joj/engine.h"
+#include "joj/engine/engine.h"
 
 AppTest::AppTest()
 {

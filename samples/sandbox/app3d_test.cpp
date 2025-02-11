@@ -3,7 +3,7 @@
 #include "joj/core/logger.h"
 #include "joj/core/jmacros.h"
 #include "joj/renderer/vertex.h"
-#include "joj/engine.h"
+#include "joj/engine/engine.h"
 #include <math.h>
 #include "joj/math/jvector3.h"
 #include "joj/joj.h"
