@@ -1,5 +1,18 @@
 #include "events/jevent.h"
 
+#include <stdio.h>
+
+void event_print()
+{
+    printf("Hello from %s jojEvents!\n",
+#ifdef BUILDING_JOJ_DLL
+        "shared"
+#else
+        "static"
+#endif
+    );
+}
+
 joj::JEvent::JEvent()
     : type(EventType::Unknown)
 {

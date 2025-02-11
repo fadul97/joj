@@ -7,12 +7,16 @@ project(jojSamples)
 if (WIN32)
     add_executable(jojSamples
         main_win32.cpp
-        sandbox/app_test.cpp
-        sandbox/gui_test.cpp
-        sandbox/app2d_test.cpp
-        sandbox/app3d_test.cpp
-        #test_app.cpp
+        # sandbox/app_test.cpp
+        # sandbox/gui_test.cpp
+        # sandbox/app2d_test.cpp
+        # sandbox/app3d_test.cpp
+        # test_app.cpp
     )
+    
+    if(BUILD_SHARED_LIBS)
+        target_compile_definitions(jojSamples PRIVATE USING_JOJ_DLL)
+    endif()
 
     # Resource folders
     set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders)
@@ -46,6 +50,22 @@ if (WIN32)
     )
     
     target_link_libraries(jojSamples joj)
+
+    # Set the output directory of the executable
+    set_target_properties(jojSamples PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    )
+
+    # Se for uma DLL, copiar automaticamente para o diretório do executável
+    if(BUILD_SHARED_LIBS)
+        add_custom_command(TARGET jojSamples POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_RUNTIME_DLLS:jojSamples>  # Sem aspas para evitar lista como string única
+                $<TARGET_FILE_DIR:jojSamples>
+            COMMAND_EXPAND_LISTS  # Faz expandir corretamente a lista de DLLs
+        )
+    endif()
+
 
 # Build on Linux
 elseif(LINUX)

@@ -7,6 +7,8 @@
 #include "event_type.h"
 #include "platform/keys.h"
 
+JAPI void event_print();
+
 namespace joj
 {
     struct JEvent

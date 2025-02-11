@@ -5,10 +5,6 @@ project(joj)
 
 if (WIN32)
     add_library(joj
-        STATIC
-        engine.cpp
-        error_code.cpp
-        logger_win32.cpp # TODO: Check for platform before adding this file
         joj.cpp
     )
 
@@ -17,42 +13,35 @@ if (WIN32)
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/joj/
     )
 
-    add_subdirectory(platform)
-    add_subdirectory(renderer)
-    add_subdirectory(systems)
-    add_subdirectory(resources)
-    add_subdirectory(gui)
-    add_subdirectory(application)
-    add_subdirectory(events)
-    add_subdirectory(jscript)
+    if(BUILD_SHARED_LIBS)
+        target_compile_definitions(joj PRIVATE BUILDING_JOJ_DLL) # Export
+    else()
+        target_compile_definitions(joj PRIVATE USING_JOJ_DLL) # Import
+    endif()
 
-    target_link_directories(
-        joj
-        PRIVATE
+    add_subdirectory(core)
+    add_subdirectory(platform)
+
+    target_link_directories(joj
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/core/
         ${CMAKE_CURRENT_SOURCE_DIR}/platform/
-        ${CMAKE_CURRENT_SOURCE_DIR}/renderer/
-        ${CMAKE_CURRENT_SOURCE_DIR}/systems/
-        ${CMAKE_CURRENT_SOURCE_DIR}/resources/
-        ${CMAKE_CURRENT_SOURCE_DIR}/gui/
-        ${CMAKE_CURRENT_SOURCE_DIR}/application/
-        ${CMAKE_CURRENT_SOURCE_DIR}/events/
-        ${CMAKE_CURRENT_SOURCE_DIR}/jscript/
     )
 
-    target_link_libraries(
-        joj
-        PRIVATE
+    target_link_libraries(joj
+        PUBLIC
+        jojCore
         jojPlatform
-        jojRenderer
-        jojSystems
-        jojResources
-        jojGUI
-        jojApplication
-        jojEvents
-        jojScript
     )
 
     target_compile_definitions(joj PRIVATE JOJ_DEBUG_MODE)
+
+    set_target_properties(joj PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    )
+
 elseif  (LINUX)
     add_library(joj
         STATIC

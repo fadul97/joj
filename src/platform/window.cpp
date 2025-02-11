@@ -1,8 +1,14 @@
 #include "platform/window.h"
 
-#include <iostream>
+#include <stdio.h>
 
-void window_print()
+void joj::window_print()
 {
-    std::cout << "Hello from Window!" << std::endl;
+	printf("Hello from %s jojPlatform!\n",
+#ifdef BUILDING_JOJ_DLL
+		"shared"
+#else
+		"static"
+#endif
+	);
 }

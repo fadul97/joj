@@ -6,10 +6,14 @@
 
 #include "core/error_code.h"
 
-JAPI void window_print();
+namespace joj
+{
+    JAPI void window_print();
+}
 
 namespace joj
 {
+
     enum class WindowMode { Borderless, Fullscreen, Windowed };
 
     struct WindowRect
@@ -23,7 +27,7 @@ namespace joj
     struct WindowData;
 
     template <typename T>
-    class JAPI Window
+    class Window
     {
     public:
         Window();
@@ -118,8 +122,7 @@ namespace joj
 
     template <typename T>
     joj::Window<T>::~Window()
-    {
-    }
+    {}
 
     template <typename T>
     inline const T& Window<T>::get_data() const

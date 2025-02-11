@@ -7,7 +7,6 @@
 #include "platform/window_registration_class.h"
 #include "platform/win32/window_factory_win32.h"
 #include "core/jmacros.h"
-#include "events/event_manager.h"
 
 joj::Win32Window::Win32Window()
     : Window{}
@@ -288,7 +287,7 @@ LRESULT CALLBACK joj::Win32Window::WinProc(HWND hWnd, UINT msg, WPARAM wParam, L
     case WM_QUIT:
     case WM_CLOSE:
         JDEBUG("Running = false");
-        EventManager::instance().publish(WindowCloseEvent());
+        // EventManager::instance().publish(WindowCloseEvent());
         PostQuitMessage(0);
         return 0;
 

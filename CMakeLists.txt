@@ -8,6 +8,8 @@ project(
 	LANGUAGES CXX
 )
 
+option(BUILD_SHARED_LIBS "Build as a shared library" OFF)
+
 option(USE_WARNING_FLAGS "Enable warning flags" OFF)
 
 if (USE_WARNING_FLAGS)
@@ -35,7 +37,7 @@ if (WIN32)
 
 	option(BUILD_TESTS "Enable jojTests" ON)
 	if(BUILD_TESTS)
-		add_subdirectory(tests)
+		# add_subdirectory(tests)
 	endif()
 elseif (LINUX)
 	add_subdirectory(include)

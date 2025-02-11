@@ -143,15 +143,21 @@ JSTATIC_ASSERT(sizeof(b32) == 4, "Expected f64 to be 4 bytes.");
 /* Extern macro */
 #define JEXTERN extern
 
-/* Dynamic libraries */
+// Dynamic libraries
 #ifdef JPLATFORM_WINDOWS
-#ifdef JOJ_ENGINE_IMPLEMENTATION
-#define JAPI __declspec(dllexport)  // Exporta quando você estiver construindo a DLL
+    #ifdef BUILDING_JOJ_DLL // Defined only in DLL compilation
+            #ifdef JOJ_ENGINE_IMPLEMENTATION
+                #define JAPI __declspec(dllexport)
+            #else
+                #define JAPI __declspec(dllimport)
+            #endif
+    #elif defined(USING_JOJ_DLL) // Defines when using DLL
+        #define JAPI __declspec(dllimport)
+    #else
+        #define JAPI  // Static builds
+    #endif
 #else
-#define JAPI __declspec(dllimport)  // Importa quando você for usar a DLL
-#endif
-#else
-#define JAPI  // Não aplica modificadores para outras plataformas
+    #define JAPI
 #endif
 
 // Debug mode */
