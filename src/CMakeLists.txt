@@ -25,6 +25,7 @@ if (WIN32)
     add_subdirectory(events)
     add_subdirectory(jscript)
     add_subdirectory(application)
+    add_subdirectory(resources)
     # add_subdirectory(systems)
 
     target_link_directories(joj
@@ -35,6 +36,7 @@ if (WIN32)
         ${CMAKE_CURRENT_SOURCE_DIR}/events/
         ${CMAKE_CURRENT_SOURCE_DIR}/jscript/
         ${CMAKE_CURRENT_SOURCE_DIR}/application/
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources/
         # ${CMAKE_CURRENT_SOURCE_DIR}/systems/
     )
 
@@ -46,6 +48,7 @@ if (WIN32)
         jojEvents
         jojScript
         jojApplication
+        jojResources
         # jojSystems
     )
 

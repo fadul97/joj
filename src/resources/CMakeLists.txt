@@ -4,18 +4,28 @@ project(joj)
 
 add_library(
     jojResources
-    STATIC
     mesh_old.cpp
     submesh.cpp
     mesh.cpp
-    m3d_loader.cpp
+    # m3d_loader.cpp
     basic_model.cpp
     key_frame.cpp
     bone_animation.cpp
     animation_clip.cpp
     skinned_data.cpp
     basic_skinned_model.cpp
+    d3d11/mesh_d3d11_old.cpp
+    d3d11/mesh_d3d11.cpp
+    # d3d11/basic_model_d3d11.cpp
+    # d3d11/basic_skinned_model_d3d11.cpp
+    # d3d11/model_manager_d3d11.cpp
 )
+
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(jojResources PUBLIC BUILDING_JOJ_DLL) # Export
+# else()
+    # target_compile_definitions(jojResources PUBLIC USING_JOJ_DLL) # Import
+endif()
 
 if (WIN32)
     add_subdirectory(d3d11)
@@ -30,10 +40,18 @@ target_include_directories(
 target_link_directories(
     jojResources
     PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/core/
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/math/
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/renderer/
+    # ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/systems/material/
 )
 
 if (WIN32)
-    target_link_libraries(jojResources PUBLIC jojMath jojRenderer jojD3D11Resources)
+    target_link_libraries(jojResources PUBLIC jojCore jojMath jojRenderer )#jojMaterial)
 endif()
+
+set_target_properties(jojResources PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+)
