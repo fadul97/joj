@@ -16,7 +16,7 @@ namespace joj
         Mouse mouse;
     };
 
-    class Input
+    class JAPI Input
     {
     public:
         Input();
@@ -38,27 +38,6 @@ namespace joj
     protected:
         static InputData m_data;
     };
-
-    inline b8 Input::is_key_down(const u32 key)
-    { return m_data.keyboard.keys[key]; }
-
-    inline b8 Input::is_key_up(const u32 key)
-    { return !m_data.keyboard.keys[key]; }
-
-    inline b8 Input::is_button_down(Buttons button) const
-    { return m_data.mouse.buttons[button]; }
-
-    inline b8 Input::is_button_up(Buttons button) const
-    { return !m_data.mouse.buttons[button]; }
-
-    inline i16 Input::get_xmouse()
-    { return m_data.mouse.x; }
-
-    inline i16 Input::get_ymouse()
-    { return m_data.mouse.y; }
-
-    inline i16 Input::get_mouse_wheel()
-    { return m_data.mouse.wheel; }
 }
 
 #endif // _JOJ_INPUT_H
