@@ -15,6 +15,9 @@ add_library(jojPlatform
 
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(jojPlatform PRIVATE BUILDING_JOJ_DLL) # Export
+    #target_link_directories(jojPlatform PRIVATE
+    #    ${CMAKE_BINARY_DIR}/bin/Debug/  # Adiciona o diretório onde a DLL está
+    #)
 endif()
 
 add_subdirectory(win32)
@@ -30,7 +33,16 @@ target_link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../core/
 )
 
-target_link_libraries(jojPlatform PUBLIC jojCore User32.lib Gdi32.lib winmm.lib)
+# Adiciona o diretório da DLL ao caminho de pesquisa de bibliotecas para vinculação dinâmica
+# target_link_directories(jojPlatform PRIVATE
+#     ${CMAKE_BINARY_DIR}/bin/Debug  # Diretório onde a DLL está
+# )
+
+if(BUILD_SHARED_LIBS)
+    target_link_libraries(jojPlatform PUBLIC jojCore.dll User32.lib Gdi32.lib winmm.lib)
+else()
+    target_link_libraries(jojPlatform PUBLIC jojCore User32.lib Gdi32.lib winmm.lib)
+endif()
 
 set_target_properties(jojPlatform PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

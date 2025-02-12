@@ -51,7 +51,19 @@ target_link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../platform/
 )
 
-target_link_libraries(jojRenderer PUBLIC
+if(BUILD_SHARED_LIBS)
+    target_link_libraries(jojRenderer PUBLIC
+        jojCore.dll
+        jojPlatform
+        # jojD3D11GUIRenderer
+        dxgi.lib
+        dxguid.lib
+        d3d11.lib
+        D3DCompiler.lib
+        # jojGUIRenderer
+    )
+else()
+    target_link_libraries(jojRenderer PUBLIC
         jojCore
         jojPlatform
         # jojD3D11GUIRenderer
@@ -61,6 +73,18 @@ target_link_libraries(jojRenderer PUBLIC
         D3DCompiler.lib
         # jojGUIRenderer
     )
+endif()
+
+target_link_libraries(jojRenderer PUBLIC
+    jojCore
+    jojPlatform
+    # jojD3D11GUIRenderer
+    dxgi.lib
+    dxguid.lib
+    d3d11.lib
+    D3DCompiler.lib
+    # jojGUIRenderer
+)
 
 set_target_properties(jojRenderer PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

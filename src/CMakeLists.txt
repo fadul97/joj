@@ -3,8 +3,6 @@
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include/joj/)
-
 add_subdirectory(core)
 add_subdirectory(platform)
 add_subdirectory(renderer)
