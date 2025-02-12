@@ -44,12 +44,22 @@ target_include_directories(jojRenderer
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
 )
 
-target_link_directories(
-    jojRenderer
-    PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/../core/
-    ${CMAKE_CURRENT_SOURCE_DIR}/../platform/
-)
+if(BUILD_SHARED_LIBS)
+    target_link_directories(
+        jojRenderer
+        PRIVATE 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../core/
+        ${CMAKE_CURRENT_SOURCE_DIR}/../platform/
+        ${CMAKE_BINARY_DIR}/bin/Debug  # Adiciona o diretório onde a DLL está
+    )
+else()
+    target_link_directories(
+        jojRenderer
+        PRIVATE 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../core/
+        ${CMAKE_CURRENT_SOURCE_DIR}/../platform/
+    )
+endif()
 
 if(BUILD_SHARED_LIBS)
     target_link_libraries(jojRenderer PUBLIC
@@ -74,17 +84,6 @@ else()
         # jojGUIRenderer
     )
 endif()
-
-target_link_libraries(jojRenderer PUBLIC
-    jojCore
-    jojPlatform
-    # jojD3D11GUIRenderer
-    dxgi.lib
-    dxguid.lib
-    d3d11.lib
-    D3DCompiler.lib
-    # jojGUIRenderer
-)
 
 set_target_properties(jojRenderer PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

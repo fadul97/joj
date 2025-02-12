@@ -9,7 +9,7 @@ project(
 )
 
 # TODO: jojCore.lib won't build when BUILD_SHARED_LIBS=ON
-# set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 option(BUILD_SHARED_LIBS "Build as a shared library" OFF)
 
