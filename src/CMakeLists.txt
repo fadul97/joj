@@ -90,9 +90,9 @@ set (SOURCE_FILES
 # -----------------------------------------------------------------------------
 
 if(BUILD_SHARED_LIBS)
-    add_library(joj SHARED joj.cpp)# ${SOURCE_FILES})
+    add_library(joj SHARED ${SOURCE_FILES})
 else()
-    add_library(joj STATIC joj.cpp)# ${SOURCE_FILES})
+    add_library(joj STATIC ${SOURCE_FILES})
 endif()
 
 if(BUILD_SHARED_LIBS)
@@ -112,30 +112,23 @@ target_include_directories(joj
     ${CMAKE_CURRENT_SOURCE_DIR}/engine/
 )
 
-target_link_directories(joj
-    PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/../include/joj/
-    ${CMAKE_CURRENT_SOURCE_DIR}/core/
-    ${CMAKE_CURRENT_SOURCE_DIR}/platform/
-    ${CMAKE_CURRENT_SOURCE_DIR}/renderer/
-    ${CMAKE_CURRENT_SOURCE_DIR}/events/
-    ${CMAKE_CURRENT_SOURCE_DIR}/jscripts/
-    ${CMAKE_CURRENT_SOURCE_DIR}/application/
-    ${CMAKE_CURRENT_SOURCE_DIR}/resources/
-    ${CMAKE_CURRENT_SOURCE_DIR}/systems/
-    ${CMAKE_CURRENT_SOURCE_DIR}/engine/
-)
+# target_link_directories(joj
+#     PUBLIC
+#     ${CMAKE_CURRENT_SOURCE_DIR}/../include/joj/
+#     ${CMAKE_CURRENT_SOURCE_DIR}/core/
+#     ${CMAKE_CURRENT_SOURCE_DIR}/platform/
+#     ${CMAKE_CURRENT_SOURCE_DIR}/renderer/
+#     ${CMAKE_CURRENT_SOURCE_DIR}/events/
+#     ${CMAKE_CURRENT_SOURCE_DIR}/jscripts/
+#     ${CMAKE_CURRENT_SOURCE_DIR}/application/
+#     ${CMAKE_CURRENT_SOURCE_DIR}/resources/
+#     ${CMAKE_CURRENT_SOURCE_DIR}/systems/
+#     ${CMAKE_CURRENT_SOURCE_DIR}/engine/
+# )
 
 target_link_libraries(joj
-    jojCore
-    jojPlatform
-    jojRenderer
-    jojEvents
-    jojScript
-    jojApplication
-    jojResources
-    jojSystems
-    jojEngine
+    User32.lib Gdi32.lib winmm.lib
+    dxgi.lib dxguid.lib d3d11.lib D3DCompiler.lib
 )
 
 target_compile_definitions(joj PRIVATE JOJ_DEBUG_MODE)
