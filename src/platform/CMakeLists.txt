@@ -30,6 +30,7 @@ target_link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../core/
 )
 
+# TODO: INTERFACE for STATIC lib
 target_link_libraries(jojPlatform PUBLIC jojCore User32.lib Gdi32.lib winmm.lib)
 
 set_target_properties(jojPlatform PROPERTIES

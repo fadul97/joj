@@ -16,6 +16,7 @@ samples/models/Sphere.txt
 samples/models/Plane.txt
 samples/models/MyMonkey.obj
 samples/models/soldier.m3d
+samples/models/BASEmodel.obj
 
 # Project File Tree
 tree.txt

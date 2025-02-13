@@ -104,6 +104,7 @@ void App3DTest::build_buffers()
     const char* filename1 = "models/cube1.txt";
     const char* filename2 = "models/customCube.obj";
     const char* filename3 = "models/cubeNew1.txt";
+    const char* filename4 = "models/BASEmodel.obj";
     // MeshData meshData;
     // load_custom_format_with_flat_shading(filename1, meshData);
     // load_custom_format(filename1, meshData);
@@ -112,7 +113,7 @@ void App3DTest::build_buffers()
     // load_new_custom_format(filename3, meshData);
     joj::OBJLoader loader;
     joj::InternalMesh* mesh = nullptr;
-    mesh = loader.load("models/customCube.obj");
+    mesh = loader.load(filename4);
     if (mesh)
     {
         for (i32 i = 0; i < mesh->vertices.size(); ++i)

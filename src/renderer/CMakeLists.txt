@@ -50,6 +50,7 @@ target_link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../platform/
 )
 
+# TODO: INTERFACE for STATIC lib
 target_link_libraries(jojRenderer PUBLIC
         jojCore
         jojPlatform
