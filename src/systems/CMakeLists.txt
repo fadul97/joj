@@ -20,6 +20,7 @@ add_library(jojSystems
     physics/rect.cpp
     scene/scene.cpp
     scene/d3d11/scene_d3d11.cpp
+    scene/d3d11/scene3d_d3d11.cpp
 )
 
 if(BUILD_SHARED_LIBS)
