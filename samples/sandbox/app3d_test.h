@@ -13,6 +13,7 @@
 #include "joj/resources/d3d11/model_manager_d3d11.h"
 #include "joj/systems/camera/free_camera.h"
 #include "joj/systems/light/light.h"
+#include "joj/systems/scene/scene_object3d.h"
 
 // Constant Objects ------------------------------------------------------------
 
@@ -70,8 +71,6 @@ public:
     // ----------------------------------------------------
     joj::D3D11Shader m_shader;
     joj::D3D11InputLayout m_input_layout;
-    joj::D3D11VertexBuffer m_vertex_buffer;
-    joj::D3D11IndexBuffer m_index_buffer;
     joj::D3D11ConstantBuffer m_constant_buffer;
 
     joj::D3D11ModelManager m_model_mgr;
@@ -79,6 +78,8 @@ public:
     joj::JFloat2 m_last_mouse_pos;
 
     joj::D3D11ConstantBuffer m_light_buffer;
+
+    joj::SceneObject3D m_base_model;
 };
 
 #endif // _JOJ_3D_APP_TEST_H

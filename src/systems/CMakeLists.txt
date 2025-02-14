@@ -21,6 +21,7 @@ add_library(jojSystems
     scene/scene.cpp
     scene/d3d11/scene_d3d11.cpp
     scene/d3d11/scene3d_d3d11.cpp
+    scene/scene_object3d.cpp
 )
 
 if(BUILD_SHARED_LIBS)

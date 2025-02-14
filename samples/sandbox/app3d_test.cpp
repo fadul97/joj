@@ -120,13 +120,7 @@ void App3DTest::build_buffers()
         {
             mesh->vertices[i].color = joj::JVector4(1.0f, 1.0f, 0.0f, 1.0f);
         }
-
-        m_vertex_buffer.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
-            sizeof(joj::Vertex::PosColorNormal) * mesh->vertices.size(), mesh->vertices.data());
-        JOJ_LOG_IF_FAIL(m_vertex_buffer.create(m_renderer->get_device()));
-
-        m_index_buffer.setup(sizeof(u32) * mesh->indices.size(), mesh->indices.data());
-        JOJ_LOG_IF_FAIL(m_index_buffer.create(m_renderer->get_device()));
+        m_base_model.setup(*mesh, m_renderer);
 
         m_constant_buffer.setup(joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr);
         JOJ_LOG_IF_FAIL(m_constant_buffer.create(m_renderer->get_device()));
@@ -181,6 +175,13 @@ void App3DTest::update(const f32 dt)
     if (m_input->is_key_pressed(joj::KEY_ESCAPE))
         joj::Engine::close();
 
+    const f32 speed = 10.0f * dt;;
+
+    if (m_input->is_key_down('K'))
+        m_base_model.translate(speed, 0.0f, 0.0f);
+    if (m_input->is_key_down('J'))
+        m_base_model.translate(-speed, 0.0f, 0.0f);
+
     process_mouse_input(dt);
 }
 
@@ -203,7 +204,9 @@ void App3DTest::draw()
     angle += 0.01f;
     {
         m_constant_buffer.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
-        joj::JMatrix4x4 W = DirectX::XMMatrixRotationY(rotation); // XMMatrixIdentity();
+        const joj::JVector3 pos = m_base_model.get_position();
+        joj::JMatrix4x4 W = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+        // W *= DirectX::XMMatrixRotationY(rotation);
         joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
         joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
         joj::JMatrix4x4 WVP = W * V * P;
@@ -235,13 +238,9 @@ void App3DTest::draw()
         m_light_buffer.update(m_renderer->get_cmd_list(), lightBuffer);
     }
 
-    u32 stride = sizeof(joj::Vertex::PosColorNormal);
-    u32 offset = 0;
+    m_base_model.bind(m_renderer);
 
-    m_vertex_buffer.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
-    m_index_buffer.bind(m_renderer->get_cmd_list(), joj::DataFormat::R32_UINT, offset);
-
-    m_renderer->get_cmd_list().device_context->DrawIndexed(total_indices, 0, 0);
+    m_renderer->get_cmd_list().device_context->DrawIndexed(m_base_model.get_total_indices(), 0, 0);
 
     m_renderer->swap_buffers();
 }
