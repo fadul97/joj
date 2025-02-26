@@ -36,6 +36,9 @@ namespace joj
 
         void cleanup() override;
 
+    protected:
+        void update_internal(CommandList& cmd_list, const void* data, const u32 sizeof_data) override;
+
     private:
         VBData m_data;
     };

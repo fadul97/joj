@@ -4,6 +4,7 @@
 
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "core/logger.h"
+#include "core/jmacros.h"
 
 joj::D3D11VertexBuffer::D3D11VertexBuffer()
 {
@@ -116,6 +117,43 @@ void joj::D3D11VertexBuffer::cleanup()
     }
 
     m_filled = false;
+}
+
+void joj::D3D11VertexBuffer::update_internal(CommandList& cmd_list, const void* data, const u32 sizeof_data)
+{
+    JOJ_ASSERT(data != nullptr);
+    JOJ_ASSERT(cmd_list.device_context != nullptr);
+
+    if (m_data.vbd.Usage != D3D11_USAGE_DYNAMIC)
+    {
+        JERROR(ErrorCode::FAILED, "Vertex Buffer usage is not dynamic.");
+        return;
+    }
+
+    if (m_data.vbd.CPUAccessFlags != D3D11_CPU_ACCESS_WRITE)
+    {
+        JERROR(ErrorCode::FAILED, "Vertex Buffer CPUAcessFlags is not writable.");
+        return;
+    }
+
+    // Data to be copied
+    D3D11_MAPPED_SUBRESOURCE mapped_buffer = {};
+    mapped_buffer.pData = nullptr;
+
+    // Get a pointer to the vertex buffer data and lock it
+    if (cmd_list.device_context->Map(m_data.vertex_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_buffer) != S_OK)
+    {
+        JERROR(ErrorCode::FAILED, "Failed to map vertex buffer.");
+        return;
+    }
+    else
+    {
+        // Copy the new data to the constant buffer data.
+        memcpy(mapped_buffer.pData, data, sizeof_data);
+
+        // Release the pointer to the constant buffer data.
+        cmd_list.device_context->Unmap(m_data.vertex_buffer, 0);
+    }
 }
 
 #endif // JPLATFORM_WINDOWS
