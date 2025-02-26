@@ -23,6 +23,10 @@ public:
     void draw() override;
     void shutdown() override;
 
+    void setup_quad_buffers_and_shaders();
+    void draw_quad();
+    void draw_rect(const i32 x, const i32 y, const i32 w, const i32 h, const i32 r, const i32 g, const i32 b, const i32 a);
+
     // ---------------------------------------------------
 
     joj::D3D11Shader m_shader;

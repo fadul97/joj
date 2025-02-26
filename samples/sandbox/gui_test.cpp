@@ -2,6 +2,7 @@
 
 #include "joj/engine/engine.h"
 #include "joj/core/jmacros.h"
+#include "joj/renderer/vertex.h"
 
 struct Vertex
 {
@@ -22,7 +23,7 @@ GUITest::~GUITest()
 
 }
 
-void GUITest::init()
+void GUITest::setup_quad_buffers_and_shaders()
 {
     m_shader.compile_vertex_shader_from_file(
         "shaders/GUITest.hlsl",
@@ -52,16 +53,20 @@ void GUITest::init()
 
     Vertex vertices[] =
     {
-        { -1.0f, -1.0f }, // Bottom-left
-        {  1.0f, -1.0f }, // Bottom-right
-        { -1.0f,  1.0f }, // Top-left
-        {  1.0f,  1.0f }  // Top-right
+        { -0.5f, -0.5f }, // Bottom-left
+        {  0.5f, -0.5f }, // Bottom-right
+        { -0.5f,  0.5f }, // Top-left
+        {  0.5f,  0.5f }  // Top-right
     };
 
-    u32 indices[] = { 0, 1, 2, 1, 3, 2 };
+    u32 indices[] =
+    {
+        0, 2, 1,  // First triangle (CCW)
+        1, 2, 3   // Second triangle (CCW)
+    };
 
-    m_vb.setup(joj::BufferUsage::Immutable, joj::CPUAccessType::None,
-        sizeof(Vertex) * 4, vertices);
+    m_vb.setup(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write,
+        sizeof(joj::Vertex::PosColor) * 4, vertices);
     JOJ_LOG_IF_FAIL(m_vb.create(m_renderer->get_device()));
 
     m_ib.setup(sizeof(u32) * 6, indices);
@@ -74,34 +79,80 @@ void GUITest::init()
     m_renderer->set_rasterizer_state(joj::RasterizerState::Solid);
 }
 
+void GUITest::init()
+{
+    setup_quad_buffers_and_shaders();
+}
+
 void GUITest::update(const f32 dt)
 {
     if (m_input->is_key_pressed(joj::KEY_ESCAPE))
         joj::Engine::close();
 }
 
+void GUITest::draw_quad()
+{
+    m_shader.bind_vertex_shader(m_renderer->get_cmd_list());
+    m_shader.bind_pixel_shader(m_renderer->get_cmd_list());
+    m_layout.bind(m_renderer->get_cmd_list());
+
+    u32 stride = sizeof(Vertex);
+    u32 offset = 0;
+
+    m_vb.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
+    m_ib.bind(m_renderer->get_cmd_list(), joj::DataFormat::R32_UINT, offset);
+
+    ColorBuffer rectColor = { 1.0f, 1.0f, 0.0f, 1.0f };
+    m_cb.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
+    m_cb.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
+    m_cb.update(m_renderer->get_cmd_list(), rectColor);
+
+    m_renderer->get_cmd_list().device_context->DrawIndexed(6, 0, 0);
+}
+
+void GUITest::draw_rect(const i32 x, const i32 y, const i32 w, const i32 h, const i32 r, const i32 g, const i32 b, const i32 a)
+{
+    constexpr i32 screen_width = 800;
+    constexpr i32 screen_height = 600;
+
+    // Normalize coordinates
+    f32 left = (2.0f * x) / static_cast<f32>(screen_width) - 1.0f;
+    f32 right = (2.0f * (x + w)) / static_cast<f32>(screen_width) - 1.0f;
+    f32 top = 1.0f - (2.0f * y) / static_cast<f32>(screen_height);
+    f32 bottom = 1.0f - (2.0f * (y + h)) / static_cast<f32>(screen_height);
+
+    Vertex vertices[] =
+    {
+        { left,  bottom }, // 2: Bottom-left
+        { right, bottom }, // 3: Bottom-right
+        { left,  top  },   // 0: Top-left
+        { right, top  }    // 1: Top-right
+    };
+
+    m_vb.update(m_renderer->get_cmd_list(), vertices);
+
+    m_shader.bind_vertex_shader(m_renderer->get_cmd_list());
+    m_shader.bind_pixel_shader(m_renderer->get_cmd_list());
+    m_layout.bind(m_renderer->get_cmd_list());
+
+    u32 stride = sizeof(Vertex);
+    u32 offset = 0;
+    m_vb.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
+    m_ib.bind(m_renderer->get_cmd_list(), joj::DataFormat::R32_UINT, offset);
+
+    ColorBuffer rectColor = { 1.0f, 1.0f, 0.0f, 1.0f };
+    m_cb.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
+    m_cb.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
+    m_cb.update(m_renderer->get_cmd_list(), rectColor);
+
+    m_renderer->get_cmd_list().device_context->DrawIndexed(6, 0, 0);
+}
+
 void GUITest::draw()
 {
     m_renderer->clear();
 
-    {
-        m_shader.bind_vertex_shader(m_renderer->get_cmd_list());
-        m_shader.bind_pixel_shader(m_renderer->get_cmd_list());
-        m_layout.bind(m_renderer->get_cmd_list());
-
-        u32 stride = sizeof(Vertex);
-        u32 offset = 0;
-        
-        m_vb.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
-        m_ib.bind(m_renderer->get_cmd_list(), joj::DataFormat::R32_UINT, offset);
-        
-        ColorBuffer rectColor = { 1.0f, 0.0f, 0.0f, 1.0f };
-        m_cb.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
-        m_cb.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
-        m_cb.update(m_renderer->get_cmd_list(), rectColor);
-
-        m_renderer->get_cmd_list().device_context->DrawIndexed(6, 0, 0);
-    }
+    draw_rect(100, 100, 150, 100, 1.0f, 0.0f, 0.0f, 1.0f);
 
     m_renderer->swap_buffers();
 }
