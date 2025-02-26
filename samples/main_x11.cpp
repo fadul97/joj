@@ -1,3 +1,7 @@
+/*
+    Main file to compile linux port - incremental.
+*/
+
 #include <iostream>
 
 #include "joj/platform/x11/window_x11.h"
