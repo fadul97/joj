@@ -81,6 +81,9 @@ void GUITest::setup_quad_buffers_and_shaders()
 
 void GUITest::init()
 {
+    JDEBUG("Size of Win32Window: %d", sizeof(joj::Win32Window));     // 136
+    JDEBUG("Size of Win32Input: %d", sizeof(joj::Win32Input));       // 8
+    JDEBUG("Size of D3D11Renderer: %d", sizeof(joj::D3D11Renderer)); // 152
     setup_quad_buffers_and_shaders();
 }
 
