@@ -99,7 +99,6 @@ void App2DTest::init()
     m_scene.add_geometry(&m_rect2);
 }
 
-static f32 rotation = 0.0f;
 void App2DTest::update(const f32 dt)
 {
     if (m_input->is_key_pressed(joj::KEY_ESCAPE))
