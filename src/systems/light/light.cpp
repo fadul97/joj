@@ -1,4 +1,4 @@
-#include "systems/light/light.h"
+#include "joj/systems/light/light.h"
 
 joj::DirectionalLight::DirectionalLight()
     : ambient{ 0.0f, 0.0f, 0.0f, 1.0f }, diffuse{ 0.0f, 0.0f, 0.0f, 1.0f },

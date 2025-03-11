@@ -1,7 +1,7 @@
-#include "resources/m3d_loader.h"
+#include "joj/resources/m3d_loader.h"
 
 #include <fstream>
-#include "core/logger.h"
+#include "joj/core/logger.h"
 
 namespace joj
 {

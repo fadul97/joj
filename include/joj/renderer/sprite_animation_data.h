@@ -1,10 +1,10 @@
 #ifndef _JOJ_SPRITE_ANIMATION_DATA_H
 #define _JOJ_SPRITE_ANIMATION_DATA_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "core/jstring.h"
-#include "core/vector.h"
+#include "joj/core/jstring.h"
+#include "joj/core/vector.h"
 
 namespace joj
 {

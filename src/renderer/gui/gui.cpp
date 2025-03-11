@@ -1,4 +1,4 @@
-#include "renderer/gui/gui.h"
+#include "joj/renderer/gui/gui.h"
 
 joj::IGUI::IGUI()
 {

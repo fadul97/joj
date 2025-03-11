@@ -28,7 +28,7 @@
 #pragma warning(pop)
 
 #include <memory>
-#include "renderer/d3d11/WICTextureLoader.h"
+#include "joj/renderer/d3d11/WICTextureLoader.h"
 
 #if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) && !defined(DXGI_1_2_FORMATS)
 #define DXGI_1_2_FORMATS

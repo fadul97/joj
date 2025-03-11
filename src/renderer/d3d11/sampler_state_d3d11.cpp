@@ -1,9 +1,9 @@
-#include "renderer/d3d11/sampler_state_d3d11.h"
+#include "joj/renderer/d3d11/sampler_state_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/d3d11/renderer_d3d11.h"
-#include "core/logger.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
+#include "joj/core/logger.h"
 
 joj::D3D11SamplerState::D3D11SamplerState()
 {

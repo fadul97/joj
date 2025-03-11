@@ -1,4 +1,4 @@
-#include "systems/scene/scene.h"
+#include "joj/systems/scene/scene.h"
 
 joj::Scene::Scene()
     : m_camera(nullptr)

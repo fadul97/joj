@@ -1,14 +1,14 @@
 #ifndef _JOJ_M3D_LOADER_H
 #define _JOJ_M3D_LOADER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include <string>
 #include <vector>
-#include "renderer/vertex.h"
+#include "joj/renderer/vertex.h"
 #include "submesh.h"
-#include "systems/material/material.h"
-#include "core/error_code.h"
+#include "joj/systems/material/material.h"
+#include "joj/core/error_code.h"
 #include "skinned_data.h"
 
 namespace joj

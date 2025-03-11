@@ -1,4 +1,4 @@
-#include "jscript/symbol_table.h"
+#include "joj/jscript/symbol_table.h"
 
 joj::SymbolTable::SymbolTable()
     : table{ std::unordered_map<std::string, Token>{} }, prev{ nullptr }

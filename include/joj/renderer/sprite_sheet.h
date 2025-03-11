@@ -1,7 +1,7 @@
 #ifndef _JOJ_SPRITE_SHEET_H
 #define _JOJ_SPRITE_SHEET_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "texture2d_data.h"
 

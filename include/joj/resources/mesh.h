@@ -1,13 +1,13 @@
 #ifndef _JOJ_MESH_H
 #define _JOJ_MESH_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "renderer/renderer.h"
+#include "joj/renderer/renderer.h"
 #include <vector>
 #include "submesh.h"
-#include "renderer/data_format.h"
-#include "core/error_code.h"
+#include "joj/renderer/data_format.h"
+#include "joj/core/error_code.h"
 
 namespace joj
 {

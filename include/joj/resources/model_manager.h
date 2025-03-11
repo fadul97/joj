@@ -1,9 +1,9 @@
 #ifndef _JOJ_MODEL_MANAGER_H
 #define _JOJ_MODEL_MANAGER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "core/error_code.h"
+#include "joj/core/error_code.h"
 #include "basic_model.h"
 
 namespace joj

@@ -1,4 +1,4 @@
-#include "jscript/parser.h"
+#include "joj/jscript/parser.h"
 
 #include <iostream>
 

@@ -1,12 +1,12 @@
 #ifndef _JOJ_GUI_H
 #define _JOJ_GUI_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "renderer/renderer.h"
+#include "joj/renderer/renderer.h"
 #include "platform/window.h"
 #include "platform/input.h"
-#include "gui/jwidget.h"
+#include "joj/gui/jwidget.h"
 #include <string>
 
 namespace joj

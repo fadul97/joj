@@ -1,4 +1,4 @@
-#include "resources/submesh.h"
+#include "joj/resources/submesh.h"
 
 joj::SubMesh::SubMesh()
 	: name{ "" }, id{ -1 },

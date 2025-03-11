@@ -1,4 +1,4 @@
-#include "resources/skinned_data.h"
+#include "joj/resources/skinned_data.h"
 
 joj::SkinnedData::SkinnedData()
 {

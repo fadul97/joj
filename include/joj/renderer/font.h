@@ -1,7 +1,7 @@
 #ifndef _JOJ_FONT_H
 #define _JOJ_FONT_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include <string>
 #include "renderer.h"

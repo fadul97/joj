@@ -1,18 +1,18 @@
 #ifndef _JOJ_BASIC_MODEL_H
 #define _JOJ_BASIC_MODEL_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "renderer/renderer.h"
-#include "renderer/texture_manager.h"
+#include "joj/renderer/renderer.h"
+#include "joj/renderer/texture_manager.h"
 #include <string>
 #include <vector>
-#include "renderer/texture2d_data.h"
-#include "systems/material/material.h"
-#include "renderer/vertex.h"
+#include "joj/renderer/texture2d_data.h"
+#include "joj/systems/material/material.h"
+#include "joj/renderer/vertex.h"
 #include "submesh.h"
 #include "mesh.h"
-#include "math/jmath.h"
+#include "joj/math/jmath.h"
 
 namespace joj
 {

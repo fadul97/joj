@@ -1,7 +1,7 @@
 #ifndef _JOJ_MATH_H
 #define _JOJ_MATH_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 

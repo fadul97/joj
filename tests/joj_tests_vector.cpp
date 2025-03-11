@@ -1,5 +1,5 @@
 #include "joj/test/jtest_macros.h"
-#include "core/vector.h"
+#include "joj/core/vector.h"
 
 #include <iostream>
 
@@ -82,7 +82,7 @@ JOJ_TEST(Copy_Constructor)
     vec1.push_back(2);
     vec1.push_back(3);
 
-    joj::Vector<i32> vec2 = vec1; // Testando o construtor de cópia
+    joj::Vector<i32> vec2 = vec1; // Testando o construtor de cï¿½pia
     assert(vec2.get_size() == 3);
     assert(vec2.get_capacity() >= 3);
     assert(vec2[0] == 1 && vec2[1] == 2 && vec2[2] == 3);
@@ -94,7 +94,7 @@ JOJ_TEST(Move_Constructor)
     vec1.push_back(42);
     vec1.push_back(84);
 
-    joj::Vector<i32> vec2 = std::move(vec1); // Testando o construtor de movimentação
+    joj::Vector<i32> vec2 = std::move(vec1); // Testando o construtor de movimentaï¿½ï¿½o
     assert(vec2.get_size() == 2);
     assert(vec2.get_capacity() >= 2);
     assert(vec2[0] == 42 && vec2[1] == 84);

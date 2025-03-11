@@ -1,6 +1,6 @@
-#include "renderer/gui/canvas.h"
+#include "joj/renderer/gui/canvas.h"
 
-#include "core/logger.h"
+#include "joj/core/logger.h"
 
 joj::Canvas::Canvas()
     : Widget()

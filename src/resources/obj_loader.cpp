@@ -1,13 +1,13 @@
-#include "resources/obj_loader.h"
+#include "joj/resources/obj_loader.h"
 
-#include "core/error_code.h"
-#include "core/logger.h"
+#include "joj/core/error_code.h"
+#include "joj/core/logger.h"
 #include <fstream>
 #include <unordered_map>
 #include <fstream>
 #include <string>
 #include <sstream>
-#include "renderer/vertex.h"
+#include "joj/renderer/vertex.h"
 
 joj::OBJLoader::OBJLoader()
 {

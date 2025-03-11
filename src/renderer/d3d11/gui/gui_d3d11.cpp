@@ -1,9 +1,9 @@
-#include "renderer/d3d11/gui/gui_d3d11.h"
+#include "joj/renderer/d3d11/gui/gui_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "core/jmacros.h"
-#include "core/logger.h"
+#include "joj/core/jmacros.h"
+#include "joj/core/logger.h"
 #include "platform/win32/window_win32.h"
 #include <windowsx.h>
 #include "platform/win32/input_win32.h"

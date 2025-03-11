@@ -1,13 +1,13 @@
 #ifndef _JOJ_D3D11_MESH_H
 #define _JOJ_D3D11_MESH_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "resources/mesh.h"
-#include "renderer/d3d11/vertex_buffer_d3d11.h"
-#include "renderer/d3d11/index_buffer_d3d11.h"
+#include "joj/resources/mesh.h"
+#include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
+#include "joj/renderer/d3d11/index_buffer_d3d11.h"
 
 namespace joj
 {

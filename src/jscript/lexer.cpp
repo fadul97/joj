@@ -1,7 +1,7 @@
-#include "jscript/lexer.h"
+#include "joj/jscript/lexer.h"
 
-#include "jscript/keywords.h"
-#include "core/logger.h"
+#include "joj/jscript/keywords.h"
+#include "joj/core/logger.h"
 #include <cctype>
 #include <sstream>
 

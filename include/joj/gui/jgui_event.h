@@ -1,9 +1,9 @@
 #ifndef _JOJ_GUI_EVENT_H
 #define _JOJ_GUI_EVENT_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 #include <functional>
-#include "core/logger.h"
+#include "joj/core/logger.h"
 
 namespace joj
 {

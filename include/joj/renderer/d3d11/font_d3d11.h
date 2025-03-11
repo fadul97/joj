@@ -1,11 +1,11 @@
 #ifndef _JOJ_D3D11_FONT_H
 #define _JOJ_D3D11_FONT_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/font.h"
+#include "joj/renderer/font.h"
 #include "texture2d_data_d3d11.h"
 
 namespace joj

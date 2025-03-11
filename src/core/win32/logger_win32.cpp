@@ -4,8 +4,8 @@
 
 #define JERROR_MSG_MAX_LEN 256
 
-#include "core/jmacros.h"
-#include "core/memory.h"
+#include "joj/core/jmacros.h"
+#include "joj/core/memory.h"
 
 #include <cstdarg>
 

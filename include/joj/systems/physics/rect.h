@@ -1,7 +1,7 @@
 #ifndef _JOJ_RECT_H
 #define _JOJ_RECT_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "geometry.h"
 

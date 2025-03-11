@@ -1,9 +1,9 @@
 #ifndef _JOJ_SHADER_H
 #define _JOJ_SHADER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "core/error_code.h"
+#include "joj/core/error_code.h"
 #include <string>
 #include "renderer.h"
 

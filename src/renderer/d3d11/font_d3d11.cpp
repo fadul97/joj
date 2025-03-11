@@ -1,10 +1,10 @@
-#include "renderer/d3d11/font_d3d11.h"
+#include "joj/renderer/d3d11/font_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "core/logger.h"
-#include "renderer/d3d11/WICTextureLoader.h"
-#include "renderer/d3d11/renderer_d3d11.h"
+#include "joj/core/logger.h"
+#include "joj/renderer/d3d11/WICTextureLoader.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
 #include <fstream>
 
 joj::D3D11Font::D3D11Font()

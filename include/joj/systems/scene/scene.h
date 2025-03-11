@@ -1,13 +1,13 @@
 #ifndef _JOJ_SCENE_H
 #define _JOJ_SCENE_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "renderer/renderer.h"
-#include "systems/camera/camera.h"
+#include "joj/renderer/renderer.h"
+#include "joj/systems/camera/camera.h"
 #include <vector>
-#include "renderer/sprite.h"
-#include "systems/physics/geometry.h"
+#include "joj/renderer/sprite.h"
+#include "joj/systems/physics/geometry.h"
 
 namespace joj
 {

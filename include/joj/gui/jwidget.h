@@ -1,12 +1,12 @@
 #ifndef _JOJ_JWIDGET_H
 #define _JOJ_JWIDGET_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include <Windows.h>
 #include "jgui_event.h"
 #include <unordered_map>
-#include "core/logger.h"
+#include "joj/core/logger.h"
 
 #define IDC_BUTTON 201
 

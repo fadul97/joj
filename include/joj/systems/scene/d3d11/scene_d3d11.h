@@ -1,16 +1,16 @@
 #ifndef _JOJ_D3D11_SCENE_H
 #define _JOJ_D3D11_SCENE_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "systems/scene/scene.h"
-#include "renderer/d3d11/vertex_buffer_d3d11.h"
-#include "renderer/d3d11/index_buffer_d3d11.h"
-#include "renderer/d3d11/shader_d3d11.h"
-#include "renderer/d3d11/input_layout_d3d11.h"
-#include "renderer/d3d11/constant_buffer_d3d11.h"
+#include "joj/systems/scene/scene.h"
+#include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
+#include "joj/renderer/d3d11/index_buffer_d3d11.h"
+#include "joj/renderer/d3d11/shader_d3d11.h"
+#include "joj/renderer/d3d11/input_layout_d3d11.h"
+#include "joj/renderer/d3d11/constant_buffer_d3d11.h"
 
 namespace joj
 {

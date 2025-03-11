@@ -1,4 +1,4 @@
-#include "resources/basic_skinned_model.h"
+#include "joj/resources/basic_skinned_model.h"
 
 joj::BasicSkinnedModel::BasicSkinnedModel()
     : m_submesh_count{ 0 }, m_mesh{ nullptr }

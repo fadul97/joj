@@ -1,9 +1,9 @@
 #ifndef _JOJ_INPUT_LAYOUT_H
 #define _JOJ_INPUT_LAYOUT_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "core/error_code.h"
+#include "joj/core/error_code.h"
 #include <string>
 #include "data_format.h"
 #include "renderer.h"

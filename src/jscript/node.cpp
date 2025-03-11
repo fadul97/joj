@@ -1,7 +1,7 @@
-#include "jscript/node.h"
+#include "joj/jscript/node.h"
 
-#include "jscript/expression_type.h"
-#include "jscript/node_type.h"
+#include "joj/jscript/expression_type.h"
+#include "joj/jscript/node_type.h"
 
 #include <memory>
 #include <sstream>

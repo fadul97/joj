@@ -1,7 +1,7 @@
 #ifndef _JOJ_INPUT_H
 #define _JOJ_INPUT_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "keys.h"
 #include "window.h"

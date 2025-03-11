@@ -1,10 +1,10 @@
-#include "renderer/d3d11/vertex_buffer_d3d11.h"
+#include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/d3d11/renderer_d3d11.h"
-#include "core/logger.h"
-#include "core/jmacros.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
+#include "joj/core/logger.h"
+#include "joj/core/jmacros.h"
 
 joj::D3D11VertexBuffer::D3D11VertexBuffer()
 {

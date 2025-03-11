@@ -1,11 +1,11 @@
 #ifndef _JOJ_D3D11_BUTTON_H
 #define _JOJ_D3D11_BUTTON_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/d3d11/gui/widget_d3d11.h"
+#include "joj/renderer/d3d11/gui/widget_d3d11.h"
 
 namespace joj
 {

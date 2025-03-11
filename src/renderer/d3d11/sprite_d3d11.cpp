@@ -1,8 +1,8 @@
-#include "renderer/d3d11/sprite_d3d11.h"
+#include "joj/renderer/d3d11/sprite_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "core/logger.h"
+#include "joj/core/logger.h"
 
 joj::D3D11Sprite::D3D11Sprite()
 {

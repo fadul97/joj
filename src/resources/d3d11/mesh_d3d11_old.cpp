@@ -1,4 +1,4 @@
-#include "resources/d3d11/mesh_d3d11_old.h"
+#include "joj/resources/d3d11/mesh_d3d11_old.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
@@ -9,10 +9,10 @@
 #include <string>
 #include <stdexcept>
 #include <algorithm>
-#include "core/logger.h"
-#include "renderer/d3d11/renderer_d3d11.h"
-#include "renderer/d3d11/shader_library_d3d11.h"
-#include "core/jmacros.h"
+#include "joj/core/logger.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
+#include "joj/renderer/d3d11/shader_library_d3d11.h"
+#include "joj/core/jmacros.h"
 
 joj::D3D11MeshGeometryOld::D3D11MeshGeometryOld()
     : MeshGeometryOld()

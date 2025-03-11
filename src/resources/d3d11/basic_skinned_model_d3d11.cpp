@@ -1,11 +1,11 @@
-#include "resources/d3d11/basic_skinned_model_d3d11.h"
+#include "joj/resources/d3d11/basic_skinned_model_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/d3d11/texture2d_data_d3d11.h"
-#include "resources/m3d_loader.h"
-#include "resources/d3d11/mesh_d3d11.h"
-#include "core/jmacros.h"
+#include "joj/renderer/d3d11/texture2d_data_d3d11.h"
+#include "joj/resources/m3d_loader.h"
+#include "joj/resources/d3d11/mesh_d3d11.h"
+#include "joj/core/jmacros.h"
 
 joj::D3D11BasicSkinnedModel::D3D11BasicSkinnedModel()
     : BasicSkinnedModel()

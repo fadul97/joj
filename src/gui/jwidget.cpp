@@ -1,4 +1,4 @@
-#include "gui/jwidget.h"
+#include "joj/gui/jwidget.h"
 
 joj::JWidget::WidgetMap joj::JWidget::g_widget_map;
 WNDPROC joj::JWidget::s_originalWndProc = nullptr;

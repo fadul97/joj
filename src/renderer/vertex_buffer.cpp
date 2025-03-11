@@ -1,4 +1,4 @@
-#include "renderer/vertex_buffer.h"
+#include "joj/renderer/vertex_buffer.h"
 
 joj::VertexBuffer::VertexBuffer()
     : m_filled(false)

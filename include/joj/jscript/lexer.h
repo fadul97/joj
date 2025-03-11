@@ -1,10 +1,10 @@
 #ifndef _JOJ_SCRIPT_H
 #define _JOJ_SCRIPT_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include <string>
-#include "core/vector.h"
+#include "joj/core/vector.h"
 #include "token.h"
 #include <fstream>
 #include <unordered_map>

@@ -1,16 +1,16 @@
-#include "resources/d3d11/basic_model_d3d11.h"
+#include "joj/resources/d3d11/basic_model_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/d3d11/texture2d_data_d3d11.h"
-#include "resources/m3d_loader.h"
-#include "resources/d3d11/mesh_d3d11.h"
-#include "core/jmacros.h"
+#include "joj/renderer/d3d11/texture2d_data_d3d11.h"
+#include "joj/resources/m3d_loader.h"
+#include "joj/resources/d3d11/mesh_d3d11.h"
+#include "joj/core/jmacros.h"
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>
-#include "renderer/vertex.h"
+#include "joj/renderer/vertex.h"
 
 joj::D3D11BasicModel::D3D11BasicModel()
     : BasicModel()

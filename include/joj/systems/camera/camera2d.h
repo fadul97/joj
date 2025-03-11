@@ -1,7 +1,7 @@
 #ifndef _JOJ_CAMERA_2D_H
 #define _JOJ_CAMERA_2D_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "camera.h"
 

@@ -1,11 +1,11 @@
 #ifndef _JOJ_D3D11_INPUT_LAYOUT_H
 #define _JOJ_D3D11_INPUT_LAYOUT_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/input_layout.h"
+#include "joj/renderer/input_layout.h"
 #include <d3d11.h>
 
 namespace joj

@@ -1,15 +1,15 @@
 #ifndef _JOJ_D3D11_MODEL_MANAGER_H
 #define _JOJ_D3D11_MODEL_MANAGER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "resources/model_manager.h"
+#include "joj/resources/model_manager.h"
 #include <unordered_map>
 #include <string>
 #include "basic_model_d3d11.h"
-#include "renderer/d3d11/texture_manager_d3d11.h"
+#include "joj/renderer/d3d11/texture_manager_d3d11.h"
 
 namespace joj
 {

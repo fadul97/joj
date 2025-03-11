@@ -1,7 +1,7 @@
 #ifndef _JOJ_CANVAS_H
 #define _JOJ_CANVAS_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "widget.h"
 

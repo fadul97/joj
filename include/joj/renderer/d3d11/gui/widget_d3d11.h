@@ -1,17 +1,17 @@
 #ifndef _JOJ_D3D11_WIDGET_H
 #define _JOJ_D3D11_WIDGET_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/gui/widget.h"
-#include "renderer/d3d11/shader_d3d11.h"
-#include "renderer/d3d11/vertex_buffer_d3d11.h"
-#include "renderer/d3d11/index_buffer_d3d11.h"
-#include "renderer/d3d11/input_layout_d3d11.h"
-#include "renderer/d3d11/constant_buffer_d3d11.h"
-#include "math/jmath.h"
+#include "joj/renderer/gui/widget.h"
+#include "joj/renderer/d3d11/shader_d3d11.h"
+#include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
+#include "joj/renderer/d3d11/index_buffer_d3d11.h"
+#include "joj/renderer/d3d11/input_layout_d3d11.h"
+#include "joj/renderer/d3d11/constant_buffer_d3d11.h"
+#include "joj/math/jmath.h"
 
 namespace joj
 {

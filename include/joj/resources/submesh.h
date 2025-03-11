@@ -1,7 +1,7 @@
 #ifndef _JOJ_SUBMESH_H
 #define _JOJ_SUBMESH_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include <string>
 

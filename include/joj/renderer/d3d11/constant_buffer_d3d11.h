@@ -1,11 +1,11 @@
 #ifndef _JOJ_D3D11_CONSTANT_BUFFER_H
 #define _JOJ_D3D11_CONSTANT_BUFFER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/constant_buffer.h"
+#include "joj/renderer/constant_buffer.h"
 #include <d3d11.h>
 
 namespace joj

@@ -1,6 +1,6 @@
-#include "renderer/sprite.h"
+#include "joj/renderer/sprite.h"
 
-#include "core/jmacros.h"
+#include "joj/core/jmacros.h"
 
 joj::Sprite::Sprite()
     : m_current_animation(nullptr),

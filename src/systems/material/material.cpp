@@ -1,4 +1,4 @@
-#include "systems/material/material.h"
+#include "joj/systems/material/material.h"
 
 joj::Material::Material()
     : ambient{ 0.0f, 0.0f, 0.0f, 1.0f },

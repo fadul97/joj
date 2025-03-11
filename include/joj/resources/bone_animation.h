@@ -1,9 +1,9 @@
 #ifndef _JOJ_BONE_ANIMATION_H
 #define _JOJ_BONE_ANIMATION_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "math/jmath.h"
+#include "joj/math/jmath.h"
 #include <vector>
 #include "key_frame.h"
 

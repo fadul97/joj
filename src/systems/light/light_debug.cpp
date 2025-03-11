@@ -1,4 +1,4 @@
-#include "systems/light/light_debug.h"
+#include "joj/systems/light/light_debug.h"
 
 b8 joj::are_directional_lights_equals(DirectionalLight& l1, DirectionalLight& l2)
 {

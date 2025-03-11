@@ -1,15 +1,15 @@
 #ifndef _JOJ_D3D11_MESH_GEOMETRY_OLD_H
 #define _JOJ_D3D11_MESH_GEOMETRY_OLD_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "resources/mesh_old.h"
-#include "renderer/d3d11/vertex_buffer_d3d11.h"
-#include "renderer/d3d11/index_buffer_d3d11.h"
-#include "renderer/d3d11/constant_buffer_d3d11.h"
-#include "renderer/d3d11/shader_d3d11.h"
+#include "joj/resources/mesh_old.h"
+#include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
+#include "joj/renderer/d3d11/index_buffer_d3d11.h"
+#include "joj/renderer/d3d11/constant_buffer_d3d11.h"
+#include "joj/renderer/d3d11/shader_d3d11.h"
 
 namespace joj
 {

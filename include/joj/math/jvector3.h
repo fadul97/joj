@@ -1,7 +1,7 @@
 #ifndef _JOJ_VECTOR3_H
 #define _JOJ_VECTOR3_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include <cmath>
 

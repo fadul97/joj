@@ -1,7 +1,7 @@
 #ifndef _JOJ_X11_WINDOW_H
 #define _JOJ_X11_WINDOW_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_LINUX
 

@@ -1,4 +1,4 @@
-#include "resources/mesh_old.h"
+#include "joj/resources/mesh_old.h"
 
 joj::MeshGeometryOld::MeshGeometryOld()
     : m_position{ 0.0f, 0.0f, 0.0f }, m_type(MeshGeometryType::None),

@@ -17,6 +17,11 @@ if(WIN32)
     target_link_libraries(jojMath INTERFACE dxgi.lib d3d11.lib)
 endif()
 
+target_include_directories(jojMath
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../
+)
+
 set_target_properties(jojMath PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"

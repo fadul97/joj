@@ -1,7 +1,7 @@
 #ifndef JOJ_APP_H
 #define JOJ_APP_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
@@ -10,7 +10,7 @@
 #include "platform/win32/window_win32.h"
 #include "platform/win32/input_win32.h"
 #include "platform/win32/timer_win32.h"
-#include "renderer/d3d11/renderer_d3d11.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
 
 namespace joj
 {

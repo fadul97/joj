@@ -1,4 +1,4 @@
-#include "resources/bone_animation.h"
+#include "joj/resources/bone_animation.h"
 
 f32 joj::BoneAnimation::get_start_time() const
 {

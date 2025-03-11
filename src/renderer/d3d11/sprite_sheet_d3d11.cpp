@@ -1,4 +1,4 @@
-#include "renderer/d3d11/sprite_sheet_d3d11.h"
+#include "joj/renderer/d3d11/sprite_sheet_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 

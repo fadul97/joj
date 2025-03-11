@@ -1,12 +1,12 @@
-#include "renderer/d3d11/renderer_d3d11.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "core/logger.h"
+#include "joj/core/logger.h"
 #include "platform/win32/window_win32.h"
-#include "renderer/d3d11/sprite_d3d11.h"
-#include "renderer/vertex.h"
-#include "core/jmacros.h"
+#include "joj/renderer/d3d11/sprite_d3d11.h"
+#include "joj/renderer/vertex.h"
+#include "joj/core/jmacros.h"
 
 joj::D3D11Renderer::D3D11Renderer()
 {

@@ -1,7 +1,7 @@
 #ifndef _JOJ_EVENT_H
 #define _JOJ_EVENT_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "event_type.h"
 #include "platform/keys.h"

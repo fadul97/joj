@@ -1,6 +1,6 @@
-#include "renderer/gui/widget.h"
+#include "joj/renderer/gui/widget.h"
 
-#include "core/logger.h"
+#include "joj/core/logger.h"
 
 joj::Widget::Widget()
     : m_x(0), m_y(0), m_width(0), m_height(0),

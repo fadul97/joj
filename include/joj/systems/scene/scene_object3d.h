@@ -1,13 +1,13 @@
 #ifndef _JOJ_SCENE_OBJECT_3D_H
 #define _JOJ_SCENE_OBJECT_3D_H
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "resources/internal_mesh.h"
-#include "renderer/d3d11/vertex_buffer_d3d11.h"
-#include "renderer/d3d11/index_buffer_d3d11.h"
-#include "renderer/renderer.h"
-#include "math/jmath.h"
-#include "math/jvector3.h"
+#include "joj/resources/internal_mesh.h"
+#include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
+#include "joj/renderer/d3d11/index_buffer_d3d11.h"
+#include "joj/renderer/renderer.h"
+#include "joj/math/jmath.h"
+#include "joj/math/jvector3.h"
 
 /*
 cbuffer ConstantBuffer : register(b0)

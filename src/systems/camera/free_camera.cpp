@@ -1,4 +1,4 @@
-#include "systems/camera/free_camera.h"
+#include "joj/systems/camera/free_camera.h"
 
 joj::FreeCamera::FreeCamera()
     : m_movement_speed{20.0f}, m_view_dirty{true},

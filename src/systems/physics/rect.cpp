@@ -1,4 +1,4 @@
-#include "systems/physics/rect.h"
+#include "joj/systems/physics/rect.h"
 
 joj::Rect::Rect()
     : m_left(0.0f), m_top(0.0f), m_right(0.0f), m_bottom(0.0f),
@@ -30,15 +30,15 @@ b8 joj::Rect::check_collision(const Geometry& geometry)
         auto rect = static_cast<const Rect*>(&geometry);
         /*
         
-        // Verificar sobreposição no eixo X
+        // Verificar sobreposiï¿½ï¿½o no eixo X
         b8 overlapX = get_right() >= rect->get_left() &&
             get_left() <= rect->get_right();
 
-        // Verificar sobreposição no eixo Y
+        // Verificar sobreposiï¿½ï¿½o no eixo Y
         b8 overlapY = get_bottom() >= rect->get_top() &&
             get_top() <= rect->get_bottom();
 
-        // Existe colisão se há sobreposição nos dois eixos
+        // Existe colisï¿½o se hï¿½ sobreposiï¿½ï¿½o nos dois eixos
         m_colliding = overlapX && overlapY;
         
         return m_colliding;

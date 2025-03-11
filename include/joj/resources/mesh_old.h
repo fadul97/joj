@@ -1,12 +1,12 @@
 #ifndef _JOJ_MESH_GEOMETRY_OLD_H
 #define _JOJ_MESH_GEOMETRY_OLD_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "math/jmath.h"
+#include "joj/math/jmath.h"
 #include <vector>
-#include "renderer/renderer.h"
-#include "renderer/shader.h"
+#include "joj/renderer/renderer.h"
+#include "joj/renderer/shader.h"
 
 namespace joj
 {

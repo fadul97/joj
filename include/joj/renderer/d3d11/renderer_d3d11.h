@@ -1,11 +1,11 @@
 #ifndef _JOJ_D3D11_RENDERER_H
 #define _JOJ_D3D11_RENDERER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/renderer.h"
+#include "joj/renderer/renderer.h"
 #include <d3d11.h>
 #include <dxgi1_6.h>
 

@@ -1,10 +1,10 @@
-#include "renderer/d3d11/texture2d_d3d11.h"
+#include "joj/renderer/d3d11/texture2d_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/d3d11/renderer_d3d11.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
 #include <renderer/d3d11/WICTextureLoader.h>
-#include "core/logger.h"
+#include "joj/core/logger.h"
 #include <locale>
 #include <codecvt>
 

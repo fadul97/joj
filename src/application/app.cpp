@@ -1,4 +1,4 @@
-#include "application/app.h"
+#include "joj/application/app.h"
 
 joj::App::App()
     : m_window(nullptr), m_input(nullptr),

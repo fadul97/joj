@@ -1,9 +1,9 @@
 #ifndef _JOJ_D3D11_TEXTURE_MANAGER_H
 #define _JOJ_D3D11_TEXTURE_MANAGER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "renderer/texture_manager.h"
+#include "joj/renderer/texture_manager.h"
 #include "texture2d_data_d3d11.h"
 
 namespace joj

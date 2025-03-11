@@ -1,7 +1,7 @@
 #ifndef _JOJ_OBJ_LOADER_H
 #define _JOJ_OBJ_LOADER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "internal_mesh.h"
 #include <vector>

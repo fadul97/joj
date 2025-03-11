@@ -1,13 +1,13 @@
 #ifndef _JOJ_JBUTTON_H
 #define _JOJ_JBUTTON_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "jwidget.h"
 #include "platform/window.h"
 #include <string>
 #include <Windows.h>
-#include "core/logger.h"
+#include "joj/core/logger.h"
 
 namespace joj
 {

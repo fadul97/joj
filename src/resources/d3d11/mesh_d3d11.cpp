@@ -1,10 +1,10 @@
-#include "resources/d3d11/mesh_d3d11.h"
+#include "joj/resources/d3d11/mesh_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "core/jmacros.h"
-#include "core/logger.h"
-#include "renderer/d3d11/renderer_d3d11.h"
+#include "joj/core/jmacros.h"
+#include "joj/core/logger.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
 
 joj::D3D11Mesh::D3D11Mesh()
 	: Mesh()

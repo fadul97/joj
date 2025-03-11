@@ -1,14 +1,14 @@
 #ifndef _JOJ_D3D11_GUI_H
 #define _JOJ_D3D11_GUI_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/gui/gui.h"
+#include "joj/renderer/gui/gui.h"
 #include <vector>
-#include "gui/jwidget.h"
-#include "gui/win32/jwidget_factory_win32.h"
+#include "joj/gui/jwidget.h"
+#include "joj/gui/win32/jwidget_factory_win32.h"
 #include "platform/win32/input_win32.h"
 #include <memory>
 

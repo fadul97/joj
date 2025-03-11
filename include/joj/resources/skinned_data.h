@@ -1,10 +1,10 @@
 #ifndef _JOJ_SKINNED_DATA_H
 #define _JOJ_SKINNED_DATA_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include <vector>
-#include "math/jmath.h"
+#include "joj/math/jmath.h"
 #include <string>
 #include <map>
 #include "animation_clip.h"

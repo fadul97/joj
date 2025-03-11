@@ -1,4 +1,4 @@
-#include "renderer/index_buffer.h"
+#include "joj/renderer/index_buffer.h"
 
 joj::IndexBuffer::IndexBuffer()
 {

@@ -1,8 +1,8 @@
-#include "engine/engine.h"
+#include "joj/engine/engine.h"
 
 #include <iostream>
 #include <sstream>
-#include "core/jmacros.h"
+#include "joj/core/jmacros.h"
 #include <windowsx.h>
 
 joj::Win32Window* joj::Engine::s_window = nullptr;

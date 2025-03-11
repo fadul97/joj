@@ -1,4 +1,4 @@
-#include "resources/mesh.h"
+#include "joj/resources/mesh.h"
 
 joj::Mesh::Mesh()
     : m_vertex_stride{ 0 },

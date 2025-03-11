@@ -1,12 +1,12 @@
 #ifndef _JOJ_D3D11_SAMPLER_STATE_H
 #define _JOJ_D3D11_SAMPLER_STATE_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
 #include <d3d11.h>
-#include "renderer/sampler_state.h"
+#include "joj/renderer/sampler_state.h"
 #include <renderer/sampler_state.h>
 
 namespace joj

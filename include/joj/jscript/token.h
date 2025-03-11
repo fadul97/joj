@@ -1,7 +1,7 @@
 #ifndef _JOJ_TOKEN_H
 #define _JOJ_TOKEN_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "token_type.h"
 #include <string>

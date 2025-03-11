@@ -1,13 +1,13 @@
-#include "systems/scene/d3d11/scene_d3d11.h"
+#include "joj/systems/scene/d3d11/scene_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "core/jmacros.h"
-#include "renderer/d3d11/sprite_d3d11.h"
-#include "renderer/vertex.h"
-#include "renderer/d3d11/renderer_d3d11.h"
-#include "systems/physics/rect.h"
-#include "systems/physics/collisions.h"
+#include "joj/core/jmacros.h"
+#include "joj/renderer/d3d11/sprite_d3d11.h"
+#include "joj/renderer/vertex.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
+#include "joj/systems/physics/rect.h"
+#include "joj/systems/physics/collisions.h"
 
 joj::D3D11Scene::D3D11Scene()
 {

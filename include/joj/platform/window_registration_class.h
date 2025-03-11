@@ -1,7 +1,7 @@
 #ifndef _JOJ_WINDOW_REGISTRATION_CLASS_H
 #define _JOJ_WINDOW_REGISTRATION_CLASS_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "window_procedure.h"
 #include <string>

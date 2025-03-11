@@ -12,7 +12,7 @@ add_library(jojGUI
 
 target_include_directories(jojGUI
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/
 )
 
 if(WIN32)

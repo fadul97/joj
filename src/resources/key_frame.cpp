@@ -1,4 +1,4 @@
-#include "resources/key_frame.h"
+#include "joj/resources/key_frame.h"
 
 joj::KeyFrame::KeyFrame()
 	: time_pos{ 0.0f },

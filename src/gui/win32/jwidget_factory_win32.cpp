@@ -1,9 +1,9 @@
-#include "gui/win32/jwidget_factory_win32.h"
+#include "joj/gui/win32/jwidget_factory_win32.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "core/logger.h"
-#include "core/jmacros.h"
+#include "joj/core/logger.h"
+#include "joj/core/jmacros.h"
 
 joj::JWin32WidgetFactory::JWin32WidgetFactory()
     : m_parent_data{ nullptr, nullptr }

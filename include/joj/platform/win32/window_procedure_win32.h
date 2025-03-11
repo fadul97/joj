@@ -1,7 +1,7 @@
 #ifndef _JOJ_WIN32_WINDOW_PROCEDURE_H
 #define _JOJ_WIN32_WINDOW_PROCEDURE_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 

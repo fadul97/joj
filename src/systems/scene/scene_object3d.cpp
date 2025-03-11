@@ -1,7 +1,7 @@
-#include "systems/scene/scene_object3d.h"
+#include "joj/systems/scene/scene_object3d.h"
 
-#include "renderer/d3d11/renderer_d3d11.h"
-#include "core/jmacros.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
+#include "joj/core/jmacros.h"
 
 joj::SceneObject3D::SceneObject3D()
     : m_total_indices(0)

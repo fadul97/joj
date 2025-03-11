@@ -1,7 +1,7 @@
 #ifndef _JOJ_D3D11_SHADER_LIBRARY_H
 #define _JOJ_D3D11_SHADER_LIBRARY_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 namespace joj
 {

@@ -14,7 +14,7 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-#include "renderer/d3d11/DDSTextureLoader11.h"
+#include "joj/renderer/d3d11/DDSTextureLoader11.h"
 
 #include <algorithm>
 #include <cassert>

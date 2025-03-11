@@ -1,7 +1,7 @@
 #ifndef _JOJ_LIGHT_DEBUG_H
 #define _JOJ_LIGHT_DEBUG_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "light.h"
 

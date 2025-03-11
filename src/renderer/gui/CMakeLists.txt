@@ -14,5 +14,5 @@ add_library(
 target_include_directories(
     jojGUIRenderer
     PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/joj/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/
 )

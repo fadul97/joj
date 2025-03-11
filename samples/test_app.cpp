@@ -1,6 +1,6 @@
 #include "test_app.h"
 
-#include "core/logger.h"
+#include "joj/core/logger.h"
 #include <sstream>
 #include <d3d11.h>
 #include "joj/core/jmacros.h"

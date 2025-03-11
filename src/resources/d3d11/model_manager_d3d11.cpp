@@ -1,8 +1,8 @@
-#include "resources/d3d11/model_manager_d3d11.h"
+#include "joj/resources/d3d11/model_manager_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "core/jmacros.h"
+#include "joj/core/jmacros.h"
 
 joj::D3D11ModelManager::D3D11ModelManager()
 {

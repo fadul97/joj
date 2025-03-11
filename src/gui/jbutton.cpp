@@ -1,7 +1,7 @@
-#include "gui/jbutton.h"
+#include "joj/gui/jbutton.h"
 
 #include <commctrl.h>
-#include "core/logger.h"
+#include "joj/core/logger.h"
 #include <Windowsx.h>
 
 LRESULT CALLBACK PanelProc(HWND hwnd, UINT msg,

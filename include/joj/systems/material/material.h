@@ -1,11 +1,11 @@
 #ifndef _JOJ_MATERIAL_H
 #define _JOJ_MATERIAL_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "math/jvector4.h"
+#include "joj/math/jvector4.h"
 
 namespace joj
 {

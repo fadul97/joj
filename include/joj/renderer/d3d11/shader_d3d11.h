@@ -1,11 +1,11 @@
 #ifndef _JOJ_D3D11_SHADER_H
 #define _JOJ_D3D11_SHADER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/shader.h"
+#include "joj/renderer/shader.h"
 #include <d3d11.h>
 
 namespace joj

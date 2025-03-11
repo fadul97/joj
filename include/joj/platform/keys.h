@@ -1,7 +1,7 @@
 #ifndef _JOJ_KEYS_H
 #define _JOJ_KEYS_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 namespace joj
 {

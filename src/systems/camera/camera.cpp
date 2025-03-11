@@ -1,4 +1,4 @@
-#include "systems/camera/camera.h"
+#include "joj/systems/camera/camera.h"
 
 joj::Camera::Camera()
     : m_view{ float4x4_identity() }, m_proj{ float4x4_identity() },

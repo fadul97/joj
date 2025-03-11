@@ -1,4 +1,4 @@
-#include "resources/animation_clip.h"
+#include "joj/resources/animation_clip.h"
 
 f32 joj::AnimationClip::get_clip_start_time() const
 {

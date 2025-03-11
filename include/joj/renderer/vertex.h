@@ -1,12 +1,12 @@
 #ifndef _JOJ_VERTEX_H
 #define _JOJ_VERTEX_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "math/jmath.h"
+#include "joj/math/jmath.h"
 #include <wtypes.h>
-#include "math/jvector3.h"
-#include "math/jvector4.h"
+#include "joj/math/jvector3.h"
+#include "joj/math/jvector4.h"
 
 namespace joj
 {

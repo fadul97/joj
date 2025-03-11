@@ -1,16 +1,16 @@
 #ifndef _JOJ_D3D11_SPRITE_H
 #define _JOJ_D3D11_SPRITE_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/sprite.h"
-#include "math/jmath.h"
-#include "renderer/color.h"
+#include "joj/renderer/sprite.h"
+#include "joj/math/jmath.h"
+#include "joj/renderer/color.h"
 #include "texture2d_d3d11.h"
 #include "sprite_sheet_d3d11.h"
-#include "renderer/sprite_animation_data.h"
+#include "joj/renderer/sprite_animation_data.h"
 
 namespace joj
 {

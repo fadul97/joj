@@ -1,11 +1,11 @@
 #ifndef _JOJ_FREE_CAMERA_H
 #define _JOJ_FREE_CAMERA_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "math/jmath.h"
+#include "joj/math/jmath.h"
 
 namespace joj
 {

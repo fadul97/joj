@@ -1,11 +1,11 @@
 #ifndef _JOJ_TEXTURE_MANAGER_H
 #define _JOJ_TEXTURE_MANAGER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include <map>
 
-#include "core/error_code.h"
+#include "joj/core/error_code.h"
 #include <string>
 #include "renderer.h"
 #include "image_type.h"

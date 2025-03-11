@@ -1,12 +1,12 @@
 #ifndef _JOJ_EVENT_MANAGER_H
 #define _JOJ_EVENT_MANAGER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include <functional>
 #include "jevent.h"
 #include <unordered_map>
-#include "core/vector.h"
+#include "joj/core/vector.h"
 
 namespace joj
 {

@@ -1,9 +1,9 @@
 #ifndef _JOJ_INTERNAL_MESH_H
 #define _JOJ_INTERNAL_MESH_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "renderer/vertex.h"
+#include "joj/renderer/vertex.h"
 #include <vector>
 
 namespace joj

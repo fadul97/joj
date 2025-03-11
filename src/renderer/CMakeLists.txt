@@ -40,7 +40,7 @@ add_subdirectory(d3d11)
 
 target_include_directories(jojRenderer
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/
 )
 
 target_link_directories(

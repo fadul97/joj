@@ -1,11 +1,11 @@
-#include "renderer/d3d11/gui/widget_d3d11.h"
+#include "joj/renderer/d3d11/gui/widget_d3d11.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "renderer/d3d11/renderer_d3d11.h"
-#include "core/logger.h"
-#include "core/jmacros.h"
-#include "renderer/vertex.h"
+#include "joj/renderer/d3d11/renderer_d3d11.h"
+#include "joj/core/logger.h"
+#include "joj/core/jmacros.h"
+#include "joj/renderer/vertex.h"
 
 joj::D3D11Widget::D3D11Widget()
 {

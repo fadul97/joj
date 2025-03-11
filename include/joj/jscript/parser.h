@@ -1,9 +1,9 @@
 #ifndef _JOJ_PARSER_H
 #define _JOJ_PARSER_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
-#include "core/vector.h"
+#include "joj/core/vector.h"
 #include "lexer.h"
 #include "symbol_table.h"
 #include "node.h"

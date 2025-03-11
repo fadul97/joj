@@ -1,11 +1,11 @@
 #ifndef _JOJ_D3D11_BASIC_MODEL_H
 #define _JOJ_D3D11_BASIC_MODEL_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "resources/basic_model.h"
+#include "joj/resources/basic_model.h"
 
 namespace joj
 {

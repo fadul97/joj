@@ -1,11 +1,11 @@
 #ifndef _JOJ_WINDOW_FACTORY_H
 #define _JOJ_WINDOW_FACTORY_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include "window_registration_class.h"
 #include "window.h"
-#include "core/error_code.h"
+#include "joj/core/error_code.h"
 
 namespace joj
 {

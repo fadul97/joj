@@ -1,7 +1,7 @@
 #ifndef _JOJ_SYMBOL_TABLE_H
 #define _JOJ_SYMBOL_TABLE_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #include <unordered_map>
 #include <string>

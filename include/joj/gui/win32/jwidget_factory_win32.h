@@ -1,11 +1,11 @@
 #ifndef _JOJ_WIN32_WIDGET_FACTORY_H
 #define _JOJ_WIN32_WIDGET_FACTORY_H
 
-#include "core/defines.h"
+#include "joj/core/defines.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "gui/jwidget_factory.h"
+#include "joj/gui/jwidget_factory.h"
 #include <Windows.h>
 
 namespace joj

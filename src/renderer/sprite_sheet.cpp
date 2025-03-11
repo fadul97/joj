@@ -1,4 +1,4 @@
-#include "renderer/sprite_sheet.h"
+#include "joj/renderer/sprite_sheet.h"
 
 joj::SpriteSheet::SpriteSheet()
 {
