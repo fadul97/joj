@@ -1,7 +1,6 @@
 #ifndef _JOJ_TIMER_H
 #define _JOJ_TIMER_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 namespace joj

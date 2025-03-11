@@ -14,7 +14,6 @@
 #ifndef _JOJ_ENGINE_H
 #define _JOJ_ENGINE_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #include "platform/win32/window_win32.h"

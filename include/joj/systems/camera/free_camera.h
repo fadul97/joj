@@ -1,7 +1,6 @@
 #ifndef _JOJ_FREE_CAMERA_H
 #define _JOJ_FREE_CAMERA_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #if JPLATFORM_WINDOWS

@@ -1,7 +1,6 @@
 #ifndef _JOJ_D3D11_TEXTURE_2D_H
 #define _JOJ_D3D11_TEXTURE_2D_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #if JPLATFORM_WINDOWS

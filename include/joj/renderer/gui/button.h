@@ -1,7 +1,6 @@
 #ifndef _JOJ_BUTTON_H
 #define _JOJ_BUTTON_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #include "widget.h"

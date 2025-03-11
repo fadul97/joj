@@ -1,7 +1,7 @@
 #ifndef _JOJ_VECTOR_H
 #define _JOJ_VECTOR_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
+
 #include "defines.h"
 
 #include <vector>

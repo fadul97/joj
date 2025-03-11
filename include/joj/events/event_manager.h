@@ -1,7 +1,6 @@
 #ifndef _JOJ_EVENT_MANAGER_H
 #define _JOJ_EVENT_MANAGER_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #include <functional>

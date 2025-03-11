@@ -1,7 +1,6 @@
 #ifndef _JOJ_D3D11_SPRITE_SHEET_H
 #define _JOJ_D3D11_SPRITE_SHEET_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #if JPLATFORM_WINDOWS
@@ -13,9 +12,9 @@ namespace joj
 {
     struct SpriteSheetData
     {
-        TextureData2D texture; // A textura que contém os quadros.
-        i32 rows;              // Número de linhas na SpriteSheet.
-        i32 columns;           // Número de colunas na SpriteSheet.
+        TextureData2D texture; // A textura que contï¿½m os quadros.
+        i32 rows;              // Nï¿½mero de linhas na SpriteSheet.
+        i32 columns;           // Nï¿½mero de colunas na SpriteSheet.
         i32 frame_width;       // Largura de cada quadro.
         i32 frame_height;      // Altura de cada quadro.
         i32 texture_width;     // Largura da textura.

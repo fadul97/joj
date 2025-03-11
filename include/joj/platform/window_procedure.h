@@ -1,7 +1,6 @@
 #ifndef _JOJ_WINDOW_PROCEDURE_H
 #define _JOJ_WINDOW_PROCEDURE_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #include <functional>

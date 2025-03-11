@@ -1,7 +1,6 @@
 #ifndef _JOJ_X11_WINDOW_H
 #define _JOJ_X11_WINDOW_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #if JPLATFORM_LINUX

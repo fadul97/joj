@@ -1,7 +1,6 @@
 #ifndef _JOJ_ANIMATION_CLIP_H
 #define _JOJ_ANIMATION_CLIP_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #include "math/jmath.h"

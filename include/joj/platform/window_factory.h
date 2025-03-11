@@ -1,7 +1,6 @@
 #ifndef _JOJ_WINDOW_FACTORY_H
 #define _JOJ_WINDOW_FACTORY_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #include "window_registration_class.h"

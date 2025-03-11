@@ -1,7 +1,6 @@
 #ifndef _JOJ_JWIDGET_H
 #define _JOJ_JWIDGET_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #include <Windows.h>

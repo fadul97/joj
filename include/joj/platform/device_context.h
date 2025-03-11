@@ -1,7 +1,6 @@
 #ifndef _JOJ_DEVICE_CONTEXT_H
 #define _JOJ_DEVICE_CONTEXT_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 namespace joj

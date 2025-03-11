@@ -1,7 +1,7 @@
 #ifndef _JOJ_STRING_H
 #define _JOJ_STRING_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
+
 #include "defines.h"
 
 #include <string>

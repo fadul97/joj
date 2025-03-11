@@ -1,7 +1,6 @@
 #ifndef _JOJ_RENDERER_H
 #define _JOJ_RENDERER_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #include "core/error_code.h"

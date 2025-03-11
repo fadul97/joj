@@ -1,7 +1,6 @@
 #ifndef _JOJ_VECTOR4_H
 #define _JOJ_VECTOR4_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #include <cmath>

@@ -15,7 +15,6 @@
 #ifndef _JOJ_ERROR_CODE_H
 #define _JOJ_ERROR_CODE_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 namespace joj

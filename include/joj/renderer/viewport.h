@@ -1,7 +1,6 @@
 #ifndef _JOJ_VIEWPORT_H
 #define _JOJ_VIEWPORT_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 namespace joj

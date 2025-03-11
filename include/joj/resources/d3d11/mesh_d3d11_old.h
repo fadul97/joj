@@ -1,7 +1,6 @@
 #ifndef _JOJ_D3D11_MESH_GEOMETRY_OLD_H
 #define _JOJ_D3D11_MESH_GEOMETRY_OLD_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #if JPLATFORM_WINDOWS

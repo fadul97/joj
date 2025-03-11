@@ -1,7 +1,6 @@
 #ifndef _JOJ_D3D11_TEXTURE_MANAGER_H
 #define _JOJ_D3D11_TEXTURE_MANAGER_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #include "renderer/texture_manager.h"

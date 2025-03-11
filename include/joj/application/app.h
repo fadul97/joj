@@ -1,7 +1,6 @@
 #ifndef JOJ_APP_H
 #define JOJ_APP_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #if JPLATFORM_WINDOWS

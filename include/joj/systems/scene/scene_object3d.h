@@ -1,6 +1,5 @@
 #ifndef _JOJ_SCENE_OBJECT_3D_H
 #define _JOJ_SCENE_OBJECT_3D_H
-
 #include "core/defines.h"
 
 #include "resources/internal_mesh.h"

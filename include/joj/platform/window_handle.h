@@ -1,7 +1,6 @@
 #ifndef _JOJ_WINDOW_HANDLE_H
 #define _JOJ_WINDOW_HANDLE_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 namespace joj

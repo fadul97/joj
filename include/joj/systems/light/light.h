@@ -1,7 +1,6 @@
 #ifndef _JOJ_LIGHT_H
 #define _JOJ_LIGHT_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 #include "math/jmath.h"

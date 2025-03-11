@@ -1,7 +1,6 @@
 #ifndef _JOJ_D3D11_SHADER_LIBRARY_H
 #define _JOJ_D3D11_SHADER_LIBRARY_H
 
-#define JOJ_ENGINE_IMPLEMENTATION
 #include "core/defines.h"
 
 namespace joj
@@ -146,13 +145,13 @@ namespace joj
         const char* VertexShaderCanvas = R"(
             struct VS_INPUT
             {
-                float3 PosL : POSITION;  // Posição local
+                float3 PosL : POSITION;  // Posiï¿½ï¿½o local
                 float4 ColorL : COLOR;   // Cor local
             };
 
             struct PS_INPUT
             {
-                float4 PosH : SV_POSITION; // Posição clip-space
+                float4 PosH : SV_POSITION; // Posiï¿½ï¿½o clip-space
                 float4 ColorH : COLOR;     // Cor para o shader de pixels
             };
 
@@ -169,7 +168,7 @@ namespace joj
 
         const char* PixelShaderCanvas = R"(
             struct PS_INPUT {
-                float4 position : SV_POSITION; // Posição clip-space
+                float4 position : SV_POSITION; // Posiï¿½ï¿½o clip-space
                 float4 color : COLOR;          // Cor recebida do VS
             };
 
