@@ -2,11 +2,13 @@
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "core/logger.h"
+#include "joj/core/logger.h"
+#include "joj/platform/window_registration_class.h"
+#include "joj/platform/win32/window_factory_win32.h"
+#include "joj/core/jmacros.h"
+
+#define WIN32_LEAN_AND_MEAN
 #include <windowsx.h>
-#include "platform/window_registration_class.h"
-#include "platform/win32/window_factory_win32.h"
-#include "core/jmacros.h"
 
 joj::Win32Window::Win32Window()
     : Window{}

@@ -2,9 +2,9 @@
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "platform/window_registration_class.h"
-#include "core/logger.h"
-#include "core/jmacros.h"
+#include "joj/platform/window_registration_class.h"
+#include "joj/core/logger.h"
+#include "joj/core/jmacros.h"
 
 joj::Win32WindowFactory::Win32WindowFactory()
     : WindowFactory<Win32Window>()

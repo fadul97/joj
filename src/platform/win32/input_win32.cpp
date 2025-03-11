@@ -2,7 +2,9 @@
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "platform/win32/window_win32.h"
+#include "joj/platform/win32/window_win32.h"
+
+#define WIN32_LEAN_AND_MEAN
 #include <windowsx.h>
 
 joj::Win32Input::Win32Input()
