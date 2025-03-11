@@ -14,13 +14,8 @@
 #ifndef _JOJ_LOGGER_H
 #define _JOJ_LOGGER_H
 
-#include "core/error_code.h"
-
-#if JOJ_PLATFORM_WINDOWS
-#include <vadefs.h>
-#elif JOJ_PLATFORM_LINUX
-#include <cstdarg>
-#endif
+#include "defines.h"
+#include "error_code.h"
 
 /** @brief Change to 1 when exporting. */
 #define JOJ_RELEASE 0
@@ -66,22 +61,13 @@ namespace joj
 
         /** @brief Info log level, should be used for non-erronuous informational purposes. */
         LOG_LEVEL_INFO = 4,
+
+        /** @brief Todo log level, should be used to spot non-implemented code. */
+        LOG_LEVEL_TODO = 5,
     };
 
     namespace Logger
     {
-        /**
-         * @brief Outputs logging at the given level. NOTE: This should not be called directly.
-         * It is recommended to use the macros defined below (JOJ_INFO, JDEBUG, JOJ_WARN, JOJ_ERROR, JOJ_FATAL).
-         * @param level The log level to use.
-         * @param err The error code to be logged.
-         * @param file The file where the log was called.
-         * @param line The line where the log was called.
-         * @param message The message to be logged.
-         * @param args Any additional arguments (data) to be logged.
-         */
-        JOJ_API void write_log(LogLevel level, joj::ErrorCode err, const char* file, i32 line, const char* message, va_list args);
-
         /**
          * @brief Writes the log to the console. This is called when the macro is used.
          * 
@@ -92,19 +78,19 @@ namespace joj
          * @param message The message to be logged.
          * @param ... Any additional arguments (data) to be logged.
          */
-        JOJ_API void log(LogLevel level, joj::ErrorCode err, const char* file, i32 line, const char* message, ...);
+        JOJ_API void log(LogLevel level, joj::ErrorCode err, const char* file,
+            i32 line, const char* message, ...);
     }
 }
 
 #if JOJ_LOG_TODO == 1
 /**
  * @brief Logs an TODO message. Should be used for non-implemented code blocks.
- * @param ... FIXME: Ignore this parameter, it does not and won't log any data you pass into it.
  */
-#define JOJ_TODO(...) joj::Logger::log(joj::LogLevel::LOG_LEVEL_WARN, joj::ErrorCode::OK,  __FILE__, __LINE__, "TODO() - Function: %s", __FUNCTION__, ##__VA_ARGS__);
+#define JOJ_TODO() joj::Logger::log(joj::LogLevel::LOG_LEVEL_TODO, joj::ErrorCode::OK,  __FILE__, __LINE__, "[TODO]: %s", __FUNCTION__);
 #else
-#define JOJ_TODO(...);
-#endif // JOJ_LOG_TODO
+#define JOJ_TODO();
+#endif // LOG_TODO
 
 #if JOJ_LOG_INFO_ENABLED == 1
 /**

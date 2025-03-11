@@ -2,7 +2,9 @@
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
-add_library(jojCore error_code.cpp logger_win32.cpp)
+add_subdirectory(win32)
+
+add_library(jojCore error_code.cpp logger_win32.cpp win32/memory_win32.cpp)
 
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(jojCore PRIVATE JOJ_BUILDING_DLL) # Export
