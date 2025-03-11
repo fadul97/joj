@@ -4,6 +4,7 @@
 
 # Builds
 build/
+out/
 
 # Textures (Ignoring for now - must be added manually)
 # samples/textures/
