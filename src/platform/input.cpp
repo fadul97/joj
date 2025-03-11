@@ -1,4 +1,4 @@
-#include "platform/input.h"
+#include "joj/platform/input.h"
 
 joj::InputData joj::Input::m_data{};
 

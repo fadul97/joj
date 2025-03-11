@@ -1,4 +1,4 @@
-#include "platform/window.h"
+#include "joj/platform/window.h"
 
 #include <stdio.h>
 

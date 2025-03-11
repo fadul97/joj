@@ -3,14 +3,42 @@ cmake_minimum_required(VERSION 3.22)
 project(joj)
 
 # -----------------------------------------------------------------------------
+# Set C++ standard
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# -----------------------------------------------------------------------------
+# Set Platform name and directory
+
+string(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM)
+
+if (PLATFORM STREQUAL "windows")
+    set(PLATFORM "win32")
+elseif(PLATFORM STREQUAL "linux")
+    set(PLATFORM "x11")
+endif()
+
+# -----------------------------------------------------------------------------
 # Add subdirectories
 
-add_subdirectory(win32)
+add_subdirectory(${PLATFORM})
+
+# -----------------------------------------------------------------------------
+# Set source files
+
+set(SOURCE_FILES
+    error_code.cpp
+    ${PLATFORM}/logger_${PLATFORM}.cpp
+    ${PLATFORM}/memory_${PLATFORM}.cpp
+)
 
 # -----------------------------------------------------------------------------
 # jojCore
 
-add_library(jojCore error_code.cpp win32/logger_win32.cpp win32/memory_win32.cpp)
+add_library(jojCore
+    ${SOURCE_FILES}
+)
 
 # -----------------------------------------------------------------------------
 # Set properties

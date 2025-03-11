@@ -1,4 +1,4 @@
-#include "platform/win32/input_win32.h"
+#include "joj/platform/win32/input_win32.h"
 
 #if JOJ_PLATFORM_WINDOWS
 
