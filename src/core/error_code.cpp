@@ -1,6 +1,6 @@
 #include "core/error_code.h"
 
-int joj::err_to_int(const ErrorCode err)
+i32 joj::err_to_int(const ErrorCode err)
 {
     switch (err)
     {

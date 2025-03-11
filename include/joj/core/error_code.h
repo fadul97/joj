@@ -1,15 +1,13 @@
 /**
  * @file error_code.h
- * @author Leonardo Fadul ( TODO: todo@domain.com)
+ * @author Leonardo Fadul (lsffadul@gmail.com)
  * @brief This file contains the error codes used throughout the engine,
- * and some helper functions for debug purposes.
+ * and some helper functions for debugging purposes.
  * @version 0.1
- * @date 2024-11-13
- * 
- * @copyright TODO: Copyright (c) 2024
- * 
- * REFERENCES: Travis Vroman (https://travisvroman.com/) - Kohi Game Engine (https://github.com/travisvroman/kohi)
- * 
+ * @date 2025-03-11
+ *
+ * @copyright TODO: Copyright (c) 2025
+ *
  */
 
 #ifndef _JOJ_ERROR_CODE_H
@@ -159,14 +157,14 @@ namespace joj
      *  @param err The error code to convert.
      *  @return The integer index of the error code.
      */
-    JOJ_API i32 err_to_int(ErrorCode err);
+    JOJ_API i32 err_to_int(const ErrorCode err);
 
     // TODO: Add all cases.
     /** @brief Get the name of the ErrorCode.
      *  @param err The error code to convert.
      *  @return The string representation of the error code.
      */
-    JOJ_API const char* err_to_str(ErrorCode err);
+    JOJ_API const char* err_to_str(const ErrorCode err);
 }
 
 #endif // _JOJ_ERROR_CODE_H

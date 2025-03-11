@@ -1,11 +1,11 @@
 /**
  * @file logger.h
- * @author Leonardo Fadul ( TODO: todo@domain.com)
- * @brief This file contains the logging system for the engine.
+ * @author Leonardo Fadul (lsffadul@gmail.com)
+ * @brief This file contains the terminal logging system for the engine.
  * @version 0.1
  * @date 2025-03-11
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2025
  * 
  * REFERENCES: Travis Vroman (https://travisvroman.com/) - Kohi Game Engine (https://github.com/travisvroman/kohi)
  * 

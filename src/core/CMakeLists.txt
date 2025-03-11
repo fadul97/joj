@@ -2,9 +2,18 @@
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
+# -----------------------------------------------------------------------------
+# Add subdirectories
+
 add_subdirectory(win32)
 
-add_library(jojCore error_code.cpp logger_win32.cpp win32/memory_win32.cpp)
+# -----------------------------------------------------------------------------
+# jojCore
+
+add_library(jojCore error_code.cpp win32/logger_win32.cpp win32/memory_win32.cpp)
+
+# -----------------------------------------------------------------------------
+# Set properties
 
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(jojCore PRIVATE JOJ_BUILDING_DLL) # Export
@@ -12,12 +21,18 @@ if(BUILD_SHARED_LIBS)
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:jojCore> ${CMAKE_BINARY_DIR})
 endif()
 
+# -----------------------------------------------------------------------------
+# Include directories
+
 # Specify include directories for jojCore
 target_include_directories(
     jojCore
     PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
 )
+
+# -----------------------------------------------------------------------------
+# Set output directories
 
 set_target_properties(jojCore PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
