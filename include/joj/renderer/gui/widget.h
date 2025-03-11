@@ -9,7 +9,7 @@
 
 namespace joj
 {
-    class JAPI Widget
+    class JOJ_API Widget
     {
     public:
         Widget();

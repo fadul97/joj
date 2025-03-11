@@ -3,13 +3,13 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "math/jvector4.h"
 
 namespace joj
 {
-	struct JAPI Material
+	struct JOJ_API Material
 	{
 		Material();
 
@@ -20,6 +20,6 @@ namespace joj
 	};
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_MATERIAL_H

@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "platform/input.h"
 
@@ -12,7 +12,7 @@
 
 namespace joj
 {
-    class JAPI Win32Input : public Input
+    class JOJ_API Win32Input : public Input
     {
     public:
         Win32Input();
@@ -24,6 +24,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_WIN32_INPUT_H

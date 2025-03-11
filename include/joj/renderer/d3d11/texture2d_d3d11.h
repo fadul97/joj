@@ -3,14 +3,14 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/texture2d.h"
 #include "texture2d_data_d3d11.h"
 
 namespace joj
 {
-    class JAPI D3D11Texture2D : public Texture2D
+    class JOJ_API D3D11Texture2D : public Texture2D
     {
     public:
         D3D11Texture2D();
@@ -29,6 +29,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_TEXTURE_2D_H

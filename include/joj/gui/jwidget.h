@@ -12,7 +12,7 @@
 
 namespace joj
 {
-    struct JAPI JWidgetCreationData
+    struct JOJ_API JWidgetCreationData
     {
         HWND parent_handle;
         HINSTANCE instance;
@@ -25,7 +25,7 @@ namespace joj
         HWND handle;
     };
 
-    class JAPI JWidget
+    class JOJ_API JWidget
     {
     public:
         JWidget();

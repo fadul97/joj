@@ -8,7 +8,7 @@
 
 namespace joj
 {
-    class JAPI D3D11TextureManager : public TextureManager
+    class JOJ_API D3D11TextureManager : public TextureManager
     {
     public:
         D3D11TextureManager();

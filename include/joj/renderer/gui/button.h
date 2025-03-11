@@ -7,7 +7,7 @@
 
 namespace joj
 {
-    class JAPI Button : public Widget
+    class JOJ_API Button : public Widget
     {
     public:
         Button();

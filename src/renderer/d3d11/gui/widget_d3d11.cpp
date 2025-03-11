@@ -1,6 +1,6 @@
 #include "renderer/d3d11/gui/widget_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "core/logger.h"
@@ -55,7 +55,7 @@ joj::ErrorCode joj::D3D11Widget::create(GraphicsDevice& device)
     // Create Vertex Buffer
     if JOJ_FAILED(m_vb.create(device))
     {
-        JERROR(ErrorCode::ERR_GUI_CANVAS_D3D11_CREATION,
+        JOJ_ERROR(ErrorCode::ERR_GUI_CANVAS_D3D11_CREATION,
             "Failed to create D3D11 Vertex Buffer for D3D11Button.");
         return ErrorCode::ERR_GUI_CANVAS_D3D11_CREATION;
     }
@@ -71,7 +71,7 @@ joj::ErrorCode joj::D3D11Widget::create(GraphicsDevice& device)
     // Create Index Buffer
     if JOJ_FAILED(m_ib.create(device))
     {
-        JERROR(ErrorCode::ERR_GUI_CANVAS_D3D11_CREATION,
+        JOJ_ERROR(ErrorCode::ERR_GUI_CANVAS_D3D11_CREATION,
             "Failed to create D3D11 index buffer.");
         return ErrorCode::ERR_GUI_CANVAS_D3D11_CREATION;
     }
@@ -98,7 +98,7 @@ joj::ErrorCode joj::D3D11Widget::create(GraphicsDevice& device)
 
     if JOJ_FAILED(m_input_layout.create(device, m_shader.get_vertex_shader()))
     {
-        JERROR(ErrorCode::ERR_GUI_CANVAS_D3D11_CREATION,
+        JOJ_ERROR(ErrorCode::ERR_GUI_CANVAS_D3D11_CREATION,
             "Failed to create D3D11 Input Layout for D3D11Button.");
         return ErrorCode::ERR_GUI_CANVAS_D3D11_CREATION;
     }
@@ -200,4 +200,4 @@ b8 joj::D3D11Widget::on_bottom_edge(const i32 x, const i32 y)
     return x >= m_x && x <= m_x + m_width && y >= m_y + m_height - tolerance && y <= m_y + m_height + tolerance;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

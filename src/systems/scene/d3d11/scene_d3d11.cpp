@@ -1,6 +1,6 @@
 #include "systems/scene/d3d11/scene_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "core/jmacros.h"
 #include "renderer/d3d11/sprite_d3d11.h"
@@ -83,7 +83,7 @@ void joj::D3D11Scene::init(const GraphicsDevice& device, Camera& camera)
         sizeof(Vertex::PosColorUVRect) * 4, sprite_quad_vertices);
     JOJ_LOG_IF_FAIL(m_sprite_vertex_buffer2D.create(device));
 
-    // Índices para formar dois triângulos
+    // ï¿½ndices para formar dois triï¿½ngulos
     u32 quad_indices[] =
     {
         0, 1, 2,
@@ -237,4 +237,4 @@ void joj::D3D11Scene::draw_collisions(IRenderer& renderer)
     }
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

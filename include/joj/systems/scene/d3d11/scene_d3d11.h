@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "systems/scene/scene.h"
 #include "renderer/d3d11/vertex_buffer_d3d11.h"
@@ -14,7 +14,7 @@
 
 namespace joj
 {
-    class JAPI D3D11Scene : public Scene
+    class JOJ_API D3D11Scene : public Scene
     {
     public:
         D3D11Scene();
@@ -41,6 +41,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_SCENE_H

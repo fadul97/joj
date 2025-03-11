@@ -1,6 +1,6 @@
 #include "renderer/d3d11/gui/gui_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "core/jmacros.h"
 #include "core/logger.h"
@@ -36,7 +36,7 @@ LRESULT CALLBACK MyWindowProc(
             return CallWindowProc(OriginalEditCtrlProc, hwnd, uMsg, wParam, lParam);
         }
 
-        // Permitir dígitos
+        // Permitir dï¿½gitos
         if (wParam >= '0' && wParam <= '9')
         {
             return CallWindowProc(OriginalEditCtrlProc, hwnd, uMsg, wParam, lParam);
@@ -48,7 +48,7 @@ LRESULT CALLBACK MyWindowProc(
             return CallWindowProc(OriginalEditCtrlProc, hwnd, uMsg, wParam, lParam);
         }
 
-        // Permitir sinal de menos apenas na primeira posição
+        // Permitir sinal de menos apenas na primeira posiï¿½ï¿½o
         if (wParam == '-' && len == 0)
         {
             return CallWindowProc(OriginalEditCtrlProc, hwnd, uMsg, wParam, lParam);
@@ -59,13 +59,13 @@ LRESULT CALLBACK MyWindowProc(
     }
     else if (uMsg == WM_KEYDOWN)
     {
-        // Se o usuário pressionar Enter ou Tab, mudar o foco
+        // Se o usuï¿½rio pressionar Enter ou Tab, mudar o foco
         if (wParam == VK_RETURN || wParam == VK_TAB)
         {
             HWND hParent = GetParent(hwnd);
             if (hParent != NULL)
             {
-                // Mudar o foco para a próxima janela (ou janela pai, se preferir)
+                // Mudar o foco para a prï¿½xima janela (ou janela pai, se preferir)
                 SetFocus(hParent);
             }
             return 0; // Impedir processamento adicional da tecla
@@ -73,7 +73,7 @@ LRESULT CALLBACK MyWindowProc(
     }
     else if (uMsg == WM_KILLFOCUS)
     {
-        // Verificar se o texto não termina em ".0"
+        // Verificar se o texto nï¿½o termina em ".0"
         TCHAR text[256];
         GetWindowText(hwnd, text, 256);
 
@@ -95,7 +95,7 @@ LRESULT CALLBACK MyWindowProc(
         SetWindowText(hwnd, text);
     }
 
-    // Manter o processamento padrão para outras mensagens
+    // Manter o processamento padrï¿½o para outras mensagens
     return CallWindowProc(OriginalEditCtrlProc, hwnd, uMsg, wParam, lParam);
 }
 
@@ -184,7 +184,7 @@ void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
     joj::Win32WindowFactory factory;
     if JOJ_FAILED(factory.create_window_class(wnd_class))
     {
-        JERROR(ErrorCode::ERR_WINDOW_REGISTRATION, "Failed to create window class.");
+        JOJ_ERROR(ErrorCode::ERR_WINDOW_REGISTRATION, "Failed to create window class.");
         return;
     }
 
@@ -219,7 +219,7 @@ void joj::D3D11GUI::init(WindowData& window, IRenderer& renderer)
 
     if (!m_window.handle)
     {
-        JFATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to create window.");
+        JOJ_FATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to create window.");
         return;
     }
 
@@ -237,7 +237,7 @@ void joj::D3D11GUI::update(const f32 dt, const i32 xmouse, const i32 ymouse, con
 {
     if (m_initialized == false)
     {
-        JERROR(ErrorCode::ERR_GUI_NOT_INITIALIZED, "GUI not initialized.");
+        JOJ_ERROR(ErrorCode::ERR_GUI_NOT_INITIALIZED, "GUI not initialized.");
         return;
     }
 
@@ -265,7 +265,7 @@ void joj::D3D11GUI::draw(CommandList& cmd_list)
 {
     if (m_initialized == false)
     {
-        JERROR(ErrorCode::ERR_GUI_NOT_INITIALIZED, "GUI not initialized.");
+        JOJ_ERROR(ErrorCode::ERR_GUI_NOT_INITIALIZED, "GUI not initialized.");
         return;
     }
 
@@ -279,7 +279,7 @@ void joj::D3D11GUI::shutdown()
 {
     if (m_initialized == false)
     {
-        JERROR(ErrorCode::ERR_GUI_NOT_INITIALIZED, "GUI not initialized.");
+        JOJ_ERROR(ErrorCode::ERR_GUI_NOT_INITIALIZED, "GUI not initialized.");
         return;
     }
 
@@ -306,7 +306,7 @@ void joj::D3D11GUI::add_button(i32 x, i32 y, i32 width, i32 height,
     JButton* button = m_factory.create_button(x, x, width, height, label);
     if (!button)
     {
-        JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
+        JOJ_FATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
         return;
     }
 
@@ -325,7 +325,7 @@ void joj::D3D11GUI::add_button(const std::string& label, i32 x, i32 y, i32 width
     JButton* button = m_factory.create_button(x, y, width, height, label, function);
     if (!button)
     {
-        JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
+        JOJ_FATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION, "Failed to create button.");
         return;
     }
 }
@@ -340,7 +340,7 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     {
     case WM_COMMAND:
     {
-        i32 notification_code = HIWORD(wParam); // Código de notificação
+        i32 notification_code = HIWORD(wParam); // Cï¿½digo de notificaï¿½ï¿½o
         HWND sender_handle = (HWND)lParam; // Handle do controle que enviou
 
         if (notification_code == BN_CLICKED)
@@ -366,17 +366,17 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     }
     case WM_USER + 1:
     {
-        // 'wParam' contém o ID do controle que enviou a mensagem
+        // 'wParam' contï¿½m o ID do controle que enviou a mensagem
         u32 controlId = static_cast<u32>(wParam);
 
-        // 'lParam' contém o valor float (convertido para um ponteiro e enviado pela mensagem)
+        // 'lParam' contï¿½m o valor float (convertido para um ponteiro e enviado pela mensagem)
         f32 value = *reinterpret_cast<f32*>(&lParam);
 
         // Verificar qual controle enviou a mensagem
         if (controlId == INPUT_FLOAT_ID)
         {
             // Fazer algo com o valor recebido
-            // Por exemplo, atualizar uma variável ou exibir o valor em um log
+            // Por exemplo, atualizar uma variï¿½vel ou exibir o valor em um log
             JDEBUG("Valor recebido do controle %u: %f", controlId, value);
         }
         break;
@@ -385,13 +385,13 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     case WM_COMMAND:
     {
         i32 control_id = LOWORD(wParam); // ID do controle
-        i32 notification_code = HIWORD(wParam); // Código de notificação
+        i32 notification_code = HIWORD(wParam); // Cï¿½digo de notificaï¿½ï¿½o
         HWND sender_handle = (HWND)lParam; // Handle do controle que enviou
 
         if (notification_code == BN_CLICKED)
         {
             // JDEBUG("Button clicked! Control ID: %d, Handle: %p", control_id, sender_handle);
-            // Você pode procurar o widget no mapa aqui se necessário
+            // Vocï¿½ pode procurar o widget no mapa aqui se necessï¿½rio
             auto it = JWidget::get_widget_map().find(sender_handle);
             if (it != JWidget::get_widget_map().end())
             {
@@ -469,4 +469,4 @@ LRESULT CALLBACK joj::D3D11GUI::GUIWinProc(HWND hWnd, UINT msg, WPARAM wParam,
     return CallWindowProc(s_originalWndProc, hWnd, msg, wParam, lParam);
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

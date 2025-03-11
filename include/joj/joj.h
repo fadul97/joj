@@ -3,6 +3,6 @@
 
 #include "core/defines.h"
 
-JAPI void joj_print();
+JOJ_API void joj_print();
 
 #endif // _JOJ_H

@@ -1,6 +1,6 @@
 #include "renderer/d3d11/gui/button_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 joj::D3D11Button::D3D11Button()
 {
@@ -21,4 +21,4 @@ joj::D3D11Button::~D3D11Button()
 {
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

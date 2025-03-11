@@ -1,6 +1,6 @@
 #include "platform/x11/window_x11.h"
 
-#if JPLATFORM_LINUX
+#if JOJ_PLATFORM_LINUX
 
 joj::X11Window::X11Window()
     : Window{}
@@ -46,7 +46,7 @@ joj::X11Window::~X11Window()
 
 joj::ErrorCode joj::X11Window::create()
 {
-    // JTODO();
+    // JOJ_TODO();
     return ErrorCode::FAILED;
 }
 
@@ -57,17 +57,17 @@ void joj::X11Window::destroy()
 
 void joj::X11Window::get_window_size(u32& width, u32& height)
 {
-    // JTODO();
+    // JOJ_TODO();
 }
 
 void joj::X11Window::get_client_size(u32& width, u32& height)
 {
-    // JTODO();
+    // JOJ_TODO();
 }
 
 void joj::X11Window::set_title(const char* title)
 {
-    // JTODO();
+    // JOJ_TODO();
 }
 
-#endif // JPLATFORM_LINUX
+#endif // JOJ_PLATFORM_LINUX

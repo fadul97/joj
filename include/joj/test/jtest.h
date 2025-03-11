@@ -14,7 +14,7 @@
 
 namespace joj
 {
-    class JAPI JTest
+    class JOJ_API JTest
     {
     public:
         JTest(const std::string& name, const std::function<void()>& func)

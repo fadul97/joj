@@ -6,7 +6,7 @@
 void joj::renderer_print()
 {
 	printf("Hello from %s jojRenderer!\n",
-#ifdef BUILDING_JOJ_DLL
+#ifdef JOJ_BUILDING_DLL
 		"shared"
 #else
 		"static"

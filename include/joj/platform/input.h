@@ -15,7 +15,7 @@ namespace joj
         Mouse mouse;
     };
 
-    class JAPI Input
+    class JOJ_API Input
     {
     public:
         Input();

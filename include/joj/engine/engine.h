@@ -25,9 +25,9 @@
 
 namespace joj
 {
-    JAPI void engine_print();
+    JOJ_API void engine_print();
 
-    class JAPI Engine
+    class JOJ_API Engine
     {
     public:
         Engine();

@@ -1,6 +1,6 @@
 #include "renderer/d3d11/constant_buffer_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "core/logger.h"
@@ -41,7 +41,7 @@ joj::ErrorCode joj::D3D11ConstantBuffer::create(const GraphicsDevice& device)
         (m_data.init_data.pSysMem != nullptr ? &m_data.init_data : nullptr),
         &m_data.buffer) != S_OK)
     {
-        JERROR(ErrorCode::ERR_CONSTANT_BUFFER_D3D11_CREATION,
+        JOJ_ERROR(ErrorCode::ERR_CONSTANT_BUFFER_D3D11_CREATION,
             "Failed to create D3D11 Constant Buffer.");
         return ErrorCode::ERR_CONSTANT_BUFFER_D3D11_CREATION;
     }
@@ -78,7 +78,7 @@ void joj::D3D11ConstantBuffer::update_internal(CommandList& cmd_list, const void
     // Get a pointer to the constant buffer data and lock it
     if (cmd_list.device_context->Map(m_data.buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_buffer) != S_OK)
     {
-        JERROR(ErrorCode::FAILED, "Failed to map constant buffer.");
+        JOJ_ERROR(ErrorCode::FAILED, "Failed to map constant buffer.");
         return;
     }
     else
@@ -91,4 +91,4 @@ void joj::D3D11ConstantBuffer::update_internal(CommandList& cmd_list, const void
     }
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

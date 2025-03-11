@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/sprite.h"
 #include "math/jmath.h"
@@ -14,7 +14,7 @@
 
 namespace joj
 {
-    struct JAPI SpriteData
+    struct JOJ_API SpriteData
     {
         TextureData2D texture;
         JFloat2 position{ 0.0f, 0.0f };
@@ -24,7 +24,7 @@ namespace joj
         JFloat4 uv_rect{ 1.0f, 1.0f, 0.0f, 1.0f };
     };
 
-    class JAPI D3D11Sprite : public Sprite
+    class JOJ_API D3D11Sprite : public Sprite
     {
     public:
         D3D11Sprite();
@@ -48,6 +48,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_SPRITE_H

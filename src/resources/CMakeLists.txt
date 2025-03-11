@@ -22,7 +22,7 @@ add_library(jojResources
 )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojResources PRIVATE BUILDING_JOJ_DLL) # Export
+    target_compile_definitions(jojResources PRIVATE JOJ_BUILDING_DLL) # Export
 endif()
 
 target_include_directories(jojResources

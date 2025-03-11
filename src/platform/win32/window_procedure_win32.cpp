@@ -1,6 +1,6 @@
 #include "platform/win32/window_procedure_win32.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 joj::Win32WindowProcedure::Win32WindowProcedure()
 {
@@ -20,4 +20,4 @@ JRESULT joj::Win32WindowProcedure::handle_message(void* hWnd, u32 message, unsig
     return 0;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

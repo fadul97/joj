@@ -10,7 +10,7 @@
 
 namespace joj
 {
-	class JAPI EventManager
+	class JOJ_API EventManager
 	{
 	public:
 		using Callback = std::function<void(const JEvent&)>;

@@ -1,6 +1,6 @@
 #include "renderer/d3d11/sprite_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "core/logger.h"
 
@@ -79,4 +79,4 @@ void joj::D3D11Sprite::draw()
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

@@ -1,6 +1,6 @@
 #include "resources/d3d11/model_manager_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "core/jmacros.h"
 
@@ -19,7 +19,7 @@ joj::ErrorCode joj::D3D11ModelManager::load_model(GraphicsDevice& device, Comman
     joj::D3D11BasicModel* model = new joj::D3D11BasicModel();
     if JOJ_FAILED(model->load_m3d(device, cmd_list, m_tex_mgr, model_path, texture_path))
     {
-        JERROR(ErrorCode::ERR_FILE_LOAD_M3D_STATIC_FAILED,
+        JOJ_ERROR(ErrorCode::ERR_FILE_LOAD_M3D_STATIC_FAILED,
             "Failed to load model '%ls'.", model_path.c_str());
         return ErrorCode::ERR_FILE_LOAD_M3D_STATIC_FAILED;
     }
@@ -43,4 +43,4 @@ joj::D3D11BasicModel* joj::D3D11ModelManager::get_model(const std::string& model
     return nullptr;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

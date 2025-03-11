@@ -7,7 +7,7 @@
 
 namespace joj
 {
-    JAPI void window_print();
+    JOJ_API void window_print();
 }
 
 namespace joj

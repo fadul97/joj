@@ -99,7 +99,7 @@ void joj::JButton::create(JWidgetCreationData& data, const JGUIEvent::Callback& 
         if (!s_originalWndProc)
         {
             DWORD error = GetLastError();
-            JFATAL(ErrorCode::FAILED, "SetWindowLongPtr failed with error code: %lu", error);
+            JOJ_FATAL(ErrorCode::FAILED, "SetWindowLongPtr failed with error code: %lu", error);
         }
 
         if (callback)
@@ -228,7 +228,7 @@ LRESULT CALLBACK joj::JButton::ButtonProc(HWND hWnd, UINT msg, WPARAM wParam,
         break;
     }
 
-    // Chamar o procedimento de janela original do botão para manter visibilidade e funcionalidade
+    // Chamar o procedimento de janela original do botï¿½o para manter visibilidade e funcionalidade
     return CallWindowProc(s_originalWndProc, hWnd, msg, wParam, lParam);
 }
 

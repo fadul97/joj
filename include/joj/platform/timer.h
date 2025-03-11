@@ -5,7 +5,7 @@
 
 namespace joj
 {
-    class JAPI Timer
+    class JOJ_API Timer
     {
     public:
         Timer();

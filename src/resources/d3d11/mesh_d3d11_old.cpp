@@ -1,6 +1,6 @@
 #include "resources/d3d11/mesh_d3d11_old.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include <iostream>
 #include <fstream>
@@ -25,7 +25,7 @@ joj::D3D11MeshGeometryOld::D3D11MeshGeometryOld(const std::string& filename, Mes
 {
     if (!load_OBJ(filename, m_vertices, m_indices, m_vertex_count, m_index_count))
     {
-        JERROR(ErrorCode::FAILED, "Failed to load OBJ model '%s'.", filename);
+        JOJ_ERROR(ErrorCode::FAILED, "Failed to load OBJ model '%s'.", filename);
         m_vertex_count = 0;
         m_index_count = 0;
         m_cb_data = {};
@@ -114,7 +114,7 @@ void joj::D3D11MeshGeometryOld::draw(GraphicsDevice& device, CommandList& cmd_li
     m_shader.bind_vertex_shader(cmd_list);
     m_shader.bind_pixel_shader(cmd_list);
 
-    // Desenhar índices
+    // Desenhar ï¿½ndices
     cmd_list.device_context->DrawIndexed(m_index_count, 0, 0);
 }
 
@@ -210,7 +210,7 @@ b8 joj::D3D11MeshGeometryOld::load_OBJ(const std::string& filename, std::vector<
 
     file.close();
 
-    // Copiar dados para os arrays de saída
+    // Copiar dados para os arrays de saï¿½da
     vertex_count = static_cast<u32>(vertex_list.size());
     index_count = static_cast<u32>(index_list.size());
 
@@ -220,4 +220,4 @@ b8 joj::D3D11MeshGeometryOld::load_OBJ(const std::string& filename, std::vector<
     return true;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

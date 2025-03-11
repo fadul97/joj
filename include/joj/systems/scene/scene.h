@@ -11,7 +11,7 @@
 
 namespace joj
 {
-    class JAPI Scene
+    class JOJ_API Scene
     {
     public:
         Scene();

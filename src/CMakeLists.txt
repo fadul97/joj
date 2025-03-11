@@ -97,7 +97,7 @@ else()
 endif()
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(joj PUBLIC BUILDING_JOJ_DLL) # Export
+    target_compile_definitions(joj PUBLIC JOJ_BUILDING_DLL) # Export
 endif()
 
 target_include_directories(joj

@@ -2,7 +2,7 @@
 #include "joj/math/jvector4.h"
 #include "joj/math/jmath.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 #include <DirectXMath.h>
 #endif
 
@@ -85,7 +85,7 @@ JOJ_TEST(Normalization)
     assert(joj::are_floats_equal(normalized.w, expected_w));
 }
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 JOJ_TEST(Conversion_To_XMFLOAT4)
 {
     joj::JVector4 v(1.0f, 2.0f, 3.0f, 4.0f);
@@ -140,7 +140,7 @@ JOJ_TEST(Vector_Normalization)
     DirectX::XMFLOAT4 dxNorm;
     DirectX::XMStoreFloat4(&dxNorm, dxVectorNorm);
 
-    // Normalizar usando a função personalizada
+    // Normalizar usando a funï¿½ï¿½o personalizada
     joj::JVector4 jNorm = v.normalized();
 
     assert(is_JVector4_equal_to_XMFLOAT4(jNorm, dxNorm));

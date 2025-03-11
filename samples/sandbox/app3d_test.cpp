@@ -65,7 +65,7 @@ void App3DTest::setup_camera()
 
 void App3DTest::build_shader()
 {
-    JINFO("Building shader...");
+    JOJ_INFO("Building shader...");
 
     m_shader.compile_vertex_shader_from_file(
         "shaders/SimpleModel.hlsl",
@@ -80,7 +80,7 @@ void App3DTest::build_shader()
 
 void App3DTest::build_input_layout()
 {
-    JINFO("Building input layout...");
+    JOJ_INFO("Building input layout...");
 
     joj::InputDesc sprite_layout[] = {
         { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
@@ -99,7 +99,7 @@ void App3DTest::build_input_layout()
 static u32 total_indices = 0;
 void App3DTest::build_buffers()
 {
-    JINFO("Building buffers...");
+    JOJ_INFO("Building buffers...");
 
     const char* filename1 = "models/cube1.txt";
     const char* filename2 = "models/customCube.obj";
@@ -151,13 +151,13 @@ void App3DTest::init()
         switch (mouseClicked.button)
         {
         case joj::Buttons::BUTTON_LEFT:
-            JINFO("BUTTON_LEFT!");
+            JOJ_INFO("BUTTON_LEFT!");
             break;
         case joj::Buttons::BUTTON_MIDDLE:
-            JINFO("BUTTON_MIDDLE!");
+            JOJ_INFO("BUTTON_MIDDLE!");
             break;
         case joj::Buttons::BUTTON_RIGHT:
-            JINFO("BUTTON_RIGHT!");
+            JOJ_INFO("BUTTON_RIGHT!");
             break;
         }
         }
@@ -366,7 +366,7 @@ void App3DTest::load_obj_format(const std::string& filename, MeshData& mesh)
     std::ifstream fin(filename);
     if (!fin.is_open())
     {
-        JERROR(joj::ErrorCode::ERR_FILE_OPENED_FAILED,
+        JOJ_ERROR(joj::ErrorCode::ERR_FILE_OPENED_FAILED,
             "Failed to open file '%s'.", filename.c_str());
     }
 

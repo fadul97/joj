@@ -64,7 +64,7 @@ void joj::Lexer::start()
 
     if (!m_fin.is_open())
     {
-        JERROR(ErrorCode::FAILED, "Failed to open file '%s'\n."
+        JOJ_ERROR(ErrorCode::FAILED, "Failed to open file '%s'\n."
             "Check file name and location. Check if it is read - protected.",
             m_source.c_str());
     }
@@ -99,7 +99,7 @@ joj::Token* joj::Lexer::scan()
                     dot = true;
                 else
                 {
-                    JERROR(ErrorCode::FAILED, "Unexpected '.' in line %d.", m_lineno);
+                    JOJ_ERROR(ErrorCode::FAILED, "Unexpected '.' in line %d.", m_lineno);
                     ++m_errors;
                 }
             }
@@ -208,7 +208,7 @@ joj::Token* joj::Lexer::scan()
                 else
                 {
                     // Raw string literal
-                    JERROR(ErrorCode::FAILED, "Expected '\"' or '\\'' after first '\\'' in line %d", m_lineno);
+                    JOJ_ERROR(ErrorCode::FAILED, "Expected '\"' or '\\'' after first '\\'' in line %d", m_lineno);
                     ++m_errors;
                 }
             }

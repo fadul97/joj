@@ -6,7 +6,7 @@
 namespace joj
 {
     template<typename T>
-    class JAPI WindowHandle
+    class JOJ_API WindowHandle
     {
     public:
         WindowHandle();

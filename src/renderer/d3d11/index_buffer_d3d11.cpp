@@ -1,6 +1,6 @@
 #include "renderer/d3d11/index_buffer_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "core/logger.h"
@@ -43,7 +43,7 @@ joj::ErrorCode joj::D3D11IndexBuffer::create(const GraphicsDevice& device)
         (m_data.init_data.pSysMem != nullptr ? &m_data.init_data : nullptr),
         &m_data.index_buffer) != S_OK)
     {
-        JERROR(ErrorCode::ERR_INDEX_BUFFER_D3D11_CREATION,
+        JOJ_ERROR(ErrorCode::ERR_INDEX_BUFFER_D3D11_CREATION,
             "Failed to create D3D11 Index Buffer.");
         return ErrorCode::ERR_INDEX_BUFFER_D3D11_CREATION;
     }
@@ -74,4 +74,4 @@ joj::IBData& joj::D3D11IndexBuffer::get_data()
     return m_data;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

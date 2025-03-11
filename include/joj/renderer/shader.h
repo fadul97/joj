@@ -22,7 +22,7 @@ namespace joj
 
     struct ComputeShader;
 
-    class JAPI Shader
+    class JOJ_API Shader
     {
     public:
         Shader();

@@ -11,7 +11,7 @@
 
 namespace joj
 {
-    class JAPI Lexer
+    class JOJ_API Lexer
     {
     public:
         Lexer(const std::string& source);

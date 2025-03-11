@@ -16,7 +16,7 @@
 
 namespace joj
 {
-    class JAPI BasicModel
+    class JOJ_API BasicModel
     {
     public:
         BasicModel();

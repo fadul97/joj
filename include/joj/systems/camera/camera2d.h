@@ -7,7 +7,7 @@
 
 namespace joj
 {
-    class JAPI Camera2D : public Camera
+    class JOJ_API Camera2D : public Camera
     {
     public:
         Camera2D();

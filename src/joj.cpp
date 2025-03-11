@@ -5,7 +5,7 @@
 void joj_print()
 {
 	printf("Hello from %s JOJ Library!\n",
-#ifdef BUILDING_JOJ_DLL
+#ifdef JOJ_BUILDING_DLL
 		"shared"
 #else
 		"static"

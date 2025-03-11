@@ -11,7 +11,7 @@
 
 namespace joj
 {
-    class JAPI IGUI
+    class JOJ_API IGUI
     {
     public:
         IGUI();

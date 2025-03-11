@@ -9,7 +9,7 @@
 namespace joj
 {
 
-    struct JAPI SpriteAnimationData
+    struct JOJ_API SpriteAnimationData
     {
         JString name;                 // Nome da anima��o (ex: "Run", "Idle").
         JVectorI32 frames;            // Lista dos �ndices dos quadros.

@@ -10,7 +10,7 @@ namespace joj
 {
     struct CBData;
 
-    class JAPI IConstantBuffer
+    class JOJ_API IConstantBuffer
     {
     public:
         IConstantBuffer();

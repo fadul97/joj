@@ -7,7 +7,7 @@
 
 namespace joj
 {
-	struct JAPI DirectionalLight
+	struct JOJ_API DirectionalLight
 	{
 		DirectionalLight();
 
@@ -18,7 +18,7 @@ namespace joj
 		f32 pad; // Padding
 	};
 
-	struct JAPI PointLight
+	struct JOJ_API PointLight
 	{
 		PointLight();
 
@@ -35,7 +35,7 @@ namespace joj
 		f32 pad; // Padding
 	};
 
-	struct JAPI SpotLight
+	struct JOJ_API SpotLight
 	{
 		SpotLight();
 

@@ -3,13 +3,13 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "resources/basic_model.h"
 
 namespace joj
 {
-    class JAPI D3D11BasicModel : public BasicModel
+    class JOJ_API D3D11BasicModel : public BasicModel
     {
     public:
         D3D11BasicModel();
@@ -27,6 +27,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_BASIC_MODEL_H

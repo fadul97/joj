@@ -11,7 +11,7 @@
 
 namespace joj
 {
-	class JAPI Mesh
+	class JOJ_API Mesh
 	{
 	public:
 		Mesh();

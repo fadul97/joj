@@ -1,6 +1,6 @@
 #include "renderer/d3d11/vertex_buffer_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "core/logger.h"
@@ -83,7 +83,7 @@ joj::ErrorCode joj::D3D11VertexBuffer::create(const GraphicsDevice& device)
         (m_data.init_data.pSysMem != nullptr ? &m_data.init_data : nullptr),
         &m_data.vertex_buffer) != S_OK)
     {
-        JERROR(ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION,
+        JOJ_ERROR(ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION,
             "Failed to create D3D11 Vertex Buffer.");
         return ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION;
     }
@@ -126,13 +126,13 @@ void joj::D3D11VertexBuffer::update_internal(CommandList& cmd_list, const void* 
 
     if (m_data.vbd.Usage != D3D11_USAGE_DYNAMIC)
     {
-        JERROR(ErrorCode::FAILED, "Vertex Buffer usage is not dynamic.");
+        JOJ_ERROR(ErrorCode::FAILED, "Vertex Buffer usage is not dynamic.");
         return;
     }
 
     if (m_data.vbd.CPUAccessFlags != D3D11_CPU_ACCESS_WRITE)
     {
-        JERROR(ErrorCode::FAILED, "Vertex Buffer CPUAcessFlags is not writable.");
+        JOJ_ERROR(ErrorCode::FAILED, "Vertex Buffer CPUAcessFlags is not writable.");
         return;
     }
 
@@ -143,7 +143,7 @@ void joj::D3D11VertexBuffer::update_internal(CommandList& cmd_list, const void* 
     // Get a pointer to the vertex buffer data and lock it
     if (cmd_list.device_context->Map(m_data.vertex_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_buffer) != S_OK)
     {
-        JERROR(ErrorCode::FAILED, "Failed to map vertex buffer.");
+        JOJ_ERROR(ErrorCode::FAILED, "Failed to map vertex buffer.");
         return;
     }
     else
@@ -156,4 +156,4 @@ void joj::D3D11VertexBuffer::update_internal(CommandList& cmd_list, const void* 
     }
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

@@ -9,7 +9,7 @@
 
 namespace joj
 {
-    class JAPI SymbolTable
+    class JOJ_API SymbolTable
     {
     public:
         SymbolTable();

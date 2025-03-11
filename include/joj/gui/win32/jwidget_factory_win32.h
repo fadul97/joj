@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "gui/jwidget_factory.h"
 #include <Windows.h>
@@ -16,7 +16,7 @@ namespace joj
         HINSTANCE instance;
     };
 
-    class JAPI JWin32WidgetFactory : public JWidgetFactory
+    class JOJ_API JWin32WidgetFactory : public JWidgetFactory
     {
     public:
         JWin32WidgetFactory();
@@ -31,6 +31,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_WIN32_WIDGET_FACTORY_H

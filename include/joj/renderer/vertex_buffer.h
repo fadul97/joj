@@ -25,7 +25,7 @@ namespace joj
         Read
     };
 
-    class JAPI VertexBuffer
+    class JOJ_API VertexBuffer
     {
     public:
         VertexBuffer();

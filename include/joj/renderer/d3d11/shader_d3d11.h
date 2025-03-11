@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/shader.h"
 #include <d3d11.h>
@@ -34,7 +34,7 @@ namespace joj
         ID3DBlob* csblob;
     };
 
-    class JAPI D3D11Shader : public Shader
+    class JOJ_API D3D11Shader : public Shader
     {
     public:
         D3D11Shader();
@@ -79,6 +79,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_SHADER_H

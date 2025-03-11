@@ -7,7 +7,7 @@
 
 namespace joj
 {
-    class JAPI Canvas : public Widget
+    class JOJ_API Canvas : public Widget
     {
     public:
         Canvas();

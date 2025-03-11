@@ -1,6 +1,6 @@
 #include "resources/d3d11/mesh_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "core/jmacros.h"
 #include "core/logger.h"
@@ -25,7 +25,7 @@ joj::ErrorCode joj::D3D11Mesh::set_indices(GraphicsDevice& device,
 
 	if JOJ_FAILED(m_ib.create(device))
 	{
-		JERROR(ErrorCode::ERR_INDEX_BUFFER_D3D11_CREATION,
+		JOJ_ERROR(ErrorCode::ERR_INDEX_BUFFER_D3D11_CREATION,
 			"Failed to create D3D11 Index Buffer for D3D11Mesh.");
 		return ErrorCode::ERR_INDEX_BUFFER_D3D11_CREATION;
 	}
@@ -62,7 +62,7 @@ joj::ErrorCode joj::D3D11Mesh::set_vertices_internal(GraphicsDevice& device,
 
 	if JOJ_FAILED(m_vb.create(device))
 	{
-		JERROR(ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION,
+		JOJ_ERROR(ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION,
 			"Failed to create D3D11 Vertex Buffer for D3D11Mesh.");
 		return ErrorCode::ERR_VERTEX_BUFFER_D3D11_CREATION;
 	}
@@ -70,4 +70,4 @@ joj::ErrorCode joj::D3D11Mesh::set_vertices_internal(GraphicsDevice& device,
 	return ErrorCode::OK;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

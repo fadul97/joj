@@ -5,7 +5,7 @@
 
 namespace joj
 {
-    class JAPI Viewport
+    class JOJ_API Viewport
     {
     public:
         Viewport();

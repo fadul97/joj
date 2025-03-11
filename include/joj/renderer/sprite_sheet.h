@@ -9,7 +9,7 @@ namespace joj
 {
     struct SpriteSheetData;
 
-    class JAPI SpriteSheet
+    class JOJ_API SpriteSheet
     {
     public:
         SpriteSheet();

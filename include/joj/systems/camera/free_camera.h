@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "math/jmath.h"
 
@@ -23,7 +23,7 @@ namespace joj
     const f32 SENSITIVITY = 0.1f;
     const f32 ZOOM = 45.0f;
 
-    class JAPI FreeCamera
+    class JOJ_API FreeCamera
     {
     public:
         FreeCamera();
@@ -88,6 +88,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_FREE_CAMERA_H

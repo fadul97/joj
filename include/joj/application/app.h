@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include <Windows.h>
 #include "platform/keys.h"
@@ -14,7 +14,7 @@
 
 namespace joj
 {
-    class JAPI App
+    class JOJ_API App
     {
     public:
         App();
@@ -65,6 +65,6 @@ namespace joj
     { m_renderer = renderer; }
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // JOJ_APP_H

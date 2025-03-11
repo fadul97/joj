@@ -14,9 +14,9 @@ namespace joj
     template <typename Key, typename Value>
     using JUnorderedMap = std::unordered_map<Key, Value>;
 
-    struct JAPI SpriteData;
+    struct JOJ_API SpriteData;
 
-    class JAPI Sprite
+    class JOJ_API Sprite
     {
     public:
         Sprite();

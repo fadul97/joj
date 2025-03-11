@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/gui/widget.h"
 #include "renderer/d3d11/shader_d3d11.h"
@@ -21,7 +21,7 @@ namespace joj
         i32 hovered;
     };
 
-    class JAPI D3D11Widget : public Widget
+    class JOJ_API D3D11Widget : public Widget
     {
     public:
         D3D11Widget();
@@ -56,6 +56,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_WIDGET_H

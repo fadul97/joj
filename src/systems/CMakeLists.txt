@@ -25,7 +25,7 @@ add_library(jojSystems
 )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojSystems PRIVATE BUILDING_JOJ_DLL) # Export
+    target_compile_definitions(jojSystems PRIVATE JOJ_BUILDING_DLL) # Export
 endif()
 
 target_include_directories(jojSystems

@@ -22,7 +22,7 @@ cbuffer ConstantBuffer : register(b0)
 
 namespace joj
 {
-    class JAPI SceneObject3D
+    class JOJ_API SceneObject3D
     {
     public:
         SceneObject3D();

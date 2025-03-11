@@ -24,13 +24,13 @@ namespace joj
 
     namespace M3DLoader
     {
-        JAPI ErrorCode load_M3D_static(const std::string& filename,
+        JOJ_API ErrorCode load_M3D_static(const std::string& filename,
             std::vector<Vertex::PosNormalTexTan>& vertices,
             std::vector<u16>& indices,
             std::vector<SubMesh>& submeshes,
             std::vector<M3DMaterial>& mats);
 
-        JAPI ErrorCode load_M3D_skinned(const std::string& filename,
+        JOJ_API ErrorCode load_M3D_skinned(const std::string& filename,
             std::vector<Vertex::PosNormalTexTanSkinned>& vertices,
             std::vector<u16>& indices,
             std::vector<SubMesh>& submeshes,

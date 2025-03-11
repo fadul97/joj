@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/font.h"
 #include "texture2d_data_d3d11.h"
@@ -21,7 +21,7 @@ namespace joj
         i32 texture_height;
     };
 
-    class JAPI D3D11Font : public Font
+    class JOJ_API D3D11Font : public Font
     {
     public:
         D3D11Font();
@@ -41,6 +41,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_FONT_H

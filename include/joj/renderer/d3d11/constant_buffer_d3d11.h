@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/constant_buffer.h"
 #include <d3d11.h>
@@ -33,7 +33,7 @@ namespace joj
         D3D11_BUFFER_DESC cbd;
     };
 
-    class JAPI D3D11ConstantBuffer : public IConstantBuffer
+    class JOJ_API D3D11ConstantBuffer : public IConstantBuffer
     {
     public:
         D3D11ConstantBuffer();
@@ -58,6 +58,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_CONSTANT_BUFFER_H

@@ -1,6 +1,6 @@
 #include "renderer/d3d11/sampler_state_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "core/logger.h"
@@ -171,7 +171,7 @@ joj::ErrorCode joj::D3D11SamplerState::create(GraphicsDevice& device,
 
     if (device.device->CreateSamplerState(&sampler_desc, &m_data.sampler_state) != S_OK)
     {
-        JERROR(ErrorCode::ERR_SAMPLER_STATE_D3D11_CREATION, "Failed to create Sampler State.");
+        JOJ_ERROR(ErrorCode::ERR_SAMPLER_STATE_D3D11_CREATION, "Failed to create Sampler State.");
         return ErrorCode::ERR_SAMPLER_STATE_D3D11_CREATION;
     }
 
@@ -201,4 +201,4 @@ joj::SamplerData& joj::D3D11SamplerState::get_data()
     return m_data;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

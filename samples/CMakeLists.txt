@@ -15,7 +15,7 @@ if (WIN32)
     )
     
     if(BUILD_SHARED_LIBS)
-        target_compile_definitions(jojSamples PRIVATE USING_JOJ_DLL)
+        target_compile_definitions(jojSamples PRIVATE JOJ_USING_DLL)
     endif()
 
     # Resource folders
@@ -57,11 +57,11 @@ if (WIN32)
     )
 
     
-    # Se for uma DLL, copiar automaticamente para o diretório do executável
+    # Se for uma DLL, copiar automaticamente para o diretï¿½rio do executï¿½vel
     if(BUILD_SHARED_LIBS)
         add_custom_command(TARGET jojSamples POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "$<TARGET_RUNTIME_DLLS:jojSamples>"  # Sem aspas para evitar lista como string única
+                "$<TARGET_RUNTIME_DLLS:jojSamples>"  # Sem aspas para evitar lista como string ï¿½nica
                 "$<TARGET_FILE_DIR:jojSamples>"
             COMMAND_EXPAND_LISTS  # Faz expandir corretamente a lista de DLLs
         )

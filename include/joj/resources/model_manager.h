@@ -9,7 +9,7 @@
 namespace joj
 {
     template<typename T>
-    class JAPI ModelManager
+    class JOJ_API ModelManager
     {
     public:
         ModelManager();

@@ -10,7 +10,7 @@ add_library(jojScript
 )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojScript PUBLIC BUILDING_JOJ_DLL) # Export
+    target_compile_definitions(jojScript PUBLIC JOJ_BUILDING_DLL) # Export
 endif()
 
 target_include_directories(jojScript

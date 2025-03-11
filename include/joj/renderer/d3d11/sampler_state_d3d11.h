@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include <d3d11.h>
 #include "renderer/sampler_state.h"
@@ -16,7 +16,7 @@ namespace joj
         ID3D11SamplerState* sampler_state;
     };
 
-    class JAPI D3D11SamplerState : public SamplerState
+    class JOJ_API D3D11SamplerState : public SamplerState
     {
     public:
         D3D11SamplerState();
@@ -34,6 +34,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_SAMPLER_STATE_H

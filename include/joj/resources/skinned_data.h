@@ -11,7 +11,7 @@
 
 namespace joj
 {
-    class JAPI SkinnedData
+    class JOJ_API SkinnedData
     {
     public:
         SkinnedData();

@@ -17,7 +17,7 @@
 
 namespace joj
 {
-    class JAPI BasicSkinnedModel
+    class JOJ_API BasicSkinnedModel
     {
     public:
         BasicSkinnedModel();

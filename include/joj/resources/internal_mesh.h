@@ -8,7 +8,7 @@
 
 namespace joj
 {
-    struct JAPI InternalMesh
+    struct JOJ_API InternalMesh
     {
         std::vector<Vertex::PosColorNormal> vertices;
         std::vector<u32> indices;

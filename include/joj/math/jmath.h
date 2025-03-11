@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include <DirectXMath.h>
 #include <iostream>
@@ -105,7 +105,7 @@ namespace joj
     }
 }
 
-#elif JPLATFORM_LINUX
+#elif JOJ_PLATFORM_LINUX
 
 #include <cmath>
 
@@ -117,6 +117,6 @@ namespace joj
     }
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_MATH_H

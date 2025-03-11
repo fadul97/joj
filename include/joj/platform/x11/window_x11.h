@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_LINUX
+#if JOJ_PLATFORM_LINUX
 
 #include "platform/window.h"
 #include <X11/Xlib.h>
@@ -22,7 +22,7 @@ namespace joj
         u32 height;
     };
 
-    class JAPI X11Window : public Window<WindowData>
+    class JOJ_API X11Window : public Window<WindowData>
     {
     public:
         X11Window();
@@ -46,6 +46,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_LINUX
+#endif // JOJ_PLATFORM_LINUX
 
 #endif // _JOJ_X11_WINDOW_H

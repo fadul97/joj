@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "resources/mesh_old.h"
 #include "renderer/d3d11/vertex_buffer_d3d11.h"
@@ -13,7 +13,7 @@
 
 namespace joj
 {
-    class JAPI D3D11MeshGeometryOld : public MeshGeometryOld
+    class JOJ_API D3D11MeshGeometryOld : public MeshGeometryOld
     {
     public:
         D3D11MeshGeometryOld();
@@ -41,6 +41,6 @@ namespace joj
 
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_MESH_GEOMETRY_OLD_H

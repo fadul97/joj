@@ -1,6 +1,6 @@
 #include "renderer/d3d11/gui/canvas_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 joj::D3D11Canvas::D3D11Canvas()
 {
@@ -21,4 +21,4 @@ joj::D3D11Canvas::~D3D11Canvas()
 {
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

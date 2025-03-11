@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "resources/model_manager.h"
 #include <unordered_map>
@@ -13,7 +13,7 @@
 
 namespace joj
 {
-    class JAPI D3D11ModelManager : public ModelManager<D3D11BasicModel>
+    class JOJ_API D3D11ModelManager : public ModelManager<D3D11BasicModel>
     {
     public:
         D3D11ModelManager();
@@ -31,6 +31,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_MODEL_MANAGER_H

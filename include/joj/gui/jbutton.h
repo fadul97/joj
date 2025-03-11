@@ -11,7 +11,7 @@
 
 namespace joj
 {
-    class JAPI JButton : public JWidget
+    class JOJ_API JButton : public JWidget
     {
     public:
         JButton();

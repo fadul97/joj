@@ -27,7 +27,7 @@ joj::ErrorCode joj::M3DLoader::load_M3D_static(const std::string& filename,
     std::ifstream fin(filename);
     if (!fin.is_open())
     {
-        JERROR(ErrorCode::ERR_FILE_OPENED_FAILED,
+        JOJ_ERROR(ErrorCode::ERR_FILE_OPENED_FAILED,
             "Failed to open file '%s'.", filename.c_str());
         return ErrorCode::ERR_FILE_OPENED_FAILED;
     }
@@ -64,7 +64,7 @@ joj::ErrorCode joj::M3DLoader::load_M3D_skinned(const std::string& filename,
     std::ifstream fin(filename);
     if (!fin.is_open())
     {
-        JERROR(ErrorCode::ERR_FILE_OPENED_FAILED,
+        JOJ_ERROR(ErrorCode::ERR_FILE_OPENED_FAILED,
             "Failed to open file '%s'.", filename.c_str());
         return ErrorCode::ERR_FILE_OPENED_FAILED;
     }

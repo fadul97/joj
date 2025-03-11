@@ -1,6 +1,6 @@
 #include "gui/win32/jwidget_factory_win32.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "core/logger.h"
 #include "core/jmacros.h"
@@ -21,7 +21,7 @@ joj::JButton* joj::JWin32WidgetFactory::create_button(i32 x, i32 y, i32 width,
     JButton* button = new JButton(x, y, width, height, label.c_str());
     if (!button)
     {
-        JFATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_GUI_BUTTON_WIN32_CREATION,
             "Failed to create button.");
         return nullptr;
     }
@@ -32,4 +32,4 @@ joj::JButton* joj::JWin32WidgetFactory::create_button(i32 x, i32 y, i32 width,
     return button;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

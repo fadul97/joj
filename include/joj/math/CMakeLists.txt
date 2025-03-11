@@ -5,9 +5,9 @@ project(joj)
 add_library(jojMath jmath.cpp jmath.h jvector3.h jvector4.h)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojMath PUBLIC BUILDING_JOJ_DLL) # Export
+    target_compile_definitions(jojMath PUBLIC JOJ_BUILDING_DLL) # Export
 # else()
-    # target_compile_definitions(jojMath PUBLIC USING_JOJ_DLL) # Import
+    # target_compile_definitions(jojMath PUBLIC JOJ_USING_DLL) # Import
 endif()
 
 # TODO: if interface, remove 'legacy' include_directories()

@@ -3,13 +3,13 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/d3d11/gui/widget_d3d11.h"
 
 namespace joj
 {
-    class JAPI D3D11Button : public D3D11Widget
+    class JOJ_API D3D11Button : public D3D11Widget
     {
     public:
         D3D11Button();
@@ -20,6 +20,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_BUTTON_H

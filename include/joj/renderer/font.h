@@ -10,7 +10,7 @@ namespace joj
 {
     struct FontData;
 
-    class JAPI Font
+    class JOJ_API Font
     {
     public:
         Font();

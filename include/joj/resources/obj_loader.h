@@ -8,7 +8,7 @@
 
 namespace joj
 {
-    class JAPI OBJLoader
+    class JOJ_API OBJLoader
     {
     public:
         OBJLoader();

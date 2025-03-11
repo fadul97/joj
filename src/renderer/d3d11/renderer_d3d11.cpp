@@ -1,6 +1,6 @@
 #include "renderer/d3d11/renderer_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "core/logger.h"
 #include "platform/win32/window_win32.h"
@@ -154,7 +154,7 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
 
     if (CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&m_factory)) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_CONTEXT_D3D11_DXGI_FACTORY2_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_DXGI_FACTORY2_CREATION,
             "Failed to create D3D11 DXGIFactory2.");
         return ErrorCode::ERR_CONTEXT_D3D11_DXGI_FACTORY2_CREATION;
     }
@@ -175,14 +175,14 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
         &m_cmd_list.device_context)          // D3D context device
         != S_OK)
     {
-        JERROR(ErrorCode::ERR_CONTEXT_D3D11_DEVICE_CREATION,
+        JOJ_ERROR(ErrorCode::ERR_CONTEXT_D3D11_DEVICE_CREATION,
             "Failed to create D3D11Device. Creating D3D11 Warp adapter...");
 
         if (D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_WARP,
             NULL, create_device_flags, NULL, 0, D3D11_SDK_VERSION,
             &m_graphics_device.device, &feature_level, &m_cmd_list.device_context) != S_OK)
         {
-            JFATAL(ErrorCode::ERR_CONTEXT_D3D11_WARP_DEVICE_ADAPTER_CREATION,
+            JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_WARP_DEVICE_ADAPTER_CREATION,
                 "Failed to create WARP Adapter.");
             return ErrorCode::ERR_CONTEXT_D3D11_WARP_DEVICE_ADAPTER_CREATION;
         }
@@ -191,7 +191,7 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
 #if JOJ_DEBUG_MODE
     if (m_graphics_device.device->QueryInterface(__uuidof(ID3D11Debug), (void**)&m_debug) != S_OK)
     {
-        JERROR(ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_ID3D11_DEBUG,
+        JOJ_ERROR(ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_ID3D11_DEBUG,
             "Failed to QueryInterface of ID3D11Debug.");
     }
 #endif // JOJ_DEBUG_MODE
@@ -199,7 +199,7 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
     IDXGIDevice* dxgi_device = nullptr;
     if (m_graphics_device.device->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgi_device) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_IDXGI_DEVICE,
+        JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_IDXGI_DEVICE,
             "Failed to QueryInterface of DXGIDevice.");
         return ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_IDXGI_DEVICE;
     }
@@ -208,7 +208,7 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
     IDXGIAdapter* dxgi_adapter = nullptr;
     if (dxgi_device->GetParent(__uuidof(IDXGIAdapter), (void**)&dxgi_adapter) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_ADAPTER,
+        JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_ADAPTER,
             "Failed to GetParent of IDXGIAdapter.");
         return ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_ADAPTER;
     }
@@ -217,7 +217,7 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
     IDXGIFactory2* dxgi_factory = nullptr;
     if (dxgi_adapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgi_factory) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_FACTORY,
+        JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_FACTORY,
             "Failed to GetParent of IDXGIFactory2.");
         return ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_FACTORY;
     }
@@ -265,7 +265,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     {
         if (create_context() != ErrorCode::OK)
         {
-            JFATAL(ErrorCode::ERR_CONTEXT_D3D11_CREATION,
+            JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_CREATION,
                 "Failed to create D3D11 context.");
             return ErrorCode::ERR_CONTEXT_D3D11_CREATION;
         }
@@ -277,7 +277,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
         4, &m_4xmsaa_quality) != S_OK)
     {
         // TODO: Better ErrorCode
-        JERROR(ErrorCode::ERR_SWAPCHAIN_D3D11_MULTISAMPLE_QUALITY_LEVELS_CHECK,
+        JOJ_ERROR(ErrorCode::ERR_SWAPCHAIN_D3D11_MULTISAMPLE_QUALITY_LEVELS_CHECK,
             "Failed to check multi sample quality levels. Setting it to 0.");
         m_4xmsaa_quality = 0;
     }
@@ -327,7 +327,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_factory->CreateSwapChain(m_graphics_device.device, &swap_chain_desc,
         &m_swapchain) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_SWAPCHAIN_D311_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_SWAPCHAIN_D311_CREATION,
             "Failed to create SwapChain.");
         return ErrorCode::ERR_SWAPCHAIN_D311_CREATION;
     }
@@ -341,7 +341,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D),
         reinterpret_cast<void**>(&backbuffer)) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_SWAPCHAIN_D3D11_GET_BACKBUFFER,
+        JOJ_FATAL(ErrorCode::ERR_SWAPCHAIN_D3D11_GET_BACKBUFFER,
             "Failed to Get backbuffer surface of a Swap Chain.");
         return ErrorCode::ERR_SWAPCHAIN_D3D11_GET_BACKBUFFER;
     }
@@ -350,7 +350,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_graphics_device.device->CreateRenderTargetView(backbuffer, NULL,
         &m_render_target_view) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_RENDER_TARGET_VIEW_D3D11_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_RENDER_TARGET_VIEW_D3D11_CREATION,
             "Failed to create D3D11 Render Target View.");
         return ErrorCode::ERR_RENDER_TARGET_VIEW_D3D11_CREATION;
     }
@@ -389,7 +389,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_graphics_device.device->CreateTexture2D(&depth_stencil_tex2d_desc, 0,
         &m_depth_stencil_buffer) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION,
             "Failed to create D3D11 DepthStencil buffer (Texture2D).");
         return ErrorCode::ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION;
     }
@@ -426,7 +426,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_graphics_device.device->CreateDepthStencilState(&depth_stencil_desc,
         &m_depth_stencil_state) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION,
             "Failed to create D3D11 Depth Stencil State.");
         return ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION;
     }
@@ -463,7 +463,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_graphics_device.device->CreateDepthStencilState(&depth_disabled_stencil_desc,
         &m_depth_disabled_stencil_state) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION,
             "Failed to create D3D11 Depth Stencil State.");
         return ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION;
     }
@@ -484,7 +484,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_graphics_device.device->CreateDepthStencilView(m_depth_stencil_buffer,
         &depth_stencil_view_desc, &m_depth_stencil_view) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION,
             "Failed to create D3D11 Depth Stencil View.");
         return ErrorCode::ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION;
     }
@@ -528,7 +528,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     // Create blend state
     if (m_graphics_device.device->CreateBlendState(&blend_desc, &m_blend_state) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_BLENDSTATE_D3D11_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_BLENDSTATE_D3D11_CREATION,
             "Failed to create D3D11 BlendState.");
         return ErrorCode::ERR_BLENDSTATE_D3D11_CREATION;
     }
@@ -550,7 +550,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     // Create Solid rasterizer state
     if (m_graphics_device.device->CreateRasterizerState(&rasterizer_desc, &m_rasterizer_state_solid) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_RASTERIZER_D3D11_CREATION, "Failed to create D3D11 RasterizerState.");
+        JOJ_FATAL(ErrorCode::ERR_RASTERIZER_D3D11_CREATION, "Failed to create D3D11 RasterizerState.");
         return ErrorCode::ERR_RASTERIZER_D3D11_CREATION;
     }
 
@@ -560,7 +560,7 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     // Create Wireframe rasterizer state
     if (m_graphics_device.device->CreateRasterizerState(&rasterizer_desc, &m_rasterizer_state_wireframe) != S_OK)
     {
-        JFATAL(ErrorCode::ERR_RASTERIZER_D3D11_CREATION, "Failed to create RasterizerState.");
+        JOJ_FATAL(ErrorCode::ERR_RASTERIZER_D3D11_CREATION, "Failed to create RasterizerState.");
         return ErrorCode::ERR_RASTERIZER_D3D11_CREATION;
     }
 
@@ -795,7 +795,7 @@ void joj::D3D11Renderer::swap_buffers()
 
     if (m_swapchain->Present(m_vsync, NULL) != S_OK)
     {
-        JERROR(ErrorCode::ERR_RENDERER_D3D11_SWAPCHAIN_PRESENT, "Failed to present SwapChain.");
+        JOJ_ERROR(ErrorCode::ERR_RENDERER_D3D11_SWAPCHAIN_PRESENT, "Failed to present SwapChain.");
         return;
     }
 
@@ -841,7 +841,7 @@ void joj::D3D11Renderer::log_hardware_info()
         size_t converted_chars = 0;
         wcstombs_s(&converted_chars, graphics_card, sizeof(graphics_card), desc.Description, _TRUNCATE);
 
-        JINFO("---> Graphics card: %s.", graphics_card);
+        JOJ_INFO("---> Graphics card: %s.", graphics_card);
     }
 
     IDXGIAdapter4* adapter4 = nullptr;
@@ -850,10 +850,10 @@ void joj::D3D11Renderer::log_hardware_info()
         DXGI_QUERY_VIDEO_MEMORY_INFO mem_info;
         adapter4->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &mem_info);
 
-        JINFO("---> Video memory (free): %lluMB.", mem_info.Budget / bytes_in_megabyte);
+        JOJ_INFO("---> Video memory (free): %lluMB.", mem_info.Budget / bytes_in_megabyte);
 
         // FIXME: Memory used is wrong
-        JINFO("---> Video memory(used) : %lluMB.", mem_info.CurrentUsage / bytes_in_megabyte);
+        JOJ_INFO("---> Video memory(used) : %lluMB.", mem_info.CurrentUsage / bytes_in_megabyte);
 
         adapter4->Release();
     }
@@ -864,7 +864,7 @@ void joj::D3D11Renderer::log_hardware_info()
 
     // Instructions block
     {
-        JINFO("---> Feature Level: 11_0.");
+        JOJ_INFO("---> Feature Level: 11_0.");
     }
 
     // ---------------------------------------------------
@@ -881,7 +881,7 @@ void joj::D3D11Renderer::log_hardware_info()
         size_t converted_chars = 0;
         wcstombs_s(&converted_chars, device_name, sizeof(device_name), desc.DeviceName, _TRUNCATE);
 
-        JINFO("---> Monitor: %s.", device_name);
+        JOJ_INFO("---> Monitor: %s.", device_name);
     }
 
     // ----------------------------------------------------
@@ -899,7 +899,7 @@ void joj::D3D11Renderer::log_hardware_info()
     EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dev_mode);
     u32 refresh = dev_mode.dmDisplayFrequency;
 
-    JINFO("---> Resolution: %dx%d %d Hz.", screen_width, screen_height, refresh);
+    JOJ_INFO("---> Resolution: %dx%d %d Hz.", screen_width, screen_height, refresh);
 
     // Release used DXGI interfaces
     if (adapter) adapter->Release();
@@ -907,4 +907,4 @@ void joj::D3D11Renderer::log_hardware_info()
 }
 #endif // JOJ_DEBUG_MODE
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

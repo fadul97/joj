@@ -1,6 +1,6 @@
 #include "platform/win32/window_win32.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "core/logger.h"
 #include <windowsx.h>
@@ -57,7 +57,7 @@ joj::ErrorCode joj::Win32Window::create()
     m_data.instance = GetModuleHandle(nullptr);
     if (!m_data.instance)
     {
-        JFATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to get module handle.");
+        JOJ_FATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to get module handle.");
         return ErrorCode::ERR_WINDOW_HANDLE;
     }
 
@@ -81,7 +81,7 @@ joj::ErrorCode joj::Win32Window::create()
         // Register "JOJ_WINDOW_CLASS" class
         if (!RegisterClassEx(&wnd_class))
         {
-            JERROR(ErrorCode::ERR_WINDOW_REGISTRATION, "Failed to register window class.");
+            JOJ_ERROR(ErrorCode::ERR_WINDOW_REGISTRATION, "Failed to register window class.");
             return ErrorCode::ERR_WINDOW_REGISTRATION;
         }
     }
@@ -175,7 +175,7 @@ joj::ErrorCode joj::Win32Window::create()
 
     if (!m_data.handle)
     {
-        JFATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to create window.");
+        JOJ_FATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to create window.");
         return ErrorCode::ERR_WINDOW_HANDLE;
     }
 
@@ -191,7 +191,7 @@ joj::ErrorCode joj::Win32Window::create()
             GetMenu(m_data.handle) != nullptr,
             GetWindowExStyle(m_data.handle)))
         {
-            JERROR(ErrorCode::ERR_WINDOW_ADJUST, "Could not adjust window rect ex.");
+            JOJ_ERROR(ErrorCode::ERR_WINDOW_ADJUST, "Could not adjust window rect ex.");
         }
 
         LONG xpos = (GetSystemMetrics(SM_CXSCREEN) / 2) - ((new_rect.right - new_rect.left) / 2);
@@ -206,7 +206,7 @@ joj::ErrorCode joj::Win32Window::create()
             TRUE)
             )
         {
-            JERROR(ErrorCode::ERR_WINDOW_MOVE, "Could not move window.");
+            JOJ_ERROR(ErrorCode::ERR_WINDOW_MOVE, "Could not move window.");
         }
     }
     else if (m_mode == WindowMode::Borderless)
@@ -218,7 +218,7 @@ joj::ErrorCode joj::Win32Window::create()
             GetMenu(m_data.handle) != nullptr,
             GetWindowExStyle(m_data.handle)))
         {
-            JERROR(ErrorCode::ERR_WINDOW_ADJUST, "Could not adjust window rect ex.");
+            JOJ_ERROR(ErrorCode::ERR_WINDOW_ADJUST, "Could not adjust window rect ex.");
         }
 
         LONG xpos = (GetSystemMetrics(SM_CXSCREEN) / 2) - ((new_rect.right - new_rect.left) / 2);
@@ -233,13 +233,13 @@ joj::ErrorCode joj::Win32Window::create()
             TRUE)
             )
         {
-            JERROR(ErrorCode::ERR_WINDOW_MOVE, "Could not move window.");
+            JOJ_ERROR(ErrorCode::ERR_WINDOW_MOVE, "Could not move window.");
         }
     }
 
     m_data.hdc = GetDC(m_data.handle);
     if (!m_data.hdc)
-        JERROR(ErrorCode::ERR_WINDOW_DEVICE_CONTEXT, "Failed to get device context.");
+        JOJ_ERROR(ErrorCode::ERR_WINDOW_DEVICE_CONTEXT, "Failed to get device context.");
 
     RECT window_rect;
     if (GetWindowRect(m_data.handle, &window_rect))
@@ -251,7 +251,7 @@ joj::ErrorCode joj::Win32Window::create()
     }
     else
     {
-        JERROR(ErrorCode::ERR_WINDOW_RECT, "Failed to get window rect.");
+        JOJ_ERROR(ErrorCode::ERR_WINDOW_RECT, "Failed to get window rect.");
     }
 
     RECT client_rect;
@@ -264,7 +264,7 @@ joj::ErrorCode joj::Win32Window::create()
     }
     else
     {
-        JERROR(ErrorCode::ERR_WINDOW_CLIENT_RECT, "Failed to get client rect.");
+        JOJ_ERROR(ErrorCode::ERR_WINDOW_CLIENT_RECT, "Failed to get client rect.");
     }
 
     return ErrorCode::OK;
@@ -313,7 +313,7 @@ void joj::Win32Window::get_window_size(u32& width, u32& height)
     }
     else
     {
-        JERROR(ErrorCode::ERR_WINDOW_RECT, "Failed to get window rect.");
+        JOJ_ERROR(ErrorCode::ERR_WINDOW_RECT, "Failed to get window rect.");
     }
 }
 
@@ -332,7 +332,7 @@ void joj::Win32Window::get_client_size(u32& width, u32& height)
     }
     else
     {
-        JERROR(ErrorCode::ERR_WINDOW_CLIENT_RECT, "Failed to get client rect.");
+        JOJ_ERROR(ErrorCode::ERR_WINDOW_CLIENT_RECT, "Failed to get client rect.");
     }
 }
 
@@ -341,4 +341,4 @@ void joj::Win32Window::set_title(const char* title)
     SetWindowText(m_data.handle, title);
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

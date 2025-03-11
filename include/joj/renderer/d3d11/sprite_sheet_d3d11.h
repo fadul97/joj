@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/sprite_sheet.h"
 #include "texture2d_data_d3d11.h"
@@ -21,7 +21,7 @@ namespace joj
         i32 texture_height;    // Altura da textura.
     };
 
-    class JAPI D3D11SpriteSheet : public SpriteSheet
+    class JOJ_API D3D11SpriteSheet : public SpriteSheet
     {
     public:
         D3D11SpriteSheet();
@@ -37,6 +37,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_SPRITE_SHEET_H

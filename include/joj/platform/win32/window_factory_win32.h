@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "platform/window_factory.h"
 #include "platform/win32/window_win32.h"
@@ -26,7 +26,7 @@ namespace joj
 
     */
 
-    class JAPI Win32WindowFactory : public WindowFactory<Win32Window>
+    class JOJ_API Win32WindowFactory : public WindowFactory<Win32Window>
     {
     public:
         Win32WindowFactory();
@@ -41,6 +41,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_WIN32_WINDOW_FACTORY_H

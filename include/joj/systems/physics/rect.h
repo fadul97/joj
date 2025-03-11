@@ -7,7 +7,7 @@
 
 namespace joj
 {
-    class JAPI Rect : public Geometry
+    class JOJ_API Rect : public Geometry
     {
     public:
         Rect();

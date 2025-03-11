@@ -14,7 +14,7 @@ add_library(jojPlatform
 )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojPlatform PRIVATE BUILDING_JOJ_DLL) # Export
+    target_compile_definitions(jojPlatform PRIVATE JOJ_BUILDING_DLL) # Export
 endif()
 
 add_subdirectory(win32)

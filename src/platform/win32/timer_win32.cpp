@@ -1,6 +1,6 @@
 #include "platform/win32/timer_win32.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 joj::Win32Timer::Win32Timer()
     : Timer{}
@@ -114,4 +114,4 @@ f32 joj::Win32Timer::elapsed()
     return float(elapsed / f64(m_freq.QuadPart));
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

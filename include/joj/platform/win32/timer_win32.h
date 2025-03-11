@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "platform/timer.h"
 
@@ -13,7 +13,7 @@
 
 namespace joj
 {
-    class JAPI Win32Timer : public Timer
+    class JOJ_API Win32Timer : public Timer
     {
     public:
         Win32Timer();
@@ -45,6 +45,6 @@ namespace joj
     { timeEndPeriod(1); }
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_WIN32_TIMER_H

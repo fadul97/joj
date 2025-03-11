@@ -1,6 +1,6 @@
 #include "renderer/d3d11/sprite_sheet_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 joj::D3D11SpriteSheet::D3D11SpriteSheet()
 {
@@ -35,4 +35,4 @@ joj::SpriteSheetData& joj::D3D11SpriteSheet::get_data()
     return m_data;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

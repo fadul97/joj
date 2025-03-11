@@ -1,6 +1,6 @@
 #include "renderer/d3d11/font_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "core/logger.h"
 #include "renderer/d3d11/WICTextureLoader.h"
@@ -42,7 +42,7 @@ void joj::D3D11Font::set_font(GraphicsDevice& device, CommandList& cmd_list, con
     if (D3D11CreateTextureFromFile(device.device, cmd_list.device_context, filename,
         nullptr, &m_data.texture.srv, m_tex_width, m_tex_height) != S_OK)
     {
-        JERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
+        JOJ_ERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
             "Failed to load Font file '%s'.", filename);
     }
 
@@ -81,9 +81,9 @@ void joj::D3D11Font::draw_text(const std::string& text, f32 x, f32 y)
 {
     if (m_data.texture.srv == nullptr)
     {
-        JWARN("Font texture is not set.");
+        JOJ_WARN("Font texture is not set.");
         return;
     }
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

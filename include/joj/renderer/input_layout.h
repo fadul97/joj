@@ -12,14 +12,14 @@
 
 namespace joj
 {
-    enum class JAPI InputClassification
+    enum class JOJ_API InputClassification
     {
         Undefined,
         PerVertexData,
         PerInstanceData
     };
 
-    struct JAPI InputDesc
+    struct JOJ_API InputDesc
     {
         std::string semantic_name;
         u32 semantic_index{ 0 };
@@ -34,7 +34,7 @@ namespace joj
 
     using JVectorInputDesc = std::vector<InputDesc>;
 
-    class JAPI InputLayout
+    class JOJ_API InputLayout
     {
     public:
         InputLayout();

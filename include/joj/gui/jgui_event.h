@@ -7,7 +7,7 @@
 
 namespace joj
 {
-    class JAPI JGUIEvent
+    class JOJ_API JGUIEvent
     {
     public:
         using Callback = std::function<void()>;

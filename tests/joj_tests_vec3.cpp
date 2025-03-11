@@ -1,7 +1,7 @@
 #include "joj/test/jtest_macros.h"
 #include "joj/math/jvector3.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 #include <DirectXMath.h>
 #endif
 
@@ -81,7 +81,7 @@ JOJ_TEST(Normalization)
     assert(normalized.x == 0.6f && normalized.y == 0.8f && normalized.z == 0.0f);
 }
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 JOJ_TEST(Conversion_To_XMFLOAT3)
 {
     joj::JVector3 v(1.0f, 2.0f, 3.0f);
@@ -136,7 +136,7 @@ JOJ_TEST(Vector_Normalization)
     DirectX::XMFLOAT3 dxNorm;
     DirectX::XMStoreFloat3(&dxNorm, dxVectorNorm);
 
-    // Normalizar usando a função personalizada
+    // Normalizar usando a funï¿½ï¿½o personalizada
     joj::JVector3 jNorm = v.normalized();
 
     assert(is_JVector3_equal_to_XMFLOAT3(jNorm, dxNorm));

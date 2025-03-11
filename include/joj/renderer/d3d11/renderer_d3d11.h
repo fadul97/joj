@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/renderer.h"
 #include <d3d11.h>
@@ -31,7 +31,7 @@ namespace joj
         ID3D11DeviceContext* device_context;
     };
 
-    class JAPI D3D11Renderer : public IRenderer
+    class JOJ_API D3D11Renderer : public IRenderer
     {
     public:
         D3D11Renderer();
@@ -99,6 +99,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_RENDERER_H

@@ -7,7 +7,7 @@
 
 namespace joj
 {
-	struct JAPI SubMesh
+	struct JOJ_API SubMesh
 	{
 		SubMesh();
 		SubMesh(std::string name);

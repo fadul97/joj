@@ -1,6 +1,6 @@
 #include "platform/win32/window_factory_win32.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "platform/window_registration_class.h"
 #include "core/logger.h"
@@ -69,7 +69,7 @@ joj::ErrorCode joj::Win32WindowFactory::create_window_class(WindowRegistrationCl
                 nullptr
             );
 
-            JFATAL(ErrorCode::ERR_WINDOW_REGISTRATION,
+            JOJ_FATAL(ErrorCode::ERR_WINDOW_REGISTRATION,
                 "Failed to register window class. Error %lu: %s", error_code, error_message);
             return ErrorCode::ERR_WINDOW_REGISTRATION;
         }
@@ -100,4 +100,4 @@ DWORD joj::Win32WindowFactory::convert_window_styles(WindowStyles styles)
     return result;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

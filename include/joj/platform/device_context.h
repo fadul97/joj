@@ -6,7 +6,7 @@
 namespace joj
 {
     template<typename T>
-    class JAPI DeviceContext
+    class JOJ_API DeviceContext
     {
     public:
         DeviceContext();

@@ -6,7 +6,7 @@
 #include "event_type.h"
 #include "platform/keys.h"
 
-JAPI void event_print();
+JOJ_API void event_print();
 
 namespace joj
 {

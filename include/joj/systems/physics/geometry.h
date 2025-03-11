@@ -13,7 +13,7 @@ namespace joj
         Rectangle,
     };
 
-    class JAPI Geometry
+    class JOJ_API Geometry
     {
     public:
         Geometry();

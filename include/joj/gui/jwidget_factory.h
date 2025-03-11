@@ -9,7 +9,7 @@
 
 namespace joj
 {
-    class JAPI JWidgetFactory
+    class JOJ_API JWidgetFactory
     {
     public:
         JWidgetFactory() = default;

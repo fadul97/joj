@@ -13,7 +13,7 @@
 
 namespace joj
 {
-    class JAPI TextureManager
+    class JOJ_API TextureManager
     {
     public:
         TextureManager();

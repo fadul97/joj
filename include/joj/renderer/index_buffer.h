@@ -11,7 +11,7 @@ namespace joj
 {
     struct IBData;
 
-    class JAPI IndexBuffer
+    class JOJ_API IndexBuffer
     {
     public:
         IndexBuffer();

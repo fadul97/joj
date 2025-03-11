@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/input_layout.h"
 #include <d3d11.h>
@@ -15,7 +15,7 @@ namespace joj
         ID3D11InputLayout* input_layout;
     };
 
-    class JAPI D3D11InputLayout : public InputLayout
+    class JOJ_API D3D11InputLayout : public InputLayout
     {
     public:
         D3D11InputLayout();
@@ -32,6 +32,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_INPUT_LAYOUT_H

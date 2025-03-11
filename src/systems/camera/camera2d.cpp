@@ -40,7 +40,7 @@ void joj::Camera2D::set_position(const f32 x, const f32 y, const f32 z)
 
 void joj::Camera2D::set_rotation(const JFloat3& rotation)
 {
-    JTODO();
+    JOJ_TODO();
 }
 
 joj::JFloat3 joj::Camera2D::get_position() const
@@ -76,12 +76,12 @@ void joj::Camera2D::update()
 {
     if (m_view_dirty)
     {
-        // Matriz de visão: rotação + translação
+        // Matriz de visï¿½o: rotaï¿½ï¿½o + translaï¿½ï¿½o
         JMatrix4x4 translation = DirectX::XMMatrixTranslation(-m_x, -m_y, 0.0f);
         JMatrix4x4 rotation = DirectX::XMMatrixRotationZ(m_rotation);
         JMatrix4x4 view = rotation * translation;
 
-        // Matriz de projeção: ortográfica
+        // Matriz de projeï¿½ï¿½o: ortogrï¿½fica
         JMatrix4x4 proj = DirectX::XMMatrixOrthographicOffCenterLH(
             m_left / m_zoom, m_right / m_zoom, m_bottom / m_zoom, m_top / m_zoom, -1.0f, 1.0f);
 

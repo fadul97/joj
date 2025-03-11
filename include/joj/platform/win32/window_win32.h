@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "platform/window.h"
 
@@ -22,7 +22,7 @@ namespace joj
         u32 height;
     };
 
-    class JAPI Win32Window : public Window<WindowData>
+    class JOJ_API Win32Window : public Window<WindowData>
     {
     public:
         Win32Window();
@@ -49,6 +49,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_WIN32_WINDOW_H

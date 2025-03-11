@@ -9,7 +9,7 @@
 
 namespace joj
 {
-    class JAPI Node
+    class JOJ_API Node
     {
     public:
         Node();
@@ -19,14 +19,14 @@ namespace joj
         NodeType node_type;
     };
 
-    class JAPI Statement : public Node
+    class JOJ_API Statement : public Node
     {
     public:
         Statement();
         Statement(NodeType ntype);
     };
 
-    class JAPI Expression : public Node
+    class JOJ_API Expression : public Node
     {
     public:
         Expression(Token* t);
@@ -40,19 +40,19 @@ namespace joj
         Token* token;
     };
 
-    class JAPI Constant : public Expression
+    class JOJ_API Constant : public Expression
     {
     public:
         Constant(ExpressionType etype, Token* t);
     };
 
-    class JAPI Identifier : public Expression
+    class JOJ_API Identifier : public Expression
     {
     public:
         Identifier(ExpressionType etype, Token* t);
     };
 
-    class JAPI Logical : public Expression
+    class JOJ_API Logical : public Expression
     {
     public:
         Logical(Token* t, Expression* e1, Expression* e2);
@@ -62,7 +62,7 @@ namespace joj
         Expression* expr2;
     };
 
-    class JAPI Relational : public Expression
+    class JOJ_API Relational : public Expression
     {
     public:
         Relational(Token* t, Expression* e1, Expression* e2);
@@ -72,7 +72,7 @@ namespace joj
         Expression* expr2;
     };
 
-    class JAPI Arithmetic : public Expression
+    class JOJ_API Arithmetic : public Expression
     {
     public:
         Arithmetic(ExpressionType etype, Token* t, Expression* e1, Expression* e2);
@@ -82,7 +82,7 @@ namespace joj
         Expression* expr2;
     };
 
-    class JAPI UnaryExpr : public Expression
+    class JOJ_API UnaryExpr : public Expression
     {
     public:
         UnaryExpr(ExpressionType etype, Token* t, Expression* e);
@@ -91,7 +91,7 @@ namespace joj
         Expression* expr;
     };
 
-    class JAPI Seq : public Statement
+    class JOJ_API Seq : public Statement
     {
     public:
         Seq(Statement* s, Statement* ss);
@@ -101,7 +101,7 @@ namespace joj
         Statement* stmts;
     };
 
-    class JAPI Assignment : public Statement
+    class JOJ_API Assignment : public Statement
     {
     public:
         Assignment(Expression* i, Expression* e);
@@ -111,7 +111,7 @@ namespace joj
         Expression* expr;
     };
 
-    class JAPI If : public Statement
+    class JOJ_API If : public Statement
     {
     public:
         If(Expression* e, Statement* s);
@@ -121,7 +121,7 @@ namespace joj
         Statement* stmt;
     };
 
-    class JAPI While : public Statement
+    class JOJ_API While : public Statement
     {
     public:
         While(Expression* e, Statement* s);
@@ -131,7 +131,7 @@ namespace joj
         Statement* stmt;
     };
 
-    class JAPI Loop : public Statement
+    class JOJ_API Loop : public Statement
     {
     public:
         Loop();

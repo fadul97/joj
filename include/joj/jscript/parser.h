@@ -10,7 +10,7 @@
 
 namespace joj
 {
-    class JAPI Parser
+    class JOJ_API Parser
     {
     public:
         Parser(Lexer& lexer);

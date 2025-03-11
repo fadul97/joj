@@ -26,7 +26,7 @@ u32 joj::Engine::s_client_height = 0;
 void joj::engine_print()
 {
 	printf("Hello from %s Engine!\n",
-#ifdef BUILDING_JOJ_DLL
+#ifdef JOJ_BUILDING_DLL
 		"shared"
 #else
 		"static"
@@ -92,7 +92,7 @@ joj::ErrorCode joj::Engine::start()
 {
     if JOJ_FAILED(s_window->create())
     {
-        JFATAL(ErrorCode::ERR_WIN32_WINDOW_CREATE, "Failed to create Window.");
+        JOJ_FATAL(ErrorCode::ERR_WIN32_WINDOW_CREATE, "Failed to create Window.");
         return ErrorCode::ERR_WIN32_WINDOW_CREATE;
     }
 
@@ -101,7 +101,7 @@ joj::ErrorCode joj::Engine::start()
 	// result = s_renderer->init(s_window->get_window_config());
 	if JOJ_FAILED(s_renderer->initialize(s_window->get_data()))
 	{
-		JFATAL(ErrorCode::ERR_RENDERER_D3D11_INIT, "Failed to initialize Renderer.");
+		JOJ_FATAL(ErrorCode::ERR_RENDERER_D3D11_INIT, "Failed to initialize Renderer.");
 		return ErrorCode::ERR_RENDERER_D3D11_INIT;
 	}
 

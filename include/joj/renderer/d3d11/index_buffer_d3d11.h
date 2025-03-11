@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/index_buffer.h"
 #include <d3d11.h>
@@ -17,7 +17,7 @@ namespace joj
         D3D11_SUBRESOURCE_DATA init_data;
     };
 
-    class JAPI D3D11IndexBuffer : public IndexBuffer
+    class JOJ_API D3D11IndexBuffer : public IndexBuffer
     {
     public:
         D3D11IndexBuffer();
@@ -37,6 +37,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_INDEX_BUFFER_H

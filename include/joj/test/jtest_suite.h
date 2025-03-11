@@ -8,7 +8,7 @@
 
 namespace joj
 {
-    class JAPI JTestSuite
+    class JOJ_API JTestSuite
     {
     public:
         static JTestSuite& instance();

@@ -3,13 +3,13 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "resources/basic_skinned_model.h"
 
 namespace joj
 {
-    class JAPI D3D11BasicSkinnedModel : public BasicSkinnedModel
+    class JOJ_API D3D11BasicSkinnedModel : public BasicSkinnedModel
     {
     public:
         D3D11BasicSkinnedModel();
@@ -21,6 +21,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_BASIC_SKINNED_MODEL_H

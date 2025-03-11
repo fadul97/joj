@@ -5,7 +5,7 @@
 
 namespace joj
 {
-    struct JAPI Color
+    struct JOJ_API Color
     {
         Color() : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
         Color(f32 r, f32 g, f32 b, f32 a) : r(r), g(g), b(b), a(a) {}

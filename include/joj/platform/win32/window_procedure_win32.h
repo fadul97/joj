@@ -3,13 +3,13 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "platform/window_procedure.h"
 
 namespace joj
 {
-    class JAPI Win32WindowProcedure : public WindowProcedureBase
+    class JOJ_API Win32WindowProcedure : public WindowProcedureBase
     {
     public:
         Win32WindowProcedure();
@@ -19,6 +19,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_WIN32_WINDOW_PROCEDURE_H

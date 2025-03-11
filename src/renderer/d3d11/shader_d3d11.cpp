@@ -1,6 +1,6 @@
 #include "renderer/d3d11/shader_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include <d3dcompiler.h>
 #include "core/logger.h"
@@ -110,7 +110,7 @@ void joj::D3D11Shader::compile_vertex_shader(const std::string& vertex_shader,
 		if (error_blob)
 		{
 			OutputDebugStringA((char*)error_blob->GetBufferPointer());
-			JERROR(ErrorCode::ERR_SHADER_D3D11_VERTEX_COMPILATION, "%s",
+			JOJ_ERROR(ErrorCode::ERR_SHADER_D3D11_VERTEX_COMPILATION, "%s",
 				(char*)error_blob->GetBufferPointer());
 			error_blob->Release();
 		}
@@ -154,7 +154,7 @@ void joj::D3D11Shader::compile_pixel_shader(const std::string& pixel_shader,
 		if (error_blob)
 		{
 			OutputDebugStringA((char*)error_blob->GetBufferPointer());
-			JERROR(ErrorCode::ERR_SHADER_D3D11_PIXEL_COMPILATION, "%s",
+			JOJ_ERROR(ErrorCode::ERR_SHADER_D3D11_PIXEL_COMPILATION, "%s",
 				(char*)error_blob->GetBufferPointer());
 			error_blob->Release();
 		}
@@ -204,13 +204,13 @@ void joj::D3D11Shader::compile_vertex_shader_from_file(const std::string& vertex
 		if (shader_compile_errors_blob != nullptr)
 		{
 			OutputDebugStringA((char*)shader_compile_errors_blob->GetBufferPointer());
-			JERROR(ErrorCode::ERR_SHADER_D3D11_VERTEX_COMPILATION, "%s",
+			JOJ_ERROR(ErrorCode::ERR_SHADER_D3D11_VERTEX_COMPILATION, "%s",
 				(char*)shader_compile_errors_blob->GetBufferPointer());
 			shader_compile_errors_blob->Release();
 		}
 		else
 		{
-			JERROR(ErrorCode::ERR_SHADER_D3D11_VERTEX_COMPILATION,
+			JOJ_ERROR(ErrorCode::ERR_SHADER_D3D11_VERTEX_COMPILATION,
 				"Failed to compile Vertex Shader.");
 		}
 	}
@@ -261,13 +261,13 @@ void joj::D3D11Shader::compile_pixel_shader_from_file(const std::string& pixel_p
 		if (shader_compile_errors_blob != nullptr)
 		{
 			OutputDebugStringA((char*)shader_compile_errors_blob->GetBufferPointer());
-			JERROR(ErrorCode::ERR_SHADER_D3D11_PIXEL_COMPILATION, "%s",
+			JOJ_ERROR(ErrorCode::ERR_SHADER_D3D11_PIXEL_COMPILATION, "%s",
 				(char*)shader_compile_errors_blob->GetBufferPointer());
 			shader_compile_errors_blob->Release();
 		}
 		else
 		{
-			JERROR(ErrorCode::ERR_SHADER_D3D11_PIXEL_COMPILATION,
+			JOJ_ERROR(ErrorCode::ERR_SHADER_D3D11_PIXEL_COMPILATION,
 				"Failed to compile Pixel Shader.");
 		}
 	}
@@ -316,7 +316,7 @@ void joj::D3D11Shader::compile_geometry_shader_from_file(const std::string& geom
 		&shader_compile_errors_blob) != S_OK)
 	{
 		OutputDebugStringA((char*)shader_compile_errors_blob->GetBufferPointer());
-		JERROR(ErrorCode::ERR_SHADER_D3D11_GEOMETRY_COMPILATION, "%s",
+		JOJ_ERROR(ErrorCode::ERR_SHADER_D3D11_GEOMETRY_COMPILATION, "%s",
 			(char*)shader_compile_errors_blob->GetBufferPointer());
 		shader_compile_errors_blob->Release();
 	}
@@ -365,7 +365,7 @@ void joj::D3D11Shader::compile_compute_shader_from_file(const std::string& compu
 		&shader_compile_errors_blob) != S_OK)
 	{
 		OutputDebugStringA((char*)shader_compile_errors_blob->GetBufferPointer());
-		JERROR(ErrorCode::ERR_SHADER_D3D11_COMPUTE_COMPILATION, "%s",
+		JOJ_ERROR(ErrorCode::ERR_SHADER_D3D11_COMPUTE_COMPILATION, "%s",
 			(char*)shader_compile_errors_blob->GetBufferPointer());
 		shader_compile_errors_blob->Release();
 	}
@@ -384,7 +384,7 @@ joj::ErrorCode joj::D3D11Shader::create_vertex_shader(const GraphicsDevice& devi
 		nullptr,
 		&m_vertex_shader.vertex_shader) != S_OK)
 	{
-		JERROR(ErrorCode::ERR_SHADER_D3D11_VERTEX_CREATION,
+		JOJ_ERROR(ErrorCode::ERR_SHADER_D3D11_VERTEX_CREATION,
 			"Failed to create Vertex Shader.");
 		return ErrorCode::ERR_SHADER_D3D11_VERTEX_CREATION;
 	}
@@ -400,7 +400,7 @@ joj::ErrorCode joj::D3D11Shader::create_pixel_shader(const GraphicsDevice& devic
 		nullptr,
 		&m_pixel_shader.pixel_shader) != S_OK)
 	{
-		JERROR(ErrorCode::ERR_SHADER_D3D11_PIXEL_CREATION,
+		JOJ_ERROR(ErrorCode::ERR_SHADER_D3D11_PIXEL_CREATION,
 			"Failed to create Pixel Shader.");
 		return ErrorCode::ERR_SHADER_D3D11_PIXEL_CREATION;
 	}
@@ -438,4 +438,4 @@ joj::ComputeShader& joj::D3D11Shader::get_compute_shader()
 	return m_compute_shader;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

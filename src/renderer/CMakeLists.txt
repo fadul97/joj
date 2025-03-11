@@ -33,7 +33,7 @@ add_library(jojRenderer
 )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojRenderer PRIVATE BUILDING_JOJ_DLL) # Export
+    target_compile_definitions(jojRenderer PRIVATE JOJ_BUILDING_DLL) # Export
 endif()
 
 add_subdirectory(d3d11)

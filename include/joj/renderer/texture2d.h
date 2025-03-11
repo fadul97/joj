@@ -11,7 +11,7 @@
 
 namespace joj
 {
-    class JAPI Texture2D
+    class JOJ_API Texture2D
     {
     public:
         Texture2D();

@@ -10,7 +10,7 @@
 namespace joj
 {
     template <typename T>
-    class JAPI WindowFactory
+    class JOJ_API WindowFactory
     {
     public:
         WindowFactory() = default;

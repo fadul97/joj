@@ -5,9 +5,9 @@
 
 #include <functional>
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 typedef __int64 JRESULT;
-#elif JPLATFORM_LINUX
+#elif JOJ_PLATFORM_LINUX
 typedef long JRESULT;
 #endif
 
@@ -15,7 +15,7 @@ namespace joj
 {
     using WindowProcedure = std::function<void(void*, u32, unsigned long, long)>;
 
-    class JAPI WindowProcedureBase
+    class JOJ_API WindowProcedureBase
     {
     public:
         WindowProcedureBase() = default;

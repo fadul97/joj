@@ -5,13 +5,13 @@
 
 #include <cmath>
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 #include "DirectXMath.h"
 #endif
 
 namespace joj
 {
-    class JAPI JVector3
+    class JOJ_API JVector3
     {
     public:
         // Constructors
@@ -19,7 +19,7 @@ namespace joj
         JVector3(f32 value) : x(value), y(value), z(value) {}
         JVector3(f32 x, f32 y, f32 z) : x(x), y(y), z(z) {}
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
         JVector3(const DirectX::XMFLOAT3& v) : x(v.x), y(v.y), z(v.z) {}
 #endif
 
@@ -85,7 +85,7 @@ namespace joj
         f32 z;
 
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
         DirectX::XMFLOAT3 to_XMFLOAT3() const { return DirectX::XMFLOAT3(x, y, z); }
         void from_XMFLOAT3(const DirectX::XMFLOAT3& other) { x = other.x; y = other.y; z = other.z; }
         b8 operator==(const DirectX::XMFLOAT3& other) const { return x == other.x && y == other.y && z == other.z; }
@@ -98,7 +98,7 @@ namespace joj
 #endif
     };
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
     inline DirectX::XMFLOAT3 JVector3_to_XMFLOAT3(const JVector3& v) { return DirectX::XMFLOAT3(v.x, v.y, v.z); }
     inline JVector3 XMFLOAT3_to_JVector3(const DirectX::XMFLOAT3& v) { return JVector3(v.x, v.y, v.z); }
     inline b8 is_JVector3_equal_to_XMFLOAT3(const JVector3& v1, const DirectX::XMFLOAT3& v2, f32 epsilon = 0.0001f)

@@ -1,6 +1,6 @@
 #include "renderer/d3d11/input_layout_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/d3d11/renderer_d3d11.h"
 #include "renderer/d3d11/shader_d3d11.h"
@@ -79,7 +79,7 @@ joj::ErrorCode joj::D3D11InputLayout::create(const GraphicsDevice& device,
         shader.vsblob->GetBufferPointer(),
         shader.vsblob->GetBufferSize(), &m_data.input_layout) != S_OK)
     {
-        JERROR(ErrorCode::ERR_INPUT_LAYOUT_D3D11_CREATION,
+        JOJ_ERROR(ErrorCode::ERR_INPUT_LAYOUT_D3D11_CREATION,
             "Failed to create D3D11 Input Layout");
         return ErrorCode::ERR_INPUT_LAYOUT_D3D11_CREATION;
     }
@@ -97,4 +97,4 @@ joj::InputLayoutData& joj::D3D11InputLayout::get_data()
     return m_data;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

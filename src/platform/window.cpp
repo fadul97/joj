@@ -5,7 +5,7 @@
 void joj::window_print()
 {
 	printf("Hello from %s jojPlatform!\n",
-#ifdef BUILDING_JOJ_DLL
+#ifdef JOJ_BUILDING_DLL
 		"shared"
 #else
 		"static"

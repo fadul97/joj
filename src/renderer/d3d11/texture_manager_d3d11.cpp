@@ -1,6 +1,6 @@
 #include "renderer/d3d11/texture_manager_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/d3d11/DDSTextureLoader11.h"
 #include <renderer/d3d11/WICTextureLoader.h>
@@ -47,7 +47,7 @@ joj::ErrorCode joj::D3D11TextureManager::create(GraphicsDevice& device,
             width,
             height) != S_OK)
         {
-            JERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
+            JOJ_ERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
                 "Failed to create texture from PNG file '%s'.", filename);
             return ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION;
         }
@@ -71,7 +71,7 @@ joj::ErrorCode joj::D3D11TextureManager::create(GraphicsDevice& device,
             width,
             height) != S_OK)
         {
-            JERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
+            JOJ_ERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
                 "Failed to create texture from JPG file '%s'.", filename);
             return ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION;
         }
@@ -81,7 +81,7 @@ joj::ErrorCode joj::D3D11TextureManager::create(GraphicsDevice& device,
         if (DirectX::CreateDDSTextureFromFile(device.device, filename.c_str(),
             nullptr, &srv) != S_OK)
         {
-            JERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
+            JOJ_ERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
                 "Failed to load DDS file '%ls'.", filename.c_str());
             return ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION;
         }
@@ -116,4 +116,4 @@ joj::TextureData2D* joj::D3D11TextureManager::get_texture(const std::wstring& fi
     return nullptr;  // Retorna nullptr se a textura não for encontrada
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

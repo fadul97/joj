@@ -1,6 +1,6 @@
 #include "renderer/d3d11/texture2d_d3d11.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/d3d11/renderer_d3d11.h"
 #include <renderer/d3d11/WICTextureLoader.h>
@@ -63,7 +63,7 @@ joj::ErrorCode joj::D3D11Texture2D::create(GraphicsDevice& device,
             m_width,
             m_height) != S_OK)
         {
-            JERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
+            JOJ_ERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
                 "Failed to create texture from PNG file '%s'.", filename);
             return ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION;
         }
@@ -83,14 +83,14 @@ joj::ErrorCode joj::D3D11Texture2D::create(GraphicsDevice& device,
             m_width,
             m_height) != S_OK)
         {
-            JERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
+            JOJ_ERROR(ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION,
                 "Failed to create texture from JPG file '%s'.", filename);
             return ErrorCode::ERR_RENDERER_D3D11_SHADER_RESOURCE_VIEW_CREATION;
         }
     }
     break;
     case ImageType::DDS:
-        JTODO();
+        JOJ_TODO();
         break;
     default:
         break;
@@ -125,4 +125,4 @@ joj::TextureData2D& joj::D3D11Texture2D::get_data()
     return m_data;
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS

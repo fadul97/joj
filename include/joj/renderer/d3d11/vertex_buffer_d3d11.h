@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/vertex_buffer.h"
 #include <d3d11.h>
@@ -17,7 +17,7 @@ namespace joj
         D3D11_SUBRESOURCE_DATA init_data;
     };
 
-    class JAPI D3D11VertexBuffer : public VertexBuffer
+    class JOJ_API D3D11VertexBuffer : public VertexBuffer
     {
     public:
         D3D11VertexBuffer();
@@ -43,6 +43,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_VERTEX_BUFFER_H

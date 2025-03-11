@@ -31,7 +31,7 @@ namespace joj
         OBJ,
     };
 
-    class JAPI MeshGeometryOld
+    class JOJ_API MeshGeometryOld
     {
     public:
         MeshGeometryOld();

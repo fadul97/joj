@@ -3,7 +3,7 @@
 
 #include "core/defines.h"
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 
 #include "renderer/gui/gui.h"
 #include <vector>
@@ -26,7 +26,7 @@ namespace joj
     };
 
 
-    class JAPI D3D11GUI : public IGUI
+    class JOJ_API D3D11GUI : public IGUI
     {
     public:
         D3D11GUI();
@@ -64,6 +64,6 @@ namespace joj
     };
 }
 
-#endif // JPLATFORM_WINDOWS
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_D3D11_GUI_H

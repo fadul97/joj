@@ -79,7 +79,7 @@ namespace joj
 
     struct SamplerData;
 
-    class JAPI SamplerState
+    class JOJ_API SamplerState
     {
     public:
         SamplerState();

@@ -7,7 +7,7 @@ add_library(jojEngine
 )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojEngine PRIVATE BUILDING_JOJ_DLL) # Export
+    target_compile_definitions(jojEngine PRIVATE JOJ_BUILDING_DLL) # Export
 endif()
 
 target_include_directories(jojEngine

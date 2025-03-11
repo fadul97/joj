@@ -10,7 +10,7 @@
 
 namespace joj
 {
-    JAPI void renderer_print();
+    JOJ_API void renderer_print();
 
     enum class PrimitiveTopology
     {
@@ -32,7 +32,7 @@ namespace joj
 
     struct CommandList;
 
-    class JAPI IRenderer
+    class JOJ_API IRenderer
     {
     public:
         IRenderer();

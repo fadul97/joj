@@ -5,13 +5,13 @@
 
 #include <cmath>
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
 #include "DirectXMath.h"
 #endif
 
 namespace joj
 {
-    class JAPI JVector4
+    class JOJ_API JVector4
     {
     public:
         // Constructors
@@ -19,7 +19,7 @@ namespace joj
         JVector4(f32 value) : x(value), y(value), z(value), w(value) {}
         JVector4(f32 x, f32 y, f32 z, f32 w) : x(x), y(y), z(z), w(w) {}
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
         JVector4(const DirectX::XMFLOAT4& v) : x(v.x), y(v.y), z(v.z), w(v.w) {}
         JVector4(const DirectX::XMVECTOR& v) : x(DirectX::XMVectorGetX(v)), y(DirectX::XMVectorGetY(v)), z(DirectX::XMVectorGetZ(v)), w(DirectX::XMVectorGetW(v)) {}
 #endif
@@ -78,7 +78,7 @@ namespace joj
         f32 z;
         f32 w;
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
         // DirectX::XMFLOAT4
         DirectX::XMFLOAT4 to_XMFLOAT4() const { return DirectX::XMFLOAT4(x, y, z, w); }
         void from_XMFLOAT4(const DirectX::XMFLOAT4& v) { x = v.x; y = v.y; z = v.z; w = v.w; }
@@ -105,7 +105,7 @@ namespace joj
 #endif
     };
 
-#if JPLATFORM_WINDOWS
+#if JOJ_PLATFORM_WINDOWS
     // DirectX::XMFLOAT4
     inline DirectX::XMFLOAT4 JVector4_to_XMFLOAT4(const JVector4& v) { return DirectX::XMFLOAT4(v.x, v.y, v.z, v.w); }
     inline JVector4 XMFLOAT4_to_JVector4(const DirectX::XMFLOAT4& v) { return JVector4(v.x, v.y, v.z, v.w); }

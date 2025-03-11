@@ -26,7 +26,7 @@ joj::InternalMesh* joj::OBJLoader::load(const char* filename)
     std::ifstream fin(filename);
     if (!fin.is_open())
     {
-        JERROR(joj::ErrorCode::ERR_FILE_OBJ_OPENED_FAILED,
+        JOJ_ERROR(joj::ErrorCode::ERR_FILE_OBJ_OPENED_FAILED,
             "Failed to open file '%s'.", filename);
         return nullptr;
     }
