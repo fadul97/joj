@@ -60,7 +60,10 @@ public:
     void process_mouse_input(const f32 dt);
 
     // ----------------------------------------------------
+    joj::D3D11VertexBuffer m_vb;
+    joj::D3D11IndexBuffer m_ib;
     joj::D3D11ConstantBuffer m_cb;
+    joj::D3D11Shader m_shader;
 
     joj::FreeCamera m_camera;
     joj::JFloat2 m_last_mouse_pos;

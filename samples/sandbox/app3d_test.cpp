@@ -16,6 +16,36 @@
 #include <string>
 #include <cstdlib> // rand()
 #include <unordered_map>
+#include "joj/renderer/shader_library.h"
+
+inline std::vector<u8> load_binary_data(const std::string& filename)
+{
+    std::ifstream file(filename, std::ios::binary);
+    if (!file.is_open())
+        throw std::runtime_error("Failed to open binary buffer file.");
+
+    file.seekg(0, std::ios::end); // Go to the end of the file
+    size_t size = file.tellg(); // Get the file size
+    std::cout << "File size: " << size << std::endl;
+    file.seekg(0, std::ios::beg); // Go back to the beginning of the file
+
+    std::vector<u8> data(size);
+    file.read(reinterpret_cast<char*>(data.data()), size);
+
+    return data;
+}
+
+inline std::vector<joj::Vector3> load_positions_from_buffer(const std::vector<u8>& buffer, size_t byteOffset, size_t count)
+{
+    const joj::Vector3* data = reinterpret_cast<const joj::Vector3*>(buffer.data() + byteOffset);
+    return std::vector<joj::Vector3>(data, data + count);
+}
+
+inline std::vector<uint16_t> load_indices_from_buffer(const std::vector<u8>& buffer, size_t byteOffset, size_t count)
+{
+    const uint16_t* data = reinterpret_cast<const uint16_t*>(buffer.data() + byteOffset);
+    return std::vector<uint16_t>(data, data + count);
+}
 
 App3DTest::App3DTest()
 {
@@ -41,6 +71,60 @@ void App3DTest::setup_camera()
 void App3DTest::build_buffers()
 {
     JOJ_INFO("Building buffers... NOT");
+
+    const char* filename = "models/Triangle.bin";
+    auto data = load_binary_data(filename);
+    auto positions = load_positions_from_buffer(data, 0, 3);
+    auto indices = load_indices_from_buffer(data, 96, 3);
+
+    // Print positions
+    for (const auto& pos : positions)
+        JOJ_INFO("Position: {0}, {1}, {2}", pos.x, pos.y, pos.z);
+
+    // Print indices
+    for (const auto& index : indices)
+        JOJ_INFO("Index: {0}", index);
+
+    // Create vertex buffer based on positions
+    joj::Vertex::PosColor vertices[] =
+    {
+        { positions[0], joj::Vector4(1.0f, 0.0f, 0.0f, 1.0f) },
+        { positions[1], joj::Vector4(0.0f, 1.0f, 0.0f, 1.0f) },
+        { positions[2], joj::Vector4(0.0f, 0.0f, 1.0f, 1.0f) }
+    };
+
+    u32 fixed_indices[] =
+    {
+        0, 2, 1,  // First triangle (CCW)
+        1, 2, 3   // Second triangle (CCW)
+    };
+
+    // Create vertex buffer
+    m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+    if (m_vb.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(joj::Vertex::RectUIType) * 4, vertices) != joj::ErrorCode::OK)
+        return;
+
+    // Create index buffer
+    m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+    if (m_ib.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(u32) * 6, fixed_indices) != joj::ErrorCode::OK)
+        return;
+
+    // Create shader
+    m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
+    if (m_shader.compile_vertex_shader(joj::ShaderLibrary::VertexShaderSimpleCamera, "VS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+        return;
+
+    if (m_shader.compile_pixel_shader(joj::ShaderLibrary::PixelShaderSimple, "PS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+        return;
+
+    std::vector<joj::InputDesc> layout =
+    {
+        { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
+        { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 12, joj::InputClassification::PerVertexData, 0 }
+    };
+
+    if (m_shader.create_input_layout(layout) != joj::ErrorCode::OK)
+        return;
 
     m_cb = joj::D3D11ConstantBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
     if (m_cb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(WVPBuffer)), nullptr) != joj::ErrorCode::OK)
@@ -77,7 +161,13 @@ void App3DTest::draw()
         DirectX::XMStoreFloat4x4(&wvp_buffer.wvp, wvp);
         m_cb.update(wvp_buffer);
 
-        m_renderer->draw_rect(0, 0, 3000, 300, &joj::Color::Green);
+        // Bind and Draw the rect
+        constexpr u32 stride = sizeof(joj::Vertex::PosColor);
+        constexpr u32 offset = 0;
+        m_vb.bind(0, 1, &stride, &offset);
+        m_ib.bind(joj::DataFormat::R32_UINT, offset);
+        m_shader.bind();
+        m_renderer->draw(3, 0);
     }
     m_renderer->end_frame();
 }
