@@ -9,6 +9,6 @@ int main()
     if JOJ_FAILED(engine.start())
         return -1;
 
-    GUITest app;
+    App3DTest app;
     return engine.run(&app);
 }

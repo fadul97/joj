@@ -669,7 +669,7 @@ void joj::D3D11Renderer::draw_rect(const i32 x, const i32 y, const i32 width,
 
     // Create shader
     D3D11Shader shader(&m_graphics_device, &m_cmd_list);
-    if (shader.compile_vertex_shader(ShaderLibrary::VertexShaderSimple, "VS", ShaderModel::Default) != ErrorCode::OK)
+    if (shader.compile_vertex_shader(ShaderLibrary::VertexShaderSimpleCamera, "VS", ShaderModel::Default) != ErrorCode::OK)
         return;
     
     if (shader.compile_pixel_shader(ShaderLibrary::PixelShaderSimple, "PS", ShaderModel::Default) != ErrorCode::OK)

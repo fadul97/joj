@@ -17,29 +17,6 @@
 #include <cstdlib> // rand()
 #include <unordered_map>
 
-joj::JFloat3 cross(const joj::JFloat3& v1, const joj::JFloat3& v2) {
-    return joj::JFloat3(
-        v1.y * v2.z - v1.z * v2.y,
-        v1.z * v2.x - v1.x * v2.z,
-        v1.x * v2.y - v1.y * v2.x
-    );
-}
-
-joj::JFloat3 normalize(const joj::JFloat3& v) {
-    f32 len = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-    if (len > 0.0f)
-        return joj::JFloat3(v.x / len, v.y / len, v.z / len);
-
-    return joj::JFloat3(0.0f, 0.0f, 0.0f); // Retorna um vetor nulo se o comprimento for zero
-}
-
-joj::JFloat3 calculateFaceNormal(const joj::JFloat3& v0, const joj::JFloat3& v1, const joj::JFloat3& v2)
-{
-    joj::JFloat3 edge1 = { v1.x - v0.x, v1.y - v0.y, v1.z - v0.z };
-    joj::JFloat3 edge2 = { v2.x - v0.x, v2.y - v0.y, v2.z - v0.z };
-    return normalize(cross(edge1, edge2));
-}
-
 App3DTest::App3DTest()
 {
     m_last_mouse_pos = { 0, 0 };
@@ -61,44 +38,18 @@ void App3DTest::setup_camera()
     m_camera.update_view_matrix();
 }
 
-void App3DTest::build_shader()
-{
-    JOJ_INFO("Building shader...");
-
-    m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
-    m_shader.compile_vertex_shader_from_file(
-        "shaders/SimpleModel.hlsl",
-        "VS", joj::ShaderModel::Default);
-
-    m_shader.compile_pixel_shader_from_file(
-        "shaders/SimpleModel.hlsl",
-        "PS", joj::ShaderModel::Default);
-}
-
-void App3DTest::build_input_layout()
-{
-    JOJ_INFO("Building input layout...");
-
-    std::vector<joj::InputDesc> sprite_layout = {
-        { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
-        { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 12, joj::InputClassification::PerVertexData, 0 },
-        { "NORMAL",   0, joj::DataFormat::R32G32B32_FLOAT,    0, 28, joj::InputClassification::PerVertexData, 0 }
-    };
-
-    m_shader.create_input_layout(sprite_layout);
-}
-
-static u32 total_indices = 0;
 void App3DTest::build_buffers()
 {
     JOJ_INFO("Building buffers... NOT");
+
+    m_cb = joj::D3D11ConstantBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+    if (m_cb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(WVPBuffer)), nullptr) != joj::ErrorCode::OK)
+        return;
 }
 
 void App3DTest::init()
 {
     setup_camera();
-    build_shader();
-    build_input_layout();
     build_buffers();
     m_renderer->set_rasterizer_state(joj::RasterizerState::Solid);
 }
@@ -118,38 +69,15 @@ void App3DTest::draw()
 {
     m_renderer->begin_frame();
     {
-        m_shader.bind();
-        
-        static f32 rotation = 0.0f;
-        // Update the rotation variable each frame.
-        rotation -= 0.0174532925f * 0.1f;
-        if (rotation < 0.0f)
-        rotation += 360.0f;
-        
-        static f32 angle = 0.0f;
-        angle += 0.01f;
-        {
-            m_constant_buffer.bind_to_vertex_shader(0, 1);
-            joj::JMatrix4x4 W = DirectX::XMMatrixRotationY(rotation);
-            joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
-            joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
-            joj::JMatrix4x4 WVP = W * V * P;
-            
-            ConstantBuffer cb{};
-            XMStoreFloat4x4(&cb.worldMatrix, XMMatrixTranspose(W));
-            XMStoreFloat4x4(&cb.wvp, XMMatrixTranspose(WVP));
-            XMStoreFloat4x4(&cb.viewMatrix, XMMatrixTranspose(V));
-            XMStoreFloat4x4(&cb.projectionMatrix, XMMatrixTranspose(P));
-            m_constant_buffer.update(cb);
-            
-            m_light_buffer.bind_to_pixel_shader(1, 1);
-            LightCB lightBuffer{};
-            lightBuffer.diffuseColor = joj::Vector4(0.7f, 0.7f, 0.7f, 1.0);
-            lightBuffer.lightDirection = joj::Vector3(0.0f, 0.0f, 1.0f);
-            m_light_buffer.update(lightBuffer);
-        }
-        
-        m_renderer->draw_indexed(total_indices, 0, 0);
+        m_cb.bind_to_vertex_shader(0, 1);
+        joj::JMatrix4x4 v = DirectX::XMLoadFloat4x4(&m_camera.get_view());
+        joj::JMatrix4x4 p = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
+        joj::JMatrix4x4 wvp = DirectX::XMMatrixTranspose(v * p);
+        WVPBuffer wvp_buffer;
+        DirectX::XMStoreFloat4x4(&wvp_buffer.wvp, wvp);
+        m_cb.update(wvp_buffer);
+
+        m_renderer->draw_rect(0, 0, 3000, 300, &joj::Color::Green);
     }
     m_renderer->end_frame();
 }
@@ -188,7 +116,7 @@ void App3DTest::on_mouse_move(WPARAM button_state, i32 x, i32 y)
 
 void App3DTest::process_mouse_input(const f32 dt)
 {
-    const f32 speed = dt * 20.0f;
+    const f32 speed = dt * 40.0f;
 
     if (m_input->is_key_down('W'))
         m_camera.walk(speed);
