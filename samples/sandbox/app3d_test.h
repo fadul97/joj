@@ -59,6 +59,9 @@ public:
 
     void process_mouse_input(const f32 dt);
 
+    u32 m_index_count = 0;
+    u32 m_vertex_cout = 0;
+
     // ----------------------------------------------------
     joj::D3D11VertexBuffer m_vb;
     joj::D3D11IndexBuffer m_ib;

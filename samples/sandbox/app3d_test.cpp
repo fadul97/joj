@@ -70,43 +70,58 @@ void App3DTest::setup_camera()
 
 void App3DTest::build_buffers()
 {
-    JOJ_INFO("Building buffers... NOT");
-
-    const char* filename = "models/Triangle.bin";
+    const char* filename = "models/Cube.bin";
     auto data = load_binary_data(filename);
-    auto positions = load_positions_from_buffer(data, 0, 3);
-    auto indices = load_indices_from_buffer(data, 96, 3);
+
+    constexpr size_t vertices_byteOffset = 0;
+    constexpr size_t vertices_count = 24;
+    auto positions = load_positions_from_buffer(data, vertices_byteOffset, vertices_count);
+
+    constexpr size_t indices_byteOffset = 768;
+    constexpr size_t indices_count = 36;
+    auto indices = load_indices_from_buffer(data, indices_byteOffset, indices_count);
 
     // Print positions
     for (const auto& pos : positions)
-        JOJ_INFO("Position: {0}, {1}, {2}", pos.x, pos.y, pos.z);
+        JOJ_INFO("Position: %.3f, %.3f, %.3f", pos.x, pos.y, pos.z);
 
     // Print indices
     for (const auto& index : indices)
-        JOJ_INFO("Index: {0}", index);
+        JOJ_INFO("Index: %d", index);
 
-    // Create vertex buffer based on positions
-    joj::Vertex::PosColor vertices[] =
+    // Array of Vector4 colors
+    joj::Vector4 colors[4] =
     {
-        { positions[0], joj::Vector4(1.0f, 0.0f, 0.0f, 1.0f) },
-        { positions[1], joj::Vector4(0.0f, 1.0f, 0.0f, 1.0f) },
-        { positions[2], joj::Vector4(0.0f, 0.0f, 1.0f, 1.0f) }
+        { 1.0f, 0.0f, 0.0f, 1.0f },
+        { 0.0f, 1.0f, 0.0f, 1.0f },
+        { 0.0f, 0.0f, 1.0f, 1.0f },
+        { 1.0f, 1.0f, 0.0f, 1.0f }
     };
 
-    u32 fixed_indices[] =
+    // Loop positions to create vertices
+    std::vector<joj::Vertex::PosColor> vertices;
+    i32 i = 0;
+    for (const auto& pos : positions)
     {
-        0, 2, 1,  // First triangle (CCW)
-        1, 2, 3   // Second triangle (CCW)
-    };
-
+        vertices.push_back({ pos, colors[i] });
+        i = (i + 1) % 4;
+    }
+    
     // Create vertex buffer
+    const u32 vertices_size = static_cast<u32>(vertices.size());
+    m_vertex_cout = vertices_size;
+    JOJ_DEBUG("Vertices count: %d", m_vertex_cout);
     m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_vb.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(joj::Vertex::RectUIType) * 4, vertices) != joj::ErrorCode::OK)
+    if (m_vb.create(joj::BufferUsage::Default, joj::CPUAccessType::None,
+        sizeof(joj::Vertex::RectUIType) * vertices_size, vertices.data()) != joj::ErrorCode::OK)
         return;
 
     // Create index buffer
+    const u32 indices_size = static_cast<u32>(indices.size());
+    m_index_count = indices_size;
+    JOJ_DEBUG("Indices count: %d", m_index_count);
     m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_ib.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(u32) * 6, fixed_indices) != joj::ErrorCode::OK)
+    if (m_ib.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(u16) * indices_size, indices.data()) != joj::ErrorCode::OK)
         return;
 
     // Create shader
@@ -165,9 +180,9 @@ void App3DTest::draw()
         constexpr u32 stride = sizeof(joj::Vertex::PosColor);
         constexpr u32 offset = 0;
         m_vb.bind(0, 1, &stride, &offset);
-        m_ib.bind(joj::DataFormat::R32_UINT, offset);
+        m_ib.bind(joj::DataFormat::R16_UINT, offset);
         m_shader.bind();
-        m_renderer->draw(3, 0);
+        m_renderer->draw_indexed(m_index_count, 0, 0);
     }
     m_renderer->end_frame();
 }
