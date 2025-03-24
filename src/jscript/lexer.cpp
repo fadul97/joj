@@ -377,9 +377,9 @@ joj::Token* joj::Lexer::scan()
     return &m_token;
 }
 
-joj::Vector<joj::Token> joj::Lexer::tokenize()
+std::vector<joj::Token> joj::Lexer::tokenize()
 {
-    Vector<Token> tokens;
+    std::vector<Token> tokens;
     start();
 
     Token* token = nullptr;

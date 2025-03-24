@@ -2,29 +2,55 @@
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
-add_library(jojScript
+# -----------------------------------------------------------------------------
+# Set source files
+
+set(SOURCE_FILES
     lexer.cpp
+    parser.cpp
     node.cpp
     symbol_table.cpp
-    parser.cpp
 )
 
+# -----------------------------------------------------------------------------
+# jojScript
+
+add_library(jojScript
+    ${SOURCE_FILES}
+)
+
+# -----------------------------------------------------------------------------
+# Set Build options macro
+
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojScript PUBLIC JOJ_BUILDING_DLL) # Export
+    target_compile_definitions(jojScript PRIVATE JOJ_BUILDING_DLL) # Export
 endif()
 
-target_include_directories(jojScript
-    PUBLIC
+# -----------------------------------------------------------------------------
+# Set include directories
+
+target_include_directories(jojScript PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/
 )
 
+# -----------------------------------------------------------------------------
+# Set Link directories
+
 target_link_directories(
     jojScript
-    PUBLIC 
+    PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/../core/
 )
 
-target_link_libraries(jojScript PRIVATE jojCore)
+# -----------------------------------------------------------------------------
+# Link libraries
+
+target_link_libraries(jojScript PRIVATE
+    jojCore
+)
+
+# -----------------------------------------------------------------------------
+# Set output directories
 
 set_target_properties(jojScript PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

@@ -3,33 +3,44 @@
 
 #include "joj/core/defines.h"
 
-#include "joj/math/jmath.h"
 #include <wtypes.h>
-#include "joj/math/jvector3.h"
-#include "joj/math/jvector4.h"
+
+// TODO: Remove this include
+#include <DirectXMath.h>
+#include "joj/core/math/vector3.h"
+#include "joj/core/math/vector4.h"
 
 namespace joj
 {
+    using Vector2 = DirectX::XMFLOAT2;
+
     namespace Vertex
     {
 		struct PosColor
 		{
-            JFloat3 pos;
-            JFloat4 color;
+            Vector3 pos;
+            Vector4 color;
+		};
+
+        // TODO: Find a better name for this struct
+        struct RectUIType
+		{
+            Vector3 pos;
+            Vector4 color;
 		};
 		
 		struct PosColorUVRect
 		{
-			JFloat3 pos;
-			JFloat4 color;
-			JFloat4 uv_rect;
+			Vector3 pos;
+			Vector4 color;
+			Vector4 uv_rect;
 		};
 
         struct PosColorNormal
         {
-            JVector3 pos;
-            JVector4 color;
-            JVector3 normal;
+            Vector3 pos;
+            Vector4 color;
+            Vector3 normal;
 
             bool operator==(const PosColorNormal& other) const
             {
@@ -48,17 +59,17 @@ namespace joj
 
 		struct PosNormalTex
 		{
-			JFloat3 pos;
-			JFloat3 normal;
-			JFloat2 tex;
+			Vector3 pos;
+			Vector3 normal;
+			Vector2 tex;
 		};
 
 		struct PosNormalTexTan
 		{
-			JFloat3 pos;
-			JFloat3 normal;
-			JFloat2 tex;
-			JFloat4 tangentU;
+			Vector3 pos;
+			Vector3 normal;
+			Vector2 tex;
+			Vector4 tangentU;
 
 			bool operator==(const PosNormalTexTan& other) const
 			{
@@ -95,11 +106,11 @@ namespace joj
 
 		struct PosNormalTexTanSkinned
 		{
-			JFloat3 pos;
-			JFloat3 normal;
-			JFloat2 tex;
-			JFloat4 tangentU;
-			JFloat3 weights;
+			Vector3 pos;
+			Vector3 normal;
+			Vector2 tex;
+			Vector4 tangentU;
+			Vector3 weights;
 			BYTE bone_indices[4];
 		};
     }

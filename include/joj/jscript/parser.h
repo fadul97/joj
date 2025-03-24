@@ -3,7 +3,6 @@
 
 #include "joj/core/defines.h"
 
-#include "joj/core/vector.h"
 #include "lexer.h"
 #include "symbol_table.h"
 #include "node.h"

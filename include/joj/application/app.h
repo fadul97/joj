@@ -6,10 +6,10 @@
 #if JOJ_PLATFORM_WINDOWS
 
 #include <Windows.h>
-#include "platform/keys.h"
-#include "platform/win32/window_win32.h"
-#include "platform/win32/input_win32.h"
-#include "platform/win32/timer_win32.h"
+#include "joj/platform/keys.h"
+#include "joj/platform/win32/window_win32.h"
+#include "joj/platform/win32/input_win32.h"
+#include "joj/platform/win32/timer_win32.h"
 #include "joj/renderer/d3d11/renderer_d3d11.h"
 
 namespace joj

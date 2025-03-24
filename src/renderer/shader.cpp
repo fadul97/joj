@@ -1,9 +1,13 @@
 #include "joj/renderer/shader.h"
 
-joj::Shader::Shader()
+joj::IShader::IShader()
 {
 }
 
-joj::Shader::~Shader()
+joj::IShader::IShader(GraphicsDevice* device, CommandList* cmd_list)
+{
+}
+
+joj::IShader::~IShader()
 {
 }

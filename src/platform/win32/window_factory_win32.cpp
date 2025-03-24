@@ -69,9 +69,9 @@ joj::ErrorCode joj::Win32WindowFactory::create_window_class(WindowRegistrationCl
                 nullptr
             );
 
-            JOJ_FATAL(ErrorCode::ERR_WINDOW_REGISTRATION,
+            JOJ_FATAL(ErrorCode::ERR_WINDOW_REGISTER_CLASS_EX,
                 "Failed to register window class. Error %lu: %s", error_code, error_message);
-            return ErrorCode::ERR_WINDOW_REGISTRATION;
+            return ErrorCode::ERR_WINDOW_REGISTER_CLASS_EX;
         }
     }
 

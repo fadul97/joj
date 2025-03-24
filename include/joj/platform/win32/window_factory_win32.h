@@ -5,8 +5,8 @@
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "platform/window_factory.h"
-#include "platform/win32/window_win32.h"
+#include "joj/platform/window_factory.h"
+#include "joj/platform/win32/window_win32.h"
 
 namespace joj
 {

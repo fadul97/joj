@@ -5,8 +5,6 @@ project(joj)
 add_subdirectory(camera)
 add_subdirectory(light)
 add_subdirectory(material)
-add_subdirectory(physics)
-add_subdirectory(scene)
 
 add_library(jojSystems
     systems.cpp
@@ -16,12 +14,6 @@ add_library(jojSystems
     light/light.cpp
     light/light_debug.cpp
     material/material.cpp
-    physics/geometry.cpp
-    physics/rect.cpp
-    scene/scene.cpp
-    scene/d3d11/scene_d3d11.cpp
-    scene/d3d11/scene3d_d3d11.cpp
-    scene/scene_object3d.cpp
 )
 
 if(BUILD_SHARED_LIBS)

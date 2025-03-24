@@ -5,7 +5,7 @@
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "platform/timer.h"
+#include "joj/platform/timer.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

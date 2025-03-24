@@ -3,12 +3,11 @@
 
 #include "defines.h"
 #include "error_code.h"
-#include "logger.h"
 #include <stdio.h>
 
 #if JOJ_DEBUG_MODE
 
-extern "C" void exit(int status);
+#include <stdlib.h>
 
 /**
  * @brief Macro to mark a variable as unused.
@@ -36,24 +35,12 @@ extern "C" void exit(int status);
     } while (0)
 #endif // JOJ_ASSERT
 
-#ifndef JOJ_LOG_IF_FAIL
-#define JOJ_LOG_IF_FAIL(x)                                                                                         \
-{                                                                                                                  \
-    joj::ErrorCode result = (x);                                                                                   \
-    if(result != joj::ErrorCode::OK) {                                                                             \
-        joj::Logger::log(joj::LogLevel::LOG_LEVEL_ERROR, result, __FILE__, __LINE__, "Function: %s", __func__);    \
-        /*return result;*/                                                                                         \
-    }                                                                                                              \
-}
-#endif // JOJ_LOG_IF_FAIL
-
 #else // JOJ_DEBUG_MODE not defined (Release mode)
 
 #define JOJ_UNUSED(x) (void)(x)
 #define JOJ_FAILED(x) (((joj::ErrorCode)(x)) != joj::ErrorCode::OK)
 #define JOJ_LOG_IF_FAIL_AND_RETURN_ERROR(x) x
 #define JOJ_ASSERT(condition, ...)
-#define JOJ_LOG_IF_FAIL(x) (void)(x)
 
 #endif // JOJ_DEBUG_MODE
 

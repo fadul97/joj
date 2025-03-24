@@ -1,7 +1,7 @@
 #include "gui_test.h"
 
 #include "joj/engine/engine.h"
-#include "joj/core/jmacros.h"
+#include "joj/core/logger.h"
 #include "joj/renderer/vertex.h"
 
 struct Vertex
@@ -31,31 +31,20 @@ void hex_to_f32_RGB(u32 hexColor, f32& r, f32& g, f32& b) {
 
 void GUITest::setup_quad_buffers_and_shaders()
 {
+    m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
     m_shader.compile_vertex_shader_from_file(
         "shaders/GUITest.hlsl",
         "VS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_shader.create_vertex_shader(m_renderer->get_device()));
 
     m_shader.compile_pixel_shader_from_file(
         "shaders/GUITest.hlsl",
         "PS", joj::ShaderModel::Default);
-    JOJ_LOG_IF_FAIL(m_shader.create_pixel_shader(m_renderer->get_device()));
 
-    m_shader.bind_vertex_shader(m_renderer->get_cmd_list());
-    m_shader.bind_pixel_shader(m_renderer->get_cmd_list());
-
-    joj::InputDesc layout[] =
+    std::vector<joj::InputDesc> layout =
     {
         { "POSITION", 0, joj::DataFormat::R32G32_FLOAT, 0,  0, joj::InputClassification::PerVertexData, 0 },
     };
-
-    for (auto& l : layout)
-    {
-        m_layout.add(l);
-    }
-
-    JOJ_LOG_IF_FAIL(m_layout.create(m_renderer->get_device(), m_shader.get_vertex_shader()));
-    m_layout.bind(m_renderer->get_cmd_list());
+    m_shader.create_input_layout(layout);
 
     Vertex vertices[] =
     {
@@ -71,15 +60,17 @@ void GUITest::setup_quad_buffers_and_shaders()
         1, 2, 3   // Second triangle (CCW)
     };
 
-    m_vb.setup(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write,
+    m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+    m_vb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write,
         sizeof(joj::Vertex::PosColor) * 4, vertices);
-    JOJ_LOG_IF_FAIL(m_vb.create(m_renderer->get_device()));
 
-    m_ib.setup(sizeof(u32) * 6, indices);
-    JOJ_LOG_IF_FAIL(m_ib.create(m_renderer->get_device()));
+    m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+    m_ib.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write,
+        sizeof(u32) * 6, indices);
 
-    m_cb.setup(joj::calculate_cb_byte_size(sizeof(ColorBuffer)), nullptr);
-    JOJ_LOG_IF_FAIL(m_cb.create(m_renderer->get_device()));
+    m_cb = joj::D3D11ConstantBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+    if (m_cb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(ColorBuffer)), nullptr) != joj::ErrorCode::OK)
+        return;
 
     m_renderer->set_primitive_topology(joj::PrimitiveTopology::TRIANGLE_LIST);
     m_renderer->set_rasterizer_state(joj::RasterizerState::Solid);
@@ -87,9 +78,9 @@ void GUITest::setup_quad_buffers_and_shaders()
 
 void GUITest::init()
 {
-    JDEBUG("Size of Win32Window: %d", sizeof(joj::Win32Window));     // 136
-    JDEBUG("Size of Win32Input: %d", sizeof(joj::Win32Input));       // 8
-    JDEBUG("Size of D3D11Renderer: %d", sizeof(joj::D3D11Renderer)); // 152
+    JOJ_DEBUG("Size of Win32Window: %d", sizeof(joj::Win32Window));     // 136
+    JOJ_DEBUG("Size of Win32Input: %d", sizeof(joj::Win32Input));       // 8
+    JOJ_DEBUG("Size of D3D11Renderer: %d", sizeof(joj::D3D11Renderer)); // 152
     setup_quad_buffers_and_shaders();
 }
 
@@ -383,22 +374,20 @@ void GUITest::update(const f32 dt)
 
 void GUITest::draw_quad()
 {
-    m_shader.bind_vertex_shader(m_renderer->get_cmd_list());
-    m_shader.bind_pixel_shader(m_renderer->get_cmd_list());
-    m_layout.bind(m_renderer->get_cmd_list());
+    m_shader.bind();
 
     u32 stride = sizeof(Vertex);
     u32 offset = 0;
 
-    m_vb.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
-    m_ib.bind(m_renderer->get_cmd_list(), joj::DataFormat::R32_UINT, offset);
+    m_vb.bind(0, 1, &stride, &offset);
+    m_ib.bind(joj::DataFormat::R32_UINT, offset);
 
     ColorBuffer rectColor = { 1.0f, 1.0f, 0.0f, 1.0f };
-    m_cb.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
-    m_cb.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
-    m_cb.update(m_renderer->get_cmd_list(), rectColor);
+    m_cb.bind_to_vertex_shader(0, 1);
+    m_cb.bind_to_pixel_shader(0, 1);
+    m_cb.update(rectColor);
 
-    m_renderer->get_cmd_list().device_context->DrawIndexed(6, 0, 0);
+    m_renderer->draw_indexed(6, 0, 0);
 }
 
 void GUITest::draw_rect(const i32 x, const i32 y, const i32 w, const i32 h, const f32 r, const f32 g, const f32 b, const f32 a)
@@ -420,35 +409,30 @@ void GUITest::draw_rect(const i32 x, const i32 y, const i32 w, const i32 h, cons
         { right, top  }    // 1: Top-right
     };
 
-    m_vb.update(m_renderer->get_cmd_list(), vertices);
+    m_vb.update(vertices);
 
-    m_shader.bind_vertex_shader(m_renderer->get_cmd_list());
-    m_shader.bind_pixel_shader(m_renderer->get_cmd_list());
-    m_layout.bind(m_renderer->get_cmd_list());
+    m_shader.bind();
 
     u32 stride = sizeof(Vertex);
     u32 offset = 0;
-    m_vb.bind(m_renderer->get_cmd_list(), 0, 1, &stride, &offset);
-    m_ib.bind(m_renderer->get_cmd_list(), joj::DataFormat::R32_UINT, offset);
+    m_vb.bind(0, 1, &stride, &offset);
+    m_ib.bind(joj::DataFormat::R32_UINT, offset);
 
     ColorBuffer rectColor = { r, g, b, a };
-    m_cb.bind_to_vertex_shader(m_renderer->get_cmd_list(), 0, 1);
-    m_cb.bind_to_pixel_shader(m_renderer->get_cmd_list(), 0, 1);
-    m_cb.update(m_renderer->get_cmd_list(), rectColor);
+    m_cb.bind_to_vertex_shader(0, 1);
+    m_cb.bind_to_pixel_shader(0, 1);
+    m_cb.update(rectColor);
 
-    m_renderer->get_cmd_list().device_context->DrawIndexed(6, 0, 0);
+    m_renderer->draw_indexed(6, 0, 0);
 }
 
 void GUITest::draw()
 {
-    m_renderer->clear();
-
-    m_renderer->disable_depth_test();
-    render(m_dt);
-    // draw_rect(uistate.mousex - 32, uistate.mousey - 24, 150, 100, 1.0f, 0.0f, 0.0f, 1.0f);
-    m_renderer->enable_depth_test();
-
-    m_renderer->swap_buffers();
+    m_renderer->begin_frame();
+    {
+        render(m_dt);
+    }
+    m_renderer->end_frame();
 }
 
 void GUITest::shutdown()

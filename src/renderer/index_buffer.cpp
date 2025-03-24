@@ -1,9 +1,13 @@
 #include "joj/renderer/index_buffer.h"
 
-joj::IndexBuffer::IndexBuffer()
+joj::IIndexBuffer::IIndexBuffer()
 {
 }
 
-joj::IndexBuffer::~IndexBuffer()
+joj::IIndexBuffer::IIndexBuffer(GraphicsDevice* device, CommandList* cmd_list)
+{
+}
+
+joj::IIndexBuffer::~IIndexBuffer()
 {
 }

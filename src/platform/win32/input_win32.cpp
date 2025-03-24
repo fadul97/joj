@@ -11,9 +11,9 @@ joj::Win32Input::Win32Input()
 {
 }
 
-void joj::Win32Input::set_window(WindowData window)
+void joj::Win32Input::set_window(WindowData* window)
 {
-    SetWindowLongPtr(window.handle, GWLP_WNDPROC, (LONG_PTR)InputProc);
+    SetWindowLongPtr(window->handle, GWLP_WNDPROC, (LONG_PTR)InputProc);
 }
 
 LRESULT CALLBACK joj::Win32Input::InputProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

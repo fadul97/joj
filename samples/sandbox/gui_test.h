@@ -62,7 +62,6 @@ public:
     // ---------------------------------------------------
 
     joj::D3D11Shader m_shader;
-    joj::D3D11InputLayout m_layout;
     joj::D3D11VertexBuffer m_vb;
     joj::D3D11IndexBuffer m_ib;
     joj::D3D11ConstantBuffer m_cb;

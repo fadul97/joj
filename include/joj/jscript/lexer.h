@@ -4,7 +4,7 @@
 #include "joj/core/defines.h"
 
 #include <string>
-#include "joj/core/vector.h"
+#include <vector>
 #include "token.h"
 #include <fstream>
 #include <unordered_map>
@@ -20,7 +20,7 @@ namespace joj
         void start();
 
         Token* scan();
-        Vector<Token> tokenize();
+        std::vector<Token> tokenize();
 
         const u32 get_line() const;
         const u32 get_errors_count() const;

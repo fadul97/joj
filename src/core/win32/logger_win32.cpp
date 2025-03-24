@@ -82,8 +82,8 @@ namespace joj
          * @param args Any additional arguments (data) to be logged.
          */
         void write_log(const LogLevel level, const ErrorCode err,
-            const char* file, const i32 line, const char* message,
-            va_list args)
+                       const char* file, const i32 line, const char* message,
+                       va_list args)
         {
             const char* level_strings[5] =
             {
@@ -124,7 +124,7 @@ namespace joj
 }
 
 void joj::Logger::log(const LogLevel level, const ErrorCode err, const char* file,
-    const i32 line, const char* message, ...)
+                      const i32 line, const char* message, ...)
 {
     va_list args;
     va_start(args, message);

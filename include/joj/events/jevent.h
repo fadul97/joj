@@ -4,7 +4,7 @@
 #include "joj/core/defines.h"
 
 #include "event_type.h"
-#include "platform/keys.h"
+#include "joj/platform/keys.h"
 
 JOJ_API void event_print();
 

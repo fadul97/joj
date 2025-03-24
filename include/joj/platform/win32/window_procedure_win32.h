@@ -5,7 +5,7 @@
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "platform/window_procedure.h"
+#include "joj/platform/window_procedure.h"
 
 namespace joj
 {

@@ -5,7 +5,7 @@
 
 #if JOJ_PLATFORM_WINDOWS
 
-#include "platform/input.h"
+#include "joj/platform/input.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -18,7 +18,7 @@ namespace joj
         Win32Input();
         ~Win32Input() = default;
 
-        void set_window(WindowData window);
+        void set_window(WindowData* window) override;
 
         static LRESULT CALLBACK InputProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     };

@@ -4,7 +4,7 @@
  * @brief This file contains type definitions that are used
  * throughout the engine and applications referencing it.
  * @version 0.1
- * @date 2025-03-11
+ * @date 2025-03-17
  *
  * @copyright TODO: Copyright (c) 2025
  *
@@ -151,4 +151,3 @@
  #endif
  
  #endif // _JOJ_DEFINES_H
- 

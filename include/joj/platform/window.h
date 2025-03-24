@@ -4,6 +4,7 @@
 #include "joj/core/defines.h"
 
 #include "joj/core/error_code.h"
+#include "window_mode.h"
 
 namespace joj
 {
@@ -12,8 +13,6 @@ namespace joj
 
 namespace joj
 {
-
-    enum class WindowMode { Borderless, Fullscreen, Windowed };
 
     struct WindowRect
     {
@@ -34,7 +33,7 @@ namespace joj
             const WindowMode mode);
         virtual ~Window();
 
-        const T& get_data() const;
+        T* get_data();
 
         const WindowRect& get_window_rect() const;
         const WindowRect& get_client_rect() const;
@@ -124,8 +123,8 @@ namespace joj
     {}
 
     template <typename T>
-    inline const T& Window<T>::get_data() const
-    { return m_data; }
+    inline T* Window<T>::get_data()
+    { return &m_data; }
 
     template <typename T>
     inline const WindowRect& Window<T>::get_window_rect() const

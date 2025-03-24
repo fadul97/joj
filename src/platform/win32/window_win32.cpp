@@ -59,8 +59,9 @@ joj::ErrorCode joj::Win32Window::create()
     m_data.instance = GetModuleHandle(nullptr);
     if (!m_data.instance)
     {
-        JOJ_FATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to get module handle.");
-        return ErrorCode::ERR_WINDOW_HANDLE;
+        JOJ_FATAL(ErrorCode::ERR_WINDOW_GET_MODULE_HANDLE,
+            "Failed to get module handle.");
+        return ErrorCode::ERR_WINDOW_GET_MODULE_HANDLE;
     }
 
     WNDCLASSEX wnd_class;
@@ -83,8 +84,9 @@ joj::ErrorCode joj::Win32Window::create()
         // Register "JOJ_WINDOW_CLASS" class
         if (!RegisterClassEx(&wnd_class))
         {
-            JOJ_ERROR(ErrorCode::ERR_WINDOW_REGISTRATION, "Failed to register window class.");
-            return ErrorCode::ERR_WINDOW_REGISTRATION;
+            JOJ_ERROR(ErrorCode::ERR_WINDOW_REGISTER_CLASS_EX,
+                "Failed to register window class.");
+            return ErrorCode::ERR_WINDOW_REGISTER_CLASS_EX;
         }
     }
 
@@ -177,8 +179,9 @@ joj::ErrorCode joj::Win32Window::create()
 
     if (!m_data.handle)
     {
-        JOJ_FATAL(ErrorCode::ERR_WINDOW_HANDLE, "Failed to create window.");
-        return ErrorCode::ERR_WINDOW_HANDLE;
+        JOJ_FATAL(ErrorCode::ERR_WINDOW_CREATE_WINDOW_EX,
+            "Failed to create window.");
+        return ErrorCode::ERR_WINDOW_CREATE_WINDOW_EX;
     }
 
     // FIXME: Weird size when creating a Fullscreen with Window style,
@@ -193,7 +196,8 @@ joj::ErrorCode joj::Win32Window::create()
             GetMenu(m_data.handle) != nullptr,
             GetWindowExStyle(m_data.handle)))
         {
-            JOJ_ERROR(ErrorCode::ERR_WINDOW_ADJUST, "Could not adjust window rect ex.");
+            JOJ_ERROR(ErrorCode::ERR_WINDOW_ADJUST_WINDOW_RECT_EX,
+                "Could not adjust window rect ex.");
         }
 
         LONG xpos = (GetSystemMetrics(SM_CXSCREEN) / 2) - ((new_rect.right - new_rect.left) / 2);
@@ -208,7 +212,8 @@ joj::ErrorCode joj::Win32Window::create()
             TRUE)
             )
         {
-            JOJ_ERROR(ErrorCode::ERR_WINDOW_MOVE, "Could not move window.");
+            JOJ_ERROR(ErrorCode::ERR_WINDOW_MOVE_WINDOW,
+                "Could not move window.");
         }
     }
     else if (m_mode == WindowMode::Borderless)
@@ -220,7 +225,8 @@ joj::ErrorCode joj::Win32Window::create()
             GetMenu(m_data.handle) != nullptr,
             GetWindowExStyle(m_data.handle)))
         {
-            JOJ_ERROR(ErrorCode::ERR_WINDOW_ADJUST, "Could not adjust window rect ex.");
+            JOJ_ERROR(ErrorCode::ERR_WINDOW_ADJUST_WINDOW_RECT_EX,
+                "Could not adjust window rect ex.");
         }
 
         LONG xpos = (GetSystemMetrics(SM_CXSCREEN) / 2) - ((new_rect.right - new_rect.left) / 2);
@@ -235,13 +241,17 @@ joj::ErrorCode joj::Win32Window::create()
             TRUE)
             )
         {
-            JOJ_ERROR(ErrorCode::ERR_WINDOW_MOVE, "Could not move window.");
+            JOJ_ERROR(ErrorCode::ERR_WINDOW_MOVE_WINDOW,
+                "Could not move window.");
         }
     }
 
     m_data.hdc = GetDC(m_data.handle);
     if (!m_data.hdc)
-        JOJ_ERROR(ErrorCode::ERR_WINDOW_DEVICE_CONTEXT, "Failed to get device context.");
+    {
+        JOJ_ERROR(ErrorCode::ERR_WINDOW_GET_DC,
+            "Failed to get device context.");
+    }
 
     RECT window_rect;
     if (GetWindowRect(m_data.handle, &window_rect))
@@ -253,7 +263,8 @@ joj::ErrorCode joj::Win32Window::create()
     }
     else
     {
-        JOJ_ERROR(ErrorCode::ERR_WINDOW_RECT, "Failed to get window rect.");
+        JOJ_ERROR(ErrorCode::ERR_WINDOW_GET_WINDOW_RECT,
+            "Failed to get window rect.");
     }
 
     RECT client_rect;
@@ -266,7 +277,8 @@ joj::ErrorCode joj::Win32Window::create()
     }
     else
     {
-        JOJ_ERROR(ErrorCode::ERR_WINDOW_CLIENT_RECT, "Failed to get client rect.");
+        JOJ_ERROR(ErrorCode::ERR_WINDOW_GET_CLIENT_RECT,
+            "Failed to get client rect.");
     }
 
     return ErrorCode::OK;
@@ -288,7 +300,7 @@ LRESULT CALLBACK joj::Win32Window::WinProc(HWND hWnd, UINT msg, WPARAM wParam, L
     case WM_DESTROY:
     case WM_QUIT:
     case WM_CLOSE:
-        JDEBUG("Running = false");
+        JOJ_DEBUG("Running = false");
         // EventManager::instance().publish(WindowCloseEvent());
         PostQuitMessage(0);
         return 0;
@@ -315,7 +327,8 @@ void joj::Win32Window::get_window_size(u32& width, u32& height)
     }
     else
     {
-        JOJ_ERROR(ErrorCode::ERR_WINDOW_RECT, "Failed to get window rect.");
+        JOJ_ERROR(ErrorCode::ERR_WINDOW_GET_WINDOW_RECT,
+            "Failed to get window rect.");
     }
 }
 
@@ -334,12 +347,14 @@ void joj::Win32Window::get_client_size(u32& width, u32& height)
     }
     else
     {
-        JOJ_ERROR(ErrorCode::ERR_WINDOW_CLIENT_RECT, "Failed to get client rect.");
+        JOJ_ERROR(ErrorCode::ERR_WINDOW_GET_CLIENT_RECT,
+            "Failed to get client rect.");
     }
 }
 
 void joj::Win32Window::set_title(const char* title)
 {
+    m_title = title;
     SetWindowText(m_data.handle, title);
 }
 

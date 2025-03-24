@@ -1,4 +1,4 @@
-﻿# PATH: src/core/CMakeLists.txt
+# PATH: src/CMakeLists.txt
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
@@ -20,17 +20,14 @@ elseif(PLATFORM STREQUAL "linux")
 endif()
 
 # -----------------------------------------------------------------------------
-# Add subdirectories
-
-add_subdirectory(${PLATFORM})
-
-# -----------------------------------------------------------------------------
 # Set source files
 
 set(SOURCE_FILES
     error_code.cpp
     ${PLATFORM}/logger_${PLATFORM}.cpp
     ${PLATFORM}/memory_${PLATFORM}.cpp
+    color.cpp
+    math/jmath.cpp
 )
 
 # -----------------------------------------------------------------------------
@@ -41,22 +38,19 @@ add_library(jojCore
 )
 
 # -----------------------------------------------------------------------------
-# Set properties
+# Set JOJ_BUILDING_DLL macro
 
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(jojCore PRIVATE JOJ_BUILDING_DLL) # Export
-    add_custom_command(TARGET jojCore POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:jojCore> ${CMAKE_BINARY_DIR})
 endif()
 
 # -----------------------------------------------------------------------------
-# Include directories
+# Set include directories
 
-# Specify include directories for jojCore
 target_include_directories(
     jojCore
     PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/joj/
 )
 
 # -----------------------------------------------------------------------------

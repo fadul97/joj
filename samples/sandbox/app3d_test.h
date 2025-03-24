@@ -5,15 +5,15 @@
 #include "joj/application/app.h"
 
 #include "joj/renderer/d3d11/shader_d3d11.h"
-#include "joj/renderer/d3d11/input_layout_d3d11.h"
 #include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
 #include "joj/renderer/d3d11/index_buffer_d3d11.h"
 #include "joj/renderer/d3d11/constant_buffer_d3d11.h"
 
-#include "joj/resources/d3d11/model_manager_d3d11.h"
 #include "joj/systems/camera/free_camera.h"
 #include "joj/systems/light/light.h"
-#include "joj/systems/scene/scene_object3d.h"
+
+#include "joj/core/math/vector3.h"
+#include "joj/core/math/vector4.h"
 
 // Constant Objects ------------------------------------------------------------
 
@@ -27,15 +27,9 @@ struct ConstantBuffer
 
 struct LightCB
 {
-    joj::JVector4 diffuseColor;
-    joj::JVector3 lightDirection;
+    joj::Vector4 diffuseColor;
+    joj::Vector3 lightDirection;
     f32 padding;
-};
-
-struct MeshData
-{
-    std::vector<joj::Vertex::PosColorNormal> vertices;
-    std::vector<u32> indices;
 };
 
 // Class -----------------------------------------------------------------------
@@ -62,24 +56,14 @@ public:
 
     void process_mouse_input(const f32 dt);
 
-    void load_custom_format(const std::string& filename, MeshData& mesh);
-    void load_custom_format_with_flat_shading(const std::string& filename, MeshData& mesh);
-    void load_new_custom_format(const std::string& filename, MeshData& mesh);
-    void load_obj_format(const std::string& filename, MeshData& mesh);
-    void load_obj_format_new(const std::string& filename, MeshData& mesh);
-
     // ----------------------------------------------------
     joj::D3D11Shader m_shader;
-    joj::D3D11InputLayout m_input_layout;
     joj::D3D11ConstantBuffer m_constant_buffer;
 
-    joj::D3D11ModelManager m_model_mgr;
     joj::FreeCamera m_camera;
     joj::JFloat2 m_last_mouse_pos;
 
     joj::D3D11ConstantBuffer m_light_buffer;
-
-    joj::SceneObject3D m_base_model;
 };
 
 #endif // _JOJ_3D_APP_TEST_H

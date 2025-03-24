@@ -3,33 +3,41 @@
 #if JOJ_PLATFORM_WINDOWS
 
 #include "joj/core/logger.h"
-#include "platform/win32/window_win32.h"
-#include "joj/renderer/d3d11/sprite_d3d11.h"
-#include "joj/renderer/vertex.h"
 #include "joj/core/jmacros.h"
+#include "joj/platform/win32/window_data_win32.h"
+#include "joj/renderer/vertex.h"
+#include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
+#include "joj/renderer/d3d11/index_buffer_d3d11.h"
+#include "joj/renderer/d3d11/shader_d3d11.h"
+#include "joj/renderer/shader_library.h"
 
 joj::D3D11Renderer::D3D11Renderer()
 {
+    // ---------------------------------------------------
+    // Graphics device initialization.
+    // ---------------------------------------------------
     m_graphics_device.device = nullptr;
     m_cmd_list.device_context = nullptr;
     m_factory = nullptr;
-    m_context_created = false;
 
-    m_4xmsaa_enabled = false;                  // No antialising
-    m_4xmsaa_quality = 0;                      // Default quality
-    m_vsync = false;                           // No vertical sync
-    m_buffer_count = 2;                        // 2 buffers: Back and Front
+    m_4xmsaa_enabled = false; // No antialising
+    m_4xmsaa_quality = 0;     // Default quality
+    m_vsync = true;           // VSync enabled
+    m_buffer_count = 2;       // Double buffering
 
-    m_swapchain = nullptr;                     // Swap chain
-    m_render_target_view = nullptr;            // Backbuffer render target view
+    // ---------------------------------------------------
+    // Graphics Pipeline initialization.
+    // ---------------------------------------------------
+    m_swapchain = nullptr;
+    m_render_target_view;
     m_depth_stencil_buffer = nullptr;
     m_depth_stencil_state = nullptr;
-    m_depth_disabled_stencil_state = nullptr;  // Disabled depth stencil
-    m_depth_stencil_view = nullptr;            // Depth/Stencil view
-    m_viewport = { 0 };                        // Viewport
-    m_blend_state = nullptr;                   // Color mix settings
-    m_rasterizer_state_solid = nullptr;        // Solid Rasterizer state
-    m_rasterizer_state_wireframe = nullptr;    // Wireframe Rasterizer state
+    m_depth_disabled_stencil_state = nullptr;
+    m_depth_stencil_view = nullptr;
+    m_viewport = { 0 };
+    m_blend_state = nullptr;
+    m_rasterizer_state_solid = nullptr;
+    m_rasterizer_state_wireframe = nullptr;
 
 #if JOJ_DEBUG_MODE
     m_debug = nullptr;
@@ -38,93 +46,8 @@ joj::D3D11Renderer::D3D11Renderer()
 
 joj::D3D11Renderer::~D3D11Renderer()
 {
-    // Release wireframe rasterizer state
-    if (m_rasterizer_state_wireframe)
-    {
-        m_rasterizer_state_wireframe->Release();
-        m_rasterizer_state_wireframe = nullptr;
-    }
-
-    // Release solid rasterizer state
-    if (m_rasterizer_state_solid)
-    {
-        m_rasterizer_state_solid->Release();
-        m_rasterizer_state_solid = nullptr;
-    }
-
-    // Release blend state
-    if (m_blend_state)
-    {
-        m_blend_state->Release();
-        m_blend_state = nullptr;
-    }
-
-    // Release depth stencil view
-    if (m_depth_stencil_view)
-    {
-        m_depth_stencil_view->Release();
-        m_depth_stencil_view = nullptr;
-    }
-
-    // Release Depth Disabled Stencil State
-    if (m_depth_disabled_stencil_state)
-    {
-        m_depth_disabled_stencil_state->Release();
-        m_depth_disabled_stencil_state = nullptr;
-    }
-
-    // Release Depth Stencil State
-    if (m_depth_stencil_state)
-    {
-        m_depth_stencil_state->Release();
-        m_depth_stencil_state = nullptr;
-    }
-
-    // Release Depth Stencil Buffer
-    if (m_depth_stencil_buffer)
-    {
-        m_depth_stencil_buffer->Release();
-        m_depth_stencil_buffer = nullptr;
-    }
-
-    // Release render target view
-    if (m_render_target_view)
-    {
-        m_render_target_view->Release();
-        m_render_target_view = nullptr;
-    }
-
-    // Release swap chain
-    if (m_swapchain)
-    {
-        // Direct3D is unable to close when full screen
-        m_swapchain->SetFullscreenState(false, NULL);
-        m_swapchain->Release();
-        m_swapchain = nullptr;
-    }
-
-    // Release factory
-    if (m_factory)
-    {
-        m_factory->Release();
-        m_factory = nullptr;
-    }
-
-    // Release device context
-    if (m_cmd_list.device_context)
-    {
-        // Restores to original state
-        m_cmd_list.device_context->ClearState();
-        m_cmd_list.device_context->Release();
-        m_cmd_list.device_context = nullptr;
-    }
-
-    // Release device
-    if (m_graphics_device.device)
-    {
-        m_graphics_device.device->Release();
-        m_graphics_device.device = nullptr;
-    }
+    shutdown();
+    destroy_context();
 
 #if JOJ_DEBUG_MODE
     if (m_debug)
@@ -154,9 +77,9 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
 
     if (CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&m_factory)) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_DXGI_FACTORY2_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_CONTEXT_CREATE_DXGI_FACTORY2,
             "Failed to create D3D11 DXGIFactory2.");
-        return ErrorCode::ERR_CONTEXT_D3D11_DXGI_FACTORY2_CREATION;
+        return ErrorCode::ERR_CONTEXT_CREATE_DXGI_FACTORY2;
     }
 
     // Level of D3D features supported by hardware
@@ -175,23 +98,23 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
         &m_cmd_list.device_context)          // D3D context device
         != S_OK)
     {
-        JOJ_ERROR(ErrorCode::ERR_CONTEXT_D3D11_DEVICE_CREATION,
+        JOJ_ERROR(ErrorCode::ERR_CONTEXT_D3D11_CREATE_DEVICE,
             "Failed to create D3D11Device. Creating D3D11 Warp adapter...");
 
         if (D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_WARP,
             NULL, create_device_flags, NULL, 0, D3D11_SDK_VERSION,
             &m_graphics_device.device, &feature_level, &m_cmd_list.device_context) != S_OK)
         {
-            JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_WARP_DEVICE_ADAPTER_CREATION,
+            JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_CREATE_DEVICE_WARP,
                 "Failed to create WARP Adapter.");
-            return ErrorCode::ERR_CONTEXT_D3D11_WARP_DEVICE_ADAPTER_CREATION;
+            return ErrorCode::ERR_CONTEXT_D3D11_CREATE_DEVICE_WARP;
         }
     }
 
 #if JOJ_DEBUG_MODE
     if (m_graphics_device.device->QueryInterface(__uuidof(ID3D11Debug), (void**)&m_debug) != S_OK)
     {
-        JOJ_ERROR(ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_ID3D11_DEBUG,
+        JOJ_ERROR(ErrorCode::ERR_CONTEXT_QUERY_INTERFACE_ID3D11_DEBUG,
             "Failed to QueryInterface of ID3D11Debug.");
     }
 #endif // JOJ_DEBUG_MODE
@@ -199,27 +122,27 @@ joj::ErrorCode joj::D3D11Renderer::create_context()
     IDXGIDevice* dxgi_device = nullptr;
     if (m_graphics_device.device->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgi_device) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_IDXGI_DEVICE,
+        JOJ_FATAL(ErrorCode::ERR_CONTEXT_QUERY_INTERFACE_IDXGI_DEVICE,
             "Failed to QueryInterface of DXGIDevice.");
-        return ErrorCode::ERR_CONTEXT_D3D11_QUERY_INTERFACE_IDXGI_DEVICE;
+        return ErrorCode::ERR_CONTEXT_QUERY_INTERFACE_IDXGI_DEVICE;
     }
 
     // Get Adpapter from Direct3D device (d3d11Device)
     IDXGIAdapter* dxgi_adapter = nullptr;
     if (dxgi_device->GetParent(__uuidof(IDXGIAdapter), (void**)&dxgi_adapter) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_ADAPTER,
+        JOJ_FATAL(ErrorCode::ERR_CONTEXT_GET_PARENTOF_IDXGI_ADAPTER,
             "Failed to GetParent of IDXGIAdapter.");
-        return ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_ADAPTER;
+        return ErrorCode::ERR_CONTEXT_GET_PARENTOF_IDXGI_ADAPTER;
     }
 
     // Get pointer to adapter DXGIFactory
     IDXGIFactory2* dxgi_factory = nullptr;
     if (dxgi_adapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgi_factory) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_FACTORY,
+        JOJ_FATAL(ErrorCode::ERR_CONTEXT_GET_PARENTOF_IDXGI_FACTORY2,
             "Failed to GetParent of IDXGIFactory2.");
-        return ErrorCode::ERR_CONTEXT_D3D11_GET_PARENTOF_IDXGI_FACTORY;
+        return ErrorCode::ERR_CONTEXT_GET_PARENTOF_IDXGI_FACTORY2;
     }
 
 #ifdef JOJ_DEBUG_MODE
@@ -259,25 +182,22 @@ void joj::D3D11Renderer::destroy_context()
     }
 }
 
-joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
+joj::ErrorCode joj::D3D11Renderer::initialize(WindowData* window)
 {
-    if (!m_context_created)
-    {
-        if (create_context() != ErrorCode::OK)
-        {
-            JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_CREATION,
-                "Failed to create D3D11 context.");
-            return ErrorCode::ERR_CONTEXT_D3D11_CREATION;
-        }
+    JOJ_ASSERT(window, "WindowData is nullptr.");
 
-        m_context_created = true;
+    if (create_context() != ErrorCode::OK)
+    {
+        JOJ_FATAL(ErrorCode::ERR_CONTEXT_D3D11_CREATION,
+            "Failed to create D3D11 context.");
+        return ErrorCode::ERR_CONTEXT_D3D11_CREATION;
     }
 
     if (m_graphics_device.device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM,
         4, &m_4xmsaa_quality) != S_OK)
     {
         // TODO: Better ErrorCode
-        JOJ_ERROR(ErrorCode::ERR_SWAPCHAIN_D3D11_MULTISAMPLE_QUALITY_LEVELS_CHECK,
+        JOJ_ERROR(ErrorCode::ERR_RENDERER_CHECK_MULTISAMPLE_QUALITY_LEVELS,
             "Failed to check multi sample quality levels. Setting it to 0.");
         m_4xmsaa_quality = 0;
     }
@@ -292,8 +212,8 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
 
     // Describe Swap Chain
     DXGI_SWAP_CHAIN_DESC swap_chain_desc = { 0 };
-    swap_chain_desc.BufferDesc.Width = static_cast<u32>(window.width);                      // Back buffer width
-    swap_chain_desc.BufferDesc.Height = static_cast<u32>(window.height);                    // Back buffer height
+    swap_chain_desc.BufferDesc.Width = window->width;                      // Back buffer width
+    swap_chain_desc.BufferDesc.Height = window->height;                    // Back buffer height
     swap_chain_desc.BufferDesc.RefreshRate.Numerator = 60;                                  // Refresh rate in hertz 
     swap_chain_desc.BufferDesc.RefreshRate.Denominator = 1;                                 // Denominator is an int
     swap_chain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;                         // Color format - RGBA 8 bits
@@ -318,8 +238,8 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     // Check value
     swap_chain_desc.BufferCount = m_buffer_count;                                           // Number of buffers (Front + Back)
 
-    swap_chain_desc.OutputWindow = window.handle;                                           // Window ID
-    swap_chain_desc.Windowed = (window.window_mode == joj::WindowMode::Windowed);           // Fullscreen or windowed 
+    swap_chain_desc.OutputWindow = window->handle;                                           // Window ID
+    swap_chain_desc.Windowed = (window->window_mode == joj::WindowMode::Windowed);           // Fullscreen or windowed 
     swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;                             // Discard surface after presenting
     swap_chain_desc.Flags = 0;                                                              // Use Back buffer size for Fullscreen
 
@@ -327,9 +247,9 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_factory->CreateSwapChain(m_graphics_device.device, &swap_chain_desc,
         &m_swapchain) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_SWAPCHAIN_D311_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_RENDERER_SWAPCHAIN_CREATION,
             "Failed to create SwapChain.");
-        return ErrorCode::ERR_SWAPCHAIN_D311_CREATION;
+        return ErrorCode::ERR_RENDERER_SWAPCHAIN_CREATION;
     }
 
     // ---------------------------------------------------
@@ -341,18 +261,18 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D),
         reinterpret_cast<void**>(&backbuffer)) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_SWAPCHAIN_D3D11_GET_BACKBUFFER,
+        JOJ_FATAL(ErrorCode::ERR_RENDERER_SWAPCHAIN_GET_BACKBUFFER,
             "Failed to Get backbuffer surface of a Swap Chain.");
-        return ErrorCode::ERR_SWAPCHAIN_D3D11_GET_BACKBUFFER;
+        return ErrorCode::ERR_RENDERER_SWAPCHAIN_GET_BACKBUFFER;
     }
 
     // Create render target view for backbuffer
     if (m_graphics_device.device->CreateRenderTargetView(backbuffer, NULL,
         &m_render_target_view) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_RENDER_TARGET_VIEW_D3D11_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_RENDERER_CREATE_RENDER_TARGET_VIEW,
             "Failed to create D3D11 Render Target View.");
-        return ErrorCode::ERR_RENDER_TARGET_VIEW_D3D11_CREATION;
+        return ErrorCode::ERR_RENDERER_CREATE_RENDER_TARGET_VIEW;
     }
 
     // ---------------------------------------------------
@@ -361,8 +281,8 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
 
     // Describe Depth/Stencil Buffer
     D3D11_TEXTURE2D_DESC depth_stencil_tex2d_desc = { 0 };
-    depth_stencil_tex2d_desc.Width = static_cast<u32>(window.width);           // Depth/Stencil buffer width
-    depth_stencil_tex2d_desc.Height = static_cast<u32>(window.height);         // Depth/Stencil buffer height
+    depth_stencil_tex2d_desc.Width = static_cast<u32>(window->width);           // Depth/Stencil buffer width
+    depth_stencil_tex2d_desc.Height = static_cast<u32>(window->height);         // Depth/Stencil buffer height
     depth_stencil_tex2d_desc.MipLevels = 0;                                    // Number of mipmap levels
     depth_stencil_tex2d_desc.ArraySize = 1;                                    // Number of textures in array
     depth_stencil_tex2d_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;           // Color format - Does it need to be the same format of swapChainDesc?
@@ -389,9 +309,9 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_graphics_device.device->CreateTexture2D(&depth_stencil_tex2d_desc, 0,
         &m_depth_stencil_buffer) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_RENDERER_CREATE_TEXTURE2D,
             "Failed to create D3D11 DepthStencil buffer (Texture2D).");
-        return ErrorCode::ERR_DEPTHSTENCIL_BUFFER_D3D11_CREATION;
+        return ErrorCode::ERR_RENDERER_CREATE_TEXTURE2D;
     }
 
     // ---------------------------------------------------
@@ -426,9 +346,9 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_graphics_device.device->CreateDepthStencilState(&depth_stencil_desc,
         &m_depth_stencil_state) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_RENDERER_CREATE_DEPTHSTENCIL_STATE,
             "Failed to create D3D11 Depth Stencil State.");
-        return ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION;
+        return ErrorCode::ERR_RENDERER_CREATE_DEPTHSTENCIL_STATE;
     }
 
     // Set Depth Stencil State
@@ -463,9 +383,9 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_graphics_device.device->CreateDepthStencilState(&depth_disabled_stencil_desc,
         &m_depth_disabled_stencil_state) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION,
-            "Failed to create D3D11 Depth Stencil State.");
-        return ErrorCode::ERR_DEPTHSTENCIL_STATE_D3D11_CREATION;
+        JOJ_FATAL(ErrorCode::ERR_RENDERER_CREATE_DEPTHSTENCIL_STATE,
+            "Failed to create D3D11 Depth Stencil State for disabled depth.");
+        return ErrorCode::ERR_RENDERER_CREATE_DEPTHSTENCIL_STATE;
     }
 
     // ---------------------------------------------------
@@ -484,9 +404,9 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     if (m_graphics_device.device->CreateDepthStencilView(m_depth_stencil_buffer,
         &depth_stencil_view_desc, &m_depth_stencil_view) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_RENDERER_CREATE_DEPTHSTENCIL_VIEW,
             "Failed to create D3D11 Depth Stencil View.");
-        return ErrorCode::ERR_DEPTHSTENCIL_VIEW_D3D11_CREATION;
+        return ErrorCode::ERR_RENDERER_CREATE_DEPTHSTENCIL_VIEW;
     }
 
     // Bind render target and depth stencil to the Output Merger stage
@@ -500,8 +420,8 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     // Describe Viewport
     m_viewport.TopLeftX = 0.0f;
     m_viewport.TopLeftY = 0.0f;
-    m_viewport.Width = static_cast<f32>(window.width);
-    m_viewport.Height = static_cast<f32>(window.height);
+    m_viewport.Width = static_cast<f32>(window->width);
+    m_viewport.Height = static_cast<f32>(window->height);
     m_viewport.MinDepth = 0.0f;
     m_viewport.MaxDepth = 1.0f;
 
@@ -528,9 +448,9 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     // Create blend state
     if (m_graphics_device.device->CreateBlendState(&blend_desc, &m_blend_state) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_BLENDSTATE_D3D11_CREATION,
+        JOJ_FATAL(ErrorCode::ERR_RENDERER_CREATE_BLENDSTATE,
             "Failed to create D3D11 BlendState.");
-        return ErrorCode::ERR_BLENDSTATE_D3D11_CREATION;
+        return ErrorCode::ERR_RENDERER_CREATE_BLENDSTATE;
     }
 
     // Bind blend state to the Output Merger stage
@@ -550,8 +470,9 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     // Create Solid rasterizer state
     if (m_graphics_device.device->CreateRasterizerState(&rasterizer_desc, &m_rasterizer_state_solid) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_RASTERIZER_D3D11_CREATION, "Failed to create D3D11 RasterizerState.");
-        return ErrorCode::ERR_RASTERIZER_D3D11_CREATION;
+        JOJ_FATAL(ErrorCode::ERR_RENDERER_CREATE_RASTERIZERSTATE,
+            "Failed to create Solid D3D11 RasterizerState.");
+        return ErrorCode::ERR_RENDERER_CREATE_RASTERIZERSTATE;
     }
 
     rasterizer_desc.FillMode = D3D11_FILL_WIREFRAME;
@@ -560,8 +481,9 @@ joj::ErrorCode joj::D3D11Renderer::initialize(WindowData window)
     // Create Wireframe rasterizer state
     if (m_graphics_device.device->CreateRasterizerState(&rasterizer_desc, &m_rasterizer_state_wireframe) != S_OK)
     {
-        JOJ_FATAL(ErrorCode::ERR_RASTERIZER_D3D11_CREATION, "Failed to create RasterizerState.");
-        return ErrorCode::ERR_RASTERIZER_D3D11_CREATION;
+        JOJ_FATAL(ErrorCode::ERR_RENDERER_CREATE_RASTERIZERSTATE,
+            "Failed to create Wireframe D3D11 RasterizerState.");
+        return ErrorCode::ERR_RENDERER_CREATE_RASTERIZERSTATE;
     }
 
     // Set Solid rasterizer state as default
@@ -648,18 +570,127 @@ void joj::D3D11Renderer::shutdown()
     }
 }
 
-void joj::D3D11Renderer::enable_depth_test()
+void joj::D3D11Renderer::begin_frame()
 {
     JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
-    JOJ_ASSERT(m_depth_stencil_state, "Depth stencil state is nullptr.");
-    m_cmd_list.device_context->OMSetDepthStencilState(m_depth_stencil_state, 1);
+    JOJ_ASSERT(m_render_target_view, "Render target view is nullptr.");
+    JOJ_ASSERT(m_depth_stencil_view, "Depth stencil view is nullptr.");
+
+    // Background color of the backbuffer = window background color
+    f32 bgcolor[4]{ 0.23f, 0.23f, 0.23f, 1.0f };
+    m_cmd_list.device_context->ClearRenderTargetView(m_render_target_view, bgcolor);
+    m_cmd_list.device_context->ClearDepthStencilView(m_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
-void joj::D3D11Renderer::disable_depth_test()
+void joj::D3D11Renderer::end_frame()
+{
+    JOJ_ASSERT(m_swapchain, "SwapChain is nullptr.");
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+
+    if (m_swapchain->Present(m_vsync, NULL) != S_OK)
+    {
+        JOJ_ERROR(ErrorCode::ERR_RENDERER_SWAPCHAIN_PRESENT,
+            "Failed to present SwapChain.");
+        return;
+    }
+
+    m_cmd_list.device_context->OMSetRenderTargets(1, &m_render_target_view, m_depth_stencil_view);
+}
+
+void joj::D3D11Renderer::draw(const u32 vertex_count, const u32 start_vertex_location)
 {
     JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
-    JOJ_ASSERT(m_depth_disabled_stencil_state, "Depth disabled stencil state is nullptr.");
-    m_cmd_list.device_context->OMSetDepthStencilState(m_depth_disabled_stencil_state, 1);
+
+    m_cmd_list.device_context->Draw(vertex_count, start_vertex_location);
+}
+
+void joj::D3D11Renderer::draw_indexed(const u32 index_count, const u32 start_index_location,
+    const i32 base_vertex_location)
+{
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+
+    m_cmd_list.device_context->DrawIndexed(index_count, start_index_location, base_vertex_location);
+}
+
+void joj::D3D11Renderer::draw_rect(const i32 x, const i32 y, const i32 width,
+    const i32 height, const Color* color)
+{
+    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
+    JOJ_ASSERT(m_graphics_device.device, "Device is nullptr.");
+
+    // Hard coded screen width and height
+    // TODO: Use screen_width and screen_height from WindowData
+    constexpr i32 screen_width = 800;
+    constexpr i32 screen_height = 600;
+
+    // Normalize coordinates
+    const f32 left = (2.0f * x) / static_cast<f32>(screen_width) - 1.0f;
+    const f32 right = (2.0f * (x + width)) / static_cast<f32>(screen_width) - 1.0f;
+    const f32 top = 1.0f - (2.0f * y) / static_cast<f32>(screen_height);
+    const f32 bottom = 1.0f - (2.0f * (y + height)) / static_cast<f32>(screen_height);
+
+    // Color
+    FloatColor float_color;
+    Vector4 color_array;
+    if (color == nullptr)
+    {
+        float_color = Color::White.to_FloatColor();
+        color_array = { float_color.r, float_color.g, float_color.b, float_color.a };
+    }
+    else
+    {
+        float_color = color->to_FloatColor();
+        color_array = { float_color.r, float_color.g, float_color.b, float_color.a };
+    }
+
+    Vertex::RectUIType vertices[] = 
+    {
+        { Vector3{ left,  bottom, 0.0f }, color_array }, // 2: Bottom-left
+        { Vector3{ right, bottom, 0.0f }, color_array }, // 3: Bottom-right
+        { Vector3{ left,  top,    0.0f }, color_array }, // 0: Top-left
+        { Vector3{ right, top,    0.0f }, color_array }, // 1: Top-right
+    };
+
+    u32 indices[] =
+    {
+        0, 2, 1,  // First triangle (CCW)
+        1, 2, 3   // Second triangle (CCW)
+    };
+
+    // Create vertex buffer
+    D3D11VertexBuffer vb(&m_graphics_device, &m_cmd_list);
+    if (vb.create(BufferUsage::Default, CPUAccessType::None, sizeof(Vertex::RectUIType) * 4, vertices) != ErrorCode::OK)
+        return;
+
+    // Create index buffer
+    D3D11IndexBuffer ib(&m_graphics_device, &m_cmd_list);
+    if (ib.create(BufferUsage::Default, CPUAccessType::None, sizeof(u32) * 6, indices) != ErrorCode::OK)
+        return;
+
+    // Create shader
+    D3D11Shader shader(&m_graphics_device, &m_cmd_list);
+    if (shader.compile_vertex_shader(ShaderLibrary::VertexShaderSimple, "VS", ShaderModel::Default) != ErrorCode::OK)
+        return;
+    
+    if (shader.compile_pixel_shader(ShaderLibrary::PixelShaderSimple, "PS", ShaderModel::Default) != ErrorCode::OK)
+        return;
+
+    std::vector<InputDesc> layout =
+    {
+        { "POSITION", 0, DataFormat::R32G32B32_FLOAT,    0,  0, InputClassification::PerVertexData, 0 },
+        { "COLOR",    0, DataFormat::R32G32B32A32_FLOAT, 0, 12, InputClassification::PerVertexData, 0 }
+    };
+
+    if (shader.create_input_layout(layout) != ErrorCode::OK)
+        return;
+
+    // Bind and Draw the rect
+    constexpr u32 stride = sizeof(Vertex::RectUIType);
+    constexpr u32 offset = 0;
+    vb.bind(0, 1, &stride, &offset);
+    ib.bind(joj::DataFormat::R32_UINT, offset);
+    shader.bind();
+    draw_indexed(6, 0, 0);
 }
 
 void joj::D3D11Renderer::set_rasterizer_state(const RasterizerState state)
@@ -710,116 +741,14 @@ void joj::D3D11Renderer::set_primitive_topology(const PrimitiveTopology topology
     }
 }
 
-void joj::D3D11Renderer::set_viewport(f32 x, f32 y, f32 width, f32 height, f32 min_depth, f32 max_depth)
+joj::GraphicsDevice* joj::D3D11Renderer::get_device()
 {
-    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
-
-    m_viewport.TopLeftX = x;
-    m_viewport.TopLeftY = y;
-    m_viewport.Width = width;
-    m_viewport.Height = height;
-    m_viewport.MinDepth = min_depth;
-    m_viewport.MaxDepth = max_depth;
-
-    m_cmd_list.device_context->RSSetViewports(1, &m_viewport);
+    return &m_graphics_device;
 }
 
-void joj::D3D11Renderer::set_viewport(const Viewport& viewport)
+joj::CommandList* joj::D3D11Renderer::get_cmd_list()
 {
-    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
-
-    m_viewport.TopLeftX = viewport.m_x;
-    m_viewport.TopLeftY = viewport.m_y;
-    m_viewport.Width = viewport.m_width;
-    m_viewport.Height = viewport.m_height;
-    m_viewport.MinDepth = viewport.m_min_depth;
-    m_viewport.MaxDepth = viewport.m_max_depth;
-
-    m_cmd_list.device_context->RSSetViewports(1, &m_viewport);
-}
-
-void joj::D3D11Renderer::set_viewport_size(const u32 width, const u32 height)
-{
-    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
-
-    m_viewport.Width = static_cast<f32>(width);
-    m_viewport.Height = static_cast<f32>(height);
-
-    m_cmd_list.device_context->RSSetViewports(1, &m_viewport);
-}
-
-void joj::D3D11Renderer::resize(i32 width, i32 height)
-{
-    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
-
-    // Describe Viewport
-    m_viewport.TopLeftX = 0.0f;
-    m_viewport.TopLeftY = 0.0f;
-    m_viewport.Width = static_cast<f32>(width);
-    m_viewport.Height = static_cast<f32>(height);
-    m_viewport.MinDepth = 0.0f;
-    m_viewport.MaxDepth = 1.0f;
-
-    // Set Viewport
-    m_cmd_list.device_context->RSSetViewports(1, &m_viewport);
-}
-
-joj::GraphicsDevice& joj::D3D11Renderer::get_device()
-{
-    JOJ_ASSERT(m_graphics_device.device, "Graphics device is nullptr.");
-    return m_graphics_device;
-}
-
-joj::CommandList& joj::D3D11Renderer::get_cmd_list()
-{
-    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
-    return m_cmd_list;
-}
-
-void joj::D3D11Renderer::clear(f32 r, f32 g, f32 b, f32 a)
-{
-    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
-    JOJ_ASSERT(m_render_target_view, "Render target view is nullptr.");
-    JOJ_ASSERT(m_depth_stencil_view, "Depth stencil view is nullptr.");
-
-    // Background color of the backbuffer = window background color
-    f32 bgcolor[4]{ r, g, b, a };
-    m_cmd_list.device_context->ClearRenderTargetView(m_render_target_view, bgcolor);
-    m_cmd_list.device_context->ClearDepthStencilView(m_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-}
-
-void joj::D3D11Renderer::swap_buffers()
-{
-    JOJ_ASSERT(m_swapchain, "SwapChain is nullptr.");
-    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
-
-    if (m_swapchain->Present(m_vsync, NULL) != S_OK)
-    {
-        JOJ_ERROR(ErrorCode::ERR_RENDERER_D3D11_SWAPCHAIN_PRESENT, "Failed to present SwapChain.");
-        return;
-    }
-
-    m_cmd_list.device_context->OMSetRenderTargets(1, &m_render_target_view, m_depth_stencil_view);
-}
-
-void joj::D3D11Renderer::draw_sprite(const SpriteData& sprite)
-{
-    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
-
-    m_cmd_list.device_context->PSSetShaderResources(0, 1, &sprite.texture.srv);
-
-    set_rasterizer_state(RasterizerState::Solid);
-    set_primitive_topology(PrimitiveTopology::TRIANGLE_LIST);
-    m_cmd_list.device_context->DrawIndexed(6, 0, 0);
-}
-
-void joj::D3D11Renderer::draw_rect()
-{
-    JOJ_ASSERT(m_cmd_list.device_context, "Device context is nullptr.");
-
-    set_rasterizer_state(RasterizerState::Wireframe);
-    set_primitive_topology(PrimitiveTopology::TRIANGLE_STRIP);
-    m_cmd_list.device_context->Draw(4, 0);
+    return &m_cmd_list;
 }
 
 #if JOJ_DEBUG_MODE

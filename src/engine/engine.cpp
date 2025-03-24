@@ -2,8 +2,10 @@
 
 #include <iostream>
 #include <sstream>
+#include "joj/core/logger.h"
 #include "joj/core/jmacros.h"
 #include <windowsx.h>
+#include "joj/renderer/d3d11/graphics_device_d3d11.h"
 
 joj::Win32Window* joj::Engine::s_window = nullptr;
 joj::Win32Input* joj::Engine::s_input = nullptr;
@@ -92,8 +94,8 @@ joj::ErrorCode joj::Engine::start()
 {
     if JOJ_FAILED(s_window->create())
     {
-        JOJ_FATAL(ErrorCode::ERR_WIN32_WINDOW_CREATE, "Failed to create Window.");
-        return ErrorCode::ERR_WIN32_WINDOW_CREATE;
+        JOJ_FATAL(ErrorCode::FAILED, "Failed to create Window.");
+        return ErrorCode::FAILED;
     }
 
     s_input->set_window(s_window->get_data());
@@ -101,12 +103,12 @@ joj::ErrorCode joj::Engine::start()
 	// result = s_renderer->init(s_window->get_window_config());
 	if JOJ_FAILED(s_renderer->initialize(s_window->get_data()))
 	{
-		JOJ_FATAL(ErrorCode::ERR_RENDERER_D3D11_INIT, "Failed to initialize Renderer.");
-		return ErrorCode::ERR_RENDERER_D3D11_INIT;
+		JOJ_FATAL(ErrorCode::FAILED, "Failed to initialize Renderer.");
+		return ErrorCode::FAILED;
 	}
 
 	// Change window procedure to EngineProc
-	SetWindowLongPtr(s_window->get_data().handle, GWLP_WNDPROC, (LONG_PTR)EngineProc);
+	SetWindowLongPtr(s_window->get_data()->handle, GWLP_WNDPROC, (LONG_PTR)EngineProc);
 
 	// Adjust sleep resolution to 1 millisecond
 	s_timer->begin_period();
@@ -181,7 +183,7 @@ i32 joj::Engine::run(App* app)
 
 void joj::Engine::on_resize()
 {
-	JDEBUG("TODO");
+	JOJ_TODO();
 }
 
 LRESULT CALLBACK joj::Engine::EngineProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -213,7 +215,7 @@ LRESULT CALLBACK joj::Engine::EngineProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 		s_client_width = LOWORD(lParam);
 		s_client_height = HIWORD(lParam);
 
-		if (s_renderer->get_device().device != nullptr)
+		if (s_renderer->get_device() != nullptr)
 		{
 			if (wParam == SIZE_MINIMIZED)
 			{

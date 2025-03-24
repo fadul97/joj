@@ -3,9 +3,9 @@
  * @author Leonardo Fadul (lsffadul@gmail.com)
  * @brief This file contains the terminal logging system for the engine.
  * @version 0.1
- * @date 2025-03-11
+ * @date 2025-03-17
  * 
- * @copyright Copyright (c) 2025
+ * @copyright Copyright (c) 2024
  * 
  * REFERENCES: Travis Vroman (https://travisvroman.com/) - Kohi Game Engine (https://github.com/travisvroman/kohi)
  * 
@@ -22,23 +22,23 @@
 
 /** @brief Disables Warn, Debug and Info in Release Mode. */
 #if JOJ_RELEASE == 1
-#define JOJ_LOG_WARN_ENABLED 0
-#define JOJ_LOG_DEBUG_ENABLED 0
-#define JOJ_LOG_INFO_ENABLED 0
-#define JOJ_LOG_TODO 0
+#define LOG_WARN_ENABLED 0
+#define LOG_DEBUG_ENABLED 0
+#define LOG_INFO_ENABLED 0
+#define LOG_TODO 0
 #else
 
 /** @brief Indicates if warning level logging is enabled. */
-#define JOJ_LOG_WARN_ENABLED 1
+#define LOG_WARN_ENABLED 1
 
 /** @brief Indicates if debug level logging is enabled */
-#define JOJ_LOG_DEBUG_ENABLED 1
+#define LOG_DEBUG_ENABLED 1
 
 /** @brief Indicates if info level logging is enabled. */
-#define JOJ_LOG_INFO_ENABLED 1
+#define LOG_INFO_ENABLED 1
 
 /** @brief Indicates if todo logging is enabled. */
-#define JOJ_LOG_TODO 1
+#define LOG_TODO 1
 
 #endif
 
@@ -83,16 +83,16 @@ namespace joj
     }
 }
 
-#if JOJ_LOG_TODO == 1
+#if LOG_TODO == 1
 /**
- * @brief Logs an TODO message. Should be used for non-implemented code blocks.
+ * @brief Logs a TODO message. Should be used for non-implemented code blocks.
  */
 #define JOJ_TODO() joj::Logger::log(joj::LogLevel::LOG_LEVEL_TODO, joj::ErrorCode::OK,  __FILE__, __LINE__, "[TODO]: %s", __FUNCTION__);
 #else
 #define JOJ_TODO();
 #endif // LOG_TODO
 
-#if JOJ_LOG_INFO_ENABLED == 1
+#if LOG_INFO_ENABLED == 1
 /**
  * @brief Logs an info-level message. Should be used for non-erronuous informational purposes.
  * @param message The message to be logged.
@@ -103,18 +103,18 @@ namespace joj
 #define JOJ_INFO(message, ...);
 #endif
 
-#if JOJ_LOG_DEBUG_ENABLED == 1
+#if LOG_DEBUG_ENABLED == 1
 /**
  * @brief Logs a debug-level message. Should be used for debugging purposes.
  * @param message The message to be logged.
  * @param ... Any additional arguments (data) to be logged.
  */
-#define JDEBUG(message, ...) joj::Logger::log(joj::LogLevel::LOG_LEVEL_DEBUG, joj::ErrorCode::OK, __FILE__, __LINE__, message, ##__VA_ARGS__);
+#define JOJ_DEBUG(message, ...) joj::Logger::log(joj::LogLevel::LOG_LEVEL_DEBUG, joj::ErrorCode::OK, __FILE__, __LINE__, message, ##__VA_ARGS__);
 #else
-#define JDEBUG(message, ...);
+#define JOJ_DEBUG(message, ...);
 #endif
 
-#if JOJ_LOG_WARN_ENABLED == 1
+#if LOG_WARN_ENABLED == 1
 /**
  * @brief Logs a warning-level message. Should be used to indicate non-critial problems that cause the application to run inefficient.
  * @param message The message to be logged.

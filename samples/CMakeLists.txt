@@ -7,9 +7,7 @@ project(jojSamples)
 if (WIN32)
     add_executable(jojSamples
         main_win32.cpp
-        sandbox/app_test.cpp
         sandbox/gui_test.cpp
-        sandbox/app2d_test.cpp
         sandbox/app3d_test.cpp
         # test_app.cpp
     )

@@ -21,7 +21,7 @@ namespace joj
         Input();
         virtual ~Input() = default;
 
-        virtual void set_window(WindowData window) = 0;
+        virtual void set_window(WindowData* window) = 0;
 
         b8 is_key_down(u32 key);
         b8 is_key_pressed(u32 key);

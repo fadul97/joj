@@ -5,7 +5,7 @@
 
 #if JOJ_PLATFORM_LINUX
 
-#include "platform/window.h"
+#include "joj/platform/window.h"
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 

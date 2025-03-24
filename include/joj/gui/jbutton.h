@@ -4,7 +4,7 @@
 #include "joj/core/defines.h"
 
 #include "jwidget.h"
-#include "platform/window.h"
+#include "joj/platform/window.h"
 #include <string>
 #include <Windows.h>
 #include "joj/core/logger.h"

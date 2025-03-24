@@ -41,24 +41,6 @@ target_link_directories(jojTestsJVec4
 target_link_libraries(jojTestsJVec4 joj)
 # -----------------------------------------------------------------------------
 
-# Vector Tests
-add_executable(jojTestsVector
-    joj_tests_vector.cpp
-)
-
-target_include_directories(jojTestsVector
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../include/
-)
-
-target_link_directories(jojTestsVector
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../src/
-)
-
-target_link_libraries(jojTestsVector joj)
-# -----------------------------------------------------------------------------
-
 # JScript Tests
 add_executable(jojTestsJScript
     joj_tests_jscript.cpp
