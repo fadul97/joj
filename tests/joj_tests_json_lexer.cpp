@@ -59,6 +59,9 @@ JOJ_TEST(JSON_TEST_3)
 
     joj::JsonParser parser(json);
     joj::JsonValue result = parser.parse();
+    std::printf("\n");
+    result.print();
+    std::printf("\n");
 }
 
 

@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <vector>
 #include <variant>
+#include <iostream>
 
 namespace joj
 {
@@ -83,9 +84,79 @@ namespace joj
          */
         b8 is_array() const;
 
+        /**
+         * @brief Print the JSON value recursively.
+         * 
+         * @param os The output stream.
+         * @param indent The indentation.
+         */
+        void print(std::ostream& os = std::cout, i32 indent = 0) const;
+
     private:
         /** @brief The JSON value. */
         Value m_value;
+
+        /**
+         * @brief Print the JSON value.
+         * 
+         * @param os The output stream.
+         * @param indent The indentation.
+         */
+        static void print_indent(std::ostream& os, i32 indent);
+    
+        /**
+         * @brief Print the JSON value.
+         * 
+         * @param value The JSON value.
+         * @param os The output stream.
+         * @param indent The indentation.
+         */
+        static void print_value(const std::nullptr_t&, std::ostream& os, i32 indent);
+
+        /**
+         * @brief Print the JSON value.
+         * 
+         * @param value The JSON boolean value.
+         * @param os The output stream.
+         * @param indent The indentation.
+         */
+        static void print_value(const b8& value, std::ostream& os, i32 indent);
+    
+        /**
+         * @brief Print the JSON value.
+         * 
+         * @param value The JSON number value.
+         * @param os The output stream.
+         * @param indent The indentation.
+         */
+        static void print_value(const f64& value, std::ostream& os, i32 indent);
+
+        /**
+         * @brief Print the JSON value.
+         * 
+         * @param value The JSON string value.
+         * @param os The output stream.
+         * @param indent The indentation.
+         */
+        static void print_value(const std::string& value, std::ostream& os, i32 indent);
+    
+        /**
+         * @brief Print the JSON value.
+         * 
+         * @param value The JSON array value.
+         * @param os The output stream.
+         * @param indent The indentation.
+         */
+        static void print_value(const Array& array, std::ostream& os, i32 indent);
+    
+        /**
+         * @brief Print the JSON value.
+         * 
+         * @param value The JSON object value.
+         * @param os The output stream.
+         * @param indent The indentation.
+         */
+        static void print_value(const Object& object, std::ostream& os, i32 indent);
     };
 }
 
