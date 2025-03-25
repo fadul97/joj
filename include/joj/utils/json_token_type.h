@@ -20,6 +20,8 @@ namespace joj
         EndOfFile,
         Error
     };
+
+    JOJ_API const char* json_token_type_to_string(const JsonTokenType type);
 }
 
 #endif // _JOJ_JSON_TOKEN_TYPE_H

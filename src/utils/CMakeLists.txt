@@ -19,6 +19,7 @@ set(SOURCE_FILES
     json_value.cpp
     json_lexer.cpp
     json_parser.cpp
+    json_token_type.cpp
 )
 
 # -----------------------------------------------------------------------------
