@@ -24,9 +24,9 @@ joj::JsonToken joj::JsonLexer::next_token()
     case ':':  return { JsonTokenType::Colon, ":" };
     case ',':  return { JsonTokenType::Comma, "," };
     case '"':  return parse_string();
-    case 't':  return parse_keyword("true", JsonTokenType::Boolean);
-    case 'f':  return parse_keyword("false", JsonTokenType::Boolean);
-    case 'n':  return parse_keyword("null", JsonTokenType::Null);
+    case 't':  return parse_keyword(c, "true", JsonTokenType::Boolean);
+    case 'f':  return parse_keyword(c, "false", JsonTokenType::Boolean);
+    case 'n':  return parse_keyword(c, "null", JsonTokenType::Null);
     case '\0': return { JsonTokenType::EndOfFile, "" };
     default:
     {
@@ -105,12 +105,16 @@ joj::JsonToken joj::JsonLexer::parse_number(const char c)
     return { JsonTokenType::Number, result };
 }
 
-joj::JsonToken joj::JsonLexer::parse_keyword(const std::string& keyword, const JsonTokenType type)
+joj::JsonToken joj::JsonLexer::parse_keyword(char c, const std::string& keyword, const JsonTokenType type)
 {
     for (u32 i = 0; i < keyword.size(); ++i)
     {
-        if (keyword[i] != advance())
+        // Check if the keyword matches
+        if (keyword[i] != c)
             return { JsonTokenType::Error, keyword };
+
+        // Advance to the next character
+        c = advance();
     }
 
     return { type, keyword };

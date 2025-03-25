@@ -54,7 +54,7 @@ namespace joj
          * 
          * @return JsonToken The keyword token.
          */
-        JsonToken parse_keyword(const std::string& keyword, const JsonTokenType type);
+        JsonToken parse_keyword(char c, const std::string& keyword, const JsonTokenType type);
 
         /**
          * @brief Peek at the next character.
