@@ -30,6 +30,103 @@ joj::JsonValue::JsonValue(const Array& value)
 {
 }
 
+joj::JsonValue& joj::JsonValue::operator[](const std::string& key)
+{
+    if (std::holds_alternative<Object>(m_value))
+    {
+        auto& obj = std::get<Object>(m_value);
+        return obj[key];
+    }
+
+    // Static object to return if the index is out of bounds
+    static JsonValue default_value;
+    return default_value;
+}
+
+const joj::JsonValue& joj::JsonValue::operator[](const std::string& key) const
+{
+    if (std::holds_alternative<Object>(m_value))
+    {
+        auto& obj = std::get<Object>(m_value);
+        auto it = obj.find(key);
+
+        if (it != obj.end())
+            return it->second;
+    }
+
+    return JsonValue();
+}
+
+joj::JsonValue& joj::JsonValue::operator[](const size_t index)
+{
+    if (std::holds_alternative<Array>(m_value))
+    {
+        auto& arr = std::get<Array>(m_value);
+
+        if (index < arr.size())
+            return arr[index];
+    }
+
+    // Static object to return if the index is out of bounds
+    static JsonValue default_value;
+    return default_value;
+}
+
+const joj::JsonValue& joj::JsonValue::operator[](const size_t index) const
+{
+    if (std::holds_alternative<Array>(m_value))
+    {
+        auto& arr = std::get<Array>(m_value);
+        
+        if (index < arr.size())
+        return arr[index];
+    }
+    
+    // Static object to return if the index is out of bounds
+    static JsonValue default_value;
+    return default_value;
+}
+
+std::string joj::JsonValue::as_string() const
+{
+    if (std::holds_alternative<std::string>(m_value))
+        return std::get<std::string>(m_value);
+
+    return "";
+}
+
+f64 joj::JsonValue::as_number() const
+{
+    if (std::holds_alternative<f64>(m_value))
+        return std::get<f64>(m_value);
+
+    return JSON_NULL;
+}
+
+b8 joj::JsonValue::as_bool() const
+{
+    if (std::holds_alternative<b8>(m_value))
+        return std::get<b8>(m_value);
+
+    return false;
+}
+
+const joj::JsonValue::Array& joj::JsonValue::as_array() const
+{
+    if (std::holds_alternative<Array>(m_value))
+        return std::get<Array>(m_value);
+
+    return Array();
+}
+
+const joj::JsonValue::Object& joj::JsonValue::as_object() const
+{
+    if (std::holds_alternative<Object>(m_value))
+        return std::get<Object>(m_value);
+
+    return Object();
+}
+
 b8 joj::JsonValue::is_object() const
 {
     return std::holds_alternative<Object>(m_value);
@@ -38,6 +135,21 @@ b8 joj::JsonValue::is_object() const
 b8 joj::JsonValue::is_array() const
 {
     return std::holds_alternative<Array>(m_value);
+}
+
+b8 joj::JsonValue::is_null() const
+{
+    return std::holds_alternative<std::nullptr_t>(m_value);
+}
+
+b8 joj::JsonValue::is_string() const
+{
+    return std::holds_alternative<std::string>(m_value);
+}
+
+b8 joj::JsonValue::is_number() const
+{
+    return std::holds_alternative<f64>(m_value);
 }
 
 void joj::JsonValue::print(std::ostream& os, i32 indent) const

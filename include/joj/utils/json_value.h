@@ -11,6 +11,8 @@
 
 namespace joj
 {
+    constexpr f64 JSON_NULL = -9999999.99f;
+
     /**
      * @brief A class that represents a JSON value.
      * It can be a null, boolean, number, string, object or array.
@@ -69,6 +71,73 @@ namespace joj
          * @param value The array value.
          */
         JsonValue(const Array& value);
+
+        /**
+         * @brief Access the JSON value by key only if it is an object.
+         * 
+         * @param key The key.
+         * @return JsonValue& The JSON value.
+         */
+        JsonValue& operator[](const std::string& key);
+
+        /**
+         * @brief Access the JSON value by key only if it is an object.
+         * 
+         * @param key The key.
+         * @return const JsonValue& The JSON value.
+         */
+        const JsonValue& operator[](const std::string& key) const;
+
+        /**
+         * @brief Access the JSON value by index only if it is an array.
+         * 
+         * @param index The index.
+         * @return JsonValue& The JSON value.
+         */
+        JsonValue& operator[](const size_t index);
+
+        /**
+         * @brief Access the JSON value by index only if it is an array.
+         * 
+         * @param index The index.
+         * @return const JsonValue& The JSON value.
+         */
+        const JsonValue& operator[](const size_t index) const;
+
+        /**
+         * @brief Get the JSON value as a string.
+         * 
+         * @return std::string The JSON value as a string.
+         */
+        std::string as_string() const;
+        
+        /**
+         * @brief Get the JSON value as a number.
+         * 
+         * @return f64 The JSON value as a number.
+         */
+        f64 as_number() const;
+        
+        /**
+         * @brief Get the JSON value as a boolean.
+         * 
+         * @return b8 The JSON value as a boolean.
+         */
+        b8 as_bool() const;
+
+        /**
+         * @brief Get the JSON value as an array.
+         * 
+         * @return const Array& The JSON value as an array.
+         */
+        const Array& as_array() const;
+
+        /**
+         * @brief Get the JSON value as an object.
+         * 
+         * @return const Object& The JSON value as an object.
+         */
+        const Object& as_object() const;
     
         /**
          * @brief Check if the JSON value is an object.
@@ -83,6 +152,27 @@ namespace joj
          * @return b8 True if the JSON value is an array, false otherwise.
          */
         b8 is_array() const;
+
+        /**
+         * @brief Check if the JSON value is null.
+         * 
+         * @return b8 True if the JSON value is null, false otherwise.
+         */
+        b8 is_null() const;
+
+        /**
+         * @brief Check if the JSON value is a string.
+         * 
+         * @return b8 True if the JSON value is a string, false otherwise.
+         */
+        b8 is_string() const;
+
+        /**
+         * @brief Check if the JSON value is a number.
+         * 
+         * @return b8 True if the JSON value is a number, false otherwise.
+         */
+        b8 is_number() const;
 
         /**
          * @brief Print the JSON value recursively.
