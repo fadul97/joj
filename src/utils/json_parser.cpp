@@ -71,7 +71,7 @@ joj::JsonValue joj::JsonParser::parse_object()
         object[key] = parse_value();
 
         // Consume ','
-        if (m_current_token.type != JsonTokenType::Comma)
+        if (m_current_token.type != JsonTokenType::Comma && m_current_token.type != JsonTokenType::RightBrace)
             advance();
 
         // Skip ','

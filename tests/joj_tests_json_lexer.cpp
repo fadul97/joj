@@ -64,6 +64,24 @@ JOJ_TEST(JSON_TEST_3)
     std::printf("\n");
 }
 
+JOJ_TEST(JSON_TEST_4)
+{
+    std::string json = R"(
+        {
+            "name": "Cube",
+            "vertices": [0, 1, 2],
+            "visible": true,
+            "position": { "x": 1.0, "y": 2.0, "z": 3.0 }
+        }
+    )";
+
+    joj::JsonParser parser(json);
+    joj::JsonValue result = parser.parse();
+    std::printf("\n");
+    result.print();
+    std::printf("\n");
+}
+
 
 int main() {
     joj::JTestSuite::instance().run();
