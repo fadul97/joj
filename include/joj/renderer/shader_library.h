@@ -19,6 +19,15 @@ namespace joj
          * only holds a float4x4 matrix.
          */
         JOJ_EXTERN const char* PosColorNormalAndCamera;
+
+        /**
+         * @brief A basic vertex shader that passes the position, color, normal.
+         * It has a simple camera that transforms the vertices, the constant buffer
+         * only holds a float4x4 matrix.
+         */
+        JOJ_EXTERN const char* LightWithPosColorNormalAndCamera;
+
+        JOJ_EXTERN const char* PosColorNormalWithLightRotation;
 	}
 }
 

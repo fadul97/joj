@@ -17,11 +17,6 @@
 
 // Constant Objects ------------------------------------------------------------
 
-struct WVPBuffer
-{
-    joj::JFloat4x4 wvp;
-};
-
 struct ConstantBuffer
 {
     joj::JFloat4x4 wvp;
@@ -30,7 +25,7 @@ struct ConstantBuffer
     joj::JFloat4x4 projectionMatrix;
 };
 
-struct LightCB
+struct LightBuffer
 {
     joj::Vector4 diffuseColor;
     joj::Vector3 lightDirection;
@@ -66,6 +61,7 @@ public:
     joj::D3D11VertexBuffer m_vb;
     joj::D3D11IndexBuffer m_ib;
     joj::D3D11ConstantBuffer m_cb;
+    joj::D3D11ConstantBuffer m_lightcb;
     joj::D3D11Shader m_shader;
 
     joj::FreeCamera m_camera;

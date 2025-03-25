@@ -121,7 +121,7 @@ void App3DTest::build_buffers()
     {
         joj::Vertex::PosColorNormal vertex;
         vertex.pos = positions[i];
-        vertex.color = colors[i % 4];
+        vertex.color = colors[1];
         vertex.normal = normals[i];
         vertices.push_back(vertex);
     }
@@ -146,10 +146,10 @@ void App3DTest::build_buffers()
 
     // Create shader
     m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_shader.compile_vertex_shader(joj::ShaderLibrary::PosColorNormalAndCamera, "VS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+    if (m_shader.compile_vertex_shader(joj::ShaderLibrary::PosColorNormalWithLightRotation, "VS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
         return;
 
-    if (m_shader.compile_pixel_shader(joj::ShaderLibrary::PosColorNormalAndCamera, "PS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+    if (m_shader.compile_pixel_shader(joj::ShaderLibrary::PosColorNormalWithLightRotation, "PS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
         return;
 
     std::vector<joj::InputDesc> layout =
@@ -163,7 +163,11 @@ void App3DTest::build_buffers()
         return;
 
     m_cb = joj::D3D11ConstantBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_cb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(WVPBuffer)), nullptr) != joj::ErrorCode::OK)
+    if (m_cb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr) != joj::ErrorCode::OK)
+        return;
+    
+    m_lightcb = joj::D3D11ConstantBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+    if (m_lightcb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(LightBuffer)), nullptr) != joj::ErrorCode::OK)
         return;
 }
 
@@ -174,28 +178,46 @@ void App3DTest::init()
     m_renderer->set_rasterizer_state(joj::RasterizerState::Solid);
 }
 
+static f32 rotation = 0.0f;
 void App3DTest::update(const f32 dt)
 {
     if (m_input->is_key_pressed(joj::KEY_ESCAPE))
         joj::Engine::close();
 
     const f32 speed = 10.0f * dt;;
+    rotation -= 0.0174532925f * 0.1f;
+    if (rotation < 0.0f)
+        rotation += 360.0f;
 
     process_mouse_input(dt);
 }
 
-static f32 angleY = 0.0f;
 void App3DTest::draw()
 {
     m_renderer->begin_frame();
     {
         m_cb.bind_to_vertex_shader(0, 1);
-        joj::JMatrix4x4 v = DirectX::XMLoadFloat4x4(&m_camera.get_view());
-        joj::JMatrix4x4 p = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
-        joj::JMatrix4x4 wvp = DirectX::XMMatrixTranspose(v * p);
-        WVPBuffer wvp_buffer;
-        DirectX::XMStoreFloat4x4(&wvp_buffer.wvp, wvp);
-        m_cb.update(wvp_buffer);
+        {
+            joj::JMatrix4x4 W = DirectX::XMMatrixRotationY(rotation); // XMMatrixIdentity();
+            joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
+            joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
+            joj::JMatrix4x4 WVP = W * V * P;
+    
+            ConstantBuffer cbData = {};
+            XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
+            XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
+            XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
+            XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
+            m_cb.update(cbData);
+        }
+
+        m_lightcb.bind_to_pixel_shader(1, 1);
+        {
+            LightBuffer lightBuffer;
+            lightBuffer.diffuseColor = joj::JFloat4(1.0f, 0.7f, 0.7f, 1.0);
+            lightBuffer.lightDirection = joj::JFloat3(0.0f, 0.0f, 1.0f);
+            m_lightcb.update(lightBuffer);
+        }
 
         // Bind and Draw the rect
         constexpr u32 stride = sizeof(joj::Vertex::PosColorNormal);
