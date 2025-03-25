@@ -21,8 +21,6 @@
 
 inline std::vector<u8> load_binary_data(const std::string& filename)
 {
-    joj::JsonParser::hello_world();
-
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open())
         throw std::runtime_error("Failed to open binary buffer file.");
