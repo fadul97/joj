@@ -76,19 +76,19 @@ void App3DTest::setup_camera()
 
 void App3DTest::build_buffers()
 {
-    const char* filename = "models/Cube.bin";
+    const char* filename = "models/Monkey.bin";
     auto data = load_binary_data(filename);
 
     constexpr size_t vertices_byteOffset = 0;
-    constexpr size_t vertices_count = 24;
+    constexpr size_t vertices_count = 1966;
     auto positions = load_positions_from_buffer(data, vertices_byteOffset, vertices_count);
 
-    constexpr size_t normals_byteOffset = 288;
-    constexpr size_t normals_count = 24;
+    constexpr size_t normals_byteOffset = 23592;
+    constexpr size_t normals_count = 1966;
     auto normals = load_normals_from_buffer(data, normals_byteOffset, normals_count);
 
-    constexpr size_t indices_byteOffset = 768;
-    constexpr size_t indices_count = 36;
+    constexpr size_t indices_byteOffset = 62912;
+    constexpr size_t indices_count = 2904;
     auto indices = load_indices_from_buffer(data, indices_byteOffset, indices_count);
 
     /*

@@ -18,6 +18,8 @@ samples/models/Plane.txt
 samples/models/MyMonkey.obj
 samples/models/soldier.m3d
 samples/models/BASEmodel.obj
+samples/models/Monkey.bin
+samples/models/Monkey.gltf
 
 # Project File Tree
 tree.txt
