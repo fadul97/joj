@@ -47,15 +47,6 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 # -----------------------------------------------------------------------------
-# Set output directories
-
-set_target_properties(joj PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-)
-
-# -----------------------------------------------------------------------------
 # Add subdirectories
 
 add_subdirectory(core)
@@ -67,21 +58,22 @@ add_subdirectory(engine)
 add_subdirectory(application)
 # add_subdirectory(jscript)
 add_subdirectory(utils)
+add_subdirectory(resources)
 
 # -----------------------------------------------------------------------------
 # Set include directories
 
-target_include_directories(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils)
+target_include_directories(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils jojResources)
 
 # -----------------------------------------------------------------------------
 # Set link directories
 
-target_link_directories(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils)
+target_link_directories(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils jojResources)
 
 # -----------------------------------------------------------------------------
 # Link libraries
 
-target_link_libraries(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils)
+target_link_libraries(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils jojResources)
 
 # -----------------------------------------------------------------------------
 # Set output directories

@@ -15,6 +15,8 @@
 #include "joj/core/math/vector3.h"
 #include "joj/core/math/vector4.h"
 
+#include "joj/resources/gltf_importer.h"
+
 // Constant Objects ------------------------------------------------------------
 
 struct ConstantBuffer
@@ -66,6 +68,8 @@ public:
 
     joj::FreeCamera m_camera;
     joj::JFloat2 m_last_mouse_pos;
+
+    joj::GLTFImporter m_gltf_importer;
 };
 
 #endif // _JOJ_3D_APP_TEST_H
