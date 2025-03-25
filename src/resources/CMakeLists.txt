@@ -1,0 +1,68 @@
+# PATH: src/resources/CMakeLists.txt
+cmake_minimum_required(VERSION 3.22)
+project(joj)
+
+# -----------------------------------------------------------------------------
+# Set C++ standard
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# -----------------------------------------------------------------------------
+# Set Platform name and directory
+# ...
+
+# -----------------------------------------------------------------------------
+# Set source files
+
+set(SOURCE_FILES
+    gltf_importer.cpp
+)
+
+# -----------------------------------------------------------------------------
+# jojResources
+
+add_library(jojResources
+    ${SOURCE_FILES}
+)
+
+# -----------------------------------------------------------------------------
+# Set JOJ_BUILDING_DLL macro
+
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(jojResources PRIVATE JOJ_BUILDING_DLL) # Export
+endif()
+
+# -----------------------------------------------------------------------------
+# Set include directories
+
+target_include_directories(jojResources PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/
+)
+
+# -----------------------------------------------------------------------------
+# Set Link directories
+
+target_link_directories(
+    jojResources
+    PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../core/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../utils/
+)
+
+# -----------------------------------------------------------------------------
+# Link libraries
+
+target_link_libraries(jojResources PRIVATE
+    jojCore
+    jojUtils
+)
+
+# -----------------------------------------------------------------------------
+# Set output directories
+
+set_target_properties(jojResources PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+)
