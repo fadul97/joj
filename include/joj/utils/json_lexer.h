@@ -75,9 +75,18 @@ namespace joj
          */
         void skip_whitespace();
 
+        /**
+         * @brief Get the error count.
+         * 
+         * @return The error count.
+         */
+        u32 get_error_count();
+
     private:
         std::string_view m_input;
         u32 m_position;
+
+        u32 m_error_count;
     };
 }
 

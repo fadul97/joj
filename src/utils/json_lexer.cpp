@@ -1,8 +1,7 @@
 #include "joj/utils/json_lexer.h"
 
 joj::JsonLexer::JsonLexer(std::string_view json)
-    : m_input(json)
-    , m_position(0)
+    : m_input(json), m_position(0), m_error_count(0)
 {
 }
 
@@ -64,6 +63,7 @@ joj::JsonToken joj::JsonLexer::parse_string()
                 case 'r': result += '\r'; break;
                 case 't': result += '\t'; break;
                 default:
+                    ++m_error_count;
                     return { JsonTokenType::Error, "Invalid escape sequence" };
             }
         }
@@ -111,7 +111,10 @@ joj::JsonToken joj::JsonLexer::parse_keyword(char c, const std::string& keyword,
     {
         // Check if the keyword matches
         if (keyword[i] != c)
+        {
+            ++m_error_count;
             return { JsonTokenType::Error, keyword };
+        }
 
         // Advance to the next character
         c = advance();
@@ -134,4 +137,9 @@ void joj::JsonLexer::skip_whitespace()
 {
     while (isspace(peek()))
         advance();
+}
+
+u32 joj::JsonLexer::get_error_count()
+{
+    return m_error_count;
 }
