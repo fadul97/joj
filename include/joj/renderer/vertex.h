@@ -22,6 +22,19 @@ namespace joj
             Vector4 color;
 		};
 
+		struct PosColorNormal
+		{
+			Vector3 pos;
+			Vector4 color;
+			Vector3 normal;
+		};
+
+		struct PosNormal
+		{
+			Vector3 pos;
+			Vector3 normal;
+		};
+
         // TODO: Find a better name for this struct
         struct RectUIType
 		{
@@ -36,7 +49,7 @@ namespace joj
 			Vector4 uv_rect;
 		};
 
-        struct PosColorNormal
+        struct PosColorNormalOP
         {
             Vector3 pos;
             Vector4 color;

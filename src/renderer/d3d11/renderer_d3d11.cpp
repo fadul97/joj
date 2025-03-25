@@ -651,7 +651,7 @@ void joj::D3D11Renderer::draw_rect(const i32 x, const i32 y, const i32 width,
         { Vector3{ right, top,    0.0f }, color_array }, // 1: Top-right
     };
 
-    u32 indices[] =
+    u16 indices[] =
     {
         0, 2, 1,  // First triangle (CCW)
         1, 2, 3   // Second triangle (CCW)
@@ -664,15 +664,15 @@ void joj::D3D11Renderer::draw_rect(const i32 x, const i32 y, const i32 width,
 
     // Create index buffer
     D3D11IndexBuffer ib(&m_graphics_device, &m_cmd_list);
-    if (ib.create(BufferUsage::Default, CPUAccessType::None, sizeof(u32) * 6, indices) != ErrorCode::OK)
+    if (ib.create(BufferUsage::Default, CPUAccessType::None, sizeof(u16) * 6, indices) != ErrorCode::OK)
         return;
 
     // Create shader
     D3D11Shader shader(&m_graphics_device, &m_cmd_list);
-    if (shader.compile_vertex_shader(ShaderLibrary::VertexShaderSimpleCamera, "VS", ShaderModel::Default) != ErrorCode::OK)
+    if (shader.compile_vertex_shader(ShaderLibrary::SimpleColor, "VS", ShaderModel::Default) != ErrorCode::OK)
         return;
     
-    if (shader.compile_pixel_shader(ShaderLibrary::PixelShaderSimple, "PS", ShaderModel::Default) != ErrorCode::OK)
+    if (shader.compile_pixel_shader(ShaderLibrary::SimpleColor, "PS", ShaderModel::Default) != ErrorCode::OK)
         return;
 
     std::vector<InputDesc> layout =
@@ -688,7 +688,7 @@ void joj::D3D11Renderer::draw_rect(const i32 x, const i32 y, const i32 width,
     constexpr u32 stride = sizeof(Vertex::RectUIType);
     constexpr u32 offset = 0;
     vb.bind(0, 1, &stride, &offset);
-    ib.bind(joj::DataFormat::R32_UINT, offset);
+    ib.bind(joj::DataFormat::R16_UINT, offset);
     shader.bind();
     draw_indexed(6, 0, 0);
 }

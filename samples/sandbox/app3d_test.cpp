@@ -41,6 +41,12 @@ inline std::vector<joj::Vector3> load_positions_from_buffer(const std::vector<u8
     return std::vector<joj::Vector3>(data, data + count);
 }
 
+inline std::vector<joj::Vector3> load_normals_from_buffer(const std::vector<u8>& buffer, size_t byteOffset, size_t count)
+{
+    const joj::Vector3* data = reinterpret_cast<const joj::Vector3*>(buffer.data() + byteOffset);
+    return std::vector<joj::Vector3>(data, data + count);
+}
+
 inline std::vector<uint16_t> load_indices_from_buffer(const std::vector<u8>& buffer, size_t byteOffset, size_t count)
 {
     const uint16_t* data = reinterpret_cast<const uint16_t*>(buffer.data() + byteOffset);
@@ -77,17 +83,28 @@ void App3DTest::build_buffers()
     constexpr size_t vertices_count = 24;
     auto positions = load_positions_from_buffer(data, vertices_byteOffset, vertices_count);
 
+    constexpr size_t normals_byteOffset = 288;
+    constexpr size_t normals_count = 24;
+    auto normals = load_normals_from_buffer(data, normals_byteOffset, normals_count);
+
     constexpr size_t indices_byteOffset = 768;
     constexpr size_t indices_count = 36;
     auto indices = load_indices_from_buffer(data, indices_byteOffset, indices_count);
 
+    /*
+    // Print normals
+    i32 count = 0;
+    for (const auto& normal : normals)
+    JOJ_INFO("Normal %d: %.3f, %.3f, %.3f", count++, normal.x, normal.y, normal.z);
+    
     // Print positions
     for (const auto& pos : positions)
-        JOJ_INFO("Position: %.3f, %.3f, %.3f", pos.x, pos.y, pos.z);
-
+    JOJ_INFO("Position: %.3f, %.3f, %.3f", pos.x, pos.y, pos.z);
+    
     // Print indices
     for (const auto& index : indices)
-        JOJ_INFO("Index: %d", index);
+    JOJ_INFO("Index: %d", index);
+    */
 
     // Array of Vector4 colors
     joj::Vector4 colors[4] =
@@ -98,22 +115,25 @@ void App3DTest::build_buffers()
         { 1.0f, 1.0f, 0.0f, 1.0f }
     };
 
-    // Loop positions to create vertices
-    std::vector<joj::Vertex::PosColor> vertices;
-    i32 i = 0;
-    for (const auto& pos : positions)
+    // Loop positions and normals to create vertices
+    std::vector<joj::Vertex::PosColorNormal> vertices;
+    for (size_t i = 0; i < positions.size(); ++i)
     {
-        vertices.push_back({ pos, colors[i] });
-        i = (i + 1) % 4;
+        joj::Vertex::PosColorNormal vertex;
+        vertex.pos = positions[i];
+        vertex.color = colors[i % 4];
+        vertex.normal = normals[i];
+        vertices.push_back(vertex);
     }
-    
+    // Size of PosColorNormal: 40
+
     // Create vertex buffer
     const u32 vertices_size = static_cast<u32>(vertices.size());
     m_vertex_cout = vertices_size;
     JOJ_DEBUG("Vertices count: %d", m_vertex_cout);
     m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
     if (m_vb.create(joj::BufferUsage::Default, joj::CPUAccessType::None,
-        sizeof(joj::Vertex::RectUIType) * vertices_size, vertices.data()) != joj::ErrorCode::OK)
+        sizeof(joj::Vertex::PosColorNormal) * vertices_size, vertices.data()) != joj::ErrorCode::OK)
         return;
 
     // Create index buffer
@@ -126,16 +146,17 @@ void App3DTest::build_buffers()
 
     // Create shader
     m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_shader.compile_vertex_shader(joj::ShaderLibrary::VertexShaderSimpleCamera, "VS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+    if (m_shader.compile_vertex_shader(joj::ShaderLibrary::PosColorNormalAndCamera, "VS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
         return;
 
-    if (m_shader.compile_pixel_shader(joj::ShaderLibrary::PixelShaderSimple, "PS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+    if (m_shader.compile_pixel_shader(joj::ShaderLibrary::PosColorNormalAndCamera, "PS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
         return;
 
     std::vector<joj::InputDesc> layout =
     {
         { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
-        { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 12, joj::InputClassification::PerVertexData, 0 }
+        { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 12, joj::InputClassification::PerVertexData, 0 },
+        { "NORMAL",   0, joj::DataFormat::R32G32B32_FLOAT,    0, 28, joj::InputClassification::PerVertexData, 0 }
     };
 
     if (m_shader.create_input_layout(layout) != joj::ErrorCode::OK)
@@ -177,7 +198,7 @@ void App3DTest::draw()
         m_cb.update(wvp_buffer);
 
         // Bind and Draw the rect
-        constexpr u32 stride = sizeof(joj::Vertex::PosColor);
+        constexpr u32 stride = sizeof(joj::Vertex::PosColorNormal);
         constexpr u32 offset = 0;
         m_vb.bind(0, 1, &stride, &offset);
         m_ib.bind(joj::DataFormat::R16_UINT, offset);
@@ -221,7 +242,10 @@ void App3DTest::on_mouse_move(WPARAM button_state, i32 x, i32 y)
 
 void App3DTest::process_mouse_input(const f32 dt)
 {
-    const f32 speed = dt * 40.0f;
+    f32 speed = dt * 10.0f;
+
+    if (m_input->is_key_down(joj::KEY_CONTROL))
+        speed *= 5;
 
     if (m_input->is_key_down('W'))
         m_camera.walk(speed);

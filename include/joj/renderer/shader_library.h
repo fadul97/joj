@@ -7,24 +7,18 @@ namespace joj
 {
 	namespace ShaderLibrary
 	{
-                /**
-                 * @brief A basic vertex shader that only passes the position and color.
-                 * 
-                 */
-                JOJ_EXTERN const char* VertexShaderSimple;
+        /**
+         * @brief A basic vertex shader that only passes the position and color
+         * and only returns the color.
+         */
+        JOJ_EXTERN const char* SimpleColor;
 
-                /**
-                 * @brief A basic pixel shader that only returns the color.
-                 * 
-                 */
-                JOJ_EXTERN const char* PixelShaderSimple;
-
-                /**
-                 * @brief A basic vertex shader that only passes the position and color.
-                 * It has a simple camera that transforms the vertices, the constant buffer
-                 * only holds a float4x4 matrix.
-                 */
-                JOJ_EXTERN const char* VertexShaderSimpleCamera;
+        /**
+         * @brief A basic vertex shader that passes the position, color and normal.
+         * It has a simple camera that transforms the vertices, the constant buffer
+         * only holds a float4x4 matrix.
+         */
+        JOJ_EXTERN const char* PosColorNormalAndCamera;
 	}
 }
 
