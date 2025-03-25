@@ -3,7 +3,7 @@
 #include <iostream>
 
 joj::JsonParser::JsonParser(std::string_view json)
-    : m_lexer(json)
+    : m_lexer(json), m_error_count(0)
 {
     advance();
 }
@@ -33,7 +33,8 @@ joj::JsonValue joj::JsonParser::parse_value()
     case JsonTokenType::Boolean: return { m_current_token.value == "true" };
     case JsonTokenType::Null: return JsonValue();
     default:
-        std::cerr << "Error: Invalid token type: " << static_cast<u32>(m_current_token.type) << std::endl;
+        ++m_error_count;
+        std::cerr << "Error: Invalid token type: " << m_current_token.value << std::endl;
         return JsonValue();
     }
 }
@@ -49,6 +50,7 @@ joj::JsonValue joj::JsonParser::parse_object()
     {
         if (m_current_token.type != JsonTokenType::String)
         {
+            ++m_error_count;
             std::cerr << "Error: Expected key name." << std::endl;
             return JsonValue();
         }
@@ -60,7 +62,8 @@ joj::JsonValue joj::JsonParser::parse_object()
 
         if (m_current_token.type != JsonTokenType::Colon)
         {
-            std::cerr << "Error: Expected ':' after key." << std::endl;
+            ++m_error_count;
+            std::cerr << "Error: Expected ':' after key '" << key << "'." << std::endl;
             return JsonValue();
         }
 
@@ -70,8 +73,14 @@ joj::JsonValue joj::JsonParser::parse_object()
         // Parse value
         object[key] = parse_value();
 
+        if (m_current_token.type == JsonTokenType::RightBrace)
+            continue;
+
+        if (m_current_token.type == JsonTokenType::RightBracket)
+            advance();
+
         // Consume ','
-        if (m_current_token.type != JsonTokenType::Comma && m_current_token.type != JsonTokenType::RightBrace)
+        if (m_current_token.type != JsonTokenType::Comma)
             advance();
 
         // Skip ','
@@ -96,6 +105,10 @@ joj::JsonValue joj::JsonParser::parse_array()
     {
         // Parse value
         array.push_back(parse_value());
+
+        // Check for another array or an object
+        //if (m_current_token.type == JsonTokenType::Comma)
+        //    advance();
 
         // Consume ','
         advance();
@@ -130,5 +143,12 @@ joj::JsonValue joj::JsonParser::parse_keyword()
     else if (m_current_token.value == "null")
         return JsonValue();
 
+    ++m_error_count;
+    std::cerr << "Error: Invalid keyword: " << m_current_token.value << std::endl;
     return JsonValue();
+}
+
+u32 joj::JsonParser::get_error_count()
+{
+    return m_lexer.get_error_count() + m_error_count;
 }

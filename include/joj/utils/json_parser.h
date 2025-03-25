@@ -19,9 +19,13 @@ namespace joj
 
         void advance();
 
+        u32 get_error_count();
+
     private:
         JsonLexer m_lexer;
         JsonToken m_current_token;
+
+        u32 m_error_count;
 
         JsonValue parse_value();
         JsonValue parse_object();
