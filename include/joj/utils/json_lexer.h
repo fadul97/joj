@@ -44,9 +44,10 @@ namespace joj
         /**
          * @brief Parse a number.
          * 
+         * @param c The current character.
          * @return JsonToken The number token.
          */
-        JsonToken parse_number();
+        JsonToken parse_number(const char c);
 
         /**
          * @brief Parse a keyword value.
