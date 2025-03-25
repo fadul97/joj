@@ -16,6 +16,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Set source files
 
 set(SOURCE_FILES
+    json_value.cpp
+    json_lexer.cpp
     json_parser.cpp
 )
 

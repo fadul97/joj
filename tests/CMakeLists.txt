@@ -41,6 +41,24 @@ target_link_directories(jojTestsJVec4
 target_link_libraries(jojTestsJVec4 joj)
 # -----------------------------------------------------------------------------
 
+# JVector4 Tests
+add_executable(jojTestsJson
+    joj_tests_json_lexer.cpp
+)
+
+target_include_directories(jojTestsJson
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/
+)
+
+target_link_directories(jojTestsJson
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/
+)
+
+target_link_libraries(jojTestsJson joj)
+# -----------------------------------------------------------------------------
+
 # JScript Tests
 add_executable(jojTestsJScript
     joj_tests_jscript.cpp
