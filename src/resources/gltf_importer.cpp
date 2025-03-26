@@ -93,7 +93,15 @@ void joj::apply_all_animations(GLTFAnimation& animation, f32 time, GLTFNode& nod
             }
             else if (channel.path == "rotation")
             {
-                // Se a rotação não for usada, pode ser ignorada por enquanto.
+                // Converter Vector4 para XMVECTOR (quaternion do DirectXMath)
+                DirectX::XMVECTOR q0 = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&keyframes[k0].rotation));
+                DirectX::XMVECTOR q1 = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&keyframes[k1].rotation));
+
+                // Interpolar usando SLERP
+                DirectX::XMVECTOR interpolatedRotation = DirectX::XMQuaternionSlerp(q0, q1, t);
+
+                Vector4 vec4_interpolated_ration = Vector4(interpolatedRotation);
+                node.SetRotation(vec4_interpolated_ration);
             }
         }
         else
@@ -110,7 +118,11 @@ void joj::apply_all_animations(GLTFAnimation& animation, f32 time, GLTFNode& nod
             }
             else if (channel.path == "rotation")
             {
-                // Aplique a rotação, se necessário
+                // Converter Vector4 para XMVECTOR
+                DirectX::XMVECTOR lastRotation = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&keyframes.back().rotation));
+
+                Vector4 vec4_interpolated_ration = Vector4(lastRotation);
+                node.SetRotation(vec4_interpolated_ration);
             }
         }
     }
