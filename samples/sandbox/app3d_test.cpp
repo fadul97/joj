@@ -77,20 +77,23 @@ void App3DTest::setup_camera()
 
 void App3DTest::build_buffers()
 {
-    const char* filename = "models/Cube.bin";
-    auto data = load_binary_data(filename);
+    m_gltf_importer = joj::GLTFImporter("models/UVSphere.gltf");
+    if (m_gltf_importer.load() == joj::ErrorCode::OK)
+    {
+        m_gltf_importer.print_scene_info();
+        m_gltf_importer.print_node_info();
+        m_gltf_importer.print_mesh_info();
+        m_gltf_importer.print_vertex_data();
+    }
 
-    constexpr size_t vertices_byteOffset = 0;
-    constexpr size_t vertices_count = 24;
-    auto positions = load_positions_from_buffer(data, vertices_byteOffset, vertices_count);
+    const size_t vertices_byteOffset = m_gltf_importer.m_positions_byte_offset;
+    const size_t vertices_count = m_gltf_importer.m_positions_count;
 
-    constexpr size_t normals_byteOffset = 288;
-    constexpr size_t normals_count = 24;
-    auto normals = load_normals_from_buffer(data, normals_byteOffset, normals_count);
+    const size_t normals_byteOffset = m_gltf_importer.m_normals_byte_offset;
+    const size_t normals_count = m_gltf_importer.m_normals_count;
 
-    constexpr size_t indices_byteOffset = 768;
-    constexpr size_t indices_count = 36;
-    auto indices = load_indices_from_buffer(data, indices_byteOffset, indices_count);
+    const size_t indices_byteOffset = m_gltf_importer.m_indices_byte_offset;
+    const size_t indices_count = m_gltf_importer.m_indices_count;
 
     /*
     // Print normals
@@ -118,12 +121,12 @@ void App3DTest::build_buffers()
 
     // Loop positions and normals to create vertices
     std::vector<joj::Vertex::PosColorNormal> vertices;
-    for (size_t i = 0; i < positions.size(); ++i)
+    for (size_t i = 0; i < m_gltf_importer.m_positions.size(); ++i)
     {
         joj::Vertex::PosColorNormal vertex;
-        vertex.pos = positions[i];
+        vertex.pos = m_gltf_importer.m_positions[i];
         vertex.color = colors[1];
-        vertex.normal = normals[i];
+        vertex.normal = m_gltf_importer.m_normals[i];
         vertices.push_back(vertex);
     }
     // Size of PosColorNormal: 40
@@ -138,11 +141,11 @@ void App3DTest::build_buffers()
         return;
 
     // Create index buffer
-    const u32 indices_size = static_cast<u32>(indices.size());
+    const u32 indices_size = static_cast<u32>(m_gltf_importer.m_indices.size());
     m_index_count = indices_size;
     JOJ_DEBUG("Indices count: %d", m_index_count);
     m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_ib.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(u16) * indices_size, indices.data()) != joj::ErrorCode::OK)
+    if (m_ib.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(u16) * indices_size, m_gltf_importer.m_indices.data()) != joj::ErrorCode::OK)
         return;
 
     // Create shader
