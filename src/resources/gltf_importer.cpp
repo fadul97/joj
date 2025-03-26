@@ -37,7 +37,154 @@ void joj::apply_animation(GLTFAnimation& animation, f32 time, GLTFNode& node)
     }
 }
 
-void joj::apply_all_animations(GLTFAnimation& animation, f32 time, GLTFNode& node)
+void joj::apply_all_animations(GLTFAnimation& animation, f32 time, GLTFNode& node, b8 loop)
+{
+    for (auto& channel : animation.channels)
+    {
+        const std::vector<GLTFKeyFrame>& keyframes = channel.keyframes;
+
+        // Se a animação deve ser em loop, ajustar o tempo
+        if (loop) {
+            if (time > keyframes.back().time) {
+                time = fmod(time, keyframes.back().time);  // Voltar para o início quando o tempo ultrapassar o último keyframe
+                // O tempo será "redefinido" para um valor entre 0 e o último keyframe
+            }
+        } else {
+            // Se o loop está desativado, a animação deve parar no último keyframe
+            if (time > keyframes.back().time) {
+                time = keyframes.back().time;  // Se passou do último keyframe, ajustamos para o último keyframe
+            }
+        }
+
+        // Encontrar os keyframes de interpolação
+        i32 k0 = 0;
+        i32 k1 = 0;
+        for (i32 i = 0; i < keyframes.size() - 1; ++i)
+        {
+            if (time >= keyframes[i].time && time <= keyframes[i + 1].time)
+            {
+                k0 = i;
+                k1 = i + 1;
+                break;
+            }
+        }
+
+        // Caso o tempo ultrapasse o último keyframe, não precisa interpolar, apenas usa o último valor
+        if (k1 == keyframes.size() - 1) {
+            k0 = k1;  // Se for o último keyframe, simplesmente usamos o k1
+        }
+
+        // Calcular o valor de t para interpolação (evitar divisão por zero)
+        if (keyframes[k1].time != keyframes[k0].time) {
+            f32 t = (time - keyframes[k0].time) / (keyframes[k1].time - keyframes[k0].time);
+            // Limitar t para que esteja entre 0 e 1
+            t = std::min(std::max(t, 0.0f), 1.0f);
+
+            // Aplicar as transformações de acordo com o tipo de canal
+            if (channel.path == "translation")
+            {
+                Vector3 value = lerp(keyframes[k0].translation, keyframes[k1].translation, t);
+                node.SetPosition(value);
+            }
+            else if (channel.path == "scale")
+            {
+                Vector3 value = lerp(keyframes[k0].scale, keyframes[k1].scale, t);
+                node.SetScale(value);
+            }
+            else if (channel.path == "rotation")
+            {
+                // Se a rotação não for usada, pode ser ignorada por enquanto.
+            }
+        }
+        else
+        {
+            // Caso não seja necessário interpolar, aplique o valor do último keyframe
+            if (channel.path == "translation")
+            {
+                node.SetPosition(keyframes[k0].translation);
+                std::cout << "Not interpolating translation" << std::endl;
+            }
+            else if (channel.path == "scale")
+            {
+                node.SetScale(keyframes[k0].scale);
+            }
+            else if (channel.path == "rotation")
+            {
+                // Aplique a rotação, se necessário
+            }
+        }
+    }
+}
+
+
+void joj::apply_all_animations_almost(GLTFAnimation& animation, f32 time, GLTFNode& node)
+{
+    for (auto& channel : animation.channels)
+    {
+        const std::vector<GLTFKeyFrame>& keyframes = channel.keyframes;
+
+        i32 k0 = 0;
+        i32 k1 = 0;
+
+        // Encontrar os keyframes de interpolação
+        for (i32 i = 0; i < keyframes.size() - 1; ++i)
+        {
+            if (time >= keyframes[i].time && time <= keyframes[i + 1].time)
+            {
+                k0 = i;
+                k1 = i + 1;
+                break;
+            }
+        }
+
+        // Caso o tempo ultrapasse o último keyframe, não precisa interpolar, apenas usa o último valor
+        if (k1 == keyframes.size() - 1) {
+            k0 = k1;  // Set k0 to the last keyframe if time is greater than the last keyframe time
+        }
+
+        // Calcular o valor de t para interpolação (evitar divisão por zero)
+        if (keyframes[k1].time != keyframes[k0].time) {
+            f32 t = (time - keyframes[k0].time) / (keyframes[k1].time - keyframes[k0].time);
+            // Limitar t para que esteja entre 0 e 1
+            t = std::min(std::max(t, 0.0f), 1.0f);
+
+            // Aplicar as transformações de acordo com o tipo de canal
+            if (channel.path == "translation")
+            {
+                Vector3 value = lerp(keyframes[k0].translation, keyframes[k1].translation, t);
+                node.SetPosition(value);
+            }
+            else if (channel.path == "scale")
+            {
+                Vector3 value = lerp(keyframes[k0].scale, keyframes[k1].scale, t);
+                node.SetScale(value);
+            }
+            else if (channel.path == "rotation")
+            {
+                // Se a rotação não for usada, pode ser ignorada por enquanto.
+            }
+        }
+        else {
+            // Caso não seja necessário interpolar, aplique o valor do último keyframe
+            if (channel.path == "translation")
+            {
+                node.SetPosition(keyframes[k0].translation);
+            }
+            else if (channel.path == "scale")
+            {
+                node.SetScale(keyframes[k0].scale);
+            }
+            else if (channel.path == "rotation")
+            {
+                // Aplique a rotação, se necessário
+            }
+        }
+    }
+}
+
+
+
+void joj::apply_all_animations_old(GLTFAnimation& animation, f32 time, GLTFNode& node)
 {
     for (auto& channel : animation.channels)
     {
@@ -141,7 +288,7 @@ joj::ErrorCode joj::GLTFImporter::load()
             {
                 m_bin_filename = "models/";
                 m_bin_filename += buffer["uri"].as_string().c_str();
-                std::cout << "Arquivo binário: " << m_bin_filename << std::endl;
+                //std::cout << "Arquivo binário: " << m_bin_filename << std::endl;
                 break;
             }
         }
@@ -152,8 +299,8 @@ joj::ErrorCode joj::GLTFImporter::load()
         if (!load_binary_file())
             return ErrorCode::FAILED;
         
-        JOJ_DEBUG("Printing Root");
-        print_root();
+        // JOJ_DEBUG("Printing Root");
+        // print_root();
         // print_animation_info();
 
         load_buffers();
@@ -571,7 +718,7 @@ void joj::GLTFImporter::print_vertex_data()
             if (accessor.has_key("bufferView"))
             {
                 i32 buffer_view_index = accessor["bufferView"].as_int();
-                std::cout << "BufferView: " << buffer_view_index << std::endl;
+                // std::cout << "BufferView: " << buffer_view_index << std::endl;
 
                 if (m_root.has_key("bufferViews"))
                 {
@@ -582,7 +729,7 @@ void joj::GLTFImporter::print_vertex_data()
                     if (buffer_view.has_key("byteOffset"))
                     {
                         i32 byte_offset = buffer_view["byteOffset"].as_int();
-                        std::cout << "  Byte Offset: " << byte_offset << " bytes" << std::endl;
+                        // std::cout << "  Byte Offset: " << byte_offset << " bytes" << std::endl;
 
                         // Verifique o tipo para associar o byteOffset
                         if (type == "VEC3")  // Posições ou Normais
@@ -590,12 +737,12 @@ void joj::GLTFImporter::print_vertex_data()
                             if (m_positions_byte_offset == -1)  // Verifique se a variável não foi preenchida
                             {
                                 m_positions_byte_offset = byte_offset;
-                                std::cout << "Positions Byte Offset: " << m_positions_byte_offset << std::endl;
+                                // std::cout << "Positions Byte Offset: " << m_positions_byte_offset << std::endl;
                             }
                             else if (m_normals_byte_offset == -1)
                             {
                                 m_normals_byte_offset = byte_offset;  // Assumindo que o próximo é Normais
-                                std::cout << "Normals Byte Offset: " << m_normals_byte_offset << std::endl;
+                                // std::cout << "Normals Byte Offset: " << m_normals_byte_offset << std::endl;
                             }
                             else
                             {
@@ -611,7 +758,7 @@ void joj::GLTFImporter::print_vertex_data()
                             if (m_indices_byte_offset == -1)
                             {
                                 m_indices_byte_offset = byte_offset;
-                                std::cout << "Indices Byte Offset: " << m_indices_byte_offset << std::endl;
+                                // std::cout << "Indices Byte Offset: " << m_indices_byte_offset << std::endl;
                             }
                             else
                             {
@@ -622,7 +769,7 @@ void joj::GLTFImporter::print_vertex_data()
 
                     if (buffer_view.has_key("byteLength"))
                     {
-                        std::cout << "  Byte Length: " << buffer_view["byteLength"].as_int() << " bytes" << std::endl;
+                        // std::cout << "  Byte Length: " << buffer_view["byteLength"].as_int() << " bytes" << std::endl;
                     }
                 }
             }
@@ -631,7 +778,7 @@ void joj::GLTFImporter::print_vertex_data()
             if (accessor.has_key("componentType"))
             {
                 std::string component_type = accessor["componentType"].as_string();
-                std::cout << "  Component Type: " << component_type << std::endl;
+                // std::cout << "  Component Type: " << component_type << std::endl;
             }
 
             // Preenche o número de vértices ou índices
@@ -643,12 +790,12 @@ void joj::GLTFImporter::print_vertex_data()
                     if (m_positions_count == -1)  // Se m_positions_byte_offset estiver vazio
                     {
                         m_positions_count = count;
-                        std::cout << "Positions Count: " << m_positions_count << std::endl;
+                        // std::cout << "Positions Count: " << m_positions_count << std::endl;
                     }
                     else if (m_normals_count == -1)  // Se m_normals_byte_offset estiver vazio
                     {
                         m_normals_count = count;
-                        std::cout << "Normals Count: " << m_normals_count << std::endl;
+                        // std::cout << "Normals Count: " << m_normals_count << std::endl;
                     }
                     else
                     {
@@ -660,7 +807,7 @@ void joj::GLTFImporter::print_vertex_data()
                     if (m_indices_count == -1)
                     {
                         m_indices_count = count;
-                        std::cout << "Indices Count: " << m_indices_count << std::endl;
+                        // std::cout << "Indices Count: " << m_indices_count << std::endl;
                     }
                     else
                     {
@@ -729,22 +876,22 @@ void joj::GLTFImporter::print_vertex_data()
                 {
                     m_translation_byte_offset = byte_offset;
                     m_translation_count = count;
-                    std::cout << "Translation Byte Offset: " << m_translation_byte_offset << "\n";
-                    std::cout << "Translation Count: " << m_translation_count << "\n";
+                    // std::cout << "Translation Byte Offset: " << m_translation_byte_offset << "\n";
+                    // std::cout << "Translation Count: " << m_translation_count << "\n";
                 }
                 else if (path == "rotation")
                 {
                     m_rotation_byte_offset = byte_offset;
                     m_rotation_count = count;
-                    std::cout << "Rotation Byte Offset: " << m_rotation_byte_offset << "\n";
-                    std::cout << "Rotation Count: " << m_rotation_count << "\n";
+                    // std::cout << "Rotation Byte Offset: " << m_rotation_byte_offset << "\n";
+                    // std::cout << "Rotation Count: " << m_rotation_count << "\n";
                 }
                 else if (path == "scale")
                 {
                     m_scale_byte_offset = byte_offset;
                     m_scale_count = count;
-                    std::cout << "Scale Byte Offset: " << m_scale_byte_offset << "\n";
-                    std::cout << "Scale Count: " << m_scale_count << "\n";
+                    // std::cout << "Scale Byte Offset: " << m_scale_byte_offset << "\n";
+                    // std::cout << "Scale Count: " << m_scale_count << "\n";
                 }
             }
         }
@@ -877,54 +1024,43 @@ bool compareKeyframes(const joj::GLTFKeyFrame& a, const joj::GLTFKeyFrame& b)
 
 void joj::GLTFImporter::print_animation_data()
 {
-    // Verifica se há animações carregadas
+    // Verificar se há animações
     if (m_animations.empty())
     {
-        std::cout << "No animations loaded." << std::endl;
+        std::cout << "Nenhuma animação encontrada!" << std::endl;
         return;
     }
 
-    // Ordena os keyframes por tempo
-    for (auto& anim : m_animations) 
+    // Iterar sobre cada animação
+    for (size_t animIndex = 0; animIndex < m_animations.size(); ++animIndex)
     {
-        for (auto& channel : anim.channels) 
-        {
-            // Ordena os keyframes dentro de cada canal com base no tempo
-            std::sort(channel.keyframes.begin(), channel.keyframes.end(), 
-                [](const GLTFKeyFrame& a, const GLTFKeyFrame& b) {
-                    return a.time < b.time;  // Ordena em ordem crescente de tempo
-                });
-        }
-    }
+        const GLTFAnimation& animation = m_animations[animIndex];
 
-    // Itera sobre todas as animações carregadas
-    for (const auto& anim : m_animations)
-    {
-        std::cout << "Animation Name: " << anim.name << std::endl;
-        
-        // Itera sobre todos os canais da animação
-        for (const auto& channel : anim.channels)
+        // Imprimir nome da animação
+        std::cout << "Animação #" << animIndex + 1 << ": " << animation.name << std::endl;
+
+        // Iterar sobre os canais de animação da animação
+        for (size_t channelIndex = 0; channelIndex < animation.channels.size(); ++channelIndex)
         {
-            std::cout << "  Channel Path: " << channel.path << std::endl;
-            std::cout << "  Target Node Index: " << channel.target_node_index << std::endl;
-            
-            // Exibe os keyframes para cada canal
-            std::cout << "  Keyframes:" << std::endl;
-            for (const auto& keyframe : channel.keyframes)
+            const GLTFAnimationChannel& channel = animation.channels[channelIndex];
+
+            // Imprimir caminho (path) do canal e índice do nó alvo
+            std::cout << "  Canal #" << channelIndex + 1 << ": " << channel.path
+                      << " (Nó alvo: " << channel.target_node_index << ")" << std::endl;
+
+            // Iterar sobre os keyframes do canal
+            for (size_t keyframeIndex = 0; keyframeIndex < channel.keyframes.size(); ++keyframeIndex)
             {
-                std::cout << "    Time: " << keyframe.time << std::endl;
-                std::cout << "    Translation: (" << keyframe.translation.x << ", "
-                          << keyframe.translation.y << ", " << keyframe.translation.z << ")" << std::endl;
-                /*
-                std::cout << "    Scale: (" << keyframe.scale.x << ", "
-                          << keyframe.scale.y << ", " << keyframe.scale.z << ")" << std::endl;
-                std::cout << "    Rotation: (" << keyframe.rotation.x << ", "
-                          << keyframe.rotation.y << ", " << keyframe.rotation.z << ")" << std::endl;
-                */
+                const GLTFKeyFrame& keyframe = channel.keyframes[keyframeIndex];
+
+                // Imprimir dados do keyframe
+                std::cout << "    Keyframe #" << keyframeIndex + 1
+                          << ": Tempo = " << keyframe.time
+                          << ", Tradução = (" << keyframe.translation.x << ", " << keyframe.translation.y << ", " << keyframe.translation.z << ")"
+                          << ", Escala = (" << keyframe.scale.x << ", " << keyframe.scale.y << ", " << keyframe.scale.z << ")"
+                          << ", Rotação = (" << keyframe.rotation.x << ", " << keyframe.rotation.y << ", " << keyframe.rotation.z << ")" << std::endl;
             }
         }
-
-        std::cout << std::endl;
     }
 }
 

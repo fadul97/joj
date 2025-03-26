@@ -85,7 +85,9 @@ namespace joj
     };
 
     void apply_animation(GLTFAnimation& animation, f32 time, GLTFNode& node);
-    void apply_all_animations(GLTFAnimation& animation, f32 time, GLTFNode& node);
+    void apply_all_animations_almost(GLTFAnimation& animation, f32 time, GLTFNode& node);
+    void apply_all_animations_old(GLTFAnimation& animation, f32 time, GLTFNode& node);
+    void apply_all_animations(GLTFAnimation& animation, f32 time, GLTFNode& node, b8 loop);
 
     struct JOJ_API GLTFVertex
     {

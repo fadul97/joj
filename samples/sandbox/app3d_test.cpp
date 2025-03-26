@@ -80,20 +80,24 @@ void App3DTest::build_buffers()
     m_gltf_importer = joj::GLTFImporter("models/AnimSimpleCube.gltf");
     if (m_gltf_importer.load() == joj::ErrorCode::OK)
     {
-        m_gltf_importer.print_scene_info();
-        m_gltf_importer.print_node_info();
-        m_gltf_importer.print_mesh_info();
+        // m_gltf_importer.print_scene_info();
+        // m_gltf_importer.print_node_info();
+        // m_gltf_importer.print_mesh_info();
         m_gltf_importer.print_vertex_data();
-        m_gltf_importer.print_animation_data();
-
-        JOJ_DEBUG("================= Translation data =================");
-        m_gltf_importer.print_translation_data();
+        // m_gltf_importer.print_animation_data();
         
-        JOJ_DEBUG("================= Rotation data =================");
-        m_gltf_importer.print_rotation_data();
-
-        JOJ_DEBUG("================= Scale data =================");
-        m_gltf_importer.print_scale_data();
+        //JOJ_DEBUG("================= Translation data =================");
+        //m_gltf_importer.print_translation_data();
+        
+        //JOJ_DEBUG("================= Rotation data =================");
+        //m_gltf_importer.print_rotation_data();
+        
+        //JOJ_DEBUG("================= Scale data =================");
+        //m_gltf_importer.print_scale_data();
+        
+        m_gltf_importer.setup_animations();
+        //JOJ_DEBUG("================= Animation data =================");
+        //m_gltf_importer.print_animation_data();
     }
 
     const size_t vertices_byteOffset = m_gltf_importer.m_positions_byte_offset;
@@ -144,7 +148,7 @@ void App3DTest::build_buffers()
     // Create vertex buffer
     const u32 vertices_size = static_cast<u32>(vertices.size());
     m_vertex_cout = vertices_size;
-    JOJ_DEBUG("Vertices count: %d", m_vertex_cout);
+    //JOJ_DEBUG("Vertices count: %d", m_vertex_cout);
     m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
     if (m_vb.create(joj::BufferUsage::Default, joj::CPUAccessType::None,
         sizeof(joj::Vertex::PosColorNormal) * vertices_size, vertices.data()) != joj::ErrorCode::OK)
@@ -153,7 +157,7 @@ void App3DTest::build_buffers()
     // Create index buffer
     const u32 indices_size = static_cast<u32>(m_gltf_importer.m_indices.size());
     m_index_count = indices_size;
-    JOJ_DEBUG("Indices count: %d", m_index_count);
+    //JOJ_DEBUG("Indices count: %d", m_index_count);
     m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
     if (m_ib.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(u16) * indices_size, m_gltf_importer.m_indices.data()) != joj::ErrorCode::OK)
         return;
@@ -222,6 +226,7 @@ void App3DTest::update(const f32 dt)
 
     process_mouse_input(dt);
 
+    b8 loop_animation = true;
     static f32 animation_time = 0.0f;
     animation_time += dt;
     if (!m_animations.empty())
@@ -231,12 +236,14 @@ void App3DTest::update(const f32 dt)
         // Supondo que o nó do cubo esteja na posição 0
         joj::GLTFNode& node = m_nodes[0];
 
-        // Aplique a animação ao nó
-        joj::apply_all_animations(animation, animation_time, node);
+        f32 animation_speed = 60.0f;
 
-        if (animation_time > animation.channels[0].keyframes.back().time)  // Tempo da última keyframe
+        // Aplique a animação ao nó com loop
+        joj::apply_all_animations(animation, animation_time * animation_speed, node, loop_animation);
+
+        if (!loop_animation && animation_time > animation.channels[0].keyframes.back().time)  // Tempo da última keyframe
         {
-            animation_time = 0.0f;  // Resetando o tempo para repetir a animação
+            animation_time = animation.channels[0].keyframes.back().time;  // Garantir que a animação pare na última posição
         }
     }
 }
@@ -291,6 +298,7 @@ void App3DTest::draw()
                 */
                 joj::JMatrix4x4 W = DirectX::XMMatrixTranslation(node.position.x, node.position.y, node.position.z);
 
+                /*
                 // Print World matrix for debugging
                 for (i32 i = 0; i < 4; ++i)
                 {
@@ -302,6 +310,7 @@ void App3DTest::draw()
                     std::cout << std::endl;
                 }
                 std::cout << "\n" << std::endl;
+                */
                 
                 // Matriz de visualização e projeção
                 joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
