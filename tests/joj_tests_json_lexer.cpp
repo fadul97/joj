@@ -6,7 +6,7 @@
 #include "joj/utils/json_parser.h"
 #include <string>
 #include "joj/core/logger.h"
-#include <print>
+#include <iostream>
 
 JOJ_TEST(JSON_TEST0_Lexer)
 {
@@ -18,7 +18,7 @@ JOJ_TEST(JSON_TEST0_Lexer)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonLexer lexer(json);
     joj::JsonToken token = lexer.next_token();
@@ -36,7 +36,7 @@ JOJ_TEST(JSON_TEST1_Lexer)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonLexer lexer(json);
     joj::JsonToken token = lexer.next_token();
@@ -55,7 +55,7 @@ JOJ_TEST(JSON_TEST2_Lexer)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonLexer lexer(json);
     joj::JsonToken token = lexer.next_token();
@@ -74,7 +74,7 @@ JOJ_TEST(JSON_TEST3_Lexer)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonLexer lexer(json);
     joj::JsonToken token = lexer.next_token();
@@ -94,7 +94,7 @@ JOJ_TEST(JSON_TEST4_Lexer)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonLexer lexer(json);
     joj::JsonToken token = lexer.next_token();
@@ -112,7 +112,7 @@ JOJ_TEST(JSON_TEST_1)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonParser parser(json);
     joj::JsonValue result = parser.parse();
@@ -131,7 +131,7 @@ JOJ_TEST(JSON_TEST_2)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonParser parser(json);
     joj::JsonValue result = parser.parse();
@@ -150,7 +150,7 @@ JOJ_TEST(JSON_TEST_3)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonParser parser(json);
     joj::JsonValue result = parser.parse();
@@ -170,7 +170,7 @@ JOJ_TEST(JSON_TEST_4)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonParser parser(json);
     joj::JsonValue result = parser.parse();
@@ -288,7 +288,7 @@ JOJ_TEST(JSON_TEST_GLTF_TRIANGLE)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonParser parser(json);
     joj::JsonValue root = parser.parse();
@@ -474,7 +474,7 @@ JOJ_TEST(JSON_TEST_GLTF_CUBE)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonParser parser(json);
     joj::JsonValue root = parser.parse();
@@ -685,7 +685,7 @@ JOJ_TEST(JSON_TEST_PARSER_GLTF_SUZANNE)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonParser parser(json);
     joj::JsonValue root = parser.parse();
@@ -896,7 +896,7 @@ JOJ_TEST(JSON_TEST_GLTF_SUZANNE)
     )";
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
 #endif
     joj::JsonParser parser(json);
     joj::JsonValue root = parser.parse();
@@ -958,7 +958,7 @@ JOJ_TEST(JSON_TEST_OperatorOverload)
     joj::JsonValue root = parser.parse();
 
 #if JOJ_DEBUG_MODE
-    std::printf("\n");
+    std::cout << "\n";
     std::cout << "Name: " << root["name"].as_string() << "\n";
     std::cout << "Version: " << root["version"].as_number() << "\n";
     std::cout << "Fullscreen: " << (root["settings"]["fullscreen"].as_bool() ? "Yes" : "No") << "\n";
@@ -1008,7 +1008,7 @@ JOJ_TEST(JSON_TEST_ArrayTest_0)
     joj::JsonParser parser(json);
     joj::JsonValue root = parser.parse();
 
-    // std::printf("\n");
+    // std::cout << "\n";
     // root.print();
 
     assert(parser.get_error_count() != 0);
@@ -1072,7 +1072,7 @@ JOJ_TEST(JSON_TEST_ArrayTest_1)
     joj::JsonParser parser(json);
     joj::JsonValue root = parser.parse();
 
-    // std::printf("\n");
+    // std::cout << "\n";
     // root.print();
 
     assert(parser.get_error_count() == 0);

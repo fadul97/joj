@@ -91,6 +91,8 @@ b8 joj::GLTFImporter::load_binary_file()
 
     m_binary_data = std::vector<u8>(size);
     file.read(reinterpret_cast<char*>(m_binary_data.data()), size);
+
+    return true;
 }
 
 std::vector<joj::GLTFVertex> joj::GLTFImporter::get_vertices()

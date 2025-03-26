@@ -77,7 +77,7 @@ void App3DTest::setup_camera()
 
 void App3DTest::build_buffers()
 {
-    m_gltf_importer = joj::GLTFImporter("models/UVSphere.gltf");
+    m_gltf_importer = joj::GLTFImporter("models/Cube.gltf");
     if (m_gltf_importer.load() == joj::ErrorCode::OK)
     {
         m_gltf_importer.print_scene_info();

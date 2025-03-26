@@ -59,7 +59,9 @@ const joj::JsonValue& joj::JsonValue::operator[](const std::string& key) const
             return it->second;
     }
 
-    return JsonValue();
+    // TODO: Log an error?
+    static const JsonValue null_value;
+    return null_value;
 }
 
 joj::JsonValue& joj::JsonValue::operator[](const size_t index)
@@ -134,7 +136,9 @@ const joj::JsonValue::Array& joj::JsonValue::as_array() const
     if (std::holds_alternative<Array>(m_value))
         return std::get<Array>(m_value);
 
-    return Array();
+    // TODO: Log an error?
+    static const Array null_array;
+    return null_array;
 }
 
 const joj::JsonValue::Object& joj::JsonValue::as_object() const
@@ -142,7 +146,9 @@ const joj::JsonValue::Object& joj::JsonValue::as_object() const
     if (std::holds_alternative<Object>(m_value))
         return std::get<Object>(m_value);
 
-    return Object();
+    // TODO: Log an error?
+    static const Object null_object;
+    return null_object;
 }
 
 i32 joj::JsonValue::as_int() const

@@ -135,6 +135,10 @@ joj::JsonValue joj::JsonParser::parse_bool()
         advance();
         return JsonValue(false);
     }
+
+    // TODO: Log an error?
+    static const JsonValue null_value;
+    return null_value;
 }
 
 joj::JsonValue joj::JsonParser::parse_null()
@@ -144,6 +148,10 @@ joj::JsonValue joj::JsonParser::parse_null()
         advance();
         return JsonValue();
     }
+
+    // TODO: Log an error?
+    static const JsonValue null_value;
+    return null_value;
 }
 
 joj::JsonValue joj::JsonParser::parse_string()
