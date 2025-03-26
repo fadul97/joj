@@ -117,7 +117,8 @@ joj::JsonToken joj::JsonLexer::parse_keyword(char c, const std::string& keyword,
         }
 
         // Advance to the next character
-        c = advance();
+        if (peek() != ',')
+            c = advance();
     }
 
     return { type, keyword };
