@@ -30,6 +30,8 @@ namespace joj
         JsonValue parse_value();
         JsonValue parse_object();
         JsonValue parse_array();
+        JsonValue parse_bool();
+        JsonValue parse_null();
         JsonValue parse_string();
         JsonValue parse_number();
         JsonValue parse_keyword();

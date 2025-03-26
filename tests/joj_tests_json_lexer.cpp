@@ -291,7 +291,75 @@ JOJ_TEST(JSON_TEST_GLTF_TRIANGLE)
     std::printf("\n");
 #endif
     joj::JsonParser parser(json);
-    joj::JsonValue result = parser.parse();
+    joj::JsonValue root = parser.parse();
+
+    assert(root.is_object());
+
+    // Verificando a seção "asset"
+    assert(root["asset"].is_object());
+    assert(root["asset"]["generator"].is_string());
+    assert(root["asset"]["generator"].as_string() == "Khronos glTF Blender I/O v4.3.47");
+    assert(root["asset"]["version"].is_string());
+    assert(root["asset"]["version"].as_string() == "2.0");
+
+    // Verificando a chave "scene0"
+    assert(root["scene0"].is_number());
+    assert(root["scene0"].as_int() == 0);
+
+    // Verificando "scenes1"
+    assert(root["scenes1"].is_array());
+    assert(root["scenes1"].size() == 1);
+    assert(root["scenes1"][0].is_object());
+    assert(root["scenes1"][0]["name"].as_string() == "Scene2");
+    assert(root["scenes1"][0]["nodes0"].is_array());
+    assert(root["scenes1"][0]["nodes0"].size() == 1);
+    assert(root["scenes1"][0]["nodes0"][0].as_int() == 0);
+
+    // Verificando "nodes1"
+    assert(root["nodes1"].is_array());
+    assert(root["nodes1"].size() == 1);
+    assert(root["nodes1"][0].is_object());
+    assert(root["nodes1"][0]["mesh0"].as_int() == 0);
+    assert(root["nodes1"][0]["name0"].as_string() == "Triangle");
+
+    // Verificando "meshes"
+    assert(root["meshes"].is_array());
+    assert(root["meshes"].size() == 1);
+    assert(root["meshes"][0].is_object());
+    assert(root["meshes"][0]["name1"].as_string() == "Plane");
+    assert(root["meshes"][0]["primitives"].is_array());
+    assert(root["meshes"][0]["primitives"].size() == 1);
+    assert(root["meshes"][0]["primitives"][0].is_object());
+    assert(root["meshes"][0]["primitives"][0]["attributes"].is_object());
+    assert(root["meshes"][0]["primitives"][0]["attributes"]["POSITION"].as_int() == 0);
+    assert(root["meshes"][0]["primitives"][0]["attributes"]["NORMAL"].as_int() == 1);
+    assert(root["meshes"][0]["primitives"][0]["attributes"]["TEXCOORD_0"].as_int() == 2);
+    assert(root["meshes"][0]["primitives"][0]["indices"].as_int() == 3);
+
+    // Verificando "accessors"
+    assert(root["accessors"].is_array());
+    assert(root["accessors"].size() == 4);
+    assert(root["accessors"][0].is_object());
+    assert(root["accessors"][0]["bufferView"].as_int() == 0);
+    assert(root["accessors"][0]["componentType"].as_int() == 5126);
+    assert(root["accessors"][0]["count"].as_int() == 3);
+    assert(root["accessors"][0]["max"].is_array());
+    assert(root["accessors"][0]["max"].size() == 3);
+    assert(root["accessors"][0]["max"][0].as_int() == 1);
+    assert(root["accessors"][0]["max"][1].as_int() == 0);
+    assert(root["accessors"][0]["max"][2].as_int() == 1);
+    assert(root["accessors"][0]["min"].is_array());
+    assert(root["accessors"][0]["min"].size() == 3);
+    assert(root["accessors"][0]["min"][0].as_int() == -1);
+    assert(root["accessors"][0]["min"][1].as_int() == 0);
+    assert(root["accessors"][0]["min"][2].as_int() == -1);
+    assert(root["accessors"][0]["type"].as_string() == "VEC3");
+
+    // Verificando "buffers"
+    assert(root["buffers"].is_array());
+    assert(root["buffers"].size() == 1);
+    assert(root["buffers"][0]["byteLength"].as_int() == 104);
+    assert(root["buffers"][0]["uri"].as_string() == "Triangle.bin");
     
     assert(parser.get_error_count() == 0);
 }
@@ -409,7 +477,100 @@ JOJ_TEST(JSON_TEST_GLTF_CUBE)
     std::printf("\n");
 #endif
     joj::JsonParser parser(json);
-    joj::JsonValue result = parser.parse();
+    joj::JsonValue root = parser.parse();
+
+    // Acessa o objeto "asset"
+    assert(root["asset"].is_object());
+    assert(root["asset"]["generator"].as_string() == "Khronos glTF Blender I/O v4.3.47");
+    assert(root["asset"]["version"].as_string() == "2.0");
+
+    // Acessa o "scene"
+    assert(root["scene"].as_int() == 0);
+
+    // Acessa o array "scenes"
+    assert(root["scenes"].size() == 1);
+    assert(root["scenes"][0].is_object());
+    assert(root["scenes"][0]["name"].as_string() == "Scene");
+    assert(root["scenes"][0]["nodes"].size() == 1);
+    assert(root["scenes"][0]["nodes"][0].as_int() == 0);
+
+    // Acessa o array "nodes"
+    assert(root["nodes"].size() == 1);
+    assert(root["nodes"][0].is_object());
+    assert(root["nodes"][0]["mesh"].as_int() == 0);
+    assert(root["nodes"][0]["name"].as_string() == "Cube");
+
+    // Acessa o array "meshes"
+    assert(root["meshes"].size() == 1);
+    assert(root["meshes"][0].is_object());
+    assert(root["meshes"][0]["name"].as_string() == "Cube.001");
+    assert(root["meshes"][0]["primitives"].size() == 1);
+    assert(root["meshes"][0]["primitives"][0].is_object());
+    assert(root["meshes"][0]["primitives"][0]["attributes"].is_object());
+    assert(root["meshes"][0]["primitives"][0]["attributes"]["POSITION"].as_int() == 0);
+    assert(root["meshes"][0]["primitives"][0]["attributes"]["NORMAL"].as_int() == 1);
+    assert(root["meshes"][0]["primitives"][0]["attributes"]["TEXCOORD_0"].as_int() == 2);
+    assert(root["meshes"][0]["primitives"][0]["indices"].as_int() == 3);
+
+    // Acessa o array "accessors"
+    assert(root["accessors"].size() == 4);
+    assert(root["accessors"][0].is_object());
+    assert(root["accessors"][0]["bufferView"].as_int() == 0);
+    assert(root["accessors"][0]["componentType"].as_int() == 5126);
+    assert(root["accessors"][0]["count"].as_int() == 24);
+    assert(root["accessors"][0]["max"].size() == 3);
+    assert(root["accessors"][0]["min"].size() == 3);
+    assert(root["accessors"][0]["type"].as_string() == "VEC3");
+
+    assert(root["accessors"][1].is_object());
+    assert(root["accessors"][1]["bufferView"].as_int() == 1);
+    assert(root["accessors"][1]["componentType"].as_int() == 5126);
+    assert(root["accessors"][1]["count"].as_int() == 24);
+    assert(root["accessors"][1]["type"].as_string() == "VEC3");
+
+    assert(root["accessors"][2].is_object());
+    assert(root["accessors"][2]["bufferView"].as_int() == 2);
+    assert(root["accessors"][2]["componentType"].as_int() == 5126);
+    assert(root["accessors"][2]["count"].as_int() == 24);
+    assert(root["accessors"][2]["type"].as_string() == "VEC2");
+
+    assert(root["accessors"][3].is_object());
+    assert(root["accessors"][3]["bufferView"].as_int() == 3);
+    assert(root["accessors"][3]["componentType"].as_int() == 5123);
+    assert(root["accessors"][3]["count"].as_int() == 36);
+    assert(root["accessors"][3]["type"].as_string() == "SCALAR");
+
+    // Acessa o array "bufferViews"
+    assert(root["bufferViews"].size() == 4);
+    assert(root["bufferViews"][0].is_object());
+    assert(root["bufferViews"][0]["buffer"].as_int() == 0);
+    assert(root["bufferViews"][0]["byteLength"].as_int() == 288);
+    assert(root["bufferViews"][0]["byteOffset"].as_int() == 0);
+    assert(root["bufferViews"][0]["target"].as_int() == 34962);
+
+    assert(root["bufferViews"][1].is_object());
+    assert(root["bufferViews"][1]["buffer"].as_int() == 0);
+    assert(root["bufferViews"][1]["byteLength"].as_int() == 288);
+    assert(root["bufferViews"][1]["byteOffset"].as_int() == 288);
+    assert(root["bufferViews"][1]["target"].as_int() == 34962);
+
+    assert(root["bufferViews"][2].is_object());
+    assert(root["bufferViews"][2]["buffer"].as_int() == 0);
+    assert(root["bufferViews"][2]["byteLength"].as_int() == 192);
+    assert(root["bufferViews"][2]["byteOffset"].as_int() == 576);
+    assert(root["bufferViews"][2]["target"].as_int() == 34962);
+
+    assert(root["bufferViews"][3].is_object());
+    assert(root["bufferViews"][3]["buffer"].as_int() == 0);
+    assert(root["bufferViews"][3]["byteLength"].as_int() == 72);
+    assert(root["bufferViews"][3]["byteOffset"].as_int() == 768);
+    assert(root["bufferViews"][3]["target"].as_int() == 34963);
+
+    // Acessa o array "buffers"
+    assert(root["buffers"].size() == 1);
+    assert(root["buffers"][0].is_object());
+    assert(root["buffers"][0]["byteLength"].as_int() == 840);
+    assert(root["buffers"][0]["uri"].as_string() == "Cube.bin");
     
     assert(parser.get_error_count() == 0);
 }
@@ -529,70 +690,98 @@ JOJ_TEST(JSON_TEST_PARSER_GLTF_SUZANNE)
     joj::JsonParser parser(json);
     joj::JsonValue root = parser.parse();
 
-    // Asset info
-    // std::cout << "Generator: " << root["asset"]["generator"].as_string() << "\n";
+    // Acessa o objeto "asset"
+    assert(root["asset"].is_object());
     assert(root["asset"]["generator"].as_string() == "Khronos glTF Blender I/O v4.4.55");
-    // std::cout << "Version: " << root["asset"]["version"].as_string() << "\n\n";
     assert(root["asset"]["version"].as_string() == "2.0");
 
-    /*
-    std::cout << "=== Buffers ===\n";
-    // Information about buffers
-    if (root["buffers"].is_array())
-    {
-        for (const joj::JsonValue& buffer : root["buffers"].as_array())
-        {
-            std::cout << "URI: " << buffer["uri"].as_string() << ", Byte Length: " << buffer["byteLength"].as_number() << "\n";
-        }
-    }
-    
-    std::cout << "\n=== BufferViews ===\n";
-    // Information about bufferViews
-    if (root["bufferViews"].is_array())
-    {
-        for (const joj::JsonValue& bufferView : root["bufferViews"].as_array())
-        {
-            std::cout << "Buffer: " << bufferView["buffer"].as_number()
-            << ", Byte Length: " << bufferView["byteLength"].as_number()
-            << ", Byte Offset: " << bufferView["byteOffset"].as_number()
-            << ", Target: " << bufferView["target"].as_number() << "\n";
-        }
-    }
-    
-    std::cout << "\n=== Accessors ===\n";
-    // Information about accessors
-    if (root["accessors"].is_array())
-    {
-        for (const joj::JsonValue& accessor : root["accessors"].as_array())
-        {
-            std::cout << "BufferView: " << accessor["bufferView"].as_number()
-            << ", Component Type: " << accessor["componentType"].as_number()
-            << ", Count: " << accessor["count"].as_number()
-            << ", Type: " << accessor["type"].as_string() << "\n";
-            
-            // Print the values of max and min
-            if (accessor["max"].is_array())
-            {
-                std::cout << "  Max: ";
-                for (const joj::JsonValue& max_val : accessor["max"].as_array())
-                {
-                    std::cout << max_val.as_number() << " ";
-                }
-                std::cout << "\n";
-            }
-            
-            if (accessor["min"].is_array())
-            {
-                std::cout << "  Min: ";
-                for (const joj::JsonValue& min_val : accessor["min"].as_array())
-                {
-                    std::cout << min_val.as_number() << " ";
-                }
-                std::cout << "\n";
-            }
-        }
-    }
-    */
+    // Acessa o "scene"
+    assert(root["scene"].as_int() == 0);
+
+    // Acessa o array "scenes"
+    assert(root["scenes"].size() == 1);
+    assert(root["scenes"][0].is_object());
+    assert(root["scenes"][0]["name"].as_string() == "Scene");
+    assert(root["scenes"][0]["nodes"].size() == 1);
+    assert(root["scenes"][0]["nodes"][0].as_int() == 0);
+
+    // Acessa o array "nodes"
+    assert(root["nodes"].size() == 1);
+    assert(root["nodes"][0].is_object());
+    assert(root["nodes"][0]["mesh"].as_int() == 0);
+    assert(root["nodes"][0]["name"].as_string() == "Suzanne");
+
+    // Acessa o array "meshes"
+    assert(root["meshes"].size() == 1);
+    assert(root["meshes"][0].is_object());
+    assert(root["meshes"][0]["name"].as_string() == "Suzanne");
+    assert(root["meshes"][0]["primitives"].size() == 1);
+    assert(root["meshes"][0]["primitives"][0].is_object());
+    assert(root["meshes"][0]["primitives"][0]["attributes"].is_object());
+    assert(root["meshes"][0]["primitives"][0]["attributes"]["POSITION"].as_int() == 0);
+    assert(root["meshes"][0]["primitives"][0]["attributes"]["NORMAL"].as_int() == 1);
+    assert(root["meshes"][0]["primitives"][0]["attributes"]["TEXCOORD_0"].as_int() == 2);
+    assert(root["meshes"][0]["primitives"][0]["indices"].as_int() == 3);
+
+    // Acessa o array "accessors"
+    assert(root["accessors"].size() == 4);
+    assert(root["accessors"][0].is_object());
+    assert(root["accessors"][0]["bufferView"].as_int() == 0);
+    assert(root["accessors"][0]["componentType"].as_int() == 5126);
+    assert(root["accessors"][0]["count"].as_int() == 1966);
+    assert(root["accessors"][0]["max"].size() == 3);
+    assert(root["accessors"][0]["min"].size() == 3);
+    assert(root["accessors"][0]["type"].as_string() == "VEC3");
+
+    assert(root["accessors"][1].is_object());
+    assert(root["accessors"][1]["bufferView"].as_int() == 1);
+    assert(root["accessors"][1]["componentType"].as_int() == 5126);
+    assert(root["accessors"][1]["count"].as_int() == 1966);
+    assert(root["accessors"][1]["type"].as_string() == "VEC3");
+
+    assert(root["accessors"][2].is_object());
+    assert(root["accessors"][2]["bufferView"].as_int() == 2);
+    assert(root["accessors"][2]["componentType"].as_int() == 5126);
+    assert(root["accessors"][2]["count"].as_int() == 1966);
+    assert(root["accessors"][2]["type"].as_string() == "VEC2");
+
+    assert(root["accessors"][3].is_object());
+    assert(root["accessors"][3]["bufferView"].as_int() == 3);
+    assert(root["accessors"][3]["componentType"].as_int() == 5123);
+    assert(root["accessors"][3]["count"].as_int() == 2904);
+    assert(root["accessors"][3]["type"].as_string() == "SCALAR");
+
+    // Acessa o array "bufferViews"
+    assert(root["bufferViews"].size() == 4);
+    assert(root["bufferViews"][0].is_object());
+    assert(root["bufferViews"][0]["buffer"].as_int() == 0);
+    assert(root["bufferViews"][0]["byteLength"].as_int() == 23592);
+    assert(root["bufferViews"][0]["byteOffset"].as_int() == 0);
+    assert(root["bufferViews"][0]["target"].as_int() == 34962);
+
+    assert(root["bufferViews"][1].is_object());
+    assert(root["bufferViews"][1]["buffer"].as_int() == 0);
+    assert(root["bufferViews"][1]["byteLength"].as_int() == 23592);
+    assert(root["bufferViews"][1]["byteOffset"].as_int() == 23592);
+    assert(root["bufferViews"][1]["target"].as_int() == 34962);
+
+    assert(root["bufferViews"][2].is_object());
+    assert(root["bufferViews"][2]["buffer"].as_int() == 0);
+    assert(root["bufferViews"][2]["byteLength"].as_int() == 15728);
+    assert(root["bufferViews"][2]["byteOffset"].as_int() == 47184);
+    assert(root["bufferViews"][2]["target"].as_int() == 34962);
+
+    assert(root["bufferViews"][3].is_object());
+    assert(root["bufferViews"][3]["buffer"].as_int() == 0);
+    assert(root["bufferViews"][3]["byteLength"].as_int() == 5808);
+    assert(root["bufferViews"][3]["byteOffset"].as_int() == 62912);
+    assert(root["bufferViews"][3]["target"].as_int() == 34963);
+
+    // Acessa o array "buffers"
+    assert(root["buffers"].size() == 1);
+    assert(root["buffers"][0].is_object());
+    assert(root["buffers"][0]["byteLength"].as_int() == 68720);
+    assert(root["buffers"][0]["uri"].as_string() == "Monkey.bin");
     
     assert(parser.get_error_count() == 0);
 }
@@ -719,7 +908,6 @@ JOJ_TEST(JSON_TEST_GLTF_SUZANNE)
     // Scene
     assert(root["scene"].as_number() == 0);
 
-    /*
     // Verificar o nome da cena e o primeiro nó
     assert(root["scenes"].as_array()[0]["name"].as_string() == "Scene");
     assert(root["scenes"].as_array()[0]["nodes"].as_array()[0].as_number() == 0);
@@ -748,7 +936,6 @@ JOJ_TEST(JSON_TEST_GLTF_SUZANNE)
     // Buffers
     assert(root["buffers"].as_array()[0]["byteLength"].as_number() == 68720);
     assert(root["buffers"].as_array()[0]["uri"].as_string() == "Monkey.bin");
-    */
 
     assert(parser.get_error_count() == 0);
 }
@@ -821,7 +1008,7 @@ JOJ_TEST(JSON_TEST_ArrayTest_0)
     joj::JsonParser parser(json);
     joj::JsonValue root = parser.parse();
 
-    std::printf("\n");
+    // std::printf("\n");
     // root.print();
 
     assert(parser.get_error_count() != 0);
@@ -885,8 +1072,8 @@ JOJ_TEST(JSON_TEST_ArrayTest_1)
     joj::JsonParser parser(json);
     joj::JsonValue root = parser.parse();
 
-    std::printf("\n");
-    root.print();
+    // std::printf("\n");
+    // root.print();
 
     assert(parser.get_error_count() == 0);
 }

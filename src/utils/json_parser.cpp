@@ -30,8 +30,8 @@ joj::JsonValue joj::JsonParser::parse_value()
     case JsonTokenType::LeftBracket: return parse_array();
     case JsonTokenType::String: return parse_string();
     case JsonTokenType::Number: return parse_number();
-    case JsonTokenType::Boolean: return { m_current_token.value == "true" };
-    case JsonTokenType::Null: return JsonValue();
+    case JsonTokenType::Boolean: return parse_bool();
+    case JsonTokenType::Null: return parse_null();
     default:
         ++m_error_count;
         std::cerr << "Error: Invalid token type: " << m_current_token.value << std::endl;
@@ -45,7 +45,7 @@ joj::JsonValue joj::JsonParser::parse_object()
 
     // Skip '{'
     advance();
-    
+
     while (m_current_token.type != JsonTokenType::RightBrace)
     {
         if (m_current_token.type != JsonTokenType::String)
@@ -57,13 +57,7 @@ joj::JsonValue joj::JsonParser::parse_object()
 
         // Parse key
         std::string key = m_current_token.value;
-#if JOJ_DEBUG_MODE
-        // std::cout << "[" << json_token_type_to_string(m_current_token.type) << "]: " << m_current_token.value << std::endl;
-#endif
-        // Skip key
-        advance();
-
-        // Print token type and value
+        advance(); // Skip key
 
         if (m_current_token.type != JsonTokenType::Colon)
         {
@@ -75,27 +69,20 @@ joj::JsonValue joj::JsonParser::parse_object()
         // Skip ':'
         advance();
 
-        // Maybe there is something wrong with they way I keep adding values to the object
         // Parse value
         object[key] = parse_value();
 
-#if JOJ_DEBUG_MODE
-        // object[key].print();
-#endif
-
-        if (m_current_token.type == JsonTokenType::RightBrace)
-            continue;
-
-        if (m_current_token.type == JsonTokenType::RightBracket)
-            advance();
-
-        // Consume ','
-        if (m_current_token.type != JsonTokenType::Comma)
-            advance();
-
-        // Skip ','
+        // Verifica se há vírgula ou fim do objeto
         if (m_current_token.type == JsonTokenType::Comma)
-            advance();
+        {
+            advance(); // Skip ','
+        }
+        else if (m_current_token.type != JsonTokenType::RightBrace)
+        {
+            ++m_error_count;
+            std::cerr << "Error: Expected ',' or '}' after key-value pair." << std::endl;
+            return JsonValue();
+        }
     }
 
     // Skip '}'
@@ -103,6 +90,7 @@ joj::JsonValue joj::JsonParser::parse_object()
 
     return JsonValue(object);
 }
+
 
 joj::JsonValue joj::JsonParser::parse_array()
 {
@@ -114,22 +102,19 @@ joj::JsonValue joj::JsonParser::parse_array()
     while (m_current_token.type != JsonTokenType::RightBracket)
     {
         // Parse value
-        JsonValue value = parse_value();
+        array.push_back(parse_value());
 
-        if (m_current_token.type == JsonTokenType::RightBracket)
-            continue;
-
-        array.push_back(value);
-
-        // Consume value
-        advance();
-
-        // Skip ','
+        // Se o próximo token for ',', continue para o próximo valor
         if (m_current_token.type == JsonTokenType::Comma)
+        {
             advance();
-
-        if (m_current_token.type == JsonTokenType::LeftBrace)
-            continue;
+        }
+        else if (m_current_token.type != JsonTokenType::RightBracket)
+        {
+            ++m_error_count;
+            std::cerr << "Error: Expected ',' or ']' after array value." << std::endl;
+            return JsonValue();
+        }
     }
 
     // Skip ']'
@@ -138,14 +123,41 @@ joj::JsonValue joj::JsonParser::parse_array()
     return JsonValue(array);
 }
 
+joj::JsonValue joj::JsonParser::parse_bool()
+{
+    if (m_current_token.value == "true")
+    {
+        advance();
+        return JsonValue(true);
+    }
+    else if (m_current_token.value == "false")
+    {
+        advance();
+        return JsonValue(false);
+    }
+}
+
+joj::JsonValue joj::JsonParser::parse_null()
+{
+    if (m_current_token.value == "null")
+    {
+        advance();
+        return JsonValue();
+    }
+}
+
 joj::JsonValue joj::JsonParser::parse_string()
 {
-    return JsonValue(m_current_token.value);
+    const std::string str = m_current_token.value;
+    advance();
+    return JsonValue(str);
 }
 
 joj::JsonValue joj::JsonParser::parse_number()
 {
-    return JsonValue(std::stod(m_current_token.value));
+    const std::string number = m_current_token.value;
+    advance();
+    return JsonValue(std::stod(number));
 }
 
 joj::JsonValue joj::JsonParser::parse_keyword()
