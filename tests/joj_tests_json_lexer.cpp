@@ -1500,7 +1500,768 @@ JOJ_TEST(JSON_TEST_GLTF_ANIM_SIMPLE_CUBE)
 
     check_accessor(samplers[2]["input"].as_int(), 2, 6);  // Time do scale (mesmo input do rotation)
     check_accessor(samplers[2]["output"].as_int(), 2, 8); // Scale values
+}
 
+JOJ_TEST(JSON_TEST_CubeSRT)
+{
+    std::string json = R"(
+        {
+            "asset":{
+                "generator":"Khronos glTF Blender I/O v4.4.55",
+                "version":"2.0"
+            },
+            "scene":0,
+            "scenes":[
+                {
+                    "name":"Scene",
+                    "nodes":[
+                        0
+                    ]
+                }
+            ],
+            "nodes":[
+                {
+                    "mesh":0,
+                    "name":"Cube"
+                }
+            ],
+            "animations":[
+                {
+                    "channels":[
+                        {
+                            "sampler":0,
+                            "target":{
+                                "node":0,
+                                "path":"translation"
+                            }
+                        },
+                        {
+                            "sampler":1,
+                            "target":{
+                                "node":0,
+                                "path":"rotation"
+                            }
+                        },
+                        {
+                            "sampler":2,
+                            "target":{
+                                "node":0,
+                                "path":"scale"
+                            }
+                        }
+                    ],
+                    "name":"CubeAction",
+                    "samplers":[
+                        {
+                            "input":4,
+                            "interpolation":"LINEAR",
+                            "output":5
+                        },
+                        {
+                            "input":4,
+                            "interpolation":"LINEAR",
+                            "output":6
+                        },
+                        {
+                            "input":4,
+                            "interpolation":"LINEAR",
+                            "output":7
+                        }
+                    ]
+                }
+            ],
+            "materials":[
+                {
+                    "doubleSided":true,
+                    "name":"Material",
+                    "pbrMetallicRoughness":{
+                        "baseColorFactor":[
+                            0.800000011920929,
+                            0.800000011920929,
+                            0.800000011920929,
+                            1
+                        ],
+                        "metallicFactor":0,
+                        "roughnessFactor":0.5
+                    }
+                }
+            ],
+            "meshes":[
+                {
+                    "name":"Cube",
+                    "primitives":[
+                        {
+                            "attributes":{
+                                "POSITION":0,
+                                "NORMAL":1,
+                                "TEXCOORD_0":2
+                            },
+                            "indices":3,
+                            "material":0
+                        }
+                    ]
+                }
+            ],
+            "accessors":[
+                {
+                    "bufferView":0,
+                    "componentType":5126,
+                    "count":24,
+                    "max":[
+                        1,
+                        1,
+                        1
+                    ],
+                    "min":[
+                        -1,
+                        -1,
+                        -1
+                    ],
+                    "type":"VEC3"
+                },
+                {
+                    "bufferView":1,
+                    "componentType":5126,
+                    "count":24,
+                    "type":"VEC3"
+                },
+                {
+                    "bufferView":2,
+                    "componentType":5126,
+                    "count":24,
+                    "type":"VEC2"
+                },
+                {
+                    "bufferView":3,
+                    "componentType":5123,
+                    "count":36,
+                    "type":"SCALAR"
+                },
+                {
+                    "bufferView":4,
+                    "componentType":5126,
+                    "count":60,
+                    "max":[
+                        2.5
+                    ],
+                    "min":[
+                        0.041666666666666664
+                    ],
+                    "type":"SCALAR"
+                },
+                {
+                    "bufferView":5,
+                    "componentType":5126,
+                    "count":60,
+                    "type":"VEC3"
+                },
+                {
+                    "bufferView":6,
+                    "componentType":5126,
+                    "count":60,
+                    "type":"VEC4"
+                },
+                {
+                    "bufferView":7,
+                    "componentType":5126,
+                    "count":60,
+                    "type":"VEC3"
+                }
+            ],
+            "bufferViews":[
+                {
+                    "buffer":0,
+                    "byteLength":288,
+                    "byteOffset":0,
+                    "target":34962
+                },
+                {
+                    "buffer":0,
+                    "byteLength":288,
+                    "byteOffset":288,
+                    "target":34962
+                },
+                {
+                    "buffer":0,
+                    "byteLength":192,
+                    "byteOffset":576,
+                    "target":34962
+                },
+                {
+                    "buffer":0,
+                    "byteLength":72,
+                    "byteOffset":768,
+                    "target":34963
+                },
+                {
+                    "buffer":0,
+                    "byteLength":240,
+                    "byteOffset":840
+                },
+                {
+                    "buffer":0,
+                    "byteLength":720,
+                    "byteOffset":1080
+                },
+                {
+                    "buffer":0,
+                    "byteLength":960,
+                    "byteOffset":1800
+                },
+                {
+                    "buffer":0,
+                    "byteLength":720,
+                    "byteOffset":2760
+                }
+            ],
+            "buffers":[
+                {
+                    "byteLength":3480,
+                    "uri":"CubeSRT.bin"
+                }
+            ]
+        }
+    )";
+
+    joj::JsonParser parser(json);
+    joj::JsonValue root = parser.parse();
+
+    // Validação dos accessors
+    assert(root.has_key("accessors"));
+    assert(root["accessors"].is_array());
+    assert(root["accessors"].size() == 8);
+
+    const auto& accessors = root["accessors"];
+
+    // Verifica cada accessor
+    assert(accessors[0]["bufferView"].as_int() == 0);
+    assert(accessors[0]["componentType"].as_int() == 5126);
+    assert(accessors[0]["count"].as_int() == 24);
+    assert(accessors[0]["type"].as_string() == "VEC3");
+    assert(accessors[0]["max"].is_array() && accessors[0]["max"].size() == 3);
+    assert(accessors[0]["max"][0].as_float() == 1.0f);
+    assert(accessors[0]["max"][1].as_float() == 1.0f);
+    assert(accessors[0]["max"][2].as_float() == 1.0f);
+    assert(accessors[0]["min"].is_array() && accessors[0]["min"].size() == 3);
+    assert(accessors[0]["min"][0].as_float() == -1.0f);
+    assert(accessors[0]["min"][1].as_float() == -1.0f);
+    assert(accessors[0]["min"][2].as_float() == -1.0f);
+
+    assert(accessors[1]["bufferView"].as_int() == 1);
+    assert(accessors[1]["componentType"].as_int() == 5126);
+    assert(accessors[1]["count"].as_int() == 24);
+    assert(accessors[1]["type"].as_string() == "VEC3");
+
+    assert(accessors[2]["bufferView"].as_int() == 2);
+    assert(accessors[2]["componentType"].as_int() == 5126);
+    assert(accessors[2]["count"].as_int() == 24);
+    assert(accessors[2]["type"].as_string() == "VEC2");
+
+    assert(accessors[3]["bufferView"].as_int() == 3);
+    assert(accessors[3]["componentType"].as_int() == 5123);
+    assert(accessors[3]["count"].as_int() == 36);
+    assert(accessors[3]["type"].as_string() == "SCALAR");
+
+    assert(accessors[4]["bufferView"].as_int() == 4);
+    assert(accessors[4]["componentType"].as_int() == 5126);
+    assert(accessors[4]["count"].as_int() == 60);
+    assert(accessors[4]["type"].as_string() == "SCALAR");
+    assert(accessors[4]["max"].is_array() && accessors[4]["max"].size() == 1);
+    assert(accessors[4]["max"][0].as_float() == 2.5f);
+    assert(accessors[4]["min"].is_array() && accessors[4]["min"].size() == 1);
+    assert(accessors[4]["min"][0].as_float() == 0.041666666666666664f);
+
+    assert(accessors[5]["bufferView"].as_int() == 5);
+    assert(accessors[5]["componentType"].as_int() == 5126);
+    assert(accessors[5]["count"].as_int() == 60);
+    assert(accessors[5]["type"].as_string() == "VEC3");
+
+    assert(accessors[6]["bufferView"].as_int() == 6);
+    assert(accessors[6]["componentType"].as_int() == 5126);
+    assert(accessors[6]["count"].as_int() == 60);
+    assert(accessors[6]["type"].as_string() == "VEC4");
+
+    assert(accessors[7]["bufferView"].as_int() == 7);
+    assert(accessors[7]["componentType"].as_int() == 5126);
+    assert(accessors[7]["count"].as_int() == 60);
+    assert(accessors[7]["type"].as_string() == "VEC3");
+
+    // Validação dos bufferViews
+    assert(root.has_key("bufferViews"));
+    assert(root["bufferViews"].is_array());
+    assert(root["bufferViews"].size() == 8);
+
+    const auto& bufferViews = root["bufferViews"];
+
+    assert(bufferViews[0]["buffer"].as_int() == 0);
+    assert(bufferViews[0]["byteLength"].as_int() == 288);
+    assert(bufferViews[0]["byteOffset"].as_int() == 0);
+    assert(bufferViews[0]["target"].as_int() == 34962);
+
+    assert(bufferViews[1]["buffer"].as_int() == 0);
+    assert(bufferViews[1]["byteLength"].as_int() == 288);
+    assert(bufferViews[1]["byteOffset"].as_int() == 288);
+    assert(bufferViews[1]["target"].as_int() == 34962);
+
+    assert(bufferViews[2]["buffer"].as_int() == 0);
+    assert(bufferViews[2]["byteLength"].as_int() == 192);
+    assert(bufferViews[2]["byteOffset"].as_int() == 576);
+    assert(bufferViews[2]["target"].as_int() == 34962);
+
+    assert(bufferViews[3]["buffer"].as_int() == 0);
+    assert(bufferViews[3]["byteLength"].as_int() == 72);
+    assert(bufferViews[3]["byteOffset"].as_int() == 768);
+    assert(bufferViews[3]["target"].as_int() == 34963);
+
+    assert(bufferViews[4]["buffer"].as_int() == 0);
+    assert(bufferViews[4]["byteLength"].as_int() == 240);
+    assert(bufferViews[4]["byteOffset"].as_int() == 840);
+
+    assert(bufferViews[5]["buffer"].as_int() == 0);
+    assert(bufferViews[5]["byteLength"].as_int() == 720);
+    assert(bufferViews[5]["byteOffset"].as_int() == 1080);
+
+    assert(bufferViews[6]["buffer"].as_int() == 0);
+    assert(bufferViews[6]["byteLength"].as_int() == 960);
+    assert(bufferViews[6]["byteOffset"].as_int() == 1800);
+
+    assert(bufferViews[7]["buffer"].as_int() == 0);
+    assert(bufferViews[7]["byteLength"].as_int() == 720);
+    assert(bufferViews[7]["byteOffset"].as_int() == 2760);
+
+    // Validação dos buffers
+    assert(root.has_key("buffers"));
+    assert(root["buffers"].is_array());
+    assert(root["buffers"].size() == 1);
+
+    const auto& buffer = root["buffers"][0];
+
+    assert(buffer["byteLength"].as_int() == 3480);
+    assert(buffer["uri"].as_string() == "CubeSRT.bin");
+
+    // Supondo que `root` seja o objeto JSON carregado
+    assert(root.has_key("accessors"));
+    assert(root["accessors"].is_array());
+    assert(root["accessors"].size() == 8);
+
+    // Teste do primeiro accessor (VEC3 - posição)
+    assert(accessors[0]["bufferView"].as_int() == 0);
+    assert(accessors[0]["componentType"].as_int() == 5126);
+    assert(accessors[0]["count"].as_int() == 24);
+    assert(accessors[0]["type"].as_string() == "VEC3");
+    assert(accessors[0]["max"].is_array() && accessors[0]["max"].size() == 3);
+    assert(accessors[0]["max"][0].as_float() == 1.0f);
+    assert(accessors[0]["max"][1].as_float() == 1.0f);
+    assert(accessors[0]["max"][2].as_float() == 1.0f);
+    assert(accessors[0]["min"].is_array() && accessors[0]["min"].size() == 3);
+    assert(accessors[0]["min"][0].as_float() == -1.0f);
+    assert(accessors[0]["min"][1].as_float() == -1.0f);
+    assert(accessors[0]["min"][2].as_float() == -1.0f);
+
+    // Teste do segundo accessor (VEC3 - normais)
+    assert(accessors[1]["bufferView"].as_int() == 1);
+    assert(accessors[1]["componentType"].as_int() == 5126);
+    assert(accessors[1]["count"].as_int() == 24);
+    assert(accessors[1]["type"].as_string() == "VEC3");
+
+    // Teste do terceiro accessor (VEC2 - coordenadas UV)
+    assert(accessors[2]["bufferView"].as_int() == 2);
+    assert(accessors[2]["componentType"].as_int() == 5126);
+    assert(accessors[2]["count"].as_int() == 24);
+    assert(accessors[2]["type"].as_string() == "VEC2");
+
+    // Teste do quarto accessor (SCALAR - índices)
+    assert(accessors[3]["bufferView"].as_int() == 3);
+    assert(accessors[3]["componentType"].as_int() == 5123);
+    assert(accessors[3]["count"].as_int() == 36);
+    assert(accessors[3]["type"].as_string() == "SCALAR");
+
+    // Teste do quinto accessor (SCALAR - pesos de animação)
+    assert(accessors[4]["bufferView"].as_int() == 4);
+    assert(accessors[4]["componentType"].as_int() == 5126);
+    assert(accessors[4]["count"].as_int() == 60);
+    assert(accessors[4]["type"].as_string() == "SCALAR");
+    assert(accessors[4]["max"].is_array() && accessors[4]["max"].size() == 1);
+    assert(accessors[4]["max"][0].as_float() == 2.5f);
+    assert(accessors[4]["min"].is_array() && accessors[4]["min"].size() == 1);
+    assert(accessors[4]["min"][0].as_float() == 0.041666666666666664f);
+
+    // Teste do sexto accessor (VEC3 - posições de esqueleto)
+    assert(accessors[5]["bufferView"].as_int() == 5);
+    assert(accessors[5]["componentType"].as_int() == 5126);
+    assert(accessors[5]["count"].as_int() == 60);
+    assert(accessors[5]["type"].as_string() == "VEC3");
+
+    // Teste do sétimo accessor (VEC4 - quaternions de rotação)
+    assert(accessors[6]["bufferView"].as_int() == 6);
+    assert(accessors[6]["componentType"].as_int() == 5126);
+    assert(accessors[6]["count"].as_int() == 60);
+    assert(accessors[6]["type"].as_string() == "VEC4");
+
+    // Teste do oitavo accessor (VEC3 - escalas)
+    assert(accessors[7]["bufferView"].as_int() == 7);
+    assert(accessors[7]["componentType"].as_int() == 5126);
+    assert(accessors[7]["count"].as_int() == 60);
+    assert(accessors[7]["type"].as_string() == "VEC3");
+}
+
+JOJ_TEST(JSON_TEST_BiggerCubeSRT)
+{
+    std::string json = R"(
+        {
+            "asset":{
+                "generator":"Khronos glTF Blender I/O v4.4.55",
+                "version":"2.0"
+            },
+            "scene":0,
+            "scenes":[
+                {
+                    "name":"Scene",
+                    "nodes":[
+                        0
+                    ]
+                }
+            ],
+            "nodes":[
+                {
+                    "mesh":0,
+                    "name":"Cube"
+                }
+            ],
+            "animations":[
+                {
+                    "channels":[
+                        {
+                            "sampler":0,
+                            "target":{
+                                "node":0,
+                                "path":"translation"
+                            }
+                        },
+                        {
+                            "sampler":1,
+                            "target":{
+                                "node":0,
+                                "path":"rotation"
+                            }
+                        },
+                        {
+                            "sampler":2,
+                            "target":{
+                                "node":0,
+                                "path":"scale"
+                            }
+                        }
+                    ],
+                    "name":"CubeAction",
+                    "samplers":[
+                        {
+                            "input":4,
+                            "interpolation":"LINEAR",
+                            "output":5
+                        },
+                        {
+                            "input":4,
+                            "interpolation":"LINEAR",
+                            "output":6
+                        },
+                        {
+                            "input":4,
+                            "interpolation":"LINEAR",
+                            "output":7
+                        }
+                    ]
+                }
+            ],
+            "materials":[
+                {
+                    "doubleSided":true,
+                    "name":"Material",
+                    "pbrMetallicRoughness":{
+                        "baseColorFactor":[
+                            0.800000011920929,
+                            0.800000011920929,
+                            0.800000011920929,
+                            1
+                        ],
+                        "metallicFactor":0,
+                        "roughnessFactor":0.5
+                    }
+                }
+            ],
+            "meshes":[
+                {
+                    "name":"Cube",
+                    "primitives":[
+                        {
+                            "attributes":{
+                                "POSITION":0,
+                                "NORMAL":1,
+                                "TEXCOORD_0":2
+                            },
+                            "indices":3,
+                            "material":0
+                        }
+                    ]
+                }
+            ],
+            "accessors":[
+                {
+                    "bufferView":0,
+                    "componentType":5126,
+                    "count":24,
+                    "max":[
+                        1,
+                        1,
+                        1
+                    ],
+                    "min":[
+                        -1,
+                        -1,
+                        -1
+                    ],
+                    "type":"VEC3"
+                },
+                {
+                    "bufferView":1,
+                    "componentType":5126,
+                    "count":24,
+                    "type":"VEC3"
+                },
+                {
+                    "bufferView":2,
+                    "componentType":5126,
+                    "count":24,
+                    "type":"VEC2"
+                },
+                {
+                    "bufferView":3,
+                    "componentType":5123,
+                    "count":36,
+                    "type":"SCALAR"
+                },
+                {
+                    "bufferView":4,
+                    "componentType":5126,
+                    "count":60,
+                    "max":[
+                        2.5
+                    ],
+                    "min":[
+                        0.041666666666666664
+                    ],
+                    "type":"SCALAR"
+                },
+                {
+                    "bufferView":5,
+                    "componentType":5126,
+                    "count":60,
+                    "type":"VEC3"
+                },
+                {
+                    "bufferView":6,
+                    "componentType":5126,
+                    "count":60,
+                    "type":"VEC4"
+                },
+                {
+                    "bufferView":7,
+                    "componentType":5126,
+                    "count":60,
+                    "type":"VEC3"
+                }
+            ],
+            "bufferViews":[
+                {
+                    "buffer":0,
+                    "byteLength":288,
+                    "byteOffset":0,
+                    "target":34962
+                },
+                {
+                    "buffer":0,
+                    "byteLength":288,
+                    "byteOffset":288,
+                    "target":34962
+                },
+                {
+                    "buffer":0,
+                    "byteLength":192,
+                    "byteOffset":576,
+                    "target":34962
+                },
+                {
+                    "buffer":0,
+                    "byteLength":72,
+                    "byteOffset":768,
+                    "target":34963
+                },
+                {
+                    "buffer":0,
+                    "byteLength":240,
+                    "byteOffset":840
+                },
+                {
+                    "buffer":0,
+                    "byteLength":720,
+                    "byteOffset":1080
+                },
+                {
+                    "buffer":0,
+                    "byteLength":960,
+                    "byteOffset":1800
+                },
+                {
+                    "buffer":0,
+                    "byteLength":720,
+                    "byteOffset":2760
+                }
+            ],
+            "buffers":[
+                {
+                    "byteLength":3480,
+                    "uri":"BiggerCubeSRT.bin"
+                }
+            ]
+        }
+    )";
+
+    joj::JsonParser parser(json);
+    joj::JsonValue root = parser.parse();
+
+    assert(root.has_key("asset"));
+    assert(root["asset"].has_key("generator"));
+    assert(root["asset"]["generator"].as_string() == "Khronos glTF Blender I/O v4.4.55");
+    assert(root["asset"].has_key("version"));
+    assert(root["asset"]["version"].as_string() == "2.0");
+
+    assert(root.has_key("scene"));
+    assert(root["scene"].as_int() == 0);
+    assert(root.has_key("scenes"));
+    assert(root["scenes"].is_array());
+    assert(root["scenes"].size() == 1);
+    assert(root["scenes"][0].has_key("name"));
+    assert(root["scenes"][0]["name"].as_string() == "Scene");
+    assert(root["scenes"][0].has_key("nodes"));
+    assert(root["scenes"][0]["nodes"].is_array());
+    assert(root["scenes"][0]["nodes"].size() == 1);
+    assert(root["scenes"][0]["nodes"][0].as_int() == 0);
+
+    assert(root.has_key("nodes"));
+    assert(root["nodes"].is_array());
+    assert(root["nodes"].size() == 1);
+    assert(root["nodes"][0].has_key("mesh"));
+    assert(root["nodes"][0]["mesh"].as_int() == 0);
+    assert(root["nodes"][0].has_key("name"));
+    assert(root["nodes"][0]["name"].as_string() == "Cube");
+
+    assert(root.has_key("animations"));
+    assert(root["animations"].is_array());
+    assert(root["animations"].size() == 1);
+    assert(root["animations"][0].has_key("name"));
+    assert(root["animations"][0]["name"].as_string() == "CubeAction");
+    assert(root["animations"][0].has_key("channels"));
+    assert(root["animations"][0]["channels"].is_array());
+    assert(root["animations"][0]["channels"].size() == 3);
+    assert(root["animations"][0]["channels"][0].has_key("sampler"));
+    assert(root["animations"][0]["channels"][0]["sampler"].as_int() == 0);
+    assert(root["animations"][0]["channels"][0].has_key("target"));
+    assert(root["animations"][0]["channels"][0]["target"].has_key("node"));
+    assert(root["animations"][0]["channels"][0]["target"]["node"].as_int() == 0);
+    assert(root["animations"][0]["channels"][0]["target"].has_key("path"));
+    assert(root["animations"][0]["channels"][0]["target"]["path"].as_string() == "translation");
+
+    const auto& accessors = root["accessors"];
+
+    assert(accessors[0]["bufferView"].as_int() == 0);
+    assert(accessors[0]["componentType"].as_int() == 5126);
+    assert(accessors[0]["count"].as_int() == 24);
+    assert(accessors[0]["max"][0].as_float() == 1.0f);
+    assert(accessors[0]["max"][1].as_float() == 1.0f);
+    assert(accessors[0]["max"][2].as_float() == 1.0f);
+    assert(accessors[0]["min"][0].as_float() == -1.0f);
+    assert(accessors[0]["min"][1].as_float() == -1.0f);
+    assert(accessors[0]["min"][2].as_float() == -1.0f);
+
+    assert(accessors[1]["bufferView"].as_int() == 1);
+    assert(accessors[1]["componentType"].as_int() == 5126);
+    assert(accessors[1]["count"].as_int() == 24);
+    assert(accessors[1]["type"].as_string() == "VEC3");
+
+    assert(accessors[2]["bufferView"].as_int() == 2);
+    assert(accessors[2]["componentType"].as_int() == 5126);
+    assert(accessors[2]["count"].as_int() == 24);
+    assert(accessors[2]["type"].as_string() == "VEC2");
+
+    assert(accessors[3]["bufferView"].as_int() == 3);
+    assert(accessors[3]["componentType"].as_int() == 5123);
+    assert(accessors[3]["count"].as_int() == 36);
+    assert(accessors[3]["type"].as_string() == "SCALAR");
+
+    assert(accessors[4]["bufferView"].as_int() == 4);
+    assert(accessors[4]["componentType"].as_int() == 5126);
+    assert(accessors[4]["count"].as_int() == 60);
+    assert(accessors[4]["max"][0].as_float() == 2.5f);
+    assert(accessors[4]["min"][0].as_float() == 0.041666666666666664f);
+    assert(accessors[4]["type"].as_string() == "SCALAR");
+
+    assert(accessors[5]["bufferView"].as_int() == 5);
+    assert(accessors[5]["componentType"].as_int() == 5126);
+    assert(accessors[5]["count"].as_int() == 60);
+    assert(accessors[5]["type"].as_string() == "VEC3");
+
+    assert(accessors[6]["bufferView"].as_int() == 6);
+    assert(accessors[6]["componentType"].as_int() == 5126);
+    assert(accessors[6]["count"].as_int() == 60);
+    assert(accessors[6]["type"].as_string() == "VEC4");
+
+    assert(accessors[7]["bufferView"].as_int() == 7);
+    assert(accessors[7]["componentType"].as_int() == 5126);
+    assert(accessors[7]["count"].as_int() == 60);
+    assert(accessors[7]["type"].as_string() == "VEC3");
+
+    const auto& bufferViews = root["bufferViews"];
+
+    assert(bufferViews[0]["buffer"].as_int() == 0);
+    assert(bufferViews[0]["byteLength"].as_int() == 288);
+    assert(bufferViews[0]["byteOffset"].as_int() == 0);
+    assert(bufferViews[0]["target"].as_int() == 34962);
+
+    assert(bufferViews[1]["buffer"].as_int() == 0);
+    assert(bufferViews[1]["byteLength"].as_int() == 288);
+    assert(bufferViews[1]["byteOffset"].as_int() == 288);
+    assert(bufferViews[1]["target"].as_int() == 34962);
+
+    assert(bufferViews[2]["buffer"].as_int() == 0);
+    assert(bufferViews[2]["byteLength"].as_int() == 192);
+    assert(bufferViews[2]["byteOffset"].as_int() == 576);
+    assert(bufferViews[2]["target"].as_int() == 34962);
+
+    assert(bufferViews[3]["buffer"].as_int() == 0);
+    assert(bufferViews[3]["byteLength"].as_int() == 72);
+    assert(bufferViews[3]["byteOffset"].as_int() == 768);
+    assert(bufferViews[3]["target"].as_int() == 34963);
+
+    assert(bufferViews[4]["buffer"].as_int() == 0);
+    assert(bufferViews[4]["byteLength"].as_int() == 240);
+    assert(bufferViews[4]["byteOffset"].as_int() == 840);
+
+    assert(bufferViews[5]["buffer"].as_int() == 0);
+    assert(bufferViews[5]["byteLength"].as_int() == 720);
+    assert(bufferViews[5]["byteOffset"].as_int() == 1080);
+
+    assert(bufferViews[6]["buffer"].as_int() == 0);
+    assert(bufferViews[6]["byteLength"].as_int() == 960);
+    assert(bufferViews[6]["byteOffset"].as_int() == 1800);
+
+    assert(bufferViews[7]["buffer"].as_int() == 0);
+    assert(bufferViews[7]["byteLength"].as_int() == 720);
+    assert(bufferViews[7]["byteOffset"].as_int() == 2760);
+
+    const auto& buffers = root["buffers"];
+
+    assert(buffers[0]["byteLength"].as_int() == 3480);
+    assert(buffers[0]["uri"].as_string() == "BiggerCubeSRT.bin");
 }
 
 int main() {
