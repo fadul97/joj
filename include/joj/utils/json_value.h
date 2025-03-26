@@ -175,6 +175,14 @@ namespace joj
         b8 is_number() const;
 
         /**
+         * @brief Check if the JSON value has key.
+         *
+         * @param key The key to check.
+         * @return b8 True if the JSON value has the key, false otherwise.
+         */
+        b8 has_key(const std::string& key) const;
+
+        /**
          * @brief Print the JSON value recursively.
          * 
          * @param os The output stream.

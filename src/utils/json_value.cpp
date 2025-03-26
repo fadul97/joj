@@ -152,6 +152,14 @@ b8 joj::JsonValue::is_number() const
     return std::holds_alternative<f64>(m_value);
 }
 
+b8 joj::JsonValue::has_key(const std::string& key) const
+{
+    if (auto obj = std::get_if<Object>(&m_value))
+        return obj->find(key) != obj->end();
+
+    return false;
+}
+
 void joj::JsonValue::print(std::ostream& os, i32 indent) const
 {
     std::visit([&](auto&& arg) { print_value(arg, os, indent); }, m_value);
