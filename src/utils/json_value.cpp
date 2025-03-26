@@ -10,6 +10,11 @@ joj::JsonValue::JsonValue(const b8 value)
 {
 }
 
+joj::JsonValue::JsonValue(const i32 value)
+    : m_value(value)
+{
+}
+
 joj::JsonValue::JsonValue(const f64 value)
     : m_value(value)
 {
@@ -87,6 +92,19 @@ const joj::JsonValue& joj::JsonValue::operator[](const size_t index) const
     return default_value;
 }
 
+size_t joj::JsonValue::size() const
+{
+    // If the value is an object, return the size of the object
+    if (std::holds_alternative<Object>(m_value))
+        return std::get<Object>(m_value).size();
+    // If the value is an array, return the size of the array
+    else if (std::holds_alternative<Array>(m_value))
+        return std::get<Array>(m_value).size();
+
+    // Otherwise, return 0
+    return 0;
+}
+
 std::string joj::JsonValue::as_string() const
 {
     if (std::holds_alternative<std::string>(m_value))
@@ -125,6 +143,16 @@ const joj::JsonValue::Object& joj::JsonValue::as_object() const
         return std::get<Object>(m_value);
 
     return Object();
+}
+
+i32 joj::JsonValue::as_int() const
+{
+    if (std::holds_alternative<i32>(m_value))
+        return std::get<i32>(m_value);
+    else if (std::holds_alternative<f64>(m_value))
+        return static_cast<i32>(std::get<f64>(m_value));
+    
+    return static_cast<i32>(JSON_NULL);
 }
 
 b8 joj::JsonValue::is_object() const
@@ -179,6 +207,11 @@ void joj::JsonValue::print_value(const std::nullptr_t&, std::ostream& os, i32 in
 void joj::JsonValue::print_value(const b8& value, std::ostream& os, i32 indent)
 {
     os << (value ? "true" : "false");
+}
+
+void joj::JsonValue::print_value(const i32& value, std::ostream& os, i32 indent)
+{
+    os << value;
 }
 
 void joj::JsonValue::print_value(const f64& value, std::ostream& os, i32 indent)
