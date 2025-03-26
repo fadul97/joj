@@ -1,5 +1,4 @@
 #include "joj/test/jtest_macros.h"
-#if 0
 #include "joj/jscript/lexer.h"
 #include "joj/jscript/parser.h"
 
@@ -59,7 +58,6 @@ JOJ_TEST(Parser_Var_Declaration)
 
     assert(lexer.get_errors_count() == 0);
 }
-#endif
 
 int main()
 {
