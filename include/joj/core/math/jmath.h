@@ -8,6 +8,7 @@
 #include <DirectXMath.h>
 #include <iostream>
 #include <cmath>
+#include "vector3.h"
 
 #define J_PI DirectX::XM_PI
 #define J_2PI DirectX::XM_2PI
@@ -102,6 +103,23 @@ namespace joj
     inline b8 are_floats_equal(const f32 a, const f32 b, const f32 epsilon = 0.0001f)
     {
         return std::fabs(a - b) <= epsilon;
+    }
+
+    /**
+     * @brief Linear interpolation between two vectors.
+     * 
+     * @param a The first vector.
+     * @param b The second vector.
+     * @param t The interpolation factor.
+     * @return Vector3 The interpolated vector.
+     */
+    inline Vector3 lerp(const Vector3& a, const Vector3& b, const f32 t)
+    {
+        return {
+            a.x + (b.x - a.x) * t,
+            a.y + (b.y - a.y) * t,
+            a.z + (b.z - a.z) * t
+        };
     }
 }
 

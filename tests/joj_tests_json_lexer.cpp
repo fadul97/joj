@@ -1078,6 +1078,431 @@ JOJ_TEST(JSON_TEST_ArrayTest_1)
     assert(parser.get_error_count() == 0);
 }
 
+JOJ_TEST(JSON_TEST_GLTF_ANIM_SIMPLE_CUBE)
+{
+    std::string json = R"(
+        {
+            "asset":{
+                "generator":"Khronos glTF Blender I/O v4.4.55",
+                "version":"2.0"
+            },
+            "scene":0,
+            "scenes":[
+                {
+                    "name":"Scene",
+                    "nodes":[
+                        0
+                    ]
+                }
+            ],
+            "nodes":[
+                {
+                    "mesh":0,
+                    "name":"Cube"
+                }
+            ],
+            "animations":[
+                {
+                    "channels":[
+                        {
+                            "sampler":0,
+                            "target":{
+                                "node":0,
+                                "path":"translation"
+                            }
+                        },
+                        {
+                            "sampler":1,
+                            "target":{
+                                "node":0,
+                                "path":"rotation"
+                            }
+                        },
+                        {
+                            "sampler":2,
+                            "target":{
+                                "node":0,
+                                "path":"scale"
+                            }
+                        }
+                    ],
+                    "name":"CubeAction",
+                    "samplers":[
+                        {
+                            "input":4,
+                            "interpolation":"LINEAR",
+                            "output":5
+                        },
+                        {
+                            "input":6,
+                            "interpolation":"STEP",
+                            "output":7
+                        },
+                        {
+                            "input":6,
+                            "interpolation":"STEP",
+                            "output":8
+                        }
+                    ]
+                }
+            ],
+            "materials":[
+                {
+                    "doubleSided":true,
+                    "name":"Material",
+                    "pbrMetallicRoughness":{
+                        "baseColorFactor":[
+                            0.800000011920929,
+                            0.800000011920929,
+                            0.800000011920929,
+                            1
+                        ],
+                        "metallicFactor":0,
+                        "roughnessFactor":0.5
+                    }
+                }
+            ],
+            "meshes":[
+                {
+                    "name":"Cube",
+                    "primitives":[
+                        {
+                            "attributes":{
+                                "POSITION":0,
+                                "NORMAL":1,
+                                "TEXCOORD_0":2
+                            },
+                            "indices":3,
+                            "material":0
+                        }
+                    ]
+                }
+            ],
+            "accessors":[
+                {
+                    "bufferView":0,
+                    "componentType":5126,
+                    "count":24,
+                    "max":[
+                        1,
+                        1,
+                        1
+                    ],
+                    "min":[
+                        -1,
+                        -1,
+                        -1
+                    ],
+                    "type":"VEC3"
+                },
+                {
+                    "bufferView":1,
+                    "componentType":5126,
+                    "count":24,
+                    "type":"VEC3"
+                },
+                {
+                    "bufferView":2,
+                    "componentType":5126,
+                    "count":24,
+                    "type":"VEC2"
+                },
+                {
+                    "bufferView":3,
+                    "componentType":5123,
+                    "count":36,
+                    "type":"SCALAR"
+                },
+                {
+                    "bufferView":4,
+                    "componentType":5126,
+                    "count":100,
+                    "max":[
+                        4.166666666666667
+                    ],
+                    "min":[
+                        0.041666666666666664
+                    ],
+                    "type":"SCALAR"
+                },
+                {
+                    "bufferView":5,
+                    "componentType":5126,
+                    "count":100,
+                    "type":"VEC3"
+                },
+                {
+                    "bufferView":6,
+                    "componentType":5126,
+                    "count":2,
+                    "max":[
+                        4.166666666666667
+                    ],
+                    "min":[
+                        0.041666666666666664
+                    ],
+                    "type":"SCALAR"
+                },
+                {
+                    "bufferView":7,
+                    "componentType":5126,
+                    "count":2,
+                    "type":"VEC4"
+                },
+                {
+                    "bufferView":8,
+                    "componentType":5126,
+                    "count":2,
+                    "type":"VEC3"
+                }
+            ],
+            "bufferViews":[
+                {
+                    "buffer":0,
+                    "byteLength":288,
+                    "byteOffset":0,
+                    "target":34962
+                },
+                {
+                    "buffer":0,
+                    "byteLength":288,
+                    "byteOffset":288,
+                    "target":34962
+                },
+                {
+                    "buffer":0,
+                    "byteLength":192,
+                    "byteOffset":576,
+                    "target":34962
+                },
+                {
+                    "buffer":0,
+                    "byteLength":72,
+                    "byteOffset":768,
+                    "target":34963
+                },
+                {
+                    "buffer":0,
+                    "byteLength":400,
+                    "byteOffset":840
+                },
+                {
+                    "buffer":0,
+                    "byteLength":1200,
+                    "byteOffset":1240
+                },
+                {
+                    "buffer":0,
+                    "byteLength":8,
+                    "byteOffset":2440
+                },
+                {
+                    "buffer":0,
+                    "byteLength":32,
+                    "byteOffset":2448
+                },
+                {
+                    "buffer":0,
+                    "byteLength":24,
+                    "byteOffset":2480
+                }
+            ],
+            "buffers":[
+                {
+                    "byteLength":2504,
+                    "uri":"AnimSimpleCube.bin"
+                }
+            ]
+        }
+    )";
+
+    joj::JsonParser parser(json);
+    joj::JsonValue root = parser.parse();
+
+    // Asset metadata
+    assert(root["asset"].is_object());
+    assert(root["asset"].has_key("generator"));
+    assert(root["asset"]["generator"].as_string() == "Khronos glTF Blender I/O v4.4.55");
+    assert(root["asset"].has_key("version"));
+    assert(root["asset"]["version"].as_string() == "2.0");
+
+    // Scene
+    assert(root["scene"].as_int() == 0);
+    assert(root["scenes"].is_array());
+    assert(root["scenes"].size() > 0);
+    assert(root["scenes"][0].has_key("nodes"));
+    assert(root["scenes"][0]["nodes"].is_array());
+    assert(root["scenes"][0]["nodes"].size() > 0);
+    assert(root["scenes"][0]["nodes"][0].as_int() == 0);
+
+    // Nodes
+    assert(root["nodes"].is_array());
+    assert(root["nodes"].size() > 0);
+    assert(root["nodes"][0].has_key("mesh"));
+    assert(root["nodes"][0]["mesh"].as_int() == 0);
+    assert(root["nodes"][0].has_key("name"));
+    assert(root["nodes"][0]["name"].as_string() == "Cube");
+
+    // Animations
+    assert(root["animations"].is_array());
+    assert(root["animations"].size() > 0);
+    assert(root["animations"][0].has_key("channels"));
+    assert(root["animations"][0]["channels"].size() == 3);
+    assert(root["animations"][0]["channels"][0]["target"]["path"].as_string() == "translation");
+    assert(root["animations"][0]["channels"][1]["target"]["path"].as_string() == "rotation");
+    assert(root["animations"][0]["channels"][2]["target"]["path"].as_string() == "scale");
+
+    // Animations
+    assert(root["animations"].is_array());
+    assert(root["animations"].size() > 0);
+
+    for (size_t i = 0; i < root["animations"].size(); i++) {
+        assert(root["animations"][i].has_key("channels"));
+        assert(root["animations"][i]["channels"].is_array());
+        assert(root["animations"][i]["channels"].size() > 0); // Garante que há pelo menos um canal
+
+        // Verifica os paths dos canais de animação
+        for (size_t j = 0; j < root["animations"][i]["channels"].size(); j++) {
+            assert(root["animations"][i]["channels"][j].has_key("target"));
+            assert(root["animations"][i]["channels"][j]["target"].has_key("path"));
+            std::string path = root["animations"][i]["channels"][j]["target"]["path"].as_string();
+            assert(path == "translation" || path == "rotation" || path == "scale"); // Verifica se o path é válido
+        }
+    }
+
+    // Verifica a primeira animação
+    const auto& animation = root["animations"][0];
+
+    assert(animation.has_key("channels"));
+    assert(animation["channels"].is_array());
+    assert(animation["channels"].size() == 3); // Deve ter 3 canais
+
+    // Verifica o primeiro canal (translation)
+    assert(animation["channels"][0].has_key("sampler"));
+    assert(animation["channels"][0]["sampler"].as_int() == 0);
+    assert(animation["channels"][0].has_key("target"));
+    assert(animation["channels"][0]["target"].has_key("node"));
+    assert(animation["channels"][0]["target"]["node"].as_int() == 0);
+    assert(animation["channels"][0]["target"].has_key("path"));
+    assert(animation["channels"][0]["target"]["path"].as_string() == "translation");
+
+    // Verifica o segundo canal (rotation)
+    assert(animation["channels"][1].has_key("sampler"));
+    assert(animation["channels"][1]["sampler"].as_int() == 1);
+    assert(animation["channels"][1].has_key("target"));
+    assert(animation["channels"][1]["target"].has_key("node"));
+    assert(animation["channels"][1]["target"]["node"].as_int() == 0);
+    assert(animation["channels"][1]["target"].has_key("path"));
+    assert(animation["channels"][1]["target"]["path"].as_string() == "rotation");
+
+    // Verifica o terceiro canal (scale)
+    assert(animation["channels"][2].has_key("sampler"));
+    assert(animation["channels"][2]["sampler"].as_int() == 2);
+    assert(animation["channels"][2].has_key("target"));
+    assert(animation["channels"][2]["target"].has_key("node"));
+    assert(animation["channels"][2]["target"]["node"].as_int() == 0);
+    assert(animation["channels"][2]["target"].has_key("path"));
+    assert(animation["channels"][2]["target"]["path"].as_string() == "scale");
+
+    // Verifica os samplers
+    assert(animation.has_key("samplers"));
+    assert(animation["samplers"].is_array());
+    assert(animation["samplers"].size() == 3); // Deve ter 3 samplers
+
+    // Verifica o primeiro sampler
+    assert(animation["samplers"][0].has_key("input"));
+    assert(animation["samplers"][0]["input"].as_int() == 4);
+    assert(animation["samplers"][0].has_key("interpolation"));
+    assert(animation["samplers"][0]["interpolation"].as_string() == "LINEAR");
+    assert(animation["samplers"][0].has_key("output"));
+    assert(animation["samplers"][0]["output"].as_int() == 5);
+
+    // Verifica o segundo sampler
+    assert(animation["samplers"][1].has_key("input"));
+    assert(animation["samplers"][1]["input"].as_int() == 6);
+    assert(animation["samplers"][1].has_key("interpolation"));
+    assert(animation["samplers"][1]["interpolation"].as_string() == "STEP");
+    assert(animation["samplers"][1].has_key("output"));
+    assert(animation["samplers"][1]["output"].as_int() == 7);
+
+    // Verifica o terceiro sampler
+    assert(animation["samplers"][2].has_key("input"));
+    assert(animation["samplers"][2]["input"].as_int() == 6);
+    assert(animation["samplers"][2].has_key("interpolation"));
+    assert(animation["samplers"][2]["interpolation"].as_string() == "STEP");
+    assert(animation["samplers"][2].has_key("output"));
+    assert(animation["samplers"][2]["output"].as_int() == 8);
+
+    // Materials
+    assert(root["materials"].is_array());
+    assert(root["materials"].size() > 0);
+    assert(root["materials"][0]["name"].as_string() == "Material");
+    assert(root["materials"][0]["pbrMetallicRoughness"].has_key("metallicFactor"));
+    assert(root["materials"][0]["pbrMetallicRoughness"]["metallicFactor"].as_number() == 0.0);
+
+    // Meshes
+    assert(root["meshes"].is_array());
+    assert(root["meshes"].size() > 0);
+    assert(root["meshes"][0]["name"].as_string() == "Cube");
+    assert(root["meshes"][0]["primitives"].is_array());
+    assert(root["meshes"][0]["primitives"].size() > 0);
+
+    // Buffers
+    assert(root["buffers"].is_array());
+    assert(root["buffers"].size() > 0);
+    assert(root["buffers"][0]["byteLength"].as_int() == 2504);
+    assert(root["buffers"][0]["uri"].as_string() == "AnimSimpleCube.bin");
+
+    assert(root.has_key("accessors"));
+    assert(root["accessors"].is_array());
+
+    assert(root.has_key("bufferViews"));
+    assert(root["bufferViews"].is_array());
+
+    // Função auxiliar para verificar um accessor
+    auto check_accessor = [&](int accessor_index, int expected_count, int expected_bufferView)
+    {
+        assert(accessor_index >= 0 && accessor_index < root["accessors"].size());
+        const auto& accessor = root["accessors"][accessor_index];
+
+        assert(accessor.has_key("count"));
+        assert(accessor["count"].as_int() == expected_count);
+
+        assert(accessor.has_key("bufferView"));
+        int bufferViewIndex = accessor["bufferView"].as_int();
+        assert(bufferViewIndex == expected_bufferView); // Confere se aponta para o bufferView correto
+
+        assert(bufferViewIndex >= 0 && bufferViewIndex < root["bufferViews"].size());
+        const auto& bufferView = root["bufferViews"][bufferViewIndex];
+
+        assert(bufferView.has_key("byteLength"));
+        int byteLength = bufferView["byteLength"].as_int();
+        assert(byteLength >= expected_count * 4); // Supondo floats (4 bytes cada)
+    };
+
+    // Garante que há uma animação e que tem os samplers esperados
+    assert(root.has_key("animations"));
+    assert(root["animations"].is_array());
+    assert(root["animations"].size() > 0);
+
+    assert(animation.has_key("samplers"));
+    assert(animation["samplers"].is_array());
+
+    const auto& samplers = animation["samplers"];
+    assert(samplers.size() == 3); // Deve haver 3 samplers
+
+    // Verifica os accessors baseados no JSON fornecido
+    check_accessor(samplers[0]["input"].as_int(), 100, 4);  // Time do translation
+    check_accessor(samplers[0]["output"].as_int(), 100, 5); // Translation values
+
+    check_accessor(samplers[1]["input"].as_int(), 2, 6);  // Time do rotation
+    check_accessor(samplers[1]["output"].as_int(), 2, 7); // Rotation values
+
+    check_accessor(samplers[2]["input"].as_int(), 2, 6);  // Time do scale (mesmo input do rotation)
+    check_accessor(samplers[2]["output"].as_int(), 2, 8); // Scale values
+
+}
+
 int main() {
     joj::JTestSuite::instance().run();
     return 0;
