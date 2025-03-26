@@ -161,6 +161,16 @@ i32 joj::JsonValue::as_int() const
     return static_cast<i32>(JSON_NULL);
 }
 
+f32 joj::JsonValue::as_float() const
+{
+    if (std::holds_alternative<f64>(m_value))
+        return static_cast<f32>(std::get<f64>(m_value));
+    else if (std::holds_alternative<i32>(m_value))
+        return static_cast<f32>(std::get<i32>(m_value));
+    
+    return static_cast<f32>(JSON_NULL);
+}
+
 b8 joj::JsonValue::is_object() const
 {
     return std::holds_alternative<Object>(m_value);

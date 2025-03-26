@@ -159,6 +159,13 @@ namespace joj
          * @return i32 The JSON value as an integer.
          */
         i32 as_int() const;
+
+        /**
+         * @brief Get the JSON value as a float.
+         * 
+         * @return f32 The JSON value as a float.
+         */
+        f32 as_float() const;
     
         /**
          * @brief Check if the JSON value is an object.
