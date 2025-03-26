@@ -77,13 +77,23 @@ void App3DTest::setup_camera()
 
 void App3DTest::build_buffers()
 {
-    m_gltf_importer = joj::GLTFImporter("models/Cube.gltf");
+    m_gltf_importer = joj::GLTFImporter("models/AnimSimpleCube.gltf");
     if (m_gltf_importer.load() == joj::ErrorCode::OK)
     {
         m_gltf_importer.print_scene_info();
         m_gltf_importer.print_node_info();
         m_gltf_importer.print_mesh_info();
         m_gltf_importer.print_vertex_data();
+        m_gltf_importer.print_animation_data();
+
+        JOJ_DEBUG("================= Translation data =================");
+        m_gltf_importer.print_translation_data();
+        
+        JOJ_DEBUG("================= Rotation data =================");
+        m_gltf_importer.print_rotation_data();
+
+        JOJ_DEBUG("================= Scale data =================");
+        m_gltf_importer.print_scale_data();
     }
 
     const size_t vertices_byteOffset = m_gltf_importer.m_positions_byte_offset;
@@ -179,6 +189,23 @@ void App3DTest::init()
 {
     setup_camera();
     build_buffers();
+
+    joj::GLTFNode cubeNode;
+
+    // Definindo a posição inicial do cubo
+    cubeNode.position = joj::Vector3(0.0f, 0.0f, 0.0f);  // Posição inicial no centro da cena
+
+    // Definindo a rotação inicial (sem rotação, identidade)
+    cubeNode.rotation = joj::Vector4(0.0f, 0.0f, 0.0f, 1.0f);  // Quaternions: identidade
+
+    // Definindo a escala inicial
+    cubeNode.scale = joj::Vector3(1.0f, 1.0f, 1.0f);  // Escala padrão de 1
+
+    // Armazenar o nó na lista de nós, ou apenas utilizá-lo diretamente
+    m_nodes.push_back(cubeNode);
+
+    m_animations = m_gltf_importer.get_animations();
+
     m_renderer->set_rasterizer_state(joj::RasterizerState::Solid);
 }
 
@@ -194,6 +221,24 @@ void App3DTest::update(const f32 dt)
         rotation += 360.0f;
 
     process_mouse_input(dt);
+
+    static f32 animation_time = 0.0f;
+    animation_time += dt;
+    if (!m_animations.empty())
+    {
+        joj::GLTFAnimation& animation = m_animations[0];
+
+        // Supondo que o nó do cubo esteja na posição 0
+        joj::GLTFNode& node = m_nodes[0];
+
+        // Aplique a animação ao nó
+        joj::apply_all_animations(animation, animation_time, node);
+
+        if (animation_time > animation.channels[0].keyframes.back().time)  // Tempo da última keyframe
+        {
+            animation_time = 0.0f;  // Resetando o tempo para repetir a animação
+        }
+    }
 }
 
 void App3DTest::draw()
@@ -230,6 +275,63 @@ void App3DTest::draw()
         m_ib.bind(joj::DataFormat::R16_UINT, offset);
         m_shader.bind();
         m_renderer->draw_indexed(m_index_count, 0, 0);
+
+        {
+            m_cb.bind_to_vertex_shader(0, 1);
+            {
+                // Aplique as animações ao nó (no caso, o primeiro nó da cena)
+                joj::GLTFNode& node = m_nodes[0];  // Supondo que seja o cubo
+
+                DirectX::XMVECTOR rotation = DirectX::XMQuaternionRotationRollPitchYaw(node.rotation.x, node.rotation.y, node.rotation.z);
+                // Crie uma matriz de transformação para o nó
+                /*
+                joj::JMatrix4x4 W = DirectX::XMMatrixScaling(node.scale.x, node.scale.y, node.scale.z) *
+                                    DirectX::XMMatrixRotationQuaternion(DirectX::XMQuaternionNormalize(rotation)) *
+                                    DirectX::XMMatrixTranslation(node.position.x, node.position.y, node.position.z);
+                */
+                joj::JMatrix4x4 W = DirectX::XMMatrixTranslation(node.position.x, node.position.y, node.position.z);
+
+                // Print World matrix for debugging
+                for (i32 i = 0; i < 4; ++i)
+                {
+                    std::cout << "W[" << i << "]: ";
+                    for (i32 j = 0; j < 4; ++j)
+                    {
+                        std::cout << W.r[i].m128_f32[j] << " ";
+                    }
+                    std::cout << std::endl;
+                }
+                std::cout << "\n" << std::endl;
+                
+                // Matriz de visualização e projeção
+                joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
+                joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
+                joj::JMatrix4x4 WVP = W * V * P;
+        
+                ConstantBuffer cbData = {};
+                XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
+                XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
+                XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
+                XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
+                m_cb.update(cbData);
+            }
+
+            m_lightcb.bind_to_pixel_shader(1, 1);
+            {
+                LightBuffer lightBuffer;
+                lightBuffer.diffuseColor = joj::JFloat4(1.0f, 0.7f, 0.7f, 1.0);
+                lightBuffer.lightDirection = joj::JFloat3(0.0f, 0.0f, 1.0f);
+                m_lightcb.update(lightBuffer);
+            }
+
+            // Bind and Draw the rect
+            constexpr u32 stride = sizeof(joj::Vertex::PosColorNormal);
+            constexpr u32 offset = 0;
+            m_vb.bind(0, 1, &stride, &offset);
+            m_ib.bind(joj::DataFormat::R16_UINT, offset);
+            m_shader.bind();
+            m_renderer->draw_indexed(m_index_count, 0, 0);
+        }
     }
     m_renderer->end_frame();
 }
@@ -264,6 +366,16 @@ void App3DTest::on_mouse_move(WPARAM button_state, i32 x, i32 y)
 
     m_last_mouse_pos.x = x;
     m_last_mouse_pos.y = y;
+}
+
+void App3DTest::update_animations(const f32 dt)
+{
+    m_current_time += dt;
+
+    for (auto& animation : m_animations)
+    {
+        joj::apply_animation(animation, m_current_time, m_nodes[0]); // Only for the cube
+    }
 }
 
 void App3DTest::process_mouse_input(const f32 dt)

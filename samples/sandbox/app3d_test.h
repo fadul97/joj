@@ -54,6 +54,8 @@ public:
     void setup_camera();
     void build_buffers();
 
+    f32 m_current_time = 0.0f;
+    void update_animations(const f32 dt);
     void process_mouse_input(const f32 dt);
 
     u32 m_index_count = 0;
@@ -70,6 +72,8 @@ public:
     joj::JFloat2 m_last_mouse_pos;
 
     joj::GLTFImporter m_gltf_importer;
+    std::vector<joj::GLTFAnimation> m_animations;
+    std::vector<joj::GLTFNode> m_nodes;
 };
 
 #endif // _JOJ_3D_APP_TEST_H
