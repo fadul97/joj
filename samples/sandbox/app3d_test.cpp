@@ -77,7 +77,7 @@ void App3DTest::setup_camera()
 
 void App3DTest::build_buffers()
 {
-    m_gltf_importer = joj::GLTFImporter("models/AnimSimpleCube.gltf");
+    m_gltf_importer = joj::GLTFImporter("models/BiggerCubeSRT.gltf");
     if (m_gltf_importer.load() == joj::ErrorCode::OK)
     {
         // m_gltf_importer.print_scene_info();
@@ -97,7 +97,7 @@ void App3DTest::build_buffers()
         
         m_gltf_importer.setup_animations();
         //JOJ_DEBUG("================= Animation data =================");
-        //m_gltf_importer.print_animation_data();
+        m_gltf_importer.print_animation_data();
     }
 
     const size_t vertices_byteOffset = m_gltf_importer.m_positions_byte_offset;
@@ -226,7 +226,10 @@ void App3DTest::update(const f32 dt)
 
     process_mouse_input(dt);
 
-    b8 loop_animation = true;
+    static b8 loop_animation = false;
+    if (m_input->is_key_pressed('T'))
+        loop_animation = !loop_animation;
+
     static f32 animation_time = 0.0f;
     animation_time += dt;
     if (!m_animations.empty())
@@ -291,12 +294,10 @@ void App3DTest::draw()
 
                 DirectX::XMVECTOR rotation = DirectX::XMQuaternionRotationRollPitchYaw(node.rotation.x, node.rotation.y, node.rotation.z);
                 // Crie uma matriz de transformação para o nó
-                /*
+                // joj::JMatrix4x4 W = DirectX::XMMatrixTranslation(node.position.x, node.position.y, node.position.z);
                 joj::JMatrix4x4 W = DirectX::XMMatrixScaling(node.scale.x, node.scale.y, node.scale.z) *
                                     DirectX::XMMatrixRotationQuaternion(DirectX::XMQuaternionNormalize(rotation)) *
                                     DirectX::XMMatrixTranslation(node.position.x, node.position.y, node.position.z);
-                */
-                joj::JMatrix4x4 W = DirectX::XMMatrixTranslation(node.position.x, node.position.y, node.position.z);
 
                 /*
                 // Print World matrix for debugging
