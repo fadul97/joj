@@ -9,6 +9,7 @@
 #include <iostream>
 #include <cmath>
 #include "vector3.h"
+#include "vector4.h"
 
 #define J_PI DirectX::XM_PI
 #define J_2PI DirectX::XM_2PI
@@ -120,6 +121,61 @@ namespace joj
             a.y + (b.y - a.y) * t,
             a.z + (b.z - a.z) * t
         };
+    }
+
+    /**
+     * @brief Linear interpolation between two vectors.
+     * 
+     * @param a The first vector.
+     * @param b The second vector.
+     * @param t The interpolation factor.
+     * @return Vector4 The interpolated vector.
+     */
+    inline Vector4 lerp(const Vector4& a, const Vector4& b, const f32 t)
+    {
+        return {
+            a.x + (b.x - a.x) * t,
+            a.y + (b.y - a.y) * t,
+            a.z + (b.z - a.z) * t,
+            a.w + (b.w - a.w) * t
+        };
+    }
+
+    inline Vector4 slerp(const Vector4& q0, const Vector4& q1, f32 t)
+    {
+        // Normalizar os quaternions (importante para evitar erros numéricos)
+        Vector4 qa = vec4_normalize(q0);
+        Vector4 qb = vec4_normalize(q1);
+
+        // Calcular o produto escalar
+        f32 dot = dot_product(qa, qb);
+
+        // Se os quaternions estiverem muito próximos, use interpolação linear
+        const f32 DOT_THRESHOLD = 0.9995f;
+        if (dot > DOT_THRESHOLD)
+        {
+            return vec4_normalize(lerp(qa, qb, t));  // Fallback para lerp se os quaternions forem muito próximos
+        }
+
+        // Assegurar que o caminho de interpolação seja o mais curto possível
+        if (dot < 0.0f)
+        {
+            // FIXME:
+            /*
+            qb = -qb;
+            dot = -dot;
+            */
+        }
+
+        // Calcular os ângulos
+        f32 theta_0 = acos(dot);    // Ângulo inicial entre os quaternions
+        f32 theta = theta_0 * t;    // Ângulo interpolado
+
+        // Componentes perpendiculares
+        Vector4 q_perp = vec4_normalize(qb - qa * dot);
+
+        // Calcular a rotação interpolada
+        return vec4_normalize(qa * cos(theta) + q_perp * sin(theta));
     }
 }
 

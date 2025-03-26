@@ -18,6 +18,7 @@ namespace joj
         Vector4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
         Vector4(f32 value) : x(value), y(value), z(value), w(value) {}
         Vector4(f32 x, f32 y, f32 z, f32 w) : x(x), y(y), z(z), w(w) {}
+        Vector4(const Vector3& v) : x(v.x), y(v.y), z(v.z), w(0.0f) {}
 
 #if JOJ_PLATFORM_WINDOWS
         Vector4(const DirectX::XMFLOAT4& v) : x(v.x), y(v.y), z(v.z), w(v.w) {}
@@ -104,6 +105,9 @@ namespace joj
         }
 #endif
     };
+
+    inline Vector4 vec4_normalize(const Vector4& v) { return v.normalized(); }
+    inline f32 dot_product(const Vector4& v1, const Vector4& v2) { return v1.dot(v2); }
 
 #if JOJ_PLATFORM_WINDOWS
     // DirectX::XMFLOAT4
