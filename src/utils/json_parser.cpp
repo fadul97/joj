@@ -75,6 +75,7 @@ joj::JsonValue joj::JsonParser::parse_object()
         // Skip ':'
         advance();
 
+        // Maybe there is something wrong with they way I keep adding values to the object
         // Parse value
         object[key] = parse_value();
 
@@ -120,12 +121,15 @@ joj::JsonValue joj::JsonParser::parse_array()
 
         array.push_back(value);
 
-        // Consume ','
+        // Consume value
         advance();
 
         // Skip ','
         if (m_current_token.type == JsonTokenType::Comma)
             advance();
+
+        if (m_current_token.type == JsonTokenType::LeftBrace)
+            continue;
     }
 
     // Skip ']'

@@ -19,6 +19,9 @@ joj::ErrorCode joj::GLTFImporter::load()
     if (m_gltf_filename == nullptr)
         return ErrorCode::FAILED;
 
+    if (!parse_json())
+        return ErrorCode::FAILED;
+
     return ErrorCode::OK;
 }
 
