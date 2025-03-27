@@ -22,6 +22,11 @@ samples/models/Monkey.bin
 samples/models/Monkey.gltf
 samples/models/AnimatedCube.bin
 samples/models/AnimatedCube.gltf
+samples/models/glTF/inverseBindMatrices.bin
+samples/models/glTF/RiggedSimple0.bin
+samples/models/glTF/skinAnimation.bin
+samples/models/glTF/skinGeometry.bin
+samples/models/glTF/AnimatedCube.bin
 
 # Project File Tree
 tree.txt
