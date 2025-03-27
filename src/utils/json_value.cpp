@@ -119,6 +119,8 @@ f64 joj::JsonValue::as_number() const
 {
     if (std::holds_alternative<f64>(m_value))
         return std::get<f64>(m_value);
+    else if (std::holds_alternative<i32>(m_value))
+        return static_cast<f64>(std::get<i32>(m_value));
 
     return JSON_NULL;
 }
@@ -193,7 +195,17 @@ b8 joj::JsonValue::is_string() const
 
 b8 joj::JsonValue::is_number() const
 {
+    return is_float() || is_int();
+}
+
+b8 joj::JsonValue::is_float() const
+{
     return std::holds_alternative<f64>(m_value);
+}
+
+b8 joj::JsonValue::is_int() const
+{
+    return std::holds_alternative<i32>(m_value);
 }
 
 b8 joj::JsonValue::has_key(const std::string& key) const

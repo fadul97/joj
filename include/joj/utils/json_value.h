@@ -203,6 +203,20 @@ namespace joj
         b8 is_number() const;
 
         /**
+         * @brief Check if the JSON value is a float.
+         * 
+         * @return b8 True if the JSON value is a float, false otherwise.
+         */
+        b8 is_float() const;
+
+        /**
+         * @brief Check if the JSON value is an integer.
+         * 
+         * @return b8 True if the JSON value is an integer, false otherwise.
+         */
+        b8 is_int() const;
+
+        /**
          * @brief Check if the JSON value has key.
          *
          * @param key The key to check.
