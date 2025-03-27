@@ -10,6 +10,7 @@
 #include "gltf_sampler.h"
 #include "gltf_buffer_view.h"
 #include "gltf_accessor.h"
+#include "joj/resources/scene_node.h"
 #include "joj/resources/buffer.h"
 #include "joj/resources/animation.h"
 #include "joj/utils/json_value.h"
@@ -39,6 +40,7 @@ namespace joj
         std::vector<Vector4> m_rotations;
         std::vector<Vector3> m_scales;
         std::vector<GLTFSampler> m_samplers;
+        std::vector<SceneNode> m_nodes;
         std::vector<GLTFAccessor> m_accessors;
         std::vector<GLTFBufferView> m_buffer_views;
         std::vector<Buffer> m_buffers;
@@ -73,6 +75,9 @@ namespace joj
 
         b8 load_accessors();
         void print_accessors();
+
+        b8 load_nodes();
+        void print_nodes();
     };
 }
 

@@ -203,7 +203,7 @@ void App3DTest::init()
         JOJ_ERROR(joj::ErrorCode::FAILED, "Failed to load GLTF file.");
 
     joj::GLTFImporter riggedSimple_importer;
-    if JOJ_FAILED(riggedSimple_importer.load("models/RiggetSimple.gltf"))
+    if JOJ_FAILED(riggedSimple_importer.load("models/RiggedSimple.gltf"))
         JOJ_ERROR(joj::ErrorCode::FAILED, "Failed to load GLTF file.");
 
     joj::GLTFImporter simpleSkin_importer;

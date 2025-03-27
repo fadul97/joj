@@ -15,7 +15,7 @@ joj::GLTFImporter::GLTFImporter()
     , m_animations_byte_offset(-1), m_translation_byte_offset(-1), m_rotation_byte_offset(-1)
     , m_scale_byte_offset(-1), m_positions_count(-1), m_normals_count(-1), m_indices_count(-1)
     , m_animations_count(-1), m_translation_count(-1), m_rotation_count(-1), m_scale_count(-1)
-    , m_root()
+    , m_root(), m_nodes()
 {
 }
 
@@ -421,6 +421,206 @@ void joj::GLTFImporter::print_accessors()
         std::cout << "    Count: " << acc.count << std::endl;
         std::cout << "    Buffer view: " << acc.buffer_view << std::endl;
         std::cout << "    Byte offset: " << acc.byte_offset << std::endl;
+        ++i;
+    }
+}
+
+b8 joj::GLTFImporter::load_nodes()
+{
+    if (!m_root.has_key("nodes"))
+        return false;
+
+    // Get nodes array
+    auto nodes = m_root["nodes"].as_array();
+    i32 i = 0;
+    for (const auto& node : nodes)
+    {
+        SceneNode n;
+
+        if (node.has_key("name"))
+        {
+            if (node["name"].is_string())
+            {
+                const std::string node_name = node["name"].as_string();
+                n.set_name(node_name.c_str());
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] name is not a string.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_WARN("Node[%d] does not have key 'name'.", i);
+            const std::string node_name = "Node" + std::to_string(i);
+            n.set_name(node_name.c_str());
+        }
+
+        if (node.has_key("translation"))
+        {
+            if (node["translation"].is_array())
+            {
+                auto translation = node["translation"].as_array();
+                if (translation.size() == 3)
+                {
+                    n.set_position(Vector3(translation[0].as_float(), translation[1].as_float(), translation[2].as_float()));
+                }
+                else
+                {
+                    JOJ_ERROR(ErrorCode::FAILED, "Node[%d] translation is not a 3-element array.", i);
+                    return false;
+                }
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] translation is not an array.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_WARN("Node[%d] does not have key 'translation'.", i);
+        }
+
+        if (node.has_key("rotation"))
+        {
+            if (node["rotation"].is_array())
+            {
+                auto rotation = node["rotation"].as_array();
+                if (rotation.size() == 4)
+                {
+                    n.set_rotation(Vector4(rotation[0].as_float(), rotation[1].as_float(), rotation[2].as_float(), rotation[3].as_float()));
+                }
+                else
+                {
+                    JOJ_ERROR(ErrorCode::FAILED, "Node[%d] rotation is not a 4-element array.", i);
+                    return false;
+                }
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] rotation is not an array.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_WARN("Node[%d] does not have key 'rotation'.", i);
+        }
+
+        if (node.has_key("scale"))
+        {
+            if (node["scale"].is_array())
+            {
+                auto scale = node["scale"].as_array();
+                if (scale.size() == 3)
+                {
+                    n.set_scale(Vector3(scale[0].as_float(), scale[1].as_float(), scale[2].as_float()));
+                }
+                else
+                {
+                    JOJ_ERROR(ErrorCode::FAILED, "Node[%d] scale is not a 3-element array.", i);
+                    return false;
+                }
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] scale is not an array.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_WARN("Node[%d] does not have key 'scale'.", i);
+        }
+
+        if (node.has_key("children"))
+        {
+            if (node["children"].is_array())
+            {
+                auto children = node["children"].as_array();
+                for (const auto& child : children)
+                {
+                    if (child.is_int())
+                    {
+                        n.add_child(child.as_int());
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Node[%d] child is not an integer.", i);
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] children is not an array.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_WARN("Node[%d] does not have key 'children'.", i);
+        }
+
+        if (node.has_key("mesh"))
+        {
+            if (node["mesh"].is_int())
+            {
+                const i32 mesh_index = node["mesh"].as_int();
+                n.set_mesh(mesh_index);
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] mesh is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_WARN("Node[%d] does not have key 'mesh'.", i);
+        }
+
+        if (node.has_key("skin"))
+        {
+            if (node["skin"].is_int())
+            {
+                const i32 skin_index = node["skin"].as_int();
+                n.set_skin(skin_index);
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] skin is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_WARN("Node[%d] does not have key 'skin'.", i);
+        }
+
+        // TODO: Read camera, weights, extensions, extras
+
+        m_nodes.push_back(n);
+        ++i;
+    }
+}
+
+void joj::GLTFImporter::print_nodes()
+{
+    std::cout << "Total loaded nodes: " << m_nodes.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& node : m_nodes)
+    {
+        std::cout << "Node " << i << ": " << std::endl;
+        std::cout << "    Name: " << node.get_name() << std::endl;
+        std::cout << "    Position: " << node.get_position().to_string() << std::endl;
+        std::cout << "    Rotation: " << node.get_rotation().to_string() << std::endl;
+        std::cout << "    Scale: " << node.get_scale().to_string() << std::endl;
+        std::cout << "    Mesh: " << node.get_mesh() << std::endl;
+        std::cout << "    Skin: " << node.get_skin() << std::endl;
         ++i;
     }
 }
