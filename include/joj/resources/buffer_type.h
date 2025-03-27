@@ -5,6 +5,7 @@ namespace joj
 {
     enum class BufferType
     {
+        BYTE,
         POSITION,
         NORMAL,
         INDEX,
@@ -14,6 +15,8 @@ namespace joj
         SCALE,
         UNKNOWN
     };
+
+    const char* buffer_type_to_string(const BufferType type);
 }
 
 #endif // _JOJ_BUFFER_TYPE_H
