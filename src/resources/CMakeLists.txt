@@ -17,6 +17,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SOURCE_FILES
     old_gltf_importer.cpp
+    animation_channel.cpp
 )
 
 # -----------------------------------------------------------------------------

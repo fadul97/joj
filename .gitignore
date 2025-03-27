@@ -20,6 +20,8 @@ samples/models/soldier.m3d
 samples/models/BASEmodel.obj
 samples/models/Monkey.bin
 samples/models/Monkey.gltf
+samples/models/AnimatedCube.bin
+samples/models/AnimatedCube.gltf
 
 # Project File Tree
 tree.txt
