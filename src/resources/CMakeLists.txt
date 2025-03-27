@@ -17,7 +17,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SOURCE_FILES
     old_gltf_importer.cpp
+    buffer.cpp
     animation_channel.cpp
+    gltf/gltf_sampler.cpp
+    gltf/gltf_buffer_view.cpp
 )
 
 # -----------------------------------------------------------------------------
