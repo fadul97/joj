@@ -77,7 +77,7 @@ void App3DTest::setup_camera()
 
 void App3DTest::build_buffers()
 {
-    m_gltf_importer = joj::GLTFImporter("models/BiggerCubeSRT.gltf");
+    m_gltf_importer = joj::OLDGLTFImporter("models/BiggerCubeSRT.gltf");
     if (m_gltf_importer.load() == joj::ErrorCode::OK)
     {
         // m_gltf_importer.print_scene_info();
@@ -194,7 +194,7 @@ void App3DTest::init()
     setup_camera();
     build_buffers();
 
-    joj::GLTFNode cubeNode;
+    joj::OLDGLTFNode cubeNode;
 
     // Definindo a posição inicial do cubo
     cubeNode.position = joj::Vector3(0.0f, 0.0f, 0.0f);  // Posição inicial no centro da cena
@@ -234,10 +234,10 @@ void App3DTest::update(const f32 dt)
     animation_time += dt;
     if (!m_animations.empty())
     {
-        joj::GLTFAnimation& animation = m_animations[0];
+        joj::OLDGLTFAnimation& animation = m_animations[0];
 
         // Supondo que o nó do cubo esteja na posição 0
-        joj::GLTFNode& node = m_nodes[0];
+        joj::OLDGLTFNode& node = m_nodes[0];
 
         f32 animation_speed = 60.0f;
 
@@ -290,7 +290,7 @@ void App3DTest::draw()
             m_cb.bind_to_vertex_shader(0, 1);
             {
                 // Aplique as animações ao nó (no caso, o primeiro nó da cena)
-                joj::GLTFNode& node = m_nodes[0];  // Supondo que seja o cubo
+                joj::OLDGLTFNode& node = m_nodes[0];  // Supondo que seja o cubo
 
                 DirectX::XMVECTOR rotation = DirectX::XMQuaternionRotationRollPitchYaw(node.rotation.x, node.rotation.y, node.rotation.z);
                 // Crie uma matriz de transformação para o nó

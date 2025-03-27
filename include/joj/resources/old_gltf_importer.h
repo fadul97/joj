@@ -1,5 +1,5 @@
-#ifndef _JOJ_GLTF_IMPORTER_H
-#define _JOJ_GLTF_IMPORTER_H
+#ifndef _JOJ_OLD_GLTF_IMPORTER_H
+#define _JOJ_OLD_GLTF_IMPORTER_H
 
 #include "joj/core/defines.h"
 
@@ -12,7 +12,7 @@
 
 namespace joj
 {
-    struct JOJ_API GLTFKeyFrame
+    struct JOJ_API OLDGLTFKeyFrame
     {
         f32 time;
         Vector3 translation;
@@ -20,21 +20,21 @@ namespace joj
         Vector3 rotation;
     };
 
-    struct JOJ_API GLTFAnimationChannel
+    struct JOJ_API OLDGLTFAnimationChannel
     {
         std::string path;
         i32 target_node_index;
-        std::vector<GLTFKeyFrame> keyframes;
+        std::vector<OLDGLTFKeyFrame> keyframes;
     };
 
-    struct JOJ_API GLTFAnimation
+    struct JOJ_API OLDGLTFAnimation
     {
         std::string name;
-        std::vector<GLTFAnimationChannel> channels;
+        std::vector<OLDGLTFAnimationChannel> channels;
     };
 
     // Representa um channel da animação
-    struct JOJ_API GLTFChannel
+    struct JOJ_API OLDGLTFChannel
     {
         i32 sampler; // Índice do sampler (para ler o input e output)
         std::string path; // Caminho do target (ex.: "translation", "rotation", "scale")
@@ -42,14 +42,14 @@ namespace joj
     };
 
     // Representa um sampler de animação
-    struct JOJ_API GLTFSampler
+    struct JOJ_API OLDGLTFSampler
     {
         i32 input; // Índice do acessador de entrada (tempo da animação)
         i32 output; // Índice do acessador de saída (valores da animação)
         std::string interpolation; // Tipo de interpolação ("LINEAR", "STEP", etc.)
     };
 
-    struct JOJ_API GLTFBufferView
+    struct JOJ_API OLDGLTFBufferView
     {
         i32 buffer;      // Índice do buffer ao qual este buffer view pertence
         i32 byteOffset;  // Deslocamento em bytes dentro do buffer
@@ -57,12 +57,12 @@ namespace joj
         i32 byteStride;  // O espaçamento entre elementos, caso seja necessário (por exemplo, 3*float para um vetor de 3 floats)
     };
 
-    struct JOJ_API GLTFBuffer
+    struct JOJ_API OLDGLTFBuffer
     {
         std::vector<u8> data; // Dados binários do buffer
     };
 
-    struct JOJ_API GLTFAccessor
+    struct JOJ_API OLDGLTFAccessor
     {
         std::string type; // Tipo de dado, por exemplo, "VEC3", "SCALAR", etc.
         i32 componentType; // Tipo de componente, por exemplo, 5126 para float
@@ -71,7 +71,7 @@ namespace joj
         i32 byteOffset; // Offset em bytes dentro do buffer
     };
 
-    struct JOJ_API GLTFNode
+    struct JOJ_API OLDGLTFNode
     {
         std::string name;  // Nome do objeto (ex: "Cube")
         Vector3 position = {0, 0, 0};  // Posição do objeto
@@ -84,27 +84,27 @@ namespace joj
         void SetScale(const Vector3& scl) { scale = scl; }
     };
 
-    void apply_animation(GLTFAnimation& animation, f32 time, GLTFNode& node);
-    void apply_all_animations_almost(GLTFAnimation& animation, f32 time, GLTFNode& node);
-    void apply_all_animations_old(GLTFAnimation& animation, f32 time, GLTFNode& node);
-    void apply_all_animations(GLTFAnimation& animation, f32 time, GLTFNode& node, b8 loop);
+    void apply_animation(OLDGLTFAnimation& animation, f32 time, OLDGLTFNode& node);
+    void apply_all_animations_almost(OLDGLTFAnimation& animation, f32 time, OLDGLTFNode& node);
+    void apply_all_animations_old(OLDGLTFAnimation& animation, f32 time, OLDGLTFNode& node);
+    void apply_all_animations(OLDGLTFAnimation& animation, f32 time, OLDGLTFNode& node, b8 loop);
 
-    struct JOJ_API GLTFVertex
+    struct JOJ_API OLDGLTFVertex
     {
         Vector3 pos;
         Vector3 normal;
     };
 
-    class JOJ_API GLTFImporter
+    class JOJ_API OLDGLTFImporter
     {
     public:
-        GLTFImporter();
-        GLTFImporter(const char* filename);
-        ~GLTFImporter();
+        OLDGLTFImporter();
+        OLDGLTFImporter(const char* filename);
+        ~OLDGLTFImporter();
 
         ErrorCode load();
 
-        std::vector<f32> load_buffer_data(const GLTFBufferView& buffer_view);
+        std::vector<f32> load_buffer_data(const OLDGLTFBufferView& buffer_view);
         
         void load_buffers();
         void load_buffer_views();
@@ -113,8 +113,8 @@ namespace joj
         void load_animations();
         std::vector<u8> load_binary_data(const std::string& uri);
 
-        std::vector<GLTFVertex> get_vertices();
-        std::vector<GLTFAnimation>& get_animations();
+        std::vector<OLDGLTFVertex> get_vertices();
+        std::vector<OLDGLTFAnimation>& get_animations();
         
         void print_root();
         void print_scene_info();
@@ -130,14 +130,14 @@ namespace joj
         std::vector<joj::Vector3> m_positions;
         std::vector<joj::Vector3> m_normals;
         std::vector<u16> m_indices;
-        std::vector<GLTFAnimation> m_animations;
+        std::vector<OLDGLTFAnimation> m_animations;
         std::vector<Vector3> m_translations;
         std::vector<Vector4> m_rotations;
         std::vector<Vector3> m_scales;
-        std::vector<GLTFSampler> m_samplers;
-        std::vector<GLTFAccessor> m_accessors;
-        std::vector<GLTFBufferView> m_bufferViews;
-        std::vector<GLTFBuffer> m_buffers;
+        std::vector<OLDGLTFSampler> m_samplers;
+        std::vector<OLDGLTFAccessor> m_accessors;
+        std::vector<OLDGLTFBufferView> m_bufferViews;
+        std::vector<OLDGLTFBuffer> m_buffers;
 
     private:
         const char* m_gltf_filename;
@@ -183,4 +183,4 @@ namespace joj
     };
 }
 
-#endif // _JOJ_GLTF_IMPORTER_H
+#endif // _JOJ_OLD_GLTF_IMPORTER_H

@@ -1,4 +1,4 @@
-#include "joj/resources/gltf_importer.h"
+#include "joj/resources/old_gltf_importer.h"
 
 #include <fstream>
 #include <sstream>
@@ -7,11 +7,11 @@
 #include "joj/core/logger.h"
 #include <algorithm>
 
-void joj::apply_animation(GLTFAnimation& animation, f32 time, GLTFNode& node)
+void joj::apply_animation(OLDGLTFAnimation& animation, f32 time, OLDGLTFNode& node)
 {
     for (auto& channel : animation.channels)
     {
-        const std::vector<GLTFKeyFrame>& keyframes = channel.keyframes;
+        const std::vector<OLDGLTFKeyFrame>& keyframes = channel.keyframes;
 
         i32 k0 = 0;
         i32 k1 = 0;
@@ -37,11 +37,11 @@ void joj::apply_animation(GLTFAnimation& animation, f32 time, GLTFNode& node)
     }
 }
 
-void joj::apply_all_animations(GLTFAnimation& animation, f32 time, GLTFNode& node, b8 loop)
+void joj::apply_all_animations(OLDGLTFAnimation& animation, f32 time, OLDGLTFNode& node, b8 loop)
 {
     for (auto& channel : animation.channels)
     {
-        const std::vector<GLTFKeyFrame>& keyframes = channel.keyframes;
+        const std::vector<OLDGLTFKeyFrame>& keyframes = channel.keyframes;
 
         // Se a animação deve ser em loop, ajustar o tempo
         if (loop) {
@@ -129,11 +129,11 @@ void joj::apply_all_animations(GLTFAnimation& animation, f32 time, GLTFNode& nod
 }
 
 
-void joj::apply_all_animations_almost(GLTFAnimation& animation, f32 time, GLTFNode& node)
+void joj::apply_all_animations_almost(OLDGLTFAnimation& animation, f32 time, OLDGLTFNode& node)
 {
     for (auto& channel : animation.channels)
     {
-        const std::vector<GLTFKeyFrame>& keyframes = channel.keyframes;
+        const std::vector<OLDGLTFKeyFrame>& keyframes = channel.keyframes;
 
         i32 k0 = 0;
         i32 k1 = 0;
@@ -196,11 +196,11 @@ void joj::apply_all_animations_almost(GLTFAnimation& animation, f32 time, GLTFNo
 
 
 
-void joj::apply_all_animations_old(GLTFAnimation& animation, f32 time, GLTFNode& node)
+void joj::apply_all_animations_old(OLDGLTFAnimation& animation, f32 time, OLDGLTFNode& node)
 {
     for (auto& channel : animation.channels)
     {
-        const std::vector<GLTFKeyFrame>& keyframes = channel.keyframes;
+        const std::vector<OLDGLTFKeyFrame>& keyframes = channel.keyframes;
 
         i32 k0 = 0;
         i32 k1 = 0;
@@ -242,7 +242,7 @@ void joj::apply_all_animations_old(GLTFAnimation& animation, f32 time, GLTFNode&
 }
 
 
-joj::GLTFImporter::GLTFImporter()
+joj::OLDGLTFImporter::OLDGLTFImporter()
     : m_gltf_filename(nullptr), m_bin_filename(""),
     m_positions_byte_offset(-1), m_normals_byte_offset(-1), m_indices_byte_offset(-1),
     m_positions_count(-1), m_normals_count(-1), m_indices_count(-1),
@@ -252,7 +252,7 @@ joj::GLTFImporter::GLTFImporter()
 {
 }
 
-joj::GLTFImporter::GLTFImporter(const char* filename)
+joj::OLDGLTFImporter::OLDGLTFImporter(const char* filename)
     : m_gltf_filename(filename), m_bin_filename(""),
     m_positions_byte_offset(-1), m_normals_byte_offset(-1), m_indices_byte_offset(-1),
     m_positions_count(-1), m_normals_count(-1), m_indices_count(-1),
@@ -262,11 +262,11 @@ joj::GLTFImporter::GLTFImporter(const char* filename)
 {
 }
 
-joj::GLTFImporter::~GLTFImporter()
+joj::OLDGLTFImporter::~OLDGLTFImporter()
 {
 }
 
-joj::ErrorCode joj::GLTFImporter::load()
+joj::ErrorCode joj::OLDGLTFImporter::load()
 {
     if (m_gltf_filename == nullptr)
         return ErrorCode::FAILED;
@@ -330,7 +330,7 @@ joj::ErrorCode joj::GLTFImporter::load()
     return ErrorCode::OK;
 }
 
-void joj::GLTFImporter::load_accessors()
+void joj::OLDGLTFImporter::load_accessors()
 {
     if (!m_root.has_key("accessors"))
         return;
@@ -338,7 +338,7 @@ void joj::GLTFImporter::load_accessors()
     auto accessors = m_root["accessors"].as_array();
     for (const auto& accessor : accessors)
     {
-        GLTFAccessor gltf_accessor;
+        OLDGLTFAccessor gltf_accessor;
         gltf_accessor.type = accessor["type"].as_string(); // Tipo de dado (ex: "VEC3", "SCALAR")
         gltf_accessor.componentType = accessor["componentType"].as_int(); // Tipo do componente (ex: 5126 para float)
         gltf_accessor.count = accessor["count"].as_int(); // Número de elementos
@@ -349,7 +349,7 @@ void joj::GLTFImporter::load_accessors()
     }
 }
 
-void joj::GLTFImporter::load_buffer_views()
+void joj::OLDGLTFImporter::load_buffer_views()
 {
     if (!m_root.has_key("bufferViews"))
         return;
@@ -357,7 +357,7 @@ void joj::GLTFImporter::load_buffer_views()
     auto buffer_views = m_root["bufferViews"].as_array();
     for (const auto& buffer_view : buffer_views)
     {
-        GLTFBufferView gltf_buffer_view;
+        OLDGLTFBufferView gltf_buffer_view;
         gltf_buffer_view.buffer = buffer_view["buffer"].as_int();          // Índice do buffer
         gltf_buffer_view.byteOffset = buffer_view.has_key("byteOffset") ? buffer_view["byteOffset"].as_int() : 0; // Offset em bytes
         gltf_buffer_view.byteLength = buffer_view["byteLength"].as_int();  // Comprimento dos dados
@@ -367,7 +367,7 @@ void joj::GLTFImporter::load_buffer_views()
     }
 }
 
-void joj::GLTFImporter::load_samplers()
+void joj::OLDGLTFImporter::load_samplers()
 {
     if (!m_root.has_key("animations"))
         return;
@@ -385,7 +385,7 @@ void joj::GLTFImporter::load_samplers()
             // Itera sobre cada sampler na animação
             for (const auto& sampler : samplers)
             {
-                GLTFSampler gltf_sampler;
+                OLDGLTFSampler gltf_sampler;
                 gltf_sampler.input = sampler["input"].as_int(); // Índice do acessador de entrada
                 gltf_sampler.output = sampler["output"].as_int(); // Índice do acessador de saída
                 gltf_sampler.interpolation = sampler["interpolation"].as_string(); // Tipo de interpolação
@@ -397,7 +397,7 @@ void joj::GLTFImporter::load_samplers()
 }
 
 
-std::vector<f32> joj::GLTFImporter::load_buffer_data(const GLTFBufferView& buffer_view)
+std::vector<f32> joj::OLDGLTFImporter::load_buffer_data(const OLDGLTFBufferView& buffer_view)
 {
     std::vector<f32> data;
 
@@ -428,7 +428,7 @@ std::vector<f32> joj::GLTFImporter::load_buffer_data(const GLTFBufferView& buffe
 }
 
 
-std::vector<u8> joj::GLTFImporter::load_binary_data(const std::string& uri)
+std::vector<u8> joj::OLDGLTFImporter::load_binary_data(const std::string& uri)
 {
     std::vector<u8> data;
     // Aqui você pode carregar os dados binários de um arquivo ou de uma string base64 (dependendo do formato GLTF)
@@ -446,7 +446,7 @@ std::vector<u8> joj::GLTFImporter::load_binary_data(const std::string& uri)
     return data;
 }
 
-void joj::GLTFImporter::load_buffers()
+void joj::OLDGLTFImporter::load_buffers()
 {
     if (!m_root.has_key("buffers"))
         return;
@@ -454,7 +454,7 @@ void joj::GLTFImporter::load_buffers()
     auto buffers = m_root["buffers"].as_array();
     for (const auto& buffer : buffers)
     {
-        GLTFBuffer gltf_buffer;
+        OLDGLTFBuffer gltf_buffer;
         std::string uri = buffer["uri"].as_string();  // URI do buffer (se existir)
         
         // Print the buffer URI
@@ -468,7 +468,7 @@ void joj::GLTFImporter::load_buffers()
     }
 }
 
-void joj::GLTFImporter::load_animations()
+void joj::OLDGLTFImporter::load_animations()
 {
     if (!m_root.has_key("animations"))
         return;
@@ -476,19 +476,19 @@ void joj::GLTFImporter::load_animations()
     auto animations = m_root["animations"].as_array();
     for (const auto& animation : animations)
     {
-        GLTFAnimation anim;
+        OLDGLTFAnimation anim;
         anim.name = animation["name"].as_string(); // Nome da animação
         
         auto channels = animation["channels"].as_array();
         for (const auto& channel : channels)
         {
-            GLTFAnimationChannel animation_channel;
+            OLDGLTFAnimationChannel animation_channel;
             animation_channel.path = channel["target"]["path"].as_string(); // Caminho (ex: "translation", "scale", "rotation")
             animation_channel.target_node_index = channel["target"]["node"].as_int(); // Índice do node alvo
 
             // Obter o sampler (índice do sampler)
             i32 sampler_index = channel["sampler"].as_int();
-            GLTFSampler sampler = m_samplers[sampler_index]; // Recupera o sampler baseado no índice
+            OLDGLTFSampler sampler = m_samplers[sampler_index]; // Recupera o sampler baseado no índice
             
             // Obter os acessadores de entrada (input) e saída (output)
             auto input_accessor = m_accessors[sampler.input]; // Acessador de entrada (tempo)
@@ -506,7 +506,7 @@ void joj::GLTFImporter::load_animations()
             // Gerar keyframes
             for (size_t i = 0; i < input_data.size(); ++i)
             {
-                GLTFKeyFrame keyframe;
+                OLDGLTFKeyFrame keyframe;
                 keyframe.time = input_data[i]; // Tempo da animação
 
                 // Dependendo do caminho (path), carregar os valores de transformação (translation, scale, rotation)
@@ -548,7 +548,7 @@ void joj::GLTFImporter::load_animations()
     }
 }
 
-b8 joj::GLTFImporter::load_binary_file()
+b8 joj::OLDGLTFImporter::load_binary_file()
 {
     std::ifstream file(m_bin_filename.c_str(), std::ios::binary);
     if (!file.is_open())
@@ -568,18 +568,18 @@ b8 joj::GLTFImporter::load_binary_file()
     return true;
 }
 
-std::vector<joj::GLTFVertex> joj::GLTFImporter::get_vertices()
+std::vector<joj::OLDGLTFVertex> joj::OLDGLTFImporter::get_vertices()
 {
-    std::vector<GLTFVertex> vertices;
+    std::vector<OLDGLTFVertex> vertices;
     return vertices;
 }
 
-std::vector<joj::GLTFAnimation>& joj::GLTFImporter::get_animations()
+std::vector<joj::OLDGLTFAnimation>& joj::OLDGLTFImporter::get_animations()
 {
     return m_animations;
 }
 
-b8 joj::GLTFImporter::parse_json()
+b8 joj::OLDGLTFImporter::parse_json()
 {
     // Carrega e analisa o arquivo JSON (o arquivo glTF)
     std::ifstream file(m_gltf_filename);
@@ -602,28 +602,28 @@ b8 joj::GLTFImporter::parse_json()
     return true;
 }
 
-void joj::GLTFImporter::extract_vertices()
+void joj::OLDGLTFImporter::extract_vertices()
 {
     // Extrai os vértices do arquivo glTF
 }
 
-void joj::GLTFImporter::extract_accessors()
+void joj::OLDGLTFImporter::extract_accessors()
 {
     // Extrai os accessors do arquivo glTF
 }
 
-void joj::GLTFImporter::extract_buffer_views()
+void joj::OLDGLTFImporter::extract_buffer_views()
 {
     // Extrai os buffer views do arquivo glTF
 }
 
-void joj::GLTFImporter::print_root()
+void joj::OLDGLTFImporter::print_root()
 {
     // Imprime a raiz do arquivo glTF
     m_root.print();
 }
 
-void joj::GLTFImporter::print_scene_info()
+void joj::OLDGLTFImporter::print_scene_info()
 {
     // Acessa a chave "scenes"
     if (m_root.has_key("scenes"))
@@ -648,7 +648,7 @@ void joj::GLTFImporter::print_scene_info()
     }
 }
 
-void joj::GLTFImporter::print_node_info()
+void joj::OLDGLTFImporter::print_node_info()
 {
     // Acessa a chave "nodes"
     if (m_root.has_key("nodes"))
@@ -680,7 +680,7 @@ void joj::GLTFImporter::print_node_info()
     }
 }
 
-void joj::GLTFImporter::print_mesh_info()
+void joj::OLDGLTFImporter::print_mesh_info()
 {
     // Acessa a chave "meshes"
     if (m_root.has_key("meshes"))
@@ -714,7 +714,7 @@ void joj::GLTFImporter::print_mesh_info()
     }
 }
 
-void joj::GLTFImporter::print_vertex_data()
+void joj::OLDGLTFImporter::print_vertex_data()
 {
     // Check if the root has key "accessors"
     if (m_root.has_key("accessors"))
@@ -730,7 +730,7 @@ void joj::GLTFImporter::print_vertex_data()
             if (accessor.has_key("bufferView"))
             {
                 i32 buffer_view_index = accessor["bufferView"].as_int();
-                // std::cout << "BufferView: " << buffer_view_index << std::endl;
+                std::cout << "BufferView: " << buffer_view_index << std::endl;
 
                 if (m_root.has_key("bufferViews"))
                 {
@@ -741,7 +741,7 @@ void joj::GLTFImporter::print_vertex_data()
                     if (buffer_view.has_key("byteOffset"))
                     {
                         i32 byte_offset = buffer_view["byteOffset"].as_int();
-                        // std::cout << "  Byte Offset: " << byte_offset << " bytes" << std::endl;
+                        std::cout << "  Byte Offset: " << byte_offset << " bytes" << std::endl;
 
                         // Verifique o tipo para associar o byteOffset
                         if (type == "VEC3")  // Posições ou Normais
@@ -749,12 +749,12 @@ void joj::GLTFImporter::print_vertex_data()
                             if (m_positions_byte_offset == -1)  // Verifique se a variável não foi preenchida
                             {
                                 m_positions_byte_offset = byte_offset;
-                                // std::cout << "Positions Byte Offset: " << m_positions_byte_offset << std::endl;
+                                std::cout << "Positions Byte Offset: " << m_positions_byte_offset << std::endl;
                             }
                             else if (m_normals_byte_offset == -1)
                             {
                                 m_normals_byte_offset = byte_offset;  // Assumindo que o próximo é Normais
-                                // std::cout << "Normals Byte Offset: " << m_normals_byte_offset << std::endl;
+                                std::cout << "Normals Byte Offset: " << m_normals_byte_offset << std::endl;
                             }
                             else
                             {
@@ -770,7 +770,7 @@ void joj::GLTFImporter::print_vertex_data()
                             if (m_indices_byte_offset == -1)
                             {
                                 m_indices_byte_offset = byte_offset;
-                                // std::cout << "Indices Byte Offset: " << m_indices_byte_offset << std::endl;
+                                std::cout << "Indices Byte Offset: " << m_indices_byte_offset << std::endl;
                             }
                             else
                             {
@@ -790,7 +790,7 @@ void joj::GLTFImporter::print_vertex_data()
             if (accessor.has_key("componentType"))
             {
                 std::string component_type = accessor["componentType"].as_string();
-                // std::cout << "  Component Type: " << component_type << std::endl;
+                std::cout << "  Component Type: " << component_type << std::endl;
             }
 
             // Preenche o número de vértices ou índices
@@ -802,12 +802,12 @@ void joj::GLTFImporter::print_vertex_data()
                     if (m_positions_count == -1)  // Se m_positions_byte_offset estiver vazio
                     {
                         m_positions_count = count;
-                        // std::cout << "Positions Count: " << m_positions_count << std::endl;
+                        std::cout << "Positions Count: " << m_positions_count << std::endl;
                     }
                     else if (m_normals_count == -1)  // Se m_normals_byte_offset estiver vazio
                     {
                         m_normals_count = count;
-                        // std::cout << "Normals Count: " << m_normals_count << std::endl;
+                        std::cout << "Normals Count: " << m_normals_count << std::endl;
                     }
                     else
                     {
@@ -819,7 +819,7 @@ void joj::GLTFImporter::print_vertex_data()
                     if (m_indices_count == -1)
                     {
                         m_indices_count = count;
-                        // std::cout << "Indices Count: " << m_indices_count << std::endl;
+                        std::cout << "Indices Count: " << m_indices_count << std::endl;
                     }
                     else
                     {
@@ -919,7 +919,7 @@ void joj::GLTFImporter::print_vertex_data()
     load_scale_from_buffer(m_scale_byte_offset, m_scale_count);
 }
 
-void joj::GLTFImporter::print_animation_info()
+void joj::OLDGLTFImporter::print_animation_info()
 {
     if (!m_root.has_key("animations"))
     {
@@ -1029,12 +1029,12 @@ void joj::GLTFImporter::print_animation_info()
 }
 
 // Função de comparação para ordenar os keyframes pelo tempo
-bool compareKeyframes(const joj::GLTFKeyFrame& a, const joj::GLTFKeyFrame& b)
+bool compareKeyframes(const joj::OLDGLTFKeyFrame& a, const joj::OLDGLTFKeyFrame& b)
 {
     return a.time < b.time; // Ordena de forma crescente pelo valor de 'time'
 }
 
-void joj::GLTFImporter::print_animation_data()
+void joj::OLDGLTFImporter::print_animation_data()
 {
     // Verificar se há animações
     if (m_animations.empty())
@@ -1046,7 +1046,7 @@ void joj::GLTFImporter::print_animation_data()
     // Iterar sobre cada animação
     for (size_t animIndex = 0; animIndex < m_animations.size(); ++animIndex)
     {
-        const GLTFAnimation& animation = m_animations[animIndex];
+        const OLDGLTFAnimation& animation = m_animations[animIndex];
 
         // Imprimir nome da animação
         std::cout << "Animação #" << animIndex + 1 << ": " << animation.name << std::endl;
@@ -1054,7 +1054,7 @@ void joj::GLTFImporter::print_animation_data()
         // Iterar sobre os canais de animação da animação
         for (size_t channelIndex = 0; channelIndex < animation.channels.size(); ++channelIndex)
         {
-            const GLTFAnimationChannel& channel = animation.channels[channelIndex];
+            const OLDGLTFAnimationChannel& channel = animation.channels[channelIndex];
 
             // Imprimir caminho (path) do canal e índice do nó alvo
             std::cout << "  Canal #" << channelIndex + 1 << ": " << channel.path
@@ -1063,7 +1063,7 @@ void joj::GLTFImporter::print_animation_data()
             // Iterar sobre os keyframes do canal
             for (size_t keyframeIndex = 0; keyframeIndex < channel.keyframes.size(); ++keyframeIndex)
             {
-                const GLTFKeyFrame& keyframe = channel.keyframes[keyframeIndex];
+                const OLDGLTFKeyFrame& keyframe = channel.keyframes[keyframeIndex];
 
                 // Imprimir dados do keyframe
                 std::cout << "    Keyframe #" << keyframeIndex + 1
@@ -1077,25 +1077,25 @@ void joj::GLTFImporter::print_animation_data()
 }
 
 
-void joj::GLTFImporter::load_positions_from_buffer(const size_t byte_offset, const size_t count)
+void joj::OLDGLTFImporter::load_positions_from_buffer(const size_t byte_offset, const size_t count)
 {
     const joj::Vector3* data = reinterpret_cast<const joj::Vector3*>(m_binary_data.data() + byte_offset);
     m_positions = std::vector<joj::Vector3>(data, data + count);
 }
 
-void joj::GLTFImporter::load_normals_from_buffer(const size_t byte_offset, const size_t count)
+void joj::OLDGLTFImporter::load_normals_from_buffer(const size_t byte_offset, const size_t count)
 {
     const joj::Vector3* data = reinterpret_cast<const joj::Vector3*>(m_binary_data.data() + byte_offset);
     m_normals = std::vector<joj::Vector3>(data, data + count);
 }
 
-void joj::GLTFImporter::load_indices_from_buffer(const size_t byte_offset, const size_t count)
+void joj::OLDGLTFImporter::load_indices_from_buffer(const size_t byte_offset, const size_t count)
 {
     const u16* data = reinterpret_cast<const u16*>(m_binary_data.data() + byte_offset);
     m_indices = std::vector<u16>(data, data + count);
 }
 
-void joj::GLTFImporter::load_animations_from_buffer(const size_t byte_offset, const size_t count)
+void joj::OLDGLTFImporter::load_animations_from_buffer(const size_t byte_offset, const size_t count)
 {
     const f32* data = reinterpret_cast<const f32*>(m_binary_data.data() + byte_offset);
 
@@ -1114,26 +1114,26 @@ void joj::GLTFImporter::load_animations_from_buffer(const size_t byte_offset, co
     const Vector3* scales = reinterpret_cast<const Vector3*>(rotations + count);
 
     // Criamos uma animação
-    GLTFAnimation animation;
+    OLDGLTFAnimation animation;
     animation.name = "CubeAnimation"; // Nome genérico
 
     // Criamos os canais
-    GLTFAnimationChannel translation_channel;
+    OLDGLTFAnimationChannel translation_channel;
     translation_channel.path = "translation";
     translation_channel.target_node_index = 0;
 
-    GLTFAnimationChannel rotation_channel;
+    OLDGLTFAnimationChannel rotation_channel;
     rotation_channel.path = "rotation";
     rotation_channel.target_node_index = 0;
 
-    GLTFAnimationChannel scale_channel;
+    OLDGLTFAnimationChannel scale_channel;
     scale_channel.path = "scale";
     scale_channel.target_node_index = 0;
 
     // Preenchendo keyframes nos canais corretos
     for (size_t i = 0; i < count; i++)
     {
-        GLTFKeyFrame keyframe;
+        OLDGLTFKeyFrame keyframe;
         keyframe.time = keyframe_times[i];
         keyframe.translation = translations[i];
         keyframe.rotation = { rotations[i].x, rotations[i].y, rotations[i].z }; // Apenas XYZ para simplificar
@@ -1153,13 +1153,13 @@ void joj::GLTFImporter::load_animations_from_buffer(const size_t byte_offset, co
     m_animations.push_back(animation);
 }
 
-void joj::GLTFImporter::load_translation_from_buffer(const size_t byte_offset, const size_t count)
+void joj::OLDGLTFImporter::load_translation_from_buffer(const size_t byte_offset, const size_t count)
 {
     const joj::Vector3* data = reinterpret_cast<const joj::Vector3*>(m_binary_data.data() + byte_offset);
     m_translations = std::vector<joj::Vector3>(data, data + count);
 }
 
-void joj::GLTFImporter::load_rotation_from_buffer(const size_t byte_offset, const size_t count)
+void joj::OLDGLTFImporter::load_rotation_from_buffer(const size_t byte_offset, const size_t count)
 {
     const float* data = reinterpret_cast<const float*>(m_binary_data.data() + byte_offset);
     m_rotations.reserve(count);
@@ -1176,31 +1176,31 @@ void joj::GLTFImporter::load_rotation_from_buffer(const size_t byte_offset, cons
     }
 }
 
-void joj::GLTFImporter::load_scale_from_buffer(const size_t byte_offset, const size_t count)
+void joj::OLDGLTFImporter::load_scale_from_buffer(const size_t byte_offset, const size_t count)
 {
     const joj::Vector3* data = reinterpret_cast<const joj::Vector3*>(m_binary_data.data() + byte_offset);
     m_scales = std::vector<joj::Vector3>(data, data + count);
 }
 
-void joj::GLTFImporter::setup_animations()
+void joj::OLDGLTFImporter::setup_animations()
 {
     m_animations.clear();
 
-    GLTFAnimation animation;
+    OLDGLTFAnimation animation;
     animation.name = "SimpleAnimation";  // Nome da animação
 
     // Vamos assumir que cada dado de animação (translation, rotation, scale) está mapeado para um único canal
     // e que a animação está sendo aplicada ao nó com índice 0, mas você pode expandir isso conforme a estrutura do seu arquivo GLTF
 
     // Definir o canal de "translation"
-    GLTFAnimationChannel translationChannel;
+    OLDGLTFAnimationChannel translationChannel;
     translationChannel.path = "translation";  // Nome do caminho (path) da transformação
     translationChannel.target_node_index = 0;  // O nó alvo que está sendo animado, pode ser o cubo, por exemplo
 
     // Preencher os keyframes de tradução
     for (size_t i = 0; i < m_translations.size(); ++i)
     {
-        GLTFKeyFrame keyframe;
+        OLDGLTFKeyFrame keyframe;
         keyframe.time = static_cast<f32>(i);  // Tempo da animação (ou pode ser baseado em algum fator de tempo real)
         keyframe.translation = m_translations[i];
         keyframe.scale = Vector3(1.0f, 1.0f, 1.0f);  // Se não tiver animação de escala, podemos deixar o valor fixo
@@ -1210,14 +1210,14 @@ void joj::GLTFImporter::setup_animations()
     }
 
     // Definir o canal de "rotation"
-    GLTFAnimationChannel rotationChannel;
+    OLDGLTFAnimationChannel rotationChannel;
     rotationChannel.path = "rotation";
     rotationChannel.target_node_index = 0;  // Novamente, aplicando ao nó com índice 0 (como exemplo)
 
     // Preencher os keyframes de rotação
     for (size_t i = 0; i < m_rotations.size(); ++i)
     {
-        GLTFKeyFrame keyframe;
+        OLDGLTFKeyFrame keyframe;
         keyframe.time = static_cast<f32>(i);  // Tempo da animação
         keyframe.translation = Vector3(0.0f, 0.0f, 0.0f);  // Não alteramos a tradução aqui
         keyframe.scale = Vector3(1.0f, 1.0f, 1.0f);  // Não alteramos a escala
@@ -1227,14 +1227,14 @@ void joj::GLTFImporter::setup_animations()
     }
 
     // Definir o canal de "scale"
-    GLTFAnimationChannel scaleChannel;
+    OLDGLTFAnimationChannel scaleChannel;
     scaleChannel.path = "scale";
     scaleChannel.target_node_index = 0;  // Novamente, aplicando ao nó com índice 0
 
     // Preencher os keyframes de escala
     for (size_t i = 0; i < m_scales.size(); ++i)
     {
-        GLTFKeyFrame keyframe;
+        OLDGLTFKeyFrame keyframe;
         keyframe.time = static_cast<f32>(i);  // Tempo da animação
         keyframe.translation = Vector3(0.0f, 0.0f, 0.0f);  // Não alteramos a tradução
         keyframe.scale = m_scales[i];  // Usando o vetor de escalas
@@ -1252,7 +1252,7 @@ void joj::GLTFImporter::setup_animations()
     m_animations.push_back(animation);
 }
 
-void joj::GLTFImporter::print_translation_data()
+void joj::OLDGLTFImporter::print_translation_data()
 {
     u32 count = 0;
     for (const auto& translation : m_translations)
@@ -1261,7 +1261,7 @@ void joj::GLTFImporter::print_translation_data()
     }
 }
 
-void joj::GLTFImporter::print_rotation_data()
+void joj::OLDGLTFImporter::print_rotation_data()
 {
     u32 count = 0;
     for (const auto& rotation : m_rotations)
@@ -1270,7 +1270,7 @@ void joj::GLTFImporter::print_rotation_data()
     }
 }
 
-void joj::GLTFImporter::print_scale_data()
+void joj::OLDGLTFImporter::print_scale_data()
 {
     u32 count = 0;
     for (const auto& scale : m_scales)

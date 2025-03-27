@@ -15,7 +15,7 @@
 #include "joj/core/math/vector3.h"
 #include "joj/core/math/vector4.h"
 
-#include "joj/resources/gltf_importer.h"
+#include "joj/resources/old_gltf_importer.h"
 
 // Constant Objects ------------------------------------------------------------
 
@@ -71,9 +71,9 @@ public:
     joj::FreeCamera m_camera;
     joj::JFloat2 m_last_mouse_pos;
 
-    joj::GLTFImporter m_gltf_importer;
-    std::vector<joj::GLTFAnimation> m_animations;
-    std::vector<joj::GLTFNode> m_nodes;
+    joj::OLDGLTFImporter m_gltf_importer;
+    std::vector<joj::OLDGLTFAnimation> m_animations;
+    std::vector<joj::OLDGLTFNode> m_nodes;
 };
 
 #endif // _JOJ_3D_APP_TEST_H

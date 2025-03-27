@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Set source files
 
 set(SOURCE_FILES
-    gltf_importer.cpp
+    old_gltf_importer.cpp
 )
 
 # -----------------------------------------------------------------------------
