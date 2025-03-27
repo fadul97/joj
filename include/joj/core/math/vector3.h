@@ -79,6 +79,13 @@ namespace joj
             }
         }
 
+        const char* to_string() const
+        {
+            static char buffer[64];
+            sprintf_s(buffer, "(%.3f, %.3f, %.3f)", x, y, z);
+            return buffer;
+        }
+
         // TODO: Union to access to components as RGB or UVW
         f32 x;
         f32 y;
