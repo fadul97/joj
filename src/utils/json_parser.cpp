@@ -113,7 +113,7 @@ joj::JsonValue joj::JsonParser::parse_array()
         else if (m_current_token.type != JsonTokenType::RightBracket)
         {
             ++m_error_count;
-            std::cerr << "Error: Expected ',' or ']' after array value." << std::endl;
+            std::cerr << "Error: Expected ',' or ']' after array of " << array.size() << " elements." << std::endl;
             return JsonValue();
         }
     }
