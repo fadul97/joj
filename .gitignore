@@ -27,6 +27,11 @@ samples/models/glTF/RiggedSimple0.bin
 samples/models/glTF/skinAnimation.bin
 samples/models/glTF/skinGeometry.bin
 samples/models/glTF/skinningData.bin
+samples/models/inverseBindMatrices.bin
+samples/models/RiggedSimple0.bin
+samples/models/skinAnimation.bin
+samples/models/skinGeometry.bin
+samples/models/skinningData.bin
 
 # Project File Tree
 tree.txt

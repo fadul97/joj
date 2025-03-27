@@ -6,6 +6,7 @@ const char* joj::buffer_view_target_to_string(const BufferViewTarget target)
     {
     case BufferViewTarget::ARRAY_BUFFER:          return "ARRAY_BUFFER";
     case BufferViewTarget::ELEMENT_ARRAY_BUFFER:  return "ELEMENT_ARRAY_BUFFER";
+    case BufferViewTarget::ANY:                   return "ANY";
     case BufferViewTarget::UNKNOWN:               return "UNKNOWN";
     default:                                      return "UNKNOWN";
     }
