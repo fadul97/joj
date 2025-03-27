@@ -81,7 +81,7 @@ joj::JsonValue joj::JsonParser::parse_object()
         else if (m_current_token.type != JsonTokenType::RightBrace)
         {
             ++m_error_count;
-            std::cerr << "Error: Expected ',' or '}' after key-value pair." << std::endl;
+            std::cerr << "Error: Expected ',' or '}' after key-value pair (" << key << "-value)." << std::endl;
             return JsonValue();
         }
     }
