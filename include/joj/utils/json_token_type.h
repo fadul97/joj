@@ -15,6 +15,8 @@ namespace joj
         Comma,
         String,
         Number,
+        Integer,
+        Float,
         Boolean,
         Null, 
         EndOfFile,
