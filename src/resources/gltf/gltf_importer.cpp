@@ -34,6 +34,10 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
         return ErrorCode::FAILED;
     print_buffers();
 
+    if (!load_buffer_views())
+        return ErrorCode::FAILED;
+    print_buffer_views();
+
     return ErrorCode::OK;
 }
 
@@ -127,8 +131,138 @@ void joj::GLTFImporter::print_buffers()
     for (const auto& buffer : m_buffers)
     {
         std::cout << "Buffer " << i << " (" << buffer.size << " bytes): " << std::endl;
-        std::cout << "Buffer filename: " << buffer.filename << std::endl;
-        std::cout << "Buffer type: " << buffer_type_to_string(buffer.type) << std::endl;
-        i++;
+        std::cout << "    Buffer filename: " << buffer.filename << std::endl;
+        std::cout << "    Buffer type: " << buffer_type_to_string(buffer.type) << std::endl;
+        ++i;
+    }
+}
+
+b8 joj::GLTFImporter::load_buffer_views()
+{
+    if (!m_root.has_key("bufferViews"))
+        return false;
+
+    // Get buffer views array
+    auto buffer_views = m_root["bufferViews"].as_array();
+    i32 i = 0;
+    for (const auto& buffer_view : buffer_views)
+    {
+        GLTFBufferView view;
+
+        if (buffer_view.has_key("buffer"))
+        {
+            if (buffer_view["buffer"].is_int())
+            {
+                view.buffer = buffer_view["buffer"].as_int();
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] buffer is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'buffer' is not an integer.", i);
+            return false;
+        }
+
+        if (buffer_view.has_key("byteLength"))
+        {
+            if (buffer_view["byteLength"].is_int())
+            {
+                view.byte_length = buffer_view["byteLength"].as_int();
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] byte length is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'byteLength'.", i);
+            return false;
+        }
+
+
+        if (buffer_view.has_key("byteOffset"))
+        {
+            if (buffer_view["byteOffset"].is_int())
+            {
+                view.byte_offset = buffer_view["byteOffset"].as_int();
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] byte offset is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'byteOffset'.", i);
+            return false;
+        }
+
+        if (buffer_view.has_key("byteStride"))
+        {
+            if (buffer_view["byteStride"].is_int())
+            {
+                view.byte_stride = buffer_view["byteStride"].as_int();
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] byte stride is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_WARN("BufferView[%d] does not have key 'byteStride' Assuming 0.", i);
+            view.byte_stride = 0;
+        }
+
+        if (buffer_view.has_key("target"))
+        {
+            if (buffer_view["target"].is_int())
+            {
+                const i32 target = buffer_view["target"].as_int();
+                if (target == BUFFER_VIEW_TARGET_ARRAY_BUFFER)
+                    view.target = BufferViewTarget::ARRAY_BUFFER;
+                else if (target == BUFFER_VIEW_TARGET_ELEMENT_ARRAY_BUFFER)
+                    view.target = BufferViewTarget::ELEMENT_ARRAY_BUFFER;
+                else
+                    view.target = BufferViewTarget::UNKNOWN;
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] target is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'target'.", i);
+            return false;
+        }
+
+        m_buffer_views.push_back(view);
+    }
+}
+
+void joj::GLTFImporter::print_buffer_views()
+{
+    std::cout << "Total loaded buffer views: " << m_buffer_views.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& view : m_buffer_views)
+    {
+        std::cout << "BufferView " << i << ": " << std::endl;
+        std::cout << "    Buffer: " << view.buffer << std::endl;
+        std::cout << "    Byte offset: " << view.byte_offset << std::endl;
+        std::cout << "    Byte length: " << view.byte_length << std::endl;
+        std::cout << "    Byte stride: " << view.byte_stride << std::endl;
+        std::cout << "    Target: " << buffer_view_target_to_string(view.target) << std::endl;
+        ++i;
     }
 }

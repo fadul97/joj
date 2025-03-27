@@ -730,7 +730,7 @@ void joj::OLDGLTFImporter::print_vertex_data()
             if (accessor.has_key("bufferView"))
             {
                 i32 buffer_view_index = accessor["bufferView"].as_int();
-                std::cout << "BufferView: " << buffer_view_index << std::endl;
+                // std::cout << "BufferView: " << buffer_view_index << std::endl;
 
                 if (m_root.has_key("bufferViews"))
                 {
@@ -741,7 +741,7 @@ void joj::OLDGLTFImporter::print_vertex_data()
                     if (buffer_view.has_key("byteOffset"))
                     {
                         i32 byte_offset = buffer_view["byteOffset"].as_int();
-                        std::cout << "  Byte Offset: " << byte_offset << " bytes" << std::endl;
+                        // std::cout << "  Byte Offset: " << byte_offset << " bytes" << std::endl;
 
                         // Verifique o tipo para associar o byteOffset
                         if (type == "VEC3")  // Posições ou Normais
@@ -749,12 +749,12 @@ void joj::OLDGLTFImporter::print_vertex_data()
                             if (m_positions_byte_offset == -1)  // Verifique se a variável não foi preenchida
                             {
                                 m_positions_byte_offset = byte_offset;
-                                std::cout << "Positions Byte Offset: " << m_positions_byte_offset << std::endl;
+                                // std::cout << "Positions Byte Offset: " << m_positions_byte_offset << std::endl;
                             }
                             else if (m_normals_byte_offset == -1)
                             {
                                 m_normals_byte_offset = byte_offset;  // Assumindo que o próximo é Normais
-                                std::cout << "Normals Byte Offset: " << m_normals_byte_offset << std::endl;
+                                // std::cout << "Normals Byte Offset: " << m_normals_byte_offset << std::endl;
                             }
                             else
                             {
@@ -770,7 +770,7 @@ void joj::OLDGLTFImporter::print_vertex_data()
                             if (m_indices_byte_offset == -1)
                             {
                                 m_indices_byte_offset = byte_offset;
-                                std::cout << "Indices Byte Offset: " << m_indices_byte_offset << std::endl;
+                                // std::cout << "Indices Byte Offset: " << m_indices_byte_offset << std::endl;
                             }
                             else
                             {
@@ -790,7 +790,7 @@ void joj::OLDGLTFImporter::print_vertex_data()
             if (accessor.has_key("componentType"))
             {
                 std::string component_type = accessor["componentType"].as_string();
-                std::cout << "  Component Type: " << component_type << std::endl;
+                // std::cout << "  Component Type: " << component_type << std::endl;
             }
 
             // Preenche o número de vértices ou índices
@@ -802,12 +802,12 @@ void joj::OLDGLTFImporter::print_vertex_data()
                     if (m_positions_count == -1)  // Se m_positions_byte_offset estiver vazio
                     {
                         m_positions_count = count;
-                        std::cout << "Positions Count: " << m_positions_count << std::endl;
+                        // std::cout << "Positions Count: " << m_positions_count << std::endl;
                     }
                     else if (m_normals_count == -1)  // Se m_normals_byte_offset estiver vazio
                     {
                         m_normals_count = count;
-                        std::cout << "Normals Count: " << m_normals_count << std::endl;
+                        // std::cout << "Normals Count: " << m_normals_count << std::endl;
                     }
                     else
                     {
@@ -819,7 +819,7 @@ void joj::OLDGLTFImporter::print_vertex_data()
                     if (m_indices_count == -1)
                     {
                         m_indices_count = count;
-                        std::cout << "Indices Count: " << m_indices_count << std::endl;
+                        // std::cout << "Indices Count: " << m_indices_count << std::endl;
                     }
                     else
                     {

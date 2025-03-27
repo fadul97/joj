@@ -101,7 +101,7 @@ void App3DTest::build_buffers()
         
         m_gltf_importer.setup_animations();
         //JOJ_DEBUG("================= Animation data =================");
-        m_gltf_importer.print_animation_data();
+        // m_gltf_importer.print_animation_data();
     }
 
     const size_t vertices_byteOffset = m_gltf_importer.m_positions_byte_offset;

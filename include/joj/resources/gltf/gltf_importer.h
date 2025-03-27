@@ -16,6 +16,9 @@
 
 namespace joj
 {
+    constexpr i32 BUFFER_VIEW_TARGET_ARRAY_BUFFER = 34962;
+    constexpr i32 BUFFER_VIEW_TARGET_ELEMENT_ARRAY_BUFFER = 34963;
+
     class JOJ_API GLTFImporter
     {
     public:
@@ -64,6 +67,9 @@ namespace joj
 
         b8 load_buffers();
         void print_buffers();
+
+        b8 load_buffer_views();
+        void print_buffer_views();
     };
 }
 
