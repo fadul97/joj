@@ -1,4 +1,4 @@
-#include "joj/resources/gltf/gltf_acessor.h"
+#include "joj/resources/gltf/gltf_accessor.h"
 
 joj::GLTFAccessor::GLTFAccessor()
     : data_type(DataType::UNKNOWN), component_type(ComponentType::UNKNOWN),
