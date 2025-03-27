@@ -38,6 +38,10 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
         return ErrorCode::FAILED;
     print_buffer_views();
 
+    if (!load_accessors())
+        return ErrorCode::FAILED;
+    print_accessors();
+
     return ErrorCode::OK;
 }
 
@@ -185,7 +189,6 @@ b8 joj::GLTFImporter::load_buffer_views()
             return false;
         }
 
-
         if (buffer_view.has_key("byteOffset"))
         {
             if (buffer_view["byteOffset"].is_int())
@@ -200,8 +203,8 @@ b8 joj::GLTFImporter::load_buffer_views()
         }
         else
         {
-            JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'byteOffset'.", i);
-            return false;
+            JOJ_WARN("BufferView[%d] does not have key 'byteOffset' Assuming 0.", i);
+            view.byte_offset = 0;
         }
 
         if (buffer_view.has_key("byteStride"))
@@ -242,11 +245,12 @@ b8 joj::GLTFImporter::load_buffer_views()
         }
         else
         {
-            JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'target'.", i);
-            return false;
+            JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'target'. Assuming ANY", i);
+            view.target = BufferViewTarget::ANY;
         }
 
         m_buffer_views.push_back(view);
+        ++i;
     }
 }
 
@@ -263,6 +267,160 @@ void joj::GLTFImporter::print_buffer_views()
         std::cout << "    Byte length: " << view.byte_length << std::endl;
         std::cout << "    Byte stride: " << view.byte_stride << std::endl;
         std::cout << "    Target: " << buffer_view_target_to_string(view.target) << std::endl;
+        ++i;
+    }
+}
+
+b8 joj::GLTFImporter::load_accessors()
+{
+    if (!m_root.has_key("accessors"))
+        return false;
+
+    // Get accessors array
+    auto accessors = m_root["accessors"].as_array();
+    i32 i = 0;
+    for (const auto& accessor : accessors)
+    {
+        GLTFAccessor acc;
+
+        if (accessor.has_key("type"))
+        {
+            if (accessor["type"].is_string())
+            {
+                const std::string type = accessor["type"].as_string();
+                if (type == "SCALAR")
+                    acc.data_type = DataType::SCALAR;
+                else if (type == "VEC2")
+                    acc.data_type = DataType::VEC2;
+                else if (type == "VEC3")
+                    acc.data_type = DataType::VEC3;
+                else if (type == "VEC4")
+                    acc.data_type = DataType::VEC4;
+                else if (type == "MAT2")
+                    acc.data_type = DataType::MAT2;
+                else if (type == "MAT3")
+                    acc.data_type = DataType::MAT3;
+                else if (type == "MAT4")
+                    acc.data_type = DataType::MAT4;
+                else
+                    acc.data_type = DataType::UNKNOWN;
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] type is not a string.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'type'.", i);
+            return false;
+        }
+
+        if (accessor.has_key("componentType"))
+        {
+            if (accessor["componentType"].is_int())
+            {
+                const i32 component_type = accessor["componentType"].as_int();
+                if (component_type == 5120)
+                    acc.component_type = ComponentType::BYTE;
+                else if (component_type == 5121)
+                    acc.component_type = ComponentType::UNSIGNED_BYTE;
+                else if (component_type == 5122)
+                    acc.component_type = ComponentType::I16;
+                else if (component_type == 5123)
+                    acc.component_type = ComponentType::U16;
+                else if (component_type == 5125)
+                    acc.component_type = ComponentType::U32;
+                else if (component_type == 5126)
+                    acc.component_type = ComponentType::F32;
+                else
+                    acc.component_type = ComponentType::UNKNOWN;
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] component type is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'componentType'.", i);
+            return false;
+        }
+
+        if (accessor.has_key("count"))
+        {
+            if (accessor["count"].is_int())
+            {
+                acc.count = accessor["count"].as_int();
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] count is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'count'.", i);
+            return false;
+        }
+
+        if (accessor.has_key("bufferView"))
+        {
+            if (accessor["bufferView"].is_int())
+            {
+                acc.buffer_view = accessor["bufferView"].as_int();
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] buffer view is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'bufferView'.", i);
+            return false;
+        }
+
+        if (accessor.has_key("byteOffset"))
+        {
+            if (accessor["byteOffset"].is_int())
+            {
+                acc.byte_offset = accessor["byteOffset"].as_int();
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] byte offset is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            JOJ_WARN("Accessor[%d] does not have key 'byteOffset'. Assuming 0.", i);
+            acc.byte_offset = 0;
+        }
+
+        m_accessors.push_back(acc);
+        ++i;
+    }
+}
+
+void joj::GLTFImporter::print_accessors()
+{
+    std::cout << "Total loaded accessors: " << m_accessors.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& acc : m_accessors)
+    {
+        std::cout << "Accessor " << i << ": " << std::endl;
+        std::cout << "    Data type: " << data_type_to_string(acc.data_type) << std::endl;
+        std::cout << "    Component type: " << component_type_to_string(acc.component_type) << std::endl;
+        std::cout << "    Count: " << acc.count << std::endl;
+        std::cout << "    Buffer view: " << acc.buffer_view << std::endl;
+        std::cout << "    Byte offset: " << acc.byte_offset << std::endl;
         ++i;
     }
 }

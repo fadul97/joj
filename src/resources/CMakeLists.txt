@@ -17,6 +17,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SOURCE_FILES
     old_gltf_importer.cpp
+    data_type.cpp
+    component_type.cpp
     buffer_view_target.cpp
     buffer_type.cpp
     buffer.cpp

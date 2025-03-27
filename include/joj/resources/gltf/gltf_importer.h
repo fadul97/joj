@@ -70,6 +70,9 @@ namespace joj
 
         b8 load_buffer_views();
         void print_buffer_views();
+
+        b8 load_accessors();
+        void print_accessors();
     };
 }
 

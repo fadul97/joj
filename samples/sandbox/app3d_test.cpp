@@ -198,10 +198,17 @@ void App3DTest::init()
     setup_camera();
     build_buffers();
 
-    joj::GLTFImporter importer;
-    if JOJ_FAILED(importer.load("models/Box.gltf"))
+    joj::GLTFImporter box_importer;
+    if JOJ_FAILED(box_importer.load("models/Box.gltf"))
         JOJ_ERROR(joj::ErrorCode::FAILED, "Failed to load GLTF file.");
 
+    joj::GLTFImporter riggedSimple_importer;
+    if JOJ_FAILED(riggedSimple_importer.load("models/RiggetSimple.gltf"))
+        JOJ_ERROR(joj::ErrorCode::FAILED, "Failed to load GLTF file.");
+
+    joj::GLTFImporter simpleSkin_importer;
+    if JOJ_FAILED(simpleSkin_importer.load("models/SimpleSkin.gltf"))
+        JOJ_ERROR(joj::ErrorCode::FAILED, "Failed to load GLTF file.");
 
     joj::OLDGLTFNode cubeNode;
 
