@@ -42,6 +42,11 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
         return ErrorCode::FAILED;
     print_accessors();
 
+    if (!load_nodes())
+        return ErrorCode::FAILED;
+    print_nodes();
+
+
     return ErrorCode::OK;
 }
 
@@ -93,7 +98,7 @@ joj::Buffer joj::GLTFImporter::load_binary_file(const char* filename)
 b8 joj::GLTFImporter::load_buffers()
 {
     if (!m_root.has_key("buffers"))
-        return false;
+        return true;
 
     // Get buffer array
     auto buffers = m_root["buffers"].as_array();
@@ -144,7 +149,7 @@ void joj::GLTFImporter::print_buffers()
 b8 joj::GLTFImporter::load_buffer_views()
 {
     if (!m_root.has_key("bufferViews"))
-        return false;
+        return true;
 
     // Get buffer views array
     auto buffer_views = m_root["bufferViews"].as_array();
@@ -274,7 +279,7 @@ void joj::GLTFImporter::print_buffer_views()
 b8 joj::GLTFImporter::load_accessors()
 {
     if (!m_root.has_key("accessors"))
-        return false;
+        return true;
 
     // Get accessors array
     auto accessors = m_root["accessors"].as_array();
@@ -428,7 +433,7 @@ void joj::GLTFImporter::print_accessors()
 b8 joj::GLTFImporter::load_nodes()
 {
     if (!m_root.has_key("nodes"))
-        return false;
+        return true;
 
     // Get nodes array
     auto nodes = m_root["nodes"].as_array();
@@ -621,6 +626,13 @@ void joj::GLTFImporter::print_nodes()
         std::cout << "    Scale: " << node.get_scale().to_string() << std::endl;
         std::cout << "    Mesh: " << node.get_mesh() << std::endl;
         std::cout << "    Skin: " << node.get_skin() << std::endl;
+        if (!node.get_children_indices().empty())
+        {
+            std::cout << "    Children: ";
+            for (const auto& child : node.get_children_indices())
+            std::cout << child << " ";
+            std::cout << std::endl;
+        }
         ++i;
     }
 }
