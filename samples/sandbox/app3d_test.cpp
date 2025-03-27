@@ -19,6 +19,10 @@
 #include "joj/renderer/shader_library.h"
 #include "joj/utils/json_parser.h"
 
+// ------------------------------------------------------------------------------------------------
+#include "joj/resources/gltf/gltf_importer.h"
+#include "joj/core/logger.h"
+
 inline std::vector<u8> load_binary_data(const std::string& filename)
 {
     std::ifstream file(filename, std::ios::binary);
@@ -193,6 +197,11 @@ void App3DTest::init()
 {
     setup_camera();
     build_buffers();
+
+    joj::GLTFImporter importer;
+    if JOJ_FAILED(importer.load("models/Box.gltf"))
+        JOJ_ERROR(joj::ErrorCode::FAILED, "Failed to load GLTF file.");
+
 
     joj::OLDGLTFNode cubeNode;
 

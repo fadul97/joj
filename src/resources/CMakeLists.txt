@@ -19,8 +19,12 @@ set(SOURCE_FILES
     old_gltf_importer.cpp
     buffer.cpp
     animation_channel.cpp
+    scene_node.cpp
+
     gltf/gltf_sampler.cpp
     gltf/gltf_buffer_view.cpp
+    gltf/gltf_accessor.cpp
+    gltf/gltf_importer.cpp
 )
 
 # -----------------------------------------------------------------------------
