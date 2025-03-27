@@ -16,6 +16,8 @@ namespace joj
 
         std::vector<KeyFrame> keyframes;
         AnimationChannelType type;
+
+        // TODO: Check if this is necessary
         i32 target_node_index;
     };
 }
