@@ -28,7 +28,6 @@ namespace joj
         std::string m_gltf_filename;
         std::string m_bin_filename;
 
-        std::vector<u8> m_binary_data;
         std::vector<Vector3> m_positions;
         std::vector<Vector3> m_normals;
         std::vector<u16> m_indices;
@@ -60,6 +59,11 @@ namespace joj
         JsonValue m_root;
 
         b8 parse_json();
+
+        Buffer load_binary_file(const char* filename);
+
+        b8 load_buffers();
+        void print_buffers();
     };
 }
 
