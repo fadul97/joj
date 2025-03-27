@@ -29,7 +29,8 @@ joj::JsonValue joj::JsonParser::parse_value()
     case JsonTokenType::LeftBrace: return parse_object();
     case JsonTokenType::LeftBracket: return parse_array();
     case JsonTokenType::String: return parse_string();
-    case JsonTokenType::Number: return parse_number();
+    case JsonTokenType::Integer: return parse_integer();
+    case JsonTokenType::Float: return parse_float();
     case JsonTokenType::Boolean: return parse_bool();
     case JsonTokenType::Null: return parse_null();
     default:
@@ -72,7 +73,7 @@ joj::JsonValue joj::JsonParser::parse_object()
         // Parse value
         object[key] = parse_value();
 
-        // Verifica se há vírgula ou fim do objeto
+        // Verifica se hï¿½ vï¿½rgula ou fim do objeto
         if (m_current_token.type == JsonTokenType::Comma)
         {
             advance(); // Skip ','
@@ -104,7 +105,7 @@ joj::JsonValue joj::JsonParser::parse_array()
         // Parse value
         array.push_back(parse_value());
 
-        // Se o próximo token for ',', continue para o próximo valor
+        // Se o prï¿½ximo token for ',', continue para o prï¿½ximo valor
         if (m_current_token.type == JsonTokenType::Comma)
         {
             advance();
@@ -161,11 +162,26 @@ joj::JsonValue joj::JsonParser::parse_string()
     return JsonValue(str);
 }
 
+
 joj::JsonValue joj::JsonParser::parse_number()
 {
     const std::string number = m_current_token.value;
     advance();
     return JsonValue(std::stod(number));
+}
+
+joj::JsonValue joj::JsonParser::parse_integer()
+{
+    const std::string number = m_current_token.value;
+    advance();
+    return JsonValue(std::stoi(number));
+}
+
+joj::JsonValue joj::JsonParser::parse_float()
+{
+    const std::string number = m_current_token.value;
+    advance();
+    return JsonValue(std::stof(number));
 }
 
 joj::JsonValue joj::JsonParser::parse_keyword()

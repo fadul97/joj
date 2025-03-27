@@ -102,7 +102,10 @@ joj::JsonToken joj::JsonLexer::parse_number(const char c)
         result += advance();
     }
 
-    return { JsonTokenType::Number, result };
+    if (is_float)
+        return { JsonTokenType::Float, result };
+
+    return { JsonTokenType::Integer, result };
 }
 
 joj::JsonToken joj::JsonLexer::parse_keyword(char c, const std::string& keyword, const JsonTokenType type)

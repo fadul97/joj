@@ -34,6 +34,8 @@ namespace joj
         JsonValue parse_null();
         JsonValue parse_string();
         JsonValue parse_number();
+        JsonValue parse_integer();
+        JsonValue parse_float();
         JsonValue parse_keyword();
     };
 }
