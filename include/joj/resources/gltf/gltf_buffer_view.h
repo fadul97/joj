@@ -3,6 +3,8 @@
 
 #include "joj/core/defines.h"
 
+#include "joj/resources/buffer_view_target.h"
+
 namespace joj
 {
     struct JOJ_API GLTFBufferView
@@ -24,6 +26,9 @@ namespace joj
          * For example: 3 * sizeof(float) for a buffer containing the data for 3 floats.
         */
         i32 byte_stride;
+
+        /** @brief The target that the GPU buffer should be bound to. */
+        BufferViewTarget target;
     };
 }
 

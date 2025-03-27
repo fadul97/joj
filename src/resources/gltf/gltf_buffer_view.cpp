@@ -2,6 +2,7 @@
 
 joj::GLTFBufferView::GLTFBufferView()
     : buffer(-1) , byte_offset(-1) , byte_length(-1) , byte_stride(-1)
+    , target(BufferViewTarget::UNKNOWN)
 {
 }
 
