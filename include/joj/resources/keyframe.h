@@ -10,10 +10,10 @@ namespace joj
 {
     struct JOJ_API KeyFrame
     {
-        f32 time;
-        Vector3 translation;
-        Vector3 scale;
         Vector4 rotation;
+        Vector3 translation;
+        f32 time;
+        Vector3 scale;
     };
 }
 

@@ -3,9 +3,9 @@
 
 #include "joj/core/defines.h"
 
-#include "animation_channel_type.h"
 #include <vector>
 #include "keyframe.h"
+#include "animation_channel_type.h"
 
 namespace joj
 {
@@ -14,9 +14,9 @@ namespace joj
         AnimationChannel();
         ~AnimationChannel();
 
+        std::vector<KeyFrame> keyframes;
         AnimationChannelType type;
         i32 target_node_index;
-        std::vector<KeyFrame> keyframes;
     };
 }
 
