@@ -102,6 +102,24 @@ joj::JsonToken joj::JsonLexer::parse_number(const char c)
         result += advance();
     }
 
+    // Check for Scientific notation (e or E)
+    if (peek() == 'e' || peek() == 'E')
+    {
+        // Scientific notation always indicates a float number
+        is_float = true;
+
+        // Consume 'e' or 'E'
+        result += advance();
+
+        // Check if there is a sign after 'e'/'E' and consume it
+        if (peek() == '+' || peek() == '-')
+            result += advance();
+
+        // Now, read the digits of the exponent
+        while (isdigit(peek()))
+            result += advance();
+    }
+
     if (is_float)
         return { JsonTokenType::Float, result };
 
