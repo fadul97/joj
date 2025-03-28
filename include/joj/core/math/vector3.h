@@ -4,6 +4,7 @@
 #include "joj/core/defines.h"
 
 #include <cmath>
+#include "joj/core/string_utils.h"
 
 #if JOJ_PLATFORM_WINDOWS
 #include "DirectXMath.h"
@@ -81,8 +82,9 @@ namespace joj
 
         const char* to_string() const
         {
-            static char buffer[64];
-            sprintf_s(buffer, "(%.3f, %.3f, %.3f)", x, y, z);
+            constexpr i32 buffer_size = 64;
+            static char buffer[buffer_size];
+            StringUtils::format(buffer, buffer_size, "(%.3f, %.3f, %.3f)", x, y, z);
             return buffer;
         }
 

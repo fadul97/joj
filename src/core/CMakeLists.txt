@@ -26,6 +26,7 @@ set(SOURCE_FILES
     error_code.cpp
     ${PLATFORM}/logger_${PLATFORM}.cpp
     ${PLATFORM}/memory_${PLATFORM}.cpp
+    ${PLATFORM}/string_utils_${PLATFORM}.cpp
     color.cpp
     math/jmath.cpp
 )
