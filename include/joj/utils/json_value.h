@@ -28,6 +28,7 @@ namespace joj
          * Value: A JSON value.
          * 
          */
+        // FIXME: Second in std::pair has incomplete type.
         using Object = std::unordered_map<std::string, JsonValue>;
         using Array = std::vector<JsonValue>;
         using Value = std::variant<std::nullptr_t, b8, i32, f64, std::string, Object, Array>;
