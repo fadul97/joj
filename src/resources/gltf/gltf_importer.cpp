@@ -58,6 +58,10 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
         return ErrorCode::FAILED;
     print_skins();
 
+    if (!load_scenes())
+        return ErrorCode::FAILED;
+    print_scenes();
+
     return ErrorCode::OK;
 }
 
@@ -1265,6 +1269,79 @@ void joj::GLTFImporter::print_skins()
             std::cout << "    Joint indices: ";
             for (const auto& joint : skin.joint_indices)
                 std::cout << joint << " ";
+            std::cout << std::endl;
+        }
+        ++i;
+    }
+}
+
+b8 joj::GLTFImporter::load_scenes()
+{
+    if (!m_root.has_key("scenes"))
+        return true;
+
+    auto scenes = m_root["scenes"].as_array();
+    i32 i = 0;
+    for (const auto& scene : scenes)
+    {
+        GLTFScene s;
+        if (scene.has_key("name"))
+        {
+            if (scene["name"].is_string())
+            {
+                const std::string scene_name = scene["name"].as_string();
+                s.name = scene_name;
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Scene[%d] name is not a string.", i);
+            }
+        }
+        else
+        {
+            JOJ_WARN("Scene[%d] does not have key 'name'.", i);
+        }
+
+        if (scene.has_key("nodes"))
+        {
+            auto nodes = scene["nodes"].as_array();
+            for (const auto& node : nodes)
+            {
+                if (node.is_int())
+                {
+                    s.root_nodes.push_back(node.as_int());
+                }
+                else
+                {
+                    JOJ_ERROR(ErrorCode::FAILED, "Scene[%d] root node index is not an integer.", i);
+                }
+            }
+        }
+        else
+        {
+            JOJ_WARN("Scene[%d] does not have key 'nodes'.", i);
+        }
+
+        m_scenes.push_back(s);
+    }
+
+    return true;
+}
+
+void joj::GLTFImporter::print_scenes()
+{
+    std::cout << "Total loaded scenes: " << m_scenes.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& scene : m_scenes)
+    {
+        std::cout << "Scene " << i << ": " << std::endl;
+        std::cout << "    Name: " << scene.name << std::endl;
+        if (!scene.root_nodes.empty())
+        {
+            std::cout << "    Root nodes: ";
+            for (const auto& node : scene.root_nodes)
+                std::cout << node << " ";
             std::cout << std::endl;
         }
         ++i;
