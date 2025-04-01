@@ -11,6 +11,7 @@
 #include "gltf_buffer_view.h"
 #include "gltf_accessor.h"
 #include "gltf_mesh.h"
+#include "gltf_animation.h"
 #include "joj/resources/scene_node.h"
 #include "joj/resources/buffer.h"
 #include "joj/resources/animation.h"
@@ -36,7 +37,6 @@ namespace joj
         std::vector<Vector3> m_positions;
         std::vector<Vector3> m_normals;
         std::vector<u16> m_indices;
-        std::vector<Animation> m_animations;
         std::vector<Vector3> m_translations;
         std::vector<Vector4> m_rotations;
         std::vector<Vector3> m_scales;
@@ -46,6 +46,8 @@ namespace joj
         std::vector<GLTFBufferView> m_buffer_views;
         std::vector<Buffer> m_buffers;
         std::vector<GLTFMesh> m_meshes;
+        std::vector<GLTFAnimation> m_animations;
+
 
         i32 m_positions_byte_offset;
         i32 m_normals_byte_offset;
@@ -83,6 +85,9 @@ namespace joj
 
         b8 load_meshes();
         void print_meshes();
+
+        b8 load_animations();
+        void print_animations();
     };
 }
 

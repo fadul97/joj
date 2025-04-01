@@ -32,23 +32,27 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
 
     if (!load_buffers())
         return ErrorCode::FAILED;
-    print_buffers();
+    // print_buffers();
 
     if (!load_buffer_views())
         return ErrorCode::FAILED;
-    print_buffer_views();
+    // print_buffer_views();
 
     if (!load_accessors())
         return ErrorCode::FAILED;
-    print_accessors();
+    // print_accessors();
 
     if (!load_nodes())
         return ErrorCode::FAILED;
-    print_nodes();
+    // print_nodes();
 
     if (!load_meshes())
         return ErrorCode::FAILED;
-    print_meshes();
+    // print_meshes();
+
+    if (!load_animations())
+        return ErrorCode::FAILED;
+    print_animations();
 
     return ErrorCode::OK;
 }
@@ -260,6 +264,8 @@ b8 joj::GLTFImporter::load_buffer_views()
         m_buffer_views.push_back(view);
         ++i;
     }
+
+    return true;
 }
 
 void joj::GLTFImporter::print_buffer_views()
@@ -414,6 +420,8 @@ b8 joj::GLTFImporter::load_accessors()
         m_accessors.push_back(acc);
         ++i;
     }
+
+    return true;
 }
 
 void joj::GLTFImporter::print_accessors()
@@ -613,6 +621,8 @@ b8 joj::GLTFImporter::load_nodes()
         m_nodes.push_back(n);
         ++i;
     }
+
+    return true;
 }
 
 void joj::GLTFImporter::print_nodes()
@@ -883,6 +893,8 @@ b8 joj::GLTFImporter::load_meshes()
         m_meshes.push_back(m);
         ++i;
     }
+
+    return true;
 }
 
 void joj::GLTFImporter::print_meshes()
@@ -909,6 +921,237 @@ void joj::GLTFImporter::print_meshes()
             std::cout << "        Material index: " << primitive.material_index << std::endl;
             std::cout << "        Mode: " << primitive_mode_to_str(primitive.mode) << std::endl;
             ++j;
+        }
+        ++i;
+    }
+}
+
+b8 joj::GLTFImporter::load_animations()
+{
+    if (!m_root.has_key("animations"))
+        return true;
+
+    auto animations = m_root["animations"].as_array();
+    i32 i = 0;
+    for (const auto& animation : animations)
+    {
+        GLTFAnimation anim;
+        if (animation.has_key("name"))
+        {
+            if (animation["name"].is_string())
+            {
+                const std::string anim_name = animation["name"].as_string();
+                anim.name = anim_name;
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] name is not a string.", i);
+            }
+        }
+        else
+        {
+            JOJ_WARN("Animation[%d] does not have key 'name'.", i);
+        }
+
+        if (animation.has_key("samplers"))
+        {
+            auto samplers = animation["samplers"].as_array();
+            i32 j = 0;
+            for (const auto& sampler : samplers)
+            {
+                GLTFSampler gltf_sampler;
+                if (sampler.has_key("input"))
+                {
+                    if (sampler["input"].is_int())
+                    {
+                        const i32 input_index = sampler["input"].as_int();
+                        gltf_sampler.input = input_index;
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Sampler[%d] input index is not an integer.", i, j);
+                    }
+                }
+                else
+                {
+                    JOJ_WARN("Animation[%d] Sampler[%d] does not have key 'input'.", i, j);
+                }
+
+                if (sampler.has_key("output"))
+                {
+                    if (sampler["output"].is_int())
+                    {
+                        const i32 output_index = sampler["output"].as_int();
+                        gltf_sampler.output = output_index;
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Sampler[%d] output index is not an integer.", i, j);
+                    }
+                }
+                else
+                {
+                    JOJ_WARN("Animation[%d] Sampler[%d] does not have key 'output'.", i, j);
+                }
+
+                if (sampler.has_key("interpolation"))
+                {
+                    if (sampler["interpolation"].is_string())
+                    {
+                        const std::string interpolation = sampler["interpolation"].as_string();
+                        if (interpolation == "LINEAR")
+                            gltf_sampler.interpolation = InterpolationType::LINEAR;
+                        else if (interpolation == "STEP")
+                            gltf_sampler.interpolation = InterpolationType::STEP;
+                        else if (interpolation == "CUBICSPLINE")
+                            gltf_sampler.interpolation = InterpolationType::CUBICSPLINE;
+                        else
+                            gltf_sampler.interpolation = InterpolationType::UNKNOWN;
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Sampler[%d] interpolation is not a string.", i, j);
+                    }
+                }
+                else
+                {
+                    JOJ_WARN("Animation[%d] Sampler[%d] does not have key 'interpolation'.", i, j);
+                }
+
+                anim.samplers.push_back(gltf_sampler);
+                ++j;
+            }
+        }
+        else
+        {
+            JOJ_WARN("Animation[%d] does not have key 'samplers'.", i);
+        }
+
+        if (animation.has_key("channels"))
+        {
+            auto channels = animation["channels"].as_array();
+            i32 k = 0;
+            for (const auto& channel : channels)
+            {
+                GLTFAnimationChannel gltf_channel;
+    
+                if (channel.has_key("sampler"))
+                {
+                    if (channel["sampler"].is_int())
+                    {
+                        const i32 sampler_index = channel["sampler"].as_int();
+                        gltf_channel.sampler = sampler_index;
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] sampler index is not an integer.", i, k);
+                    }
+                }
+                else
+                {
+                    JOJ_WARN("Animation[%d] Channel[%d] does not have key 'sampler'.", i, k);
+                }
+
+                if (channel.has_key("target"))
+                {
+                    if (channel["target"].is_object())
+                    {
+                        auto target = channel["target"].as_object();
+                        if (target.find("node") != target.end())
+                        {
+                            if (target["node"].is_int())
+                            {
+                                const i32 node_index = target["node"].as_int();
+                                gltf_channel.target_node = node_index;
+                            }
+                            else
+                            {
+                                JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] target node index is not an integer.", i, k);
+                            }
+                        }
+                        else
+                        {
+                            JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] does not have key 'node'.", i, k);
+                        }
+
+                        if (target.find("path") != target.end())
+                        {
+                            if (target["path"].is_string())
+                            {
+                                const std::string target_path = target["path"].as_string();
+                                if (target_path == "translation")
+                                    gltf_channel.type = AnimationChannelType::TRANSLATION;
+                                else if (target_path == "rotation")
+                                    gltf_channel.type = AnimationChannelType::ROTATION;
+                                else if (target_path == "scale")
+                                    gltf_channel.type = AnimationChannelType::SCALE;
+                                else
+                                    gltf_channel.type = AnimationChannelType::UNKNOWN;
+                            }
+                            else
+                            {
+                                JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] target path is not a string.", i, k);
+                            }
+                        }
+                        else
+                        {
+                            JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] does not have key 'path'.", i, k);
+                        }
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] target index is not an integer.", i, k);
+                    }
+                }
+                else
+                {
+                    JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] does not have key 'target'.", i, k);
+                }
+
+                anim.channels.push_back(gltf_channel);
+                ++k;
+            }
+        }
+        else
+        {
+            JOJ_WARN("Animation[%d] does not have key 'channels'.", i);
+        }
+
+        m_animations.push_back(anim);
+        ++i;
+    }
+
+    return true;
+}
+
+void joj::GLTFImporter::print_animations()
+{
+    std::cout << "Total loaded animations: " << m_animations.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& anim : m_animations)
+    {
+        std::cout << "Animation " << i << ": " << std::endl;
+        std::cout << "    Name: " << anim.name << std::endl;
+
+        i32 j = 0;
+        for (const auto& channel : anim.channels)
+        {
+            std::cout << "    Channel " << j << ": " << std::endl;
+            std::cout << "        Sampler: " << channel.sampler << std::endl;
+            std::cout << "        Target: " << channel.target_node << std::endl;
+            std::cout << "        Path: " << animation_channel_type_to_string(channel.type) << std::endl;
+            ++j;
+        }
+
+        i32 k = 0;
+        for (const auto& sampler : anim.samplers)
+        {
+            std::cout << "    Sampler " << k << ": " << std::endl;
+            std::cout << "        Input: " << sampler.input << std::endl;
+            std::cout << "        Output: " << sampler.output << std::endl;
+            std::cout << "        Interpolation: " << interpolation_type_to_string(sampler.interpolation) << std::endl;
+            ++k;
         }
         ++i;
     }

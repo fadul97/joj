@@ -25,11 +25,14 @@ set(SOURCE_FILES
     animation_channel.cpp
     scene_node.cpp
     primitive_mode.cpp
+    animation_channel_type.cpp
+    interpolation_type.cpp
 
     gltf/gltf_sampler.cpp
     gltf/gltf_buffer_view.cpp
     gltf/gltf_accessor.cpp
     gltf/gltf_primitive.cpp
+    gltf/gltf_animation_channel.cpp
     gltf/gltf_importer.cpp
 )
 
