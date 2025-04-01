@@ -10,6 +10,7 @@
 #include "gltf_sampler.h"
 #include "gltf_buffer_view.h"
 #include "gltf_accessor.h"
+#include "gltf_mesh.h"
 #include "joj/resources/scene_node.h"
 #include "joj/resources/buffer.h"
 #include "joj/resources/animation.h"
@@ -44,6 +45,7 @@ namespace joj
         std::vector<GLTFAccessor> m_accessors;
         std::vector<GLTFBufferView> m_buffer_views;
         std::vector<Buffer> m_buffers;
+        std::vector<GLTFMesh> m_meshes;
 
         i32 m_positions_byte_offset;
         i32 m_normals_byte_offset;
@@ -78,6 +80,9 @@ namespace joj
 
         b8 load_nodes();
         void print_nodes();
+
+        b8 load_meshes();
+        void print_meshes();
     };
 }
 

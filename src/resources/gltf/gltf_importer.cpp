@@ -46,6 +46,9 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
         return ErrorCode::FAILED;
     print_nodes();
 
+    if (!load_meshes())
+        return ErrorCode::FAILED;
+    print_meshes();
 
     return ErrorCode::OK;
 }
@@ -632,6 +635,187 @@ void joj::GLTFImporter::print_nodes()
             for (const auto& child : node.get_children_indices())
             std::cout << child << " ";
             std::cout << std::endl;
+        }
+        ++i;
+    }
+}
+
+b8 joj::GLTFImporter::load_meshes()
+{
+    if (!m_root.has_key("meshes"))
+        return true;
+
+    auto meshes = m_root["meshes"].as_array();
+    i32 i = 0;
+    for (const auto& mesh : meshes)
+    {
+        GLTFMesh m;
+        if (mesh.has_key("name"))
+        {
+            if (mesh["name"].is_string())
+            {
+                const std::string mesh_name = mesh["name"].as_string();
+                m.name = mesh_name;
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] name is not a string.", i);
+            }
+        }
+        else
+        {
+            JOJ_WARN("Mesh[%d] does not have key 'name'.", i);
+        }
+
+        auto primitives = mesh["primitives"].as_array();
+        i32 j = 0;
+        for (const auto& primitive : primitives)
+        {
+            GLFTPrimitive p;
+            if (primitive.has_key("mode"))
+            {
+                if (primitive["mode"].is_int())
+                {
+                    const i32 pmode = primitive["mode"].as_int();
+                    std::cout << "Mesh[" << i << "] Primitive[" << j << "] mode: " << pmode << std::endl;
+                    switch (pmode)
+                    {
+                    case 0:
+                        p.mode = PrimitiveMode::POINTS;
+                        break;
+                    case 1:
+                        p.mode = PrimitiveMode::LINES;
+                        break;
+                    case 2:
+                        p.mode = PrimitiveMode::LINE_LOOP;
+                        break;
+                    case 3:
+                        p.mode = PrimitiveMode::LINE_STRIP;
+                        break;
+                    case 4:
+                        p.mode = PrimitiveMode::TRIANGLES;
+                        break;
+                    case 5:
+                        p.mode = PrimitiveMode::TRIANGLE_STRIP;
+                        break;
+                    case 6:
+                        p.mode = PrimitiveMode::TRIANGLE_FAN;
+                        break;
+                    default:
+                        p.mode = PrimitiveMode::UNKNOWN;
+                    }
+                }
+                else
+                {
+                    JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] mode is not an integer.", i, j);
+                }
+            }
+            else
+            {
+                JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'mode'.", i, j);
+            }
+
+            if (primitive.has_key("material"))
+            {
+                if (primitive["material"].is_int())
+                {
+                    const i32 material_index = primitive["material"].as_int();
+                    p.material_index = material_index;
+                }
+                else
+                {
+                    JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] material index is not an integer.", i, j);
+                }
+            }
+            else
+            {
+                JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'material'.", i, j);
+            }
+
+            if (primitive.has_key("attributes"))
+            {
+                auto attributes = primitive["attributes"].as_object();
+                if (attributes.find("POSITION") != attributes.end())
+                {
+                    if (attributes["POSITION"].is_int())
+                    {
+                        const i32 position_index = attributes["POSITION"].as_int();
+                        p.position_acessor = position_index;
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] position index is not an integer.", i, j);
+                    }
+                }
+                else
+                {
+                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'POSITION'.", i, j);
+                }
+
+                if (attributes.find("NORMAL") != attributes.end())
+                {
+                    if (attributes["NORMAL"].is_int())
+                    {
+                        const i32 normal_index = attributes["NORMAL"].as_int();
+                        p.normal_acessor = normal_index;
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] normal index is not an integer.", i, j);
+                    }
+                }
+                else
+                {
+                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'NORMAL'.", i, j);
+                }
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] does not have key 'attributes'.", i, j);
+            }
+
+            if (primitive.has_key("indices"))
+            {
+                if (primitive["indices"].is_int())
+                {
+                    const i32 indices_index = primitive["indices"].as_int();
+                    p.indices_acessor = indices_index;
+                }
+                else
+                {
+                    JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] indices index is not an integer.", i, j);
+                }
+            }
+            else
+            {
+                JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'indices'.", i, j);
+            }
+
+            m.primitives.push_back(p);
+            ++j;
+        }
+
+        m_meshes.push_back(m);
+        ++i;
+    }
+}
+
+void joj::GLTFImporter::print_meshes()
+{
+    std::cout << "Total loaded meshes: " << m_meshes.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& mesh : m_meshes)
+    {
+        std::cout << "Mesh " << i << ": " << std::endl;
+        std::cout << "    Name: " << mesh.name << std::endl;
+        i32 j = 0;
+        for (const auto& primitive : mesh.primitives)
+        {
+            std::cout << "    Primitive " << j << ": " << std::endl;
+            std::cout << "        Mode: " << primitive_mode_to_str(primitive.mode) << std::endl;
+            std::cout << "        Material index: " << primitive.material_index << std::endl;
+            ++j;
         }
         ++i;
     }

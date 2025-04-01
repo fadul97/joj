@@ -110,7 +110,7 @@ void joj::apply_all_animations(OLDGLTFAnimation& animation, f32 time, OLDGLTFNod
             if (channel.path == "translation")
             {
                 node.SetPosition(keyframes[k0].translation);
-                std::cout << "Not interpolating translation" << std::endl;
+                // std::cout << "Not interpolating translation" << std::endl;
             }
             else if (channel.path == "scale")
             {
