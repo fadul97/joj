@@ -12,8 +12,8 @@ namespace joj
         GLTFAnimationChannel();
         ~GLTFAnimationChannel();
 
-        i32 input;
-        i32 output;
+        i32 sampler;
+        i32 target_node;
         AnimationChannelType type;
     };
 }
