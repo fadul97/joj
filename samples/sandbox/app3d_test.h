@@ -61,7 +61,7 @@ public:
     void process_mouse_input(const f32 dt);
 
     void draw_model(const joj::GLTFModel& model, const joj::JFloat4x4& parent_transform);
-    u32 get_index_count_for_primitive(const joj::GLFTPrimitive& primitive);
+    u32 get_index_count_for_primitive(const joj::GLTFPrimitive& primitive);
     void create_buffers_for_model(joj::GLTFModel& model, joj::IRenderer* renderer);
 
     u32 m_index_count = 0;

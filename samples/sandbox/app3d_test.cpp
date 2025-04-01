@@ -397,7 +397,7 @@ void App3DTest::draw_model(const joj::GLTFModel& model, const joj::JFloat4x4& pa
     }
 }
 
-u32 App3DTest::get_index_count_for_primitive(const joj::GLFTPrimitive& primitive)
+u32 App3DTest::get_index_count_for_primitive(const joj::GLTFPrimitive& primitive)
 {
     i32 index_accessor = primitive.indices_acessor;
     if (index_accessor == -1)

@@ -12,7 +12,8 @@ namespace joj
     struct JOJ_API GLTFMesh
     {
         std::string name;
-        std::vector<GLFTPrimitive> primitives;
+        std::vector<u32> weights;
+        std::vector<GLTFPrimitive> primitives;
     };
 }
 

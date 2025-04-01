@@ -761,11 +761,38 @@ b8 joj::GLTFImporter::load_meshes()
             // JOJ_WARN("Mesh[%d] does not have key 'name'.", i);
         }
 
+        if (mesh.has_key("weights"))
+        {
+            if (mesh["weights"].is_array())
+            {
+                auto weights = mesh["weights"].as_array();
+                for (const auto& weight : weights)
+                {
+                    if (weight.is_float())
+                    {
+                        m.weights.push_back(weight.as_float());
+                    }
+                    else
+                    {
+                        // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] weight is not a float.", i);
+                    }
+                }
+            }
+            else
+            {
+                // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] weights is not an array.", i);
+            }
+        }
+        else
+        {
+            // JOJ_WARN("Mesh[%d] does not have key 'weights'.", i);
+        }
+
         auto primitives = mesh["primitives"].as_array();
         i32 j = 0;
         for (const auto& primitive : primitives)
         {
-            GLFTPrimitive p;
+            GLTFPrimitive p;
             if (primitive.has_key("mode"))
             {
                 if (primitive["mode"].is_int())

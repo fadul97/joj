@@ -7,10 +7,10 @@
 
 namespace joj
 {
-    struct JOJ_API GLFTPrimitive
+    struct JOJ_API GLTFPrimitive
     {
-        GLFTPrimitive();
-        ~GLFTPrimitive();
+        GLTFPrimitive();
+        ~GLTFPrimitive();
 
         i32 position_acessor;
         i32 normal_acessor;

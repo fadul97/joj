@@ -1,6 +1,6 @@
 #include "joj/resources/gltf/gltf_primitive.h"
 
-joj::GLFTPrimitive::GLFTPrimitive()
+joj::GLTFPrimitive::GLTFPrimitive()
     : position_acessor(-1)
     , normal_acessor(-1)
     , indices_acessor(-1)
@@ -14,6 +14,6 @@ joj::GLFTPrimitive::GLFTPrimitive()
 {
 }
 
-joj::GLFTPrimitive::~GLFTPrimitive()
+joj::GLTFPrimitive::~GLTFPrimitive()
 {
 }
