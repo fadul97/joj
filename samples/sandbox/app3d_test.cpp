@@ -82,7 +82,7 @@ void App3DTest::build_buffers()
 {
     // Load GLTF file
     m_beautiful_game_importer;
-    if (m_beautiful_game_importer.load("models/ABeautifulGame.gltf") != joj::ErrorCode::OK)
+    if (m_beautiful_game_importer.load("models/Box.gltf") != joj::ErrorCode::OK)
         return;
 
     // Load binary data
@@ -92,7 +92,6 @@ void App3DTest::build_buffers()
 
     m_model;
     m_beautiful_game_importer.get_meshes(m_model.meshes);
-    m_beautiful_game_importer.get_nodes(m_model.nodes);
     m_model.print_info();
 
     /*
@@ -461,7 +460,7 @@ void App3DTest::create_buffers_for_model(joj::GLTFModel& model, joj::IRenderer* 
             }
         }
 
-        std::cout << "Building mesh: " << node_name << " OR " << mesh.name << std::endl;
+        std::cout << "Building mesh: " << node_name << "(node_name) OR " << mesh.name << "(mesh.name)" << std::endl;
         // Print vertices count
         std::cout << "Vertices count: " << vertices.size() << std::endl;
         // Print indices count
