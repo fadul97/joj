@@ -14,6 +14,12 @@ namespace joj
         JOJ_EXTERN const char* SimpleColor;
 
         /**
+         * @brief A basic vertex shader that only passes the position, normal and color
+         * and only returns the color.
+         */
+        JOJ_EXTERN const char* PosColorNormalSimple;
+
+        /**
          * @brief A basic vertex shader that passes the position, color and normal.
          * It has a simple camera that transforms the vertices, the constant buffer
          * only holds a float4x4 matrix.
