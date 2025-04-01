@@ -146,7 +146,7 @@ namespace joj
                 0, 0, 0, 0
             };
         }
-        static Matrix4x4 translation(f32 x, f32 y, f32 z)
+        static Matrix4x4 translation(const f32 x, const f32 y, const f32 z)
         {
             return Matrix4x4
             {
@@ -157,7 +157,7 @@ namespace joj
             };
         }
 
-        static Matrix4x4 rotationX(f32 angle)
+        static Matrix4x4 rotationX(const f32 angle)
         {
             f32 c = std::cos(angle);
             f32 s = std::sin(angle);
@@ -169,7 +169,7 @@ namespace joj
                 0, 0, 0, 1
             };
         }
-        static Matrix4x4 rotationY(f32 angle)
+        static Matrix4x4 rotationY(const f32 angle)
         {
             f32 c = std::cos(angle);
             f32 s = std::sin(angle);
@@ -182,7 +182,7 @@ namespace joj
             };
         }
 
-        static Matrix4x4 rotationZ(f32 angle)
+        static Matrix4x4 rotationZ(const f32 angle)
         {
             f32 c = std::cos(angle);
             f32 s = std::sin(angle);
@@ -195,7 +195,7 @@ namespace joj
             };
         }
 
-        static Matrix4x4 scale(f32 x, f32 y, f32 z)
+        static Matrix4x4 scale(const f32 x, const f32 y, const f32 z)
         {
             return Matrix4x4
             {
@@ -206,25 +206,25 @@ namespace joj
             };
         }
 
-        static Matrix4x4 perspective(f32 fov, f32 aspect, f32 near, f32 far)
+        static Matrix4x4 perspective(const f32 fov, const f32 aspect, const f32 near_plane, const f32 far_plane)
         {
             f32 f = 1.0f / std::tan(fov / 2.0f);
             return Matrix4x4
             {
                 f / aspect, 0, 0, 0,
                 0, f, 0, 0,
-                0, 0, (far + near) / (near - far), (2 * far * near) / (near - far),
+                0, 0, (far_plane + near_plane) / (near_plane - far_plane), (2 * far_plane * near_plane) / (near_plane - far_plane),
                 0, 0, -1, 0
             };
         }
 
-        static Matrix4x4 orthographic(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far)
+        static Matrix4x4 orthographic(const f32 left, const f32 right, const f32 bottom, const f32 top, const f32 near_plane, const f32 far_plane)
         {
             return Matrix4x4
             {
                 2 / (right - left), 0, 0, -(right + left) / (right - left),
                 0, 2 / (top - bottom), 0, -(top + bottom) / (top - bottom),
-                0, 0, -2 / (far - near), -(far + near) / (far - near),
+                0, 0, -2 / (far_plane - near_plane), -(far_plane + near_plane) / (far_plane - near_plane),
                 0, 0, 0, 1
             };
         }
@@ -274,14 +274,14 @@ namespace joj
             };
         }
 
-        static Matrix4x4 lookAtLH(const Vector3& eye, const Vector3& target, const Vector3& up, f32 fov, f32 aspect, f32 near, f32 far)
+        static Matrix4x4 lookAtLH(const Vector3& eye, const Vector3& target, const Vector3& up, const f32 fov, const f32 aspect, const f32 near_plane, const f32 far_plane)
         {
-            return lookAtLH(eye, target, up) * perspective(fov, aspect, near, far);
+            return lookAtLH(eye, target, up) * perspective(fov, aspect, near_plane, far_plane);
         }
 
-        static Matrix4x4 lookAtRH(const Vector3& eye, const Vector3& target, const Vector3& up, f32 fov, f32 aspect, f32 near, f32 far)
+        static Matrix4x4 lookAtRH(const Vector3& eye, const Vector3& target, const Vector3& up, const f32 fov, const f32 aspect, const f32 near_plane, const f32 far_plane)
         {
-            return lookAtRH(eye, target, up) * perspective(fov, aspect, near, far);
+            return lookAtRH(eye, target, up) * perspective(fov, aspect, near_plane, far_plane);
         }
     };
 
@@ -309,13 +309,6 @@ namespace joj
                          m.r[1].m128_f32[0], m.r[1].m128_f32[1], m.r[1].m128_f32[2], m.r[1].m128_f32[3],
                          m.r[2].m128_f32[0], m.r[2].m128_f32[1], m.r[2].m128_f32[2], m.r[2].m128_f32[3],
                          m.r[3].m128_f32[0], m.r[3].m128_f32[1], m.r[3].m128_f32[2], m.r[3].m128_f32[3]);
-    }
-    inline DirectX::XMMATRIX to_XMMATRIX(const Matrix4x4& m)
-    {
-        return DirectX::XMMATRIX(m.m[0], m.m[1], m.m[2], m.m[3],
-                                 m.m[4], m.m[5], m.m[6], m.m[7],
-                                 m.m[8], m.m[9], m.m[10], m.m[11],
-                                 m.m[12], m.m[13], m.m[14], m.m[15]);
     }
     inline Matrix4x4 to_Matrix4x4(const DirectX::XMMATRIX& m)
     {
