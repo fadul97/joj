@@ -27,6 +27,7 @@ set(SOURCE_FILES
     primitive_mode.cpp
     animation_channel_type.cpp
     interpolation_type.cpp
+    submesh.cpp
 
     gltf/gltf_animation_sampler.cpp
     gltf/gltf_buffer_view.cpp
