@@ -7,14 +7,14 @@
 #include <string>
 #include <vector>
 #include "joj/core/math/vector3.h"
-#include "gltf_sampler.h"
+#include "gltf_animation_sampler.h"
 #include "gltf_buffer_view.h"
 #include "gltf_accessor.h"
 #include "gltf_mesh.h"
 #include "gltf_animation.h"
 #include "gltf_skin.h"
 #include "gltf_scene.h"
-#include "joj/resources/scene_node.h"
+#include "gltf_node.h"
 #include "joj/resources/buffer.h"
 #include "joj/resources/animation.h"
 #include "joj/utils/json_value.h"
@@ -44,7 +44,6 @@ namespace joj
         void get_vertices_and_indices(std::vector<GLTFVertex>& vertices, std::vector<u16>& indices);
 
         void get_meshes(std::vector<GLTFMesh>& meshes);
-        void get_nodes(std::vector<SceneNode>& nodes);
 
         std::vector<GLTFAccessor>& get_accessors();
         const GLTFAccessor& get_accessor(const u32 index) const;
@@ -72,8 +71,8 @@ namespace joj
         std::vector<Vector3> m_translations;
         std::vector<Vector4> m_rotations;
         std::vector<Vector3> m_scales;
-        std::vector<GLTFSampler> m_samplers;
-        std::vector<SceneNode> m_nodes;
+        std::vector<GLTFAnimationSampler> m_samplers;
+        std::vector<GLTFNode> m_nodes;
         std::vector<GLTFAccessor> m_accessors;
         std::vector<GLTFBufferView> m_buffer_views;
         std::vector<Buffer> m_buffers;

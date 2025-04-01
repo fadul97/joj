@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include "gltf_animation_channel.h"
-#include "gltf_sampler.h"
+#include "gltf_animation_sampler.h"
 
 namespace joj
 {
@@ -14,7 +14,7 @@ namespace joj
     {
         std::string name;
         std::vector<GLTFAnimationChannel> channels;
-        std::vector<GLTFSampler> samplers;
+        std::vector<GLTFAnimationSampler> samplers;
     };
 }
 

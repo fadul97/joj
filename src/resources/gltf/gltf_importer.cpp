@@ -459,52 +459,120 @@ b8 joj::GLTFImporter::load_nodes()
     i32 i = 0;
     for (const auto& node : nodes)
     {
-        SceneNode n;
+        GLTFNode n;
 
-        if (node.has_key("name"))
+        if (node.has_key("camera"))
         {
-            if (node["name"].is_string())
+            if (node["camera"].is_int())
             {
-                const std::string node_name = node["name"].as_string();
-                n.set_name(node_name.c_str());
+                const i32 camera_index = node["camera"].as_int();
+                n.camera_index = camera_index;
             }
             else
             {
-                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] name is not a string.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] camera is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            // JOJ_WARN("Node[%d] does not have key 'name'.", i);
-            const std::string node_name = "Node" + std::to_string(i);
-            n.set_name(node_name.c_str());
+            // JOJ_WARN("Node[%d] does not have key 'camera'.", i);
         }
 
-        if (node.has_key("translation"))
+        if (node.has_key("children"))
         {
-            if (node["translation"].is_array())
+            if (node["children"].is_array())
             {
-                auto translation = node["translation"].as_array();
-                if (translation.size() == 3)
+                auto children = node["children"].as_array();
+                for (const auto& child : children)
                 {
-                    n.set_position(Vector3(translation[0].as_float(), translation[1].as_float(), translation[2].as_float()));
+                    if (child.is_int())
+                    {
+                        n.children.push_back(child.as_int());
+                    }
+                    else
+                    {
+                        // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] child is not an integer.", i);
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] children is not an array.", i);
+                return false;
+            }
+        }
+        else
+        {
+            // JOJ_WARN("Node[%d] does not have key 'children'.", i);
+        }
+
+        if (node.has_key("skin"))
+        {
+            if (node["skin"].is_int())
+            {
+                const i32 skin_index = node["skin"].as_int();
+                n.skin_index = skin_index;
+            }
+            else
+            {
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] skin is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            // JOJ_WARN("Node[%d] does not have key 'skin'.", i);
+        }
+
+        if (node.has_key("matrix"))
+        {
+            if (node["matrix"].is_array())
+            {
+                auto matrix = node["matrix"].as_array();
+                if (matrix.size() == 16)
+                {
+                    n.matrix = Matrix4x4(
+                        matrix[0].as_float(), matrix[1].as_float(), matrix[2].as_float(), matrix[3].as_float(),
+                        matrix[4].as_float(), matrix[5].as_float(), matrix[6].as_float(), matrix[7].as_float(),
+                        matrix[8].as_float(), matrix[9].as_float(), matrix[10].as_float(), matrix[11].as_float(),
+                        matrix[12].as_float(), matrix[13].as_float(), matrix[14].as_float(), matrix[15].as_float()
+                    );
                 }
                 else
                 {
-                    // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] translation is not a 3-element array.", i);
+                    // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] matrix is not a 16-element array.", i);
                     return false;
                 }
             }
             else
             {
-                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] translation is not an array.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] matrix is not an array.", i);
                 return false;
             }
         }
         else
         {
-            // JOJ_WARN("Node[%d] does not have key 'translation'.", i);
+            // JOJ_WARN("Node[%d] does not have key 'matrix'.", i);
+        }
+
+        if (node.has_key("mesh"))
+        {
+            if (node["mesh"].is_int())
+            {
+                const i32 mesh_index = node["mesh"].as_int();
+                n.mesh_index = mesh_index;
+            }
+            else
+            {
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] mesh is not an integer.", i);
+                return false;
+            }
+        }
+        else
+        {
+            // JOJ_WARN("Node[%d] does not have key 'mesh'.", i);
         }
 
         if (node.has_key("rotation"))
@@ -514,7 +582,7 @@ b8 joj::GLTFImporter::load_nodes()
                 auto rotation = node["rotation"].as_array();
                 if (rotation.size() == 4)
                 {
-                    n.set_rotation(Vector4(rotation[0].as_float(), rotation[1].as_float(), rotation[2].as_float(), rotation[3].as_float()));
+                    n.rotation = Vector4(rotation[0].as_float(), rotation[1].as_float(), rotation[2].as_float(), rotation[3].as_float());
                 }
                 else
                 {
@@ -540,7 +608,7 @@ b8 joj::GLTFImporter::load_nodes()
                 auto scale = node["scale"].as_array();
                 if (scale.size() == 3)
                 {
-                    n.set_scale(Vector3(scale[0].as_float(), scale[1].as_float(), scale[2].as_float()));
+                    n.scale = Vector3(scale[0].as_float(), scale[1].as_float(), scale[2].as_float());
                 }
                 else
                 {
@@ -559,72 +627,80 @@ b8 joj::GLTFImporter::load_nodes()
             // JOJ_WARN("Node[%d] does not have key 'scale'.", i);
         }
 
-        if (node.has_key("children"))
+        if (node.has_key("translation"))
         {
-            if (node["children"].is_array())
+            if (node["translation"].is_array())
             {
-                auto children = node["children"].as_array();
-                for (const auto& child : children)
+                auto translation = node["translation"].as_array();
+                if (translation.size() == 3)
                 {
-                    if (child.is_int())
+                    n.translation = Vector3(translation[0].as_float(), translation[1].as_float(), translation[2].as_float());
+                }
+                else
+                {
+                    // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] translation is not a 3-element array.", i);
+                    return false;
+                }
+            }
+            else
+            {
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] translation is not an array.", i);
+                return false;
+            }
+        }
+        else
+        {
+            // JOJ_WARN("Node[%d] does not have key 'translation'.", i);
+        }
+
+        if (node.has_key("weights"))
+        {
+            if (node["weights"].is_array())
+            {
+                auto weights = node["weights"].as_array();
+                for (const auto& weight : weights)
+                {
+                    if (weight.is_float())
                     {
-                        n.add_child(child.as_int());
+                        n.weights.push_back(weight.as_float());
                     }
                     else
                     {
-                        // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] child is not an integer.", i);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] weight is not a float.", i);
                         return false;
                     }
                 }
             }
             else
             {
-                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] children is not an array.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] weights is not an array.", i);
                 return false;
             }
         }
         else
         {
-            // JOJ_WARN("Node[%d] does not have key 'children'.", i);
+            // JOJ_WARN("Node[%d] does not have key 'weights'.", i);
         }
 
-        if (node.has_key("mesh"))
+        if (node.has_key("name"))
         {
-            if (node["mesh"].is_int())
+            if (node["name"].is_string())
             {
-                const i32 mesh_index = node["mesh"].as_int();
-                n.set_mesh(mesh_index);
+                const std::string node_name = node["name"].as_string();
+                n.name = node_name;
             }
             else
             {
-                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] mesh is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] name is not a string.", i);
                 return false;
             }
         }
         else
         {
-            // JOJ_WARN("Node[%d] does not have key 'mesh'.", i);
+            // JOJ_WARN("Node[%d] does not have key 'name'.", i);
+            const std::string node_name = "Node" + std::to_string(i);
+            n.name = node_name;
         }
-
-        if (node.has_key("skin"))
-        {
-            if (node["skin"].is_int())
-            {
-                const i32 skin_index = node["skin"].as_int();
-                n.set_skin(skin_index);
-            }
-            else
-            {
-                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] skin is not an integer.", i);
-                return false;
-            }
-        }
-        else
-        {
-            // JOJ_WARN("Node[%d] does not have key 'skin'.", i);
-        }
-
-        // TODO: Read camera, weights, extensions, extras
 
         m_nodes.push_back(n);
         ++i;
@@ -641,17 +717,17 @@ void joj::GLTFImporter::print_nodes()
     for (const auto& node : m_nodes)
     {
         std::cout << "Node " << i << ": " << std::endl;
-        std::cout << "    Name: " << node.get_name() << std::endl;
-        std::cout << "    Position: " << node.get_position().to_string() << std::endl;
-        std::cout << "    Rotation: " << node.get_rotation().to_string() << std::endl;
-        std::cout << "    Scale: " << node.get_scale().to_string() << std::endl;
-        std::cout << "    Mesh: " << node.get_mesh() << std::endl;
-        std::cout << "    Skin: " << node.get_skin() << std::endl;
-        if (!node.get_children_indices().empty())
+        std::cout << "    Name: " << node.name << std::endl;
+        std::cout << "    Translation: " << node.translation.to_string() << std::endl;
+        std::cout << "    Rotation: " << node.rotation.to_string() << std::endl;
+        std::cout << "    Scale: " << node.scale.to_string() << std::endl;
+        std::cout << "    Mesh: " << node.mesh_index << std::endl;
+        std::cout << "    Skin: " << node.skin_index << std::endl;
+        if (!node.children.empty())
         {
             std::cout << "    Children: ";
-            for (const auto& child : node.get_children_indices())
-            std::cout << child << " ";
+            for (const auto& child : node.children)
+                std::cout << child << " ";
             std::cout << std::endl;
         }
         ++i;
@@ -967,13 +1043,13 @@ b8 joj::GLTFImporter::load_animations()
             i32 j = 0;
             for (const auto& sampler : samplers)
             {
-                GLTFSampler gltf_sampler;
+                GLTFAnimationSampler anim_sampler;
                 if (sampler.has_key("input"))
                 {
                     if (sampler["input"].is_int())
                     {
                         const i32 input_index = sampler["input"].as_int();
-                        gltf_sampler.input = input_index;
+                        anim_sampler.input = input_index;
                     }
                     else
                     {
@@ -990,7 +1066,7 @@ b8 joj::GLTFImporter::load_animations()
                     if (sampler["output"].is_int())
                     {
                         const i32 output_index = sampler["output"].as_int();
-                        gltf_sampler.output = output_index;
+                        anim_sampler.output = output_index;
                     }
                     else
                     {
@@ -1008,13 +1084,13 @@ b8 joj::GLTFImporter::load_animations()
                     {
                         const std::string interpolation = sampler["interpolation"].as_string();
                         if (interpolation == "LINEAR")
-                            gltf_sampler.interpolation = InterpolationType::LINEAR;
+                            anim_sampler.interpolation = InterpolationType::LINEAR;
                         else if (interpolation == "STEP")
-                            gltf_sampler.interpolation = InterpolationType::STEP;
+                            anim_sampler.interpolation = InterpolationType::STEP;
                         else if (interpolation == "CUBICSPLINE")
-                            gltf_sampler.interpolation = InterpolationType::CUBICSPLINE;
+                            anim_sampler.interpolation = InterpolationType::CUBICSPLINE;
                         else
-                            gltf_sampler.interpolation = InterpolationType::UNKNOWN;
+                            anim_sampler.interpolation = InterpolationType::UNKNOWN;
                     }
                     else
                     {
@@ -1026,7 +1102,7 @@ b8 joj::GLTFImporter::load_animations()
                     // JOJ_WARN("Animation[%d] Sampler[%d] does not have key 'interpolation'.", i, j);
                 }
 
-                anim.samplers.push_back(gltf_sampler);
+                anim.samplers.push_back(anim_sampler);
                 ++j;
             }
         }
@@ -1432,14 +1508,6 @@ void joj::GLTFImporter::get_meshes(std::vector<GLTFMesh>& meshes)
     for (const auto& mesh : m_meshes)
     {
         meshes.push_back(mesh);
-    }
-}
-
-void joj::GLTFImporter::get_nodes(std::vector<SceneNode>& nodes)
-{
-    for (const auto& node : m_nodes)
-    {
-        nodes.push_back(node);
     }
 }
 
