@@ -6,6 +6,11 @@ joj::GLFTPrimitive::GLFTPrimitive()
     , indices_acessor(-1)
     , material_index(-1)
     , mode(PrimitiveMode::UNKNOWN)
+    , tangent_acessor(-1)
+    , texcoord_acessor(-1)
+    , color_acessor(-1)
+    , joint_acessor(-1)
+    , weight_acessor(-1)
 {
 }
 

@@ -14,6 +14,11 @@ namespace joj
 
         i32 position_acessor;
         i32 normal_acessor;
+        i32 tangent_acessor;
+        i32 texcoord_acessor;
+        i32 color_acessor;
+        i32 joint_acessor;
+        i32 weight_acessor;
         i32 indices_acessor;
         i32 material_index;
         PrimitiveMode mode;

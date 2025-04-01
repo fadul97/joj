@@ -768,6 +768,91 @@ b8 joj::GLTFImporter::load_meshes()
                 {
                     JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'NORMAL'.", i, j);
                 }
+
+                if (attributes.find("TANGENT") != attributes.end())
+                {
+                    if (attributes["TANGENT"].is_int())
+                    {
+                        const i32 tangent_index = attributes["TANGENT"].as_int();
+                        p.tangent_acessor = tangent_index;
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] tangent index is not an integer.", i, j);
+                    }
+                }
+                else
+                {
+                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'TANGENT'.", i, j);
+                }
+
+                if (attributes.find("TEXCOORD_0") != attributes.end())
+                {
+                    if (attributes["TEXCOORD_0"].is_int())
+                    {
+                        const i32 texcoord_index = attributes["TEXCOORD_0"].as_int();
+                        p.texcoord_acessor = texcoord_index;
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] texcoord index is not an integer.", i, j);
+                    }
+                }
+                else
+                {
+                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'TEXCOORD_0'.", i, j);
+                }
+
+                if (attributes.find("COLOR_0") != attributes.end())
+                {
+                    if (attributes["COLOR_0"].is_int())
+                    {
+                        const i32 color_index = attributes["COLOR_0"].as_int();
+                        p.color_acessor = color_index;
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] color index is not an integer.", i, j);
+                    }
+                }
+                else
+                {
+                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'COLOR_0'.", i, j);
+                }
+
+                if (attributes.find("JOINTS_0") != attributes.end())
+                {
+                    if (attributes["JOINTS_0"].is_int())
+                    {
+                        const i32 joint_index = attributes["JOINTS_0"].as_int();
+                        p.joint_acessor = joint_index;
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] joint index is not an integer.", i, j);
+                    }
+                }
+                else
+                {
+                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'JOINTS_0'.", i, j);
+                }
+
+                if (attributes.find("WEIGHTS_0") != attributes.end())
+                {
+                    if (attributes["WEIGHTS_0"].is_int())
+                    {
+                        const i32 weight_index = attributes["WEIGHTS_0"].as_int();
+                        p.weight_acessor = weight_index;
+                    }
+                    else
+                    {
+                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] weight index is not an integer.", i, j);
+                    }
+                }
+                else
+                {
+                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'WEIGHTS_0'.", i, j);
+                }
             }
             else
             {
@@ -813,8 +898,16 @@ void joj::GLTFImporter::print_meshes()
         for (const auto& primitive : mesh.primitives)
         {
             std::cout << "    Primitive " << j << ": " << std::endl;
-            std::cout << "        Mode: " << primitive_mode_to_str(primitive.mode) << std::endl;
+            std::cout << "        Position accessor (attr): " << primitive.position_acessor << std::endl;
+            std::cout << "        Normal accessor (attr): " << primitive.normal_acessor << std::endl;
+            std::cout << "        Tangent accessor (attr): " << primitive.tangent_acessor << std::endl;
+            std::cout << "        Texcoord accessor (attr): " << primitive.texcoord_acessor << std::endl;
+            std::cout << "        Color accessor (attr): " << primitive.color_acessor << std::endl;
+            std::cout << "        Joint accessor (attr): " << primitive.joint_acessor << std::endl;
+            std::cout << "        Weight accessor (attr): " << primitive.weight_acessor << std::endl;
+            std::cout << "        Indices accessor: " << primitive.indices_acessor << std::endl;
             std::cout << "        Material index: " << primitive.material_index << std::endl;
+            std::cout << "        Mode: " << primitive_mode_to_str(primitive.mode) << std::endl;
             ++j;
         }
         ++i;
