@@ -16,6 +16,7 @@
 #include "joj/core/math/vector4.h"
 
 #include "joj/resources/old_gltf_importer.h"
+#include "joj/resources/gltf/gltf_importer.h"
 
 // Constant Objects ------------------------------------------------------------
 
@@ -61,6 +62,9 @@ public:
     u32 m_index_count = 0;
     u32 m_vertex_cout = 0;
 
+    u32 m_gltf_index_count = 0;
+    u32 m_gltf_vertex_count = 0;
+
     // ----------------------------------------------------
     joj::D3D11VertexBuffer m_vb;
     joj::D3D11IndexBuffer m_ib;
@@ -70,10 +74,6 @@ public:
 
     joj::FreeCamera m_camera;
     joj::JFloat2 m_last_mouse_pos;
-
-    joj::OLDGLTFImporter m_gltf_importer;
-    std::vector<joj::OLDGLTFAnimation> m_animations;
-    std::vector<joj::OLDGLTFNode> m_nodes;
 };
 
 #endif // _JOJ_3D_APP_TEST_H
