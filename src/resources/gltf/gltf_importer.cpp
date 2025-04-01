@@ -1387,9 +1387,9 @@ void joj::GLTFImporter::get_vertices_and_indices(std::vector<GLTFVertex>& vertic
             const Buffer& indices_buffer = m_buffers[indices_buffer_view.buffer];
 
             // 5. Extrair os dados dos buffers
-            std::vector<Vector3> positions = read_buffer<Vector3>(position_buffer, position_accessor, position_buffer_view);
-            std::vector<Vector3> normals = read_buffer<Vector3>(normal_buffer, normal_accessor, normal_buffer_view);
-            std::vector<u16> indices_data = read_buffer<u16>(indices_buffer, indices_accessor, indices_buffer_view);
+            std::vector<Vector3> positions = read_buffer_internal<Vector3>(position_buffer, position_accessor, position_buffer_view);
+            std::vector<Vector3> normals = read_buffer_internal<Vector3>(normal_buffer, normal_accessor, normal_buffer_view);
+            std::vector<u16> indices_data = read_buffer_internal<u16>(indices_buffer, indices_accessor, indices_buffer_view);
 
             std::vector<Vector4> colors; // RGBA
             if (index_color_accessor != -1)
@@ -1401,13 +1401,13 @@ void joj::GLTFImporter::get_vertices_and_indices(std::vector<GLTFVertex>& vertic
                 // Verificar se o dado é vec3 (RGB) ou vec4 (RGBA)
                 if (color_accessor.data_type == DataType::VEC3)
                 {
-                    std::vector<Vector3> temp_colors = read_buffer<Vector3>(color_buffer, color_accessor, color_buffer_view);
+                    std::vector<Vector3> temp_colors = read_buffer_internal<Vector3>(color_buffer, color_accessor, color_buffer_view);
                     for (const auto& c : temp_colors)
                         colors.push_back(Vector4(c.x, c.y, c.z, 1.0f)); // Adiciona Alpha = 1.0f
                 }
                 else if (color_accessor.data_type == DataType::VEC4)
                 {
-                    colors = read_buffer<Vector4>(color_buffer, color_accessor, color_buffer_view);
+                    colors = read_buffer_internal<Vector4>(color_buffer, color_accessor, color_buffer_view);
                 }
             }
 
@@ -1425,4 +1425,43 @@ void joj::GLTFImporter::get_vertices_and_indices(std::vector<GLTFVertex>& vertic
             indices.insert(indices.end(), indices_data.begin(), indices_data.end());
         }
     }
+}
+
+void joj::GLTFImporter::get_meshes(std::vector<GLTFMesh>& meshes)
+{
+    for (const auto& mesh : m_meshes)
+    {
+        meshes.push_back(mesh);
+    }
+}
+
+void joj::GLTFImporter::get_nodes(std::vector<SceneNode>& nodes)
+{
+    for (const auto& node : m_nodes)
+    {
+        nodes.push_back(node);
+    }
+}
+
+std::vector<joj::GLTFAccessor>& joj::GLTFImporter::get_accessors()
+{
+    return m_accessors;
+}
+
+const joj::GLTFAccessor& joj::GLTFImporter::get_accessor(const u32 index) const
+{
+    if (index >= 0 && index < m_accessors.size())
+        return m_accessors[index];
+    else
+        return m_accessors[0]; // Retorna o primeiro acessor como fallback
+}
+
+const joj::Buffer& joj::GLTFImporter::get_buffer(const GLTFAccessor& accessor) const
+{
+    return m_buffers[m_buffer_views[accessor.buffer_view].buffer];
+}
+
+const joj::GLTFBufferView& joj::GLTFImporter::get_buffer_view(const GLTFAccessor& accessor) const
+{
+    return m_buffer_views[accessor.buffer_view];
 }

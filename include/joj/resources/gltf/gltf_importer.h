@@ -43,6 +43,25 @@ namespace joj
         void get_indices(std::vector<u16>& indices);
         void get_vertices_and_indices(std::vector<GLTFVertex>& vertices, std::vector<u16>& indices);
 
+        void get_meshes(std::vector<GLTFMesh>& meshes);
+        void get_nodes(std::vector<SceneNode>& nodes);
+
+        std::vector<GLTFAccessor>& get_accessors();
+        const GLTFAccessor& get_accessor(const u32 index) const;
+
+        const Buffer& get_buffer(const GLTFAccessor& accessor) const;
+        const GLTFBufferView& get_buffer_view(const GLTFAccessor& accessor) const;
+
+        template <typename T>
+        std::vector<T> read_buffer(const u32 accessor_index) const
+        {
+            const auto& accessor = get_accessor(accessor_index);
+            const auto& bufferView = get_buffer_view(accessor);
+            const auto& buffer = get_buffer(accessor);
+
+            return read_buffer_internal<T>(buffer, accessor, bufferView);
+        }
+
     private:
         std::string m_gltf_filename;
         std::string m_bin_filename;
@@ -111,7 +130,7 @@ namespace joj
         void print_scenes();
 
         template <typename T>
-        std::vector<T> read_buffer(const Buffer& buffer, const GLTFAccessor& accessor, const GLTFBufferView& bufferView)
+        std::vector<T> read_buffer_internal(const Buffer& buffer, const GLTFAccessor& accessor, const GLTFBufferView& bufferView) const
         {
             std::vector<T> data;
             size_t element_size = sizeof(T);
