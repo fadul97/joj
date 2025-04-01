@@ -1365,6 +1365,7 @@ void joj::GLTFImporter::get_vertices_and_indices(std::vector<GLTFVertex>& vertic
             // 1. Pegar os índices dos accessors
             i32 index_position_accessor = primitive.position_acessor;
             i32 index_normal_accessor = primitive.normal_acessor;
+            i32 index_color_accessor = primitive.color_acessor;
             i32 index_indices_accessor = primitive.indices_acessor;
 
             if (index_position_accessor == -1 || index_normal_accessor == -1 || index_indices_accessor == -1)
@@ -1390,12 +1391,32 @@ void joj::GLTFImporter::get_vertices_and_indices(std::vector<GLTFVertex>& vertic
             std::vector<Vector3> normals = read_buffer<Vector3>(normal_buffer, normal_accessor, normal_buffer_view);
             std::vector<u16> indices_data = read_buffer<u16>(indices_buffer, indices_accessor, indices_buffer_view);
 
+            std::vector<Vector4> colors; // RGBA
+            if (index_color_accessor != -1)
+            {
+                const GLTFAccessor& color_accessor = m_accessors[index_color_accessor];
+                const GLTFBufferView& color_buffer_view = m_buffer_views[color_accessor.buffer_view];
+                const Buffer& color_buffer = m_buffers[color_buffer_view.buffer];
+
+                // Verificar se o dado é vec3 (RGB) ou vec4 (RGBA)
+                if (color_accessor.data_type == DataType::VEC3)
+                {
+                    std::vector<Vector3> temp_colors = read_buffer<Vector3>(color_buffer, color_accessor, color_buffer_view);
+                    for (const auto& c : temp_colors)
+                        colors.push_back(Vector4(c.x, c.y, c.z, 1.0f)); // Adiciona Alpha = 1.0f
+                }
+                else if (color_accessor.data_type == DataType::VEC4)
+                {
+                    colors = read_buffer<Vector4>(color_buffer, color_accessor, color_buffer_view);
+                }
+            }
+
             // 6. Criar os vértices
             for (size_t i = 0; i < positions.size(); i++)
             {
                 GLTFVertex vertex;
                 vertex.pos = positions[i];
-                vertex.color = Vector4(0, 1, 0, 1); // Cor padrão (branco)
+                vertex.color = (i < colors.size()) ? colors[i] : Vector4(1, 1, 1, 1);
                 vertex.normal = (i < normals.size()) ? normals[i] : Vector3(0, 0, 1); // Normal padrão caso não exista
                 vertices.push_back(vertex);
             }
