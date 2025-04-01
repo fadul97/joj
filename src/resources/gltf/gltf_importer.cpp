@@ -54,6 +54,10 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
         return ErrorCode::FAILED;
     print_animations();
 
+    if (!load_skins())
+        return ErrorCode::FAILED;
+    print_skins();
+
     return ErrorCode::OK;
 }
 
@@ -1152,6 +1156,116 @@ void joj::GLTFImporter::print_animations()
             std::cout << "        Output: " << sampler.output << std::endl;
             std::cout << "        Interpolation: " << interpolation_type_to_string(sampler.interpolation) << std::endl;
             ++k;
+        }
+        ++i;
+    }
+}
+
+b8 joj::GLTFImporter::load_skins()
+{
+    if (!m_root.has_key("skins"))
+        return true;
+
+    auto skins = m_root["skins"].as_array();
+    i32 i = 0;
+    for (const auto& skin : skins)
+    {
+        GLTFSkin s;
+
+        if (skin.has_key("name"))
+        {
+            if (skin["name"].is_string())
+            {
+                const std::string skin_name = skin["name"].as_string();
+                s.name = skin_name;
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] name is not a string.", i);
+            }
+        }
+        else
+        {
+            JOJ_WARN("Skin[%d] does not have key 'name'.", i);
+        }
+
+        if (skin.has_key("inverseBindMatrices"))
+        {
+            if (skin["inverseBindMatrices"].is_int())
+            {
+                const i32 inverse_bind_matrices_index = skin["inverseBindMatrices"].as_int();
+                s.inverse_bind_matrices_accessor_index = inverse_bind_matrices_index;
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] inverse bind matrices index is not an integer.", i);
+            }
+        }
+        else
+        {
+            JOJ_WARN("Skin[%d] does not have key 'inverseBindMatrices'.", i);
+        }
+
+        if (skin.has_key("skeleton"))
+        {
+            if (skin["skeleton"].is_int())
+            {
+                const i32 skeleton_root_node_index = skin["skeleton"].as_int();
+                s.skeleton_root_node_index = skeleton_root_node_index;
+            }
+            else
+            {
+                JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] skeleton root node index is not an integer.", i);
+            }
+        }
+        else
+        {
+            JOJ_WARN("Skin[%d] does not have key 'skeleton'.", i);
+        }
+
+        if (skin.has_key("joints"))
+        {
+            auto joints = skin["joints"].as_array();
+            for (const auto& joint : joints)
+            {
+                if (joint.is_int())
+                {
+                    s.joint_indices.push_back(joint.as_int());
+                }
+                else
+                {
+                    JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] joint index is not an integer.", i);
+                }
+            }
+        }
+        else
+        {
+            JOJ_WARN("Skin[%d] does not have key 'joints'.", i);
+        }
+
+        m_skins.push_back(s);
+    }
+
+    return true;
+}
+
+void joj::GLTFImporter::print_skins()
+{
+    std::cout << "Total loaded skins: " << m_skins.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& skin : m_skins)
+    {
+        std::cout << "Skin " << i << ": " << std::endl;
+        std::cout << "    Name: " << skin.name << std::endl;
+        std::cout << "    Inverse bind matrices accessor index: " << skin.inverse_bind_matrices_accessor_index << std::endl;
+        std::cout << "    Skeleton root node index: " << skin.skeleton_root_node_index << std::endl;
+        if (!skin.joint_indices.empty())
+        {
+            std::cout << "    Joint indices: ";
+            for (const auto& joint : skin.joint_indices)
+                std::cout << joint << " ";
+            std::cout << std::endl;
         }
         ++i;
     }

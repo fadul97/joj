@@ -33,6 +33,8 @@ set(SOURCE_FILES
     gltf/gltf_accessor.cpp
     gltf/gltf_primitive.cpp
     gltf/gltf_animation_channel.cpp
+    gltf/gltf_animation.cpp
+    gltf/gltf_skin.cpp
     gltf/gltf_importer.cpp
 )
 

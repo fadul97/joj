@@ -12,6 +12,7 @@
 #include "gltf_accessor.h"
 #include "gltf_mesh.h"
 #include "gltf_animation.h"
+#include "gltf_skin.h"
 #include "joj/resources/scene_node.h"
 #include "joj/resources/buffer.h"
 #include "joj/resources/animation.h"
@@ -47,7 +48,7 @@ namespace joj
         std::vector<Buffer> m_buffers;
         std::vector<GLTFMesh> m_meshes;
         std::vector<GLTFAnimation> m_animations;
-
+        std::vector<GLTFSkin> m_skins;
 
         i32 m_positions_byte_offset;
         i32 m_normals_byte_offset;
@@ -88,6 +89,9 @@ namespace joj
 
         b8 load_animations();
         void print_animations();
+
+        b8 load_skins();
+        void print_skins();
     };
 }
 
