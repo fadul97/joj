@@ -21,6 +21,13 @@
 
 namespace joj
 {
+    struct GLTFVertex
+    {
+        Vector3 pos;
+        Vector4 color;
+        Vector3 normal;
+    };
+
     constexpr i32 BUFFER_VIEW_TARGET_ARRAY_BUFFER = 34962;
     constexpr i32 BUFFER_VIEW_TARGET_ELEMENT_ARRAY_BUFFER = 34963;
 
@@ -31,6 +38,10 @@ namespace joj
         ~GLTFImporter();
 
         ErrorCode load(const char* file_path);
+
+        void get_vertices(std::vector<GLTFVertex>& vertices);
+        void get_indices(std::vector<u16>& indices);
+        void get_vertices_and_indices(std::vector<GLTFVertex>& vertices, std::vector<u16>& indices);
 
     private:
         std::string m_gltf_filename;
@@ -73,6 +84,7 @@ namespace joj
         b8 parse_json();
 
         Buffer load_binary_file(const char* filename);
+        void load_data_buffer(const size_t byte_offset, const size_t count);
 
         b8 load_buffers();
         void print_buffers();
@@ -97,6 +109,25 @@ namespace joj
 
         b8 load_scenes();
         void print_scenes();
+
+        template <typename T>
+        std::vector<T> read_buffer(const Buffer& buffer, const GLTFAccessor& accessor, const GLTFBufferView& bufferView)
+        {
+            std::vector<T> data;
+            size_t element_size = sizeof(T);
+            size_t count = accessor.count;
+            size_t stride = (bufferView.byte_stride > 0) ? bufferView.byte_stride : element_size;
+            size_t start_offset = bufferView.byte_offset + accessor.byte_offset;
+
+            data.resize(count);
+            for (size_t i = 0; i < count; i++)
+            {
+                size_t offset = start_offset + (i * stride);
+                memcpy(&data[i], &buffer.data[offset], element_size);
+            }
+
+            return data;
+        }
     };
 }
 

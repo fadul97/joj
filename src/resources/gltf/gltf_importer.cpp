@@ -52,15 +52,15 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
 
     if (!load_animations())
         return ErrorCode::FAILED;
-    print_animations();
+    // print_animations();
 
     if (!load_skins())
         return ErrorCode::FAILED;
-    print_skins();
+    // print_skins();
 
     if (!load_scenes())
         return ErrorCode::FAILED;
-    print_scenes();
+    // print_scenes();
 
     return ErrorCode::OK;
 }
@@ -181,13 +181,13 @@ b8 joj::GLTFImporter::load_buffer_views()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] buffer is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] buffer is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'buffer' is not an integer.", i);
+            // JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'buffer' is not an integer.", i);
             return false;
         }
 
@@ -199,13 +199,13 @@ b8 joj::GLTFImporter::load_buffer_views()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] byte length is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] byte length is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'byteLength'.", i);
+            // JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'byteLength'.", i);
             return false;
         }
 
@@ -217,13 +217,13 @@ b8 joj::GLTFImporter::load_buffer_views()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] byte offset is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] byte offset is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_WARN("BufferView[%d] does not have key 'byteOffset' Assuming 0.", i);
+            // JOJ_WARN("BufferView[%d] does not have key 'byteOffset' Assuming 0.", i);
             view.byte_offset = 0;
         }
 
@@ -235,13 +235,13 @@ b8 joj::GLTFImporter::load_buffer_views()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] byte stride is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] byte stride is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_WARN("BufferView[%d] does not have key 'byteStride' Assuming 0.", i);
+            // JOJ_WARN("BufferView[%d] does not have key 'byteStride' Assuming 0.", i);
             view.byte_stride = 0;
         }
 
@@ -259,13 +259,13 @@ b8 joj::GLTFImporter::load_buffer_views()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] target is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] target is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'target'. Assuming ANY", i);
+            // JOJ_ERROR(ErrorCode::FAILED, "BufferView[%d] does not have key 'target'. Assuming ANY", i);
             view.target = BufferViewTarget::ANY;
         }
 
@@ -329,13 +329,13 @@ b8 joj::GLTFImporter::load_accessors()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] type is not a string.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] type is not a string.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'type'.", i);
+            // JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'type'.", i);
             return false;
         }
 
@@ -361,13 +361,13 @@ b8 joj::GLTFImporter::load_accessors()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] component type is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] component type is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'componentType'.", i);
+            // JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'componentType'.", i);
             return false;
         }
 
@@ -379,13 +379,13 @@ b8 joj::GLTFImporter::load_accessors()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] count is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] count is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'count'.", i);
+            // JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'count'.", i);
             return false;
         }
 
@@ -397,13 +397,13 @@ b8 joj::GLTFImporter::load_accessors()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] buffer view is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] buffer view is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'bufferView'.", i);
+            // JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] does not have key 'bufferView'.", i);
             return false;
         }
 
@@ -415,13 +415,13 @@ b8 joj::GLTFImporter::load_accessors()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] byte offset is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Accessor[%d] byte offset is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_WARN("Accessor[%d] does not have key 'byteOffset'. Assuming 0.", i);
+            // JOJ_WARN("Accessor[%d] does not have key 'byteOffset'. Assuming 0.", i);
             acc.byte_offset = 0;
         }
 
@@ -470,13 +470,13 @@ b8 joj::GLTFImporter::load_nodes()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] name is not a string.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] name is not a string.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_WARN("Node[%d] does not have key 'name'.", i);
+            // JOJ_WARN("Node[%d] does not have key 'name'.", i);
             const std::string node_name = "Node" + std::to_string(i);
             n.set_name(node_name.c_str());
         }
@@ -492,19 +492,19 @@ b8 joj::GLTFImporter::load_nodes()
                 }
                 else
                 {
-                    JOJ_ERROR(ErrorCode::FAILED, "Node[%d] translation is not a 3-element array.", i);
+                    // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] translation is not a 3-element array.", i);
                     return false;
                 }
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] translation is not an array.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] translation is not an array.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_WARN("Node[%d] does not have key 'translation'.", i);
+            // JOJ_WARN("Node[%d] does not have key 'translation'.", i);
         }
 
         if (node.has_key("rotation"))
@@ -518,19 +518,19 @@ b8 joj::GLTFImporter::load_nodes()
                 }
                 else
                 {
-                    JOJ_ERROR(ErrorCode::FAILED, "Node[%d] rotation is not a 4-element array.", i);
+                    // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] rotation is not a 4-element array.", i);
                     return false;
                 }
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] rotation is not an array.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] rotation is not an array.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_WARN("Node[%d] does not have key 'rotation'.", i);
+            // JOJ_WARN("Node[%d] does not have key 'rotation'.", i);
         }
 
         if (node.has_key("scale"))
@@ -544,19 +544,19 @@ b8 joj::GLTFImporter::load_nodes()
                 }
                 else
                 {
-                    JOJ_ERROR(ErrorCode::FAILED, "Node[%d] scale is not a 3-element array.", i);
+                    // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] scale is not a 3-element array.", i);
                     return false;
                 }
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] scale is not an array.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] scale is not an array.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_WARN("Node[%d] does not have key 'scale'.", i);
+            // JOJ_WARN("Node[%d] does not have key 'scale'.", i);
         }
 
         if (node.has_key("children"))
@@ -572,20 +572,20 @@ b8 joj::GLTFImporter::load_nodes()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Node[%d] child is not an integer.", i);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] child is not an integer.", i);
                         return false;
                     }
                 }
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] children is not an array.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] children is not an array.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_WARN("Node[%d] does not have key 'children'.", i);
+            // JOJ_WARN("Node[%d] does not have key 'children'.", i);
         }
 
         if (node.has_key("mesh"))
@@ -597,13 +597,13 @@ b8 joj::GLTFImporter::load_nodes()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] mesh is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] mesh is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_WARN("Node[%d] does not have key 'mesh'.", i);
+            // JOJ_WARN("Node[%d] does not have key 'mesh'.", i);
         }
 
         if (node.has_key("skin"))
@@ -615,13 +615,13 @@ b8 joj::GLTFImporter::load_nodes()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Node[%d] skin is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Node[%d] skin is not an integer.", i);
                 return false;
             }
         }
         else
         {
-            JOJ_WARN("Node[%d] does not have key 'skin'.", i);
+            // JOJ_WARN("Node[%d] does not have key 'skin'.", i);
         }
 
         // TODO: Read camera, weights, extensions, extras
@@ -677,12 +677,12 @@ b8 joj::GLTFImporter::load_meshes()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] name is not a string.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] name is not a string.", i);
             }
         }
         else
         {
-            JOJ_WARN("Mesh[%d] does not have key 'name'.", i);
+            // JOJ_WARN("Mesh[%d] does not have key 'name'.", i);
         }
 
         auto primitives = mesh["primitives"].as_array();
@@ -695,7 +695,7 @@ b8 joj::GLTFImporter::load_meshes()
                 if (primitive["mode"].is_int())
                 {
                     const i32 pmode = primitive["mode"].as_int();
-                    std::cout << "Mesh[" << i << "] Primitive[" << j << "] mode: " << pmode << std::endl;
+                    // std::cout << "Mesh[" << i << "] Primitive[" << j << "] mode: " << pmode << std::endl;
                     switch (pmode)
                     {
                     case 0:
@@ -725,12 +725,12 @@ b8 joj::GLTFImporter::load_meshes()
                 }
                 else
                 {
-                    JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] mode is not an integer.", i, j);
+                    // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] mode is not an integer.", i, j);
                 }
             }
             else
             {
-                JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'mode'.", i, j);
+                // JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'mode'.", i, j);
             }
 
             if (primitive.has_key("material"))
@@ -742,12 +742,12 @@ b8 joj::GLTFImporter::load_meshes()
                 }
                 else
                 {
-                    JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] material index is not an integer.", i, j);
+                    // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] material index is not an integer.", i, j);
                 }
             }
             else
             {
-                JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'material'.", i, j);
+                // JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'material'.", i, j);
             }
 
             if (primitive.has_key("attributes"))
@@ -762,12 +762,12 @@ b8 joj::GLTFImporter::load_meshes()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] position index is not an integer.", i, j);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] position index is not an integer.", i, j);
                     }
                 }
                 else
                 {
-                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'POSITION'.", i, j);
+                    // JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'POSITION'.", i, j);
                 }
 
                 if (attributes.find("NORMAL") != attributes.end())
@@ -779,12 +779,12 @@ b8 joj::GLTFImporter::load_meshes()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] normal index is not an integer.", i, j);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] normal index is not an integer.", i, j);
                     }
                 }
                 else
                 {
-                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'NORMAL'.", i, j);
+                    // JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'NORMAL'.", i, j);
                 }
 
                 if (attributes.find("TANGENT") != attributes.end())
@@ -796,12 +796,12 @@ b8 joj::GLTFImporter::load_meshes()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] tangent index is not an integer.", i, j);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] tangent index is not an integer.", i, j);
                     }
                 }
                 else
                 {
-                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'TANGENT'.", i, j);
+                    // JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'TANGENT'.", i, j);
                 }
 
                 if (attributes.find("TEXCOORD_0") != attributes.end())
@@ -813,12 +813,12 @@ b8 joj::GLTFImporter::load_meshes()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] texcoord index is not an integer.", i, j);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] texcoord index is not an integer.", i, j);
                     }
                 }
                 else
                 {
-                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'TEXCOORD_0'.", i, j);
+                    // JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'TEXCOORD_0'.", i, j);
                 }
 
                 if (attributes.find("COLOR_0") != attributes.end())
@@ -830,12 +830,12 @@ b8 joj::GLTFImporter::load_meshes()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] color index is not an integer.", i, j);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] color index is not an integer.", i, j);
                     }
                 }
                 else
                 {
-                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'COLOR_0'.", i, j);
+                    // JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'COLOR_0'.", i, j);
                 }
 
                 if (attributes.find("JOINTS_0") != attributes.end())
@@ -847,12 +847,12 @@ b8 joj::GLTFImporter::load_meshes()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] joint index is not an integer.", i, j);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] joint index is not an integer.", i, j);
                     }
                 }
                 else
                 {
-                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'JOINTS_0'.", i, j);
+                    // JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'JOINTS_0'.", i, j);
                 }
 
                 if (attributes.find("WEIGHTS_0") != attributes.end())
@@ -864,17 +864,17 @@ b8 joj::GLTFImporter::load_meshes()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] weight index is not an integer.", i, j);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] weight index is not an integer.", i, j);
                     }
                 }
                 else
                 {
-                    JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'WEIGHTS_0'.", i, j);
+                    // JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'WEIGHTS_0'.", i, j);
                 }
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] does not have key 'attributes'.", i, j);
+                // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] does not have key 'attributes'.", i, j);
             }
 
             if (primitive.has_key("indices"))
@@ -886,12 +886,12 @@ b8 joj::GLTFImporter::load_meshes()
                 }
                 else
                 {
-                    JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] indices index is not an integer.", i, j);
+                    // JOJ_ERROR(ErrorCode::FAILED, "Mesh[%d] Primitive[%d] indices index is not an integer.", i, j);
                 }
             }
             else
             {
-                JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'indices'.", i, j);
+                // JOJ_WARN("Mesh[%d] Primitive[%d] does not have key 'indices'.", i, j);
             }
 
             m.primitives.push_back(p);
@@ -953,12 +953,12 @@ b8 joj::GLTFImporter::load_animations()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] name is not a string.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] name is not a string.", i);
             }
         }
         else
         {
-            JOJ_WARN("Animation[%d] does not have key 'name'.", i);
+            // JOJ_WARN("Animation[%d] does not have key 'name'.", i);
         }
 
         if (animation.has_key("samplers"))
@@ -977,12 +977,12 @@ b8 joj::GLTFImporter::load_animations()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Sampler[%d] input index is not an integer.", i, j);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Sampler[%d] input index is not an integer.", i, j);
                     }
                 }
                 else
                 {
-                    JOJ_WARN("Animation[%d] Sampler[%d] does not have key 'input'.", i, j);
+                    // JOJ_WARN("Animation[%d] Sampler[%d] does not have key 'input'.", i, j);
                 }
 
                 if (sampler.has_key("output"))
@@ -994,12 +994,12 @@ b8 joj::GLTFImporter::load_animations()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Sampler[%d] output index is not an integer.", i, j);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Sampler[%d] output index is not an integer.", i, j);
                     }
                 }
                 else
                 {
-                    JOJ_WARN("Animation[%d] Sampler[%d] does not have key 'output'.", i, j);
+                    // JOJ_WARN("Animation[%d] Sampler[%d] does not have key 'output'.", i, j);
                 }
 
                 if (sampler.has_key("interpolation"))
@@ -1018,12 +1018,12 @@ b8 joj::GLTFImporter::load_animations()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Sampler[%d] interpolation is not a string.", i, j);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Sampler[%d] interpolation is not a string.", i, j);
                     }
                 }
                 else
                 {
-                    JOJ_WARN("Animation[%d] Sampler[%d] does not have key 'interpolation'.", i, j);
+                    // JOJ_WARN("Animation[%d] Sampler[%d] does not have key 'interpolation'.", i, j);
                 }
 
                 anim.samplers.push_back(gltf_sampler);
@@ -1032,7 +1032,7 @@ b8 joj::GLTFImporter::load_animations()
         }
         else
         {
-            JOJ_WARN("Animation[%d] does not have key 'samplers'.", i);
+            // JOJ_WARN("Animation[%d] does not have key 'samplers'.", i);
         }
 
         if (animation.has_key("channels"))
@@ -1052,12 +1052,12 @@ b8 joj::GLTFImporter::load_animations()
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] sampler index is not an integer.", i, k);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] sampler index is not an integer.", i, k);
                     }
                 }
                 else
                 {
-                    JOJ_WARN("Animation[%d] Channel[%d] does not have key 'sampler'.", i, k);
+                    // JOJ_WARN("Animation[%d] Channel[%d] does not have key 'sampler'.", i, k);
                 }
 
                 if (channel.has_key("target"))
@@ -1074,12 +1074,12 @@ b8 joj::GLTFImporter::load_animations()
                             }
                             else
                             {
-                                JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] target node index is not an integer.", i, k);
+                                // JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] target node index is not an integer.", i, k);
                             }
                         }
                         else
                         {
-                            JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] does not have key 'node'.", i, k);
+                            // JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] does not have key 'node'.", i, k);
                         }
 
                         if (target.find("path") != target.end())
@@ -1098,22 +1098,22 @@ b8 joj::GLTFImporter::load_animations()
                             }
                             else
                             {
-                                JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] target path is not a string.", i, k);
+                                // JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] target path is not a string.", i, k);
                             }
                         }
                         else
                         {
-                            JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] does not have key 'path'.", i, k);
+                            // JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] does not have key 'path'.", i, k);
                         }
                     }
                     else
                     {
-                        JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] target index is not an integer.", i, k);
+                        // JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] target index is not an integer.", i, k);
                     }
                 }
                 else
                 {
-                    JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] does not have key 'target'.", i, k);
+                    // JOJ_ERROR(ErrorCode::FAILED, "Animation[%d] Channel[%d] does not have key 'target'.", i, k);
                 }
 
                 anim.channels.push_back(gltf_channel);
@@ -1122,7 +1122,7 @@ b8 joj::GLTFImporter::load_animations()
         }
         else
         {
-            JOJ_WARN("Animation[%d] does not have key 'channels'.", i);
+            // JOJ_WARN("Animation[%d] does not have key 'channels'.", i);
         }
 
         m_animations.push_back(anim);
@@ -1185,12 +1185,12 @@ b8 joj::GLTFImporter::load_skins()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] name is not a string.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] name is not a string.", i);
             }
         }
         else
         {
-            JOJ_WARN("Skin[%d] does not have key 'name'.", i);
+            // JOJ_WARN("Skin[%d] does not have key 'name'.", i);
         }
 
         if (skin.has_key("inverseBindMatrices"))
@@ -1202,12 +1202,12 @@ b8 joj::GLTFImporter::load_skins()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] inverse bind matrices index is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] inverse bind matrices index is not an integer.", i);
             }
         }
         else
         {
-            JOJ_WARN("Skin[%d] does not have key 'inverseBindMatrices'.", i);
+            // JOJ_WARN("Skin[%d] does not have key 'inverseBindMatrices'.", i);
         }
 
         if (skin.has_key("skeleton"))
@@ -1219,12 +1219,12 @@ b8 joj::GLTFImporter::load_skins()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] skeleton root node index is not an integer.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] skeleton root node index is not an integer.", i);
             }
         }
         else
         {
-            JOJ_WARN("Skin[%d] does not have key 'skeleton'.", i);
+            // JOJ_WARN("Skin[%d] does not have key 'skeleton'.", i);
         }
 
         if (skin.has_key("joints"))
@@ -1238,13 +1238,13 @@ b8 joj::GLTFImporter::load_skins()
                 }
                 else
                 {
-                    JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] joint index is not an integer.", i);
+                    // JOJ_ERROR(ErrorCode::FAILED, "Skin[%d] joint index is not an integer.", i);
                 }
             }
         }
         else
         {
-            JOJ_WARN("Skin[%d] does not have key 'joints'.", i);
+            // JOJ_WARN("Skin[%d] does not have key 'joints'.", i);
         }
 
         m_skins.push_back(s);
@@ -1294,12 +1294,12 @@ b8 joj::GLTFImporter::load_scenes()
             }
             else
             {
-                JOJ_ERROR(ErrorCode::FAILED, "Scene[%d] name is not a string.", i);
+                // JOJ_ERROR(ErrorCode::FAILED, "Scene[%d] name is not a string.", i);
             }
         }
         else
         {
-            JOJ_WARN("Scene[%d] does not have key 'name'.", i);
+            // JOJ_WARN("Scene[%d] does not have key 'name'.", i);
         }
 
         if (scene.has_key("nodes"))
@@ -1313,13 +1313,13 @@ b8 joj::GLTFImporter::load_scenes()
                 }
                 else
                 {
-                    JOJ_ERROR(ErrorCode::FAILED, "Scene[%d] root node index is not an integer.", i);
+                    // JOJ_ERROR(ErrorCode::FAILED, "Scene[%d] root node index is not an integer.", i);
                 }
             }
         }
         else
         {
-            JOJ_WARN("Scene[%d] does not have key 'nodes'.", i);
+            // JOJ_WARN("Scene[%d] does not have key 'nodes'.", i);
         }
 
         m_scenes.push_back(s);
@@ -1345,5 +1345,63 @@ void joj::GLTFImporter::print_scenes()
             std::cout << std::endl;
         }
         ++i;
+    }
+}
+
+void joj::GLTFImporter::get_vertices(std::vector<GLTFVertex>& vertices)
+{
+}
+
+void joj::GLTFImporter::get_indices(std::vector<u16>& indices)
+{
+}
+
+void joj::GLTFImporter::get_vertices_and_indices(std::vector<GLTFVertex>& vertices, std::vector<u16>& indices)
+{
+    for (const auto& mesh : m_meshes)
+    {
+        for (const auto& primitive : mesh.primitives)
+        {
+            // 1. Pegar os índices dos accessors
+            i32 index_position_accessor = primitive.position_acessor;
+            i32 index_normal_accessor = primitive.normal_acessor;
+            i32 index_indices_accessor = primitive.indices_acessor;
+
+            if (index_position_accessor == -1 || index_normal_accessor == -1 || index_indices_accessor == -1)
+                continue; // Se faltar algum dado essencial, pula a primitive
+
+            // 2. Obter os accessors correspondentes
+            const GLTFAccessor& position_accessor = m_accessors[index_position_accessor];
+            const GLTFAccessor& normal_accessor = m_accessors[index_normal_accessor];
+            const GLTFAccessor& indices_accessor = m_accessors[index_indices_accessor];
+
+            // 3. Pegar os BufferViews dos accessors
+            const GLTFBufferView& position_buffer_view = m_buffer_views[position_accessor.buffer_view];
+            const GLTFBufferView& normal_buffer_view = m_buffer_views[normal_accessor.buffer_view];
+            const GLTFBufferView& indices_buffer_view = m_buffer_views[indices_accessor.buffer_view];
+
+            // 4. Obter os Buffers correspondentes
+            const Buffer& position_buffer = m_buffers[position_buffer_view.buffer];
+            const Buffer& normal_buffer = m_buffers[normal_buffer_view.buffer];
+            const Buffer& indices_buffer = m_buffers[indices_buffer_view.buffer];
+
+            // 5. Extrair os dados dos buffers
+            std::vector<Vector3> positions = read_buffer<Vector3>(position_buffer, position_accessor, position_buffer_view);
+            std::vector<Vector3> normals = read_buffer<Vector3>(normal_buffer, normal_accessor, normal_buffer_view);
+            std::vector<u16> indices_data = read_buffer<u16>(indices_buffer, indices_accessor, indices_buffer_view);
+
+            // 6. Criar os vértices
+            for (size_t i = 0; i < positions.size(); i++)
+            {
+                GLTFVertex vertex;
+                vertex.pos = positions[i];
+                vertex.color = Vector4(0, 1, 0, 1); // Cor padrão (branco)
+                vertex.normal = (i < normals.size()) ? normals[i] : Vector3(0, 0, 1); // Normal padrão caso não exista
+                vertices.push_back(vertex);
+            }
+
+            // 7. Adicionar os índices na lista final
+            indices.insert(indices.end(), indices_data.begin(), indices_data.end());
+        }
     }
 }
