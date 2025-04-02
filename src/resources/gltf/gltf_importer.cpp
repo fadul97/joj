@@ -1679,6 +1679,7 @@ void joj::GLTFImporter::setup_mesh(GLTFMesh& gltf_mesh, Mesh& mesh)
     for (const auto& primitive : gltf_mesh.primitives)
     {
         Submesh submesh;
+        submesh.name = gltf_mesh.name;
 
         submesh.index_start = index_offset;
 
@@ -1736,6 +1737,89 @@ void joj::GLTFImporter::setup_mesh(GLTFMesh& gltf_mesh, Mesh& mesh)
         std::cout << "    Index count: " << submesh.index_count << std::endl;
     }
     */
+}
+
+void joj::GLTFImporter::setup_meshes(std::vector<GLTFMesh>& gltf_meshes, Mesh& mesh)
+{
+    std::vector<Vertex::ColorTanPosNormalTex> vertices;
+    std::vector<u16> indices;
+    std::vector<Submesh> submeshes;
+
+    u32 vertex_offset = 0;
+    u32 index_offset = 0;
+
+    for (const auto& gltf_mesh : gltf_meshes)
+    {
+        std::vector<Vector3> positions;
+        std::vector<Vector3> normals;
+        std::vector<Vector4> tangents;
+        std::vector<Vector2> texCoords;
+        std::vector<Vector4> colors;
+
+        for (const auto& primitive : gltf_mesh.primitives)
+        {
+            if (primitive.position_acessor != -1)
+                positions = read_buffer<Vector3>(primitive.position_acessor);
+            
+            if (primitive.normal_acessor != -1)
+                normals = read_buffer<Vector3>(primitive.normal_acessor);
+        
+            if (primitive.tangent_acessor != -1)
+                tangents = read_buffer<Vector4>(primitive.tangent_acessor);
+            
+            if (primitive.texcoord_acessor != -1)
+                texCoords = read_buffer<Vector2>(primitive.texcoord_acessor);
+
+            if (primitive.color_acessor != -1)
+                colors = read_buffer<Vector4>(primitive.color_acessor);
+            
+            // Combinar os dados de vértices
+            for (size_t i = 0; i < positions.size(); ++i)
+            {
+                Vertex::ColorTanPosNormalTex vertex;
+                vertex.pos = positions[i];
+                vertex.normal = i < normals.size() ? normals[i] : Vector3(1, 1, 1);
+                vertex.tangentU = i < tangents.size() ? tangents[i] : Vector4(0, 0, 0, 1);
+                vertex.tex = i < texCoords.size() ? texCoords[i] : Vector2(0, 1);
+                vertex.color = i < colors.size() ? colors[i] : Vector4(1, 1, 1, 1);
+
+                vertices.push_back(vertex);
+            }
+
+            // Carregar os índices
+            auto prim_indices = read_buffer<u16>(primitive.indices_acessor);
+            for (auto& index : prim_indices)
+                index += vertex_offset; // Ajustar os índices para o novo offset global
+            
+            indices.insert(indices.end(), prim_indices.begin(), prim_indices.end());
+
+            // Criar um submesh
+            Submesh submesh;
+            submesh.name = gltf_mesh.name;
+
+            submesh.vertex_start = vertex_offset;
+            submesh.vertex_count = static_cast<u32>(positions.size());
+
+            submesh.index_start = index_offset;
+            submesh.index_count = static_cast<u32>(prim_indices.size());
+
+            submeshes.push_back(submesh);
+
+            // Atualizar os offsets globais
+            vertex_offset += static_cast<u32>(positions.size());
+            index_offset += static_cast<u32>(prim_indices.size());
+        }
+    }
+
+    // Passar os dados para o Mesh
+    mesh.set_vertices(vertices);
+    mesh.set_indices(indices);
+    mesh.set_submeshes(submeshes);
+
+    // Print de depuração
+    std::cout << "Total Vertices: " << vertices.size() << std::endl;
+    std::cout << "Total Indices: " << indices.size() << std::endl;
+    std::cout << "Total Submeshes: " << submeshes.size() << std::endl;
 }
 
 void joj::GLTFImporter::setup_aggregated_mesh(const GLTFNode& node, Mesh& mesh)
@@ -1861,6 +1945,8 @@ void joj::GLTFImporter::setup_aggregated_meshes(Mesh& mesh)
             Submesh submesh;
             submesh.vertex_start = vertex_offset;
             submesh.index_start = index_offset;
+
+            submesh.name = gltf_mesh.name;
 
             // Ler buffers
             auto position_accessor = get_accessor(primitive.position_acessor);

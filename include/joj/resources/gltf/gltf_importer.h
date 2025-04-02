@@ -54,6 +54,7 @@ namespace joj
         const GLTFBufferView& get_buffer_view(const GLTFAccessor& accessor) const;
 
         void setup_mesh(GLTFMesh& gltf_mesh, Mesh& mesh);
+        void setup_meshes(std::vector<GLTFMesh>& gltf_meshes, Mesh& mesh);
         void setup_aggregated_mesh(const GLTFNode& node, Mesh& mesh);
         void build_aggregated_meshes();
         void setup_aggregated_meshes(Mesh& mesh);

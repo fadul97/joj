@@ -90,8 +90,73 @@ void App3DTest::build_buffers()
     // m_model.print_info();
 
     m_mesh;
-    m_beautiful_game_importer.setup_mesh(m_model.meshes[0], m_mesh);
-    m_beautiful_game_importer.setup_aggregated_meshes(m_mesh);
+    // m_beautiful_game_importer.setup_mesh(m_model.meshes[2], m_mesh);
+    m_beautiful_game_importer.setup_meshes(m_model.meshes, m_mesh);
+    // m_beautiful_game_importer.setup_aggregated_meshes(m_mesh);
+
+    // Write vertices and indices to file
+    std::ofstream vertices_file("out_sponza_vertices.txt");
+
+    if (vertices_file.is_open())
+    {
+        vertices_file << "Vertices Count: " << m_mesh.get_vertex_count() << "\n";
+        vertices_file << "Indices Count: " << m_mesh.get_index_count() << "\n";
+        vertices_file << "Submeshes: " << m_mesh.get_submesh_count() << "\n";
+        vertices_file << "Submeshes:\n";
+        for (const auto& submesh : m_mesh.get_submeshes())
+        {
+            vertices_file << "    Submesh Name: " << submesh.name << "\n";
+            vertices_file << "        Vertex Start: " << submesh.vertex_start << "\n";
+            vertices_file << "        Vertex Count: " << submesh.vertex_count << "\n";
+            vertices_file << "        Index Start: " << submesh.index_start << "\n";
+            vertices_file << "        Index Count: " << submesh.index_count << "\n";
+        }
+
+        // Print vertices of each submesh
+        i32 i = 0;
+        for (const auto& submesh : m_mesh.get_submeshes())
+        {
+            vertices_file << "Submesh Name[" << i << "]: " << submesh.name << "\n";
+            vertices_file << "    Vertex Start: " << submesh.vertex_start << "\n";
+            vertices_file << "    Vertex Count: " << submesh.vertex_count << "\n";
+            vertices_file << "    => Vertices\n";
+            for (u32 j = 0; j < submesh.vertex_count; ++j)
+            {
+                const auto& vertex = m_mesh.get_vertex_data()[submesh.vertex_start + j];
+                vertices_file << "        " << j << ": " << vertex.pos.x << ", " << vertex.pos.y << ", " << vertex.pos.z << "\n";
+            }
+            ++i;
+        }
+        
+        vertices_file << "Indices:\n";
+        // Print indices of each submesh
+        i32 j = 0;
+        for (const auto& submesh : m_mesh.get_submeshes())
+        {
+            vertices_file << "Submesh Name[" << j << "]: " << submesh.name << "\n";
+            vertices_file << "    Index Start: " << submesh.index_start << "\n";
+            vertices_file << "    Index Count: " << submesh.index_count << "\n";
+            vertices_file << "    => Indices\n";
+            for (u32 k = 0; k < submesh.index_count; ++k)
+            {
+                const auto& index = m_mesh.get_index_data()[submesh.index_start + k];
+                vertices_file << "        " << index << "\n";
+            }
+            ++j;
+        }
+        vertices_file.close();
+    }
+    else
+    {
+        std::cerr << "Unable to open vertices file." << std::endl;
+    }
+
+    // Print m_mesh data
+    /*
+    m_mesh.print_info();
+    m_mesh.print_vertices();
+    m_mesh.print_indices();
+    */
 
     std::vector<joj::Vertex::ColorTanPosNormalTex> vertices_data;
     vertices_data.reserve(m_mesh.get_vertex_count());
@@ -102,6 +167,8 @@ void App3DTest::build_buffers()
         v.pos = vertex.pos;
         v.color = vertex.color;
         v.normal = vertex.normal;
+        v.tangentU = vertex.tangentU;
+        v.tex = vertex.tex;
         vertices_data.push_back(v);
     }
     
@@ -120,6 +187,12 @@ void App3DTest::build_buffers()
         std::cout << "Normal: " << vertex.normal.x << ", " << vertex.normal.y << ", " << vertex.normal.z << std::endl;
     }
     */
+
+    // Print size differente between vertices_data and mesh.get_vertex_data()
+    std::cout << "Size of vertices_data: " << sizeof(vertices_data) << std::endl;
+    std::cout << "Size of mesh.get_vertex_data(): " << sizeof(m_mesh.get_vertex_data()) << std::endl;
+    std::cout << "Size of vertices_data[0]: " << sizeof(vertices_data[0]) << std::endl;
+    std::cout << "Size of mesh.get_vertex_data()[0]: " << sizeof(m_mesh.get_vertex_data()[0]) << std::endl;
 
     // Create vertex buffer
     m_use_new_vertex = false;
@@ -230,7 +303,7 @@ void App3DTest::init()
 {
     setup_camera();
     build_buffers();
-    create_buffers_for_model(m_model, m_renderer);
+    // create_buffers_for_model(m_model, m_renderer);
 
     m_renderer->set_rasterizer_state(joj::RasterizerState::Solid);
 
@@ -268,7 +341,7 @@ void App3DTest::draw()
             m_lightcb.update(lightBuffer);
         }
 
-        draw_model(m_model, joj::float4x4_identity());
+        // draw_model(m_model, joj::float4x4_identity());
 
         draw_modelNew(m_model, joj::float4x4_identity());
     }
@@ -443,7 +516,7 @@ void App3DTest::draw_modelNew(const joj::GLTFModel& model, const joj::JFloat4x4&
     // Renderizar cada primitiva dentro da mesh
     for (const auto& submesh : m_mesh.get_submeshes())
     {
-        m_renderer->draw_indexed(submesh.index_count, submesh.index_start, submesh.vertex_start);
+        m_renderer->draw_indexed(submesh.index_count, submesh.index_start, 0);
     }
 }
 

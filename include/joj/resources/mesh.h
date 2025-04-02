@@ -29,6 +29,12 @@ namespace joj
         u32 get_index_count() const;
         u32 get_submesh_count() const;
 
+        void print_vertices() const;
+        void print_indices() const;
+
+        void print_info() const;
+        void print_submesh_info() const;
+
     private:
         std::vector<Vertex::ColorTanPosNormalTex> m_vertices;
         std::vector<u16> m_indices;
