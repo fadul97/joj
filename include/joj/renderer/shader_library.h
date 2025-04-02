@@ -5,8 +5,8 @@
 
 namespace joj
 {
-	namespace ShaderLibrary
-	{
+        namespace ShaderLibrary
+        {
         /**
          * @brief A basic vertex shader that only passes the position and color
          * and only returns the color.
@@ -34,7 +34,9 @@ namespace joj
         JOJ_EXTERN const char* LightWithPosColorNormalAndCamera;
 
         JOJ_EXTERN const char* PosColorNormalWithLightRotation;
-	}
+
+        JOJ_EXTERN const char* ColorTanPosNormalTexWithCamera;
+        }
 }
 
 #endif // _JOJ_SHADER_LIBRARY_H

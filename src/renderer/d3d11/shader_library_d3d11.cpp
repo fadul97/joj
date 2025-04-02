@@ -233,6 +233,90 @@ namespace joj
                 return float4(input.ColorH.rgb * finalColor, input.ColorH.a);
             }
         )";
+
+
+        const char* ColorTanPosNormalTexWithCamera = R"(
+            cbuffer CB : register(b0)
+            {
+                float4x4 gWVP;
+                float4x4 gW;
+                float4x4 gV;
+                float4x4 gP;
+            };
+
+            cbuffer LightBuffer : register(b1)
+            {
+                float4 diffuseColor;
+                float3 lightDirection;
+                float padding;
+            };
+
+/*
+struct ColorTanPosNormalTex
+{
+    Vector4 color;
+    Vector4 tangentU;
+    Vector3 pos;
+    Vector3 normal;
+    Vector2 tex;
+};
+*/
+            struct VS_INPUT
+            {
+                float4 ColorL : COLOR;
+                float4 TangentL : TANGENT;
+                float3 PosL : POSITION;
+                float3 NormalL : NORMAL;
+                float2 TexL : TEXCOORD;
+            };
+
+            struct PS_INPUT
+            {
+                float4 PosH : SV_POSITION;
+                float4 ColorH : COLOR;
+                float3 NormalW : NORMAL;
+            };
+
+            PS_INPUT VS(VS_INPUT input) {
+                PS_INPUT output;
+
+                // Calculate the position of the vertex against the world, view, and projection matrices.
+                output.PosH = mul(float4(input.PosL, 1.0f), gW);
+                output.PosH = mul(output.PosH, gV);
+                output.PosH = mul(output.PosH, gP);
+
+                // Calculate the normal vector against the world matrix only.
+                output.NormalW = mul(input.NormalL, (float3x3)gW);
+                
+                // Normalize the normal vector.
+                output.NormalW = normalize(output.NormalW);
+
+                output.ColorH = input.ColorL;
+
+                return output;
+            }
+
+            float4 PS(PS_INPUT input) : SV_TARGET {
+                // Negate the light direction
+                float3 lightDir = -lightDirection;
+
+                // Diffuse light color
+                float3 diffuseColor = float3(1.0f, 0.3f, 1.0f);
+
+                // Calculate the intensity of the diffuse light
+                float diffIntensity = saturate(dot(input.NormalW, lightDir));
+                float3 diffuse = diffuseColor.rgb * diffIntensity;
+
+                // Ambient light
+                float3 ambient = float3(1.0f, 0.3f, 1.0f);
+
+                // Combine the two light sources (ambient and diffuse)
+                float3 finalColor = ambient + diffuse;
+
+                // Multiply the final color by the material color
+                return float4(input.ColorH.rgb * finalColor, input.ColorH.a);
+            }
+        )";
 	}
 }
 

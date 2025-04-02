@@ -16,6 +16,15 @@ namespace joj
 
     namespace Vertex
     {
+		struct ColorTanPosNormalTex
+		{
+			Vector4 color;
+			Vector4 tangentU;
+			Vector3 pos;
+			Vector3 normal;
+			Vector2 tex;
+		};
+
 		struct PosColor
 		{
             Vector3 pos;
