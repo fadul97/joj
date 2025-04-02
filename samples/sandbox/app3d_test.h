@@ -82,6 +82,7 @@ public:
 
     joj::GLTFImporter m_beautiful_game_importer;
     joj::GLTFModel m_model;
+    b8 m_use_new_vertex;
 };
 
 #endif // _JOJ_3D_APP_TEST_H

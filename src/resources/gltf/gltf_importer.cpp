@@ -1560,3 +1560,113 @@ const joj::GLTFBufferView& joj::GLTFImporter::get_buffer_view(const GLTFAccessor
 {
     return m_buffer_views[accessor.buffer_view];
 }
+
+void joj::GLTFImporter::setup_mesh(GLTFMesh& gltf_mesh, Mesh& mesh)
+{
+    std::vector<Vertex::ColorTanPosNormalTex> vertices;
+    std::vector<u16> indices;
+    std::vector<Submesh> submeshes;
+
+    std::vector<Vector3> positions;
+    std::vector<Vector3> normals;
+    std::vector<Vector4> tangents;
+    std::vector<Vector2> texCoords;
+    std::vector<Vector4> colors;
+
+    for (const auto& primitive : gltf_mesh.primitives)
+    {
+        if (primitive.position_acessor != -1)
+            positions = read_buffer<Vector3>(primitive.position_acessor);
+        
+        if (primitive.normal_acessor != -1)
+            normals = read_buffer<Vector3>(primitive.normal_acessor);
+    
+        if (primitive.tangent_acessor != -1)
+            tangents = read_buffer<Vector4>(primitive.tangent_acessor);
+        
+        if (primitive.texcoord_acessor != -1)
+            texCoords = read_buffer<Vector2>(primitive.texcoord_acessor);
+
+        if (primitive.color_acessor != -1)
+            colors = read_buffer<Vector4>(primitive.color_acessor);
+        
+        // Combinar os dados de vértices
+        for (size_t i = 0; i < positions.size(); ++i)
+        {
+            Vertex::ColorTanPosNormalTex vertex;
+            vertex.pos = positions[i];
+            vertex.normal = i < normals.size() ? normals[i] : Vector3(1, 1, 1); // Default normal
+            vertex.tangentU = i < tangents.size() ? tangents[i] : Vector4(0, 0, 0, 1); // Default tangent
+            vertex.tex = i < texCoords.size() ? texCoords[i] : Vector2(0, 1); // Default texcoord
+            vertex.color = i < colors.size() ? colors[i] : Vector4(1, 1, 1, 1); // Default color
+
+            vertices.push_back(vertex);
+        }
+
+        // Carregar os índices
+        auto prim_indices = read_buffer<u16>(primitive.indices_acessor);
+        indices.insert(indices.end(), prim_indices.begin(), prim_indices.end());
+    }
+
+    u32 vertex_offset = 0;
+    u32 index_offset = 0;
+
+    for (const auto& primitive : gltf_mesh.primitives)
+    {
+        Submesh submesh;
+
+        submesh.index_start = index_offset;
+
+        auto position_accessor = get_accessor(primitive.position_acessor);
+        submesh.vertex_start = vertex_offset;
+        submesh.vertex_count = position_accessor.count; // TODO: Corrigir isso para o número correto de vértices
+
+        auto indices_accessor = get_accessor(primitive.indices_acessor);
+        submesh.index_start = index_offset;
+        submesh.index_count = indices_accessor.count; // TODO: Corrigir isso para o número correto de índices
+
+        index_offset += submesh.index_count;
+        vertex_offset += submesh.vertex_count;
+
+        submeshes.push_back(submesh);
+    }
+
+    // Passar os dados para o Mesh
+    mesh.set_vertices(vertices);
+    mesh.set_indices(indices);
+    mesh.set_submeshes(submeshes);
+
+    // Print size of vertices and indices
+    std::cout << "Vertices size: " << vertices.size() << std::endl;
+    std::cout << "Indices size: " << indices.size() << std::endl;
+    std::cout << "Submeshes size: " << submeshes.size() << std::endl;
+
+    // Print vertices
+    for (const auto& vertex : vertices)
+    {
+        std::cout << "Vertex: " << vertex.pos.x << ", " << vertex.pos.y << ", " << vertex.pos.z << std::endl;
+        // std::cout << "Normal: " << vertex.normal.x << ", " << vertex.normal.y << ", " << vertex.normal.z << std::endl;
+        // std::cout << "Tangent: " << vertex.tangentU.x << ", " << vertex.tangentU.y << ", " << vertex.tangentU.z << std::endl;
+        // std::cout << "TexCoord: " << vertex.tex.x << ", " << vertex.tex.y << std::endl;
+        // std::cout << "Color: " << vertex.color.x << ", " << vertex.color.y << ", " << vertex.color.z << ", " << vertex.color.w << std::endl;
+    }
+
+    // Print indices
+    std::cout << "Indices: [";
+    for (const auto& index : indices)
+    {
+        std::cout << index << ", ";
+    }
+    std::cout << "]\n";
+
+    // Print submeshes
+    i32 i = 0;
+    for (const auto& submesh : submeshes)
+    {
+        std::cout << "Submesh: " << i << std::endl;
+        std::cout << "    Vertex start: " << submesh.vertex_start << std::endl;
+        std::cout << "    Vertex count: " << submesh.vertex_count << std::endl;
+        std::cout << "    Index start: " << submesh.index_start << std::endl;
+        std::cout << "    Index count: " << submesh.index_count << std::endl;
+    }
+}

@@ -21,6 +21,7 @@
 
 // ------------------------------------------------------------------------------------------------
 #include "joj/core/logger.h"
+#include "joj/resources/mesh.h"
 
 inline std::vector<u8> load_binary_data(const std::string& filename)
 {
@@ -85,14 +86,32 @@ void App3DTest::build_buffers()
     if (m_beautiful_game_importer.load("models/Box.gltf") != joj::ErrorCode::OK)
         return;
 
-    // Load binary data
-    std::vector<joj::GLTFVertex> vertices;
-    std::vector<u16> indices;
-    m_beautiful_game_importer.get_vertices_and_indices(vertices, indices);
-
     m_model;
     m_beautiful_game_importer.get_meshes(m_model.meshes);
     m_model.print_info();
+
+    joj::Mesh mesh;
+    m_beautiful_game_importer.setup_mesh(m_model.meshes[0], mesh);
+
+    std::vector<joj::Vertex::ColorTanPosNormalTex> vertices_data;
+    vertices_data.reserve(mesh.get_vertex_count());
+    const auto& vertices = mesh.get_vertex_data();
+    for (const auto& vertex : vertices)
+    {
+        joj::Vertex::ColorTanPosNormalTex v;
+        v.pos = vertex.pos;
+        v.color = vertex.color;
+        v.normal = vertex.normal;
+        vertices_data.push_back(v);
+    }
+    
+    std::vector<u16> indices_data;
+    indices_data.reserve(mesh.get_index_count());
+    const auto& indices = mesh.get_index_data();
+    for (const auto& index : indices)
+    {
+        indices_data.push_back(index);
+    }
 
     /*
     for (const auto& vertex : vertices)
@@ -103,39 +122,102 @@ void App3DTest::build_buffers()
     */
 
     // Create vertex buffer
-    const u32 vertices_size = static_cast<u32>(vertices.size());
-    m_vertex_cout = vertices_size;
-    JOJ_DEBUG("Vertices count: %d", m_vertex_cout);
-    m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_vb.create(joj::BufferUsage::Default, joj::CPUAccessType::None,
-        sizeof(joj::Vertex::PosColorNormal) * vertices_size, vertices.data()) != joj::ErrorCode::OK)
-        return;
-
-    // Create index buffer
-    const u32 indices_size = static_cast<u32>(indices.size());
-    m_index_count = indices_size;
-    JOJ_DEBUG("Indices count: %d", m_index_count);
-    m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_ib.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(u16) * indices_size, indices.data()) != joj::ErrorCode::OK)
-        return;
-
-    // Create shader
-    m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_shader.compile_vertex_shader(joj::ShaderLibrary::PosColorNormalWithLightRotation, "VS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
-        return;
-
-    if (m_shader.compile_pixel_shader(joj::ShaderLibrary::PosColorNormalWithLightRotation, "PS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
-        return;
-
-    std::vector<joj::InputDesc> layout =
+    m_use_new_vertex = false;
+    if (m_use_new_vertex)
     {
-        { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
-        { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 12, joj::InputClassification::PerVertexData, 0 },
-        { "NORMAL",   0, joj::DataFormat::R32G32B32_FLOAT,    0, 28, joj::InputClassification::PerVertexData, 0 }
-    };
+        std::cout << "Using new vertex format." << std::endl;
+        const u32 vertices_size = static_cast<u32>(mesh.get_vertex_count());
+        m_vertex_cout = vertices_size;
+        JOJ_DEBUG("Vertices count: %d", m_vertex_cout);
+        m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+        if (m_vb.create(joj::BufferUsage::Default, joj::CPUAccessType::None,
+            sizeof(joj::Vertex::ColorTanPosNormalTex) * vertices_size, &mesh.get_vertex_data()) != joj::ErrorCode::OK)
+            return;
+    
+        // Create index buffer
+        const u32 indices_size = static_cast<u32>(mesh.get_index_count());
+        m_index_count = indices_size;
+        JOJ_DEBUG("Indices count: %d", m_index_count);
+        m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+        if (m_ib.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(u16) * indices_size, &mesh.get_index_data()) != joj::ErrorCode::OK)
+            return;
 
-    if (m_shader.create_input_layout(layout) != joj::ErrorCode::OK)
+        // Create shader
+        m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
+        if (m_shader.compile_vertex_shader(joj::ShaderLibrary::ColorTanPosNormalTexWithCamera, "VS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+            return;
+    
+        if (m_shader.compile_pixel_shader(joj::ShaderLibrary::ColorTanPosNormalTexWithCamera, "PS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+            return;
+    
+        std::vector<joj::InputDesc> layout =
+        {
+            { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0,  0, joj::InputClassification::PerVertexData, 0 },
+            { "TANGENT",  0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 16, joj::InputClassification::PerVertexData, 0 },
+            { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0, 28, joj::InputClassification::PerVertexData, 0 },
+            { "NORMAL",   0, joj::DataFormat::R32G32B32_FLOAT,    0, 40, joj::InputClassification::PerVertexData, 0 },
+            { "TEXCOORD", 0, joj::DataFormat::R32G32_FLOAT,       0, 52, joj::InputClassification::PerVertexData, 0 },
+        };
+
+        if (m_shader.create_input_layout(layout) != joj::ErrorCode::OK)
+            return;
+    }
+    else
+    {
+        std::cout << "Using old vertex format." << std::endl;
+        const u32 vertices_size = static_cast<u32>(vertices_data.size());
+        m_vertex_cout = vertices_size;
+        JOJ_DEBUG("Vertices count: %d", m_vertex_cout);
+        m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+        if (m_vb.create(joj::BufferUsage::Default, joj::CPUAccessType::None,
+            sizeof(joj::Vertex::ColorTanPosNormalTex) * vertices_size, vertices_data.data()) != joj::ErrorCode::OK)
+            return;
+    
+        // Create index buffer
+        const u32 indices_size = static_cast<u32>(indices.size());
+        m_index_count = indices_size;
+        JOJ_DEBUG("Indices count: %d", m_index_count);
+        m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+        if (m_ib.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(u16) * indices_size, indices.data()) != joj::ErrorCode::OK)
+            return;
+
+        // Create shader
+        /*
+        m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
+        if (m_shader.compile_vertex_shader(joj::ShaderLibrary::PosColorNormalWithLightRotation, "VS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
         return;
+        
+        if (m_shader.compile_pixel_shader(joj::ShaderLibrary::PosColorNormalWithLightRotation, "PS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+        return;
+        
+       std::vector<joj::InputDesc> layout =
+       {
+           { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0,  0, joj::InputClassification::PerVertexData, 0 },
+           { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 12, joj::InputClassification::PerVertexData, 0 },
+           { "NORMAL",   0, joj::DataFormat::R32G32B32_FLOAT,    0, 28, joj::InputClassification::PerVertexData, 0 },
+        };
+        */
+       m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
+        if (m_shader.compile_vertex_shader(joj::ShaderLibrary::ColorTanPosNormalTexWithCamera, "VS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+            return;
+    
+        if (m_shader.compile_pixel_shader(joj::ShaderLibrary::ColorTanPosNormalTexWithCamera, "PS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+            return;
+    
+        std::vector<joj::InputDesc> layout =
+        {
+            { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0,  0, joj::InputClassification::PerVertexData, 0 },
+            { "TANGENT",  0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 16, joj::InputClassification::PerVertexData, 0 },
+            { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0, 32, joj::InputClassification::PerVertexData, 0 },
+            { "NORMAL",   0, joj::DataFormat::R32G32B32_FLOAT,    0, 44, joj::InputClassification::PerVertexData, 0 },
+            { "TEXCOORD", 0, joj::DataFormat::R32G32_FLOAT,       0, 56, joj::InputClassification::PerVertexData, 0 },
+        };
+
+        if (m_shader.create_input_layout(layout) != joj::ErrorCode::OK)
+            return;
+    }
+
+
 
     m_cb = joj::D3D11ConstantBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
     if (m_cb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr) != joj::ErrorCode::OK)
@@ -153,6 +235,8 @@ void App3DTest::init()
     create_buffers_for_model(m_model, m_renderer);
 
     m_renderer->set_rasterizer_state(joj::RasterizerState::Solid);
+
+
 }
 
 static f32 rotation = 0.0f;
@@ -186,13 +270,48 @@ void App3DTest::draw()
             m_lightcb.update(lightBuffer);
         }
 
+        m_cb.bind_to_vertex_shader(0, 1);
+        {
+            joj::JMatrix4x4 W = DirectX::XMMatrixRotationY(rotation); // XMMatrixIdentity();
+            joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
+            joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
+            joj::JMatrix4x4 WVP = W * V * P;
+    
+            ConstantBuffer cbData = {};
+            XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
+            XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
+            XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
+            XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
+            m_cb.update(cbData);
+        }
+
+        m_lightcb.bind_to_pixel_shader(1, 1);
+        {
+            LightBuffer lightBuffer;
+            lightBuffer.diffuseColor = joj::JFloat4(1.0f, 0.7f, 0.7f, 1.0);
+            lightBuffer.lightDirection = joj::JFloat3(0.0f, 0.0f, 1.0f);
+            m_lightcb.update(lightBuffer);
+        }
+
+        // Bind and Draw the rect
+        u32 stride;
+        if (m_use_new_vertex)
+            stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
+        else
+            stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
+        constexpr u32 offset = 0;
+        m_vb.bind(0, 1, &stride, &offset);
+        m_ib.bind(joj::DataFormat::R16_UINT, offset);
+        m_shader.bind();
+        m_renderer->draw_indexed(m_index_count, 0, 0);
+
         // Per object updates
         m_cb.bind_to_vertex_shader(0, 1);
         // Draw first model - top right
         {
             // Move world matrix to the right and up
             joj::JMatrix4x4 W = DirectX::XMMatrixIdentity();
-            W = DirectX::XMMatrixRotationY(rotation) * DirectX::XMMatrixTranslation(2.0f, 2.0f, 0.0f);
+            W = DirectX::XMMatrixRotationY(rotation * 2.0f) * DirectX::XMMatrixTranslation(2.0f, 2.0f, 0.0f);
             
             joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
             joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
@@ -236,7 +355,7 @@ void App3DTest::draw()
         {
             // Move world matrix to the left and down
             joj::JMatrix4x4 W = DirectX::XMMatrixIdentity();
-            W = DirectX::XMMatrixTranslation(-2.0f, -2.0f, 0.0f) * DirectX::XMMatrixRotationY(-rotation);
+            W = DirectX::XMMatrixTranslation(-2.0f, -2.0f, 0.0f) * DirectX::XMMatrixRotationY(-rotation * 4.0f);
             
             joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
             joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
@@ -371,15 +490,16 @@ void App3DTest::draw_model(const joj::GLTFModel& model, const joj::JFloat4x4& pa
             std::cout << "Drawing Chessboard mesh: " << mesh.name << std::endl;
         }
 
-        joj::D3D11VertexBuffer& vb = *model.vbs[mesh_index]; // Desreferenciar unique_ptr
-        joj::D3D11IndexBuffer& ib = *model.ibs[mesh_index];  // Desreferenciar unique_ptr
-
         // Bind dos buffers antes do draw
-        constexpr u32 stride = sizeof(joj::GLTFVertex);
+        u32 stride;
+        if (m_use_new_vertex)
+            stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
+        else
+            stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
         constexpr u32 offset = 0;
 
-        vb.bind(0, 1, &stride, &offset);
-        ib.bind(joj::DataFormat::R16_UINT, offset);
+        m_vb.bind(0, 1, &stride, &offset);
+        m_ib.bind(joj::DataFormat::R16_UINT, offset);
 
         // Bind do shader
         m_shader.bind();
@@ -389,10 +509,12 @@ void App3DTest::draw_model(const joj::GLTFModel& model, const joj::JFloat4x4& pa
         {
             u32 index_count = get_index_count_for_primitive(primitive);
             m_renderer->draw_indexed(index_count, 0, 0);
+            /*
             if (!mesh.name.empty())
-                std::cout << "[DRAW CALL]: " << mesh.name << " (" << index_count << " indices)" << std::endl;
+            std::cout << "[DRAW CALL]: " << mesh.name << " (" << index_count << " indices)" << std::endl;
             else
-                std::cout << "[DRAW CALL]: (Unnamed Mesh) (" << index_count << " indices)" << std::endl;
+            std::cout << "[DRAW CALL]: (Unnamed Mesh) (" << index_count << " indices)" << std::endl;
+            */
         }
     }
 }

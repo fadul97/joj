@@ -18,6 +18,7 @@
 #include "joj/resources/buffer.h"
 #include "joj/resources/animation.h"
 #include "joj/utils/json_value.h"
+#include "joj/resources/mesh.h"
 
 namespace joj
 {
@@ -50,6 +51,8 @@ namespace joj
 
         const Buffer& get_buffer(const GLTFAccessor& accessor) const;
         const GLTFBufferView& get_buffer_view(const GLTFAccessor& accessor) const;
+
+        void setup_mesh(GLTFMesh& gltf_mesh, Mesh& mesh);
 
         template <typename T>
         std::vector<T> read_buffer(const u32 accessor_index) const
