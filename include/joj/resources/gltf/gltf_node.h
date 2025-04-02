@@ -29,6 +29,8 @@ namespace joj
     };
 
     JOJ_API b8 is_aggregator_node(const GLTFNode& node);
+
+    JOJ_API Matrix4x4 compute_local_transform(const GLTFNode& node);
 }
 
 #endif // _JOJ_GLTF_NODE_H
