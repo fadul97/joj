@@ -6,79 +6,62 @@
 #include <vector>
 #include "gltf_mesh.h"
 #include "gltf_node.h"
-#include "joj/resources/mesh.h"
-#include <iostream>
-#include <memory>
-#include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
-#include "joj/renderer/d3d11/index_buffer_d3d11.h"
-#include <unordered_map>
 
 namespace joj
 {
-    struct JOJ_API GLTFModel
-    {
-        std::vector<GLTFMesh> meshes;  // Todas as partes do modelo
-        std::vector<GLTFNode> nodes;  // Estrutura hierárquica da cena
-        std::vector<i32> root_nodes;   // Índices dos nós raiz (GLTFScene usa isso)
-        std::vector<std::unique_ptr<D3D11VertexBuffer>> vbs;
-        std::vector<std::unique_ptr<D3D11IndexBuffer>> ibs;
-        std::vector<Mesh> aggregated_meshes;
+    struct Mesh;
 
-        void print_info() const // Apenas para debug
-        {
-            std::cout << "GLTFModel: " << meshes.size() << " meshes, " 
-                    << nodes.size() << " nodes, " 
-                    << root_nodes.size() << " root nodes\n";
-        }
-    };
-
-    inline void print_model_hierarchy(const GLTFModel& model)
+    class JOJ_API GLTFModel
     {
-        std::cout << "=== GLTF Model Hierarchy ===\n";
-    
-        // Criar um mapa para descobrir o pai de cada nó
-        std::unordered_map<i32, i32> parent_map;
+    public:
+        GLTFModel();
+        ~GLTFModel();
+
+        void clear_root_nodes();
+
+        void add_gltf_mesh(const GLTFMesh& mesh);
+        void add_gltf_node(const GLTFNode& node);
+        void add_root_node(const i32 node_index);
+        void add_root_node(const std::string& node_name);
+        void add_aggregated_mesh(const Mesh& mesh);
+
+        void set_gltf_meshes(const std::vector<GLTFMesh>& meshes);
+        void set_gltf_nodes(const std::vector<GLTFNode>& nodes);
+        void set_root_nodes(const std::vector<i32>& root_nodes);
+        void set_aggregated_meshes(const std::vector<Mesh>& meshes);
+
+        const std::vector<GLTFMesh>& get_gltf_meshes() const;
+        const GLTFMesh* get_gltf_mesh(const i32 index) const;
+        const GLTFMesh* get_gltf_mesh(const std::string& name) const;
         
-        for (size_t i = 0; i < model.nodes.size(); ++i)
-        {
-            const auto& node = model.nodes[i];
-            for (i32 child_index : node.children)
-            {
-                parent_map[child_index] = static_cast<i32>(i);
-            }
-        }
+        const std::vector<GLTFNode>& get_nodes() const;
+        const GLTFNode* get_node(const i32 index) const;
+        const GLTFNode* get_node(const std::string& name) const;
+        const GLTFNode* get_node_by_mesh(const i32 mesh_index) const;
+        const GLTFNode* get_node_by_mesh(const std::string& mesh_name) const;
 
-        // Percorrer os nós para imprimir a relação pai-filho
-        for (size_t i = 0; i < model.nodes.size(); ++i)
-        {
-            const auto& node = model.nodes[i];
-            std::cout << "Node " << i << " - Name: " << node.name;
+        const std::vector<i32>& get_root_nodes() const;
+        const i32 get_root_node(const i32 index) const;
+        const i32 get_root_node(const std::string& name) const;
+        const i32 get_root_node_by_mesh(const i32 mesh_index) const;
+        const i32 get_root_node_by_mesh(const std::string& mesh_name) const;
 
-            // Verificar se o nó tem um pai
-            if (parent_map.find(i) != parent_map.end())
-            {
-                std::cout << " (Parent: " << parent_map[i] << " - " << model.nodes[parent_map[i]].name << ")";
-            }
-            else
-            {
-                std::cout << " (Root Node)";
-            }
+        const i32 get_gltf_meshes_count() const;
+        const i32 get_gltf_nodes_count() const;
+        const i32 get_root_nodes_count() const;
+        const i32 get_aggregated_meshes_count() const;
 
-            std::cout << "\n";
+        void print_info() const;
+        void print_hierarchy() const;
+        void print_meshes() const;
+        void print_nodes() const;
 
-            // Imprimir os filhos
-            if (!node.children.empty())
-            {
-                std::cout << "  Children: ";
-                for (i32 child_index : node.children)
-                {
-                    std::cout << child_index << " (" << model.nodes[child_index].name << "), ";
-                }
-                std::cout << "\n";
-            }
-        }
-        std::cout << "===========================\n";
-    }
+    private:
+        std::vector<GLTFMesh> m_gltf_meshes;
+        std::vector<GLTFNode> m_gltf_nodes;
+        std::vector<i32> m_root_nodes;
+        std::vector<Mesh> m_aggregated_meshes;
+    };
 }
 
 #endif // _JOJ_GLTF_MODEL_H

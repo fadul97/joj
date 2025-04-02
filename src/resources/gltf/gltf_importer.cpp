@@ -6,6 +6,7 @@
 #include "joj/core/logger.h"
 #include <algorithm>
 #include <unordered_set>
+#include "joj/core/jmacros.h"
 
 joj::GLTFImporter::GLTFImporter()
     : m_gltf_filename(""), m_bin_filename("")
@@ -65,8 +66,6 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
 
     build_model();
     build_aggregated_meshes();
-
-    print_model_hierarchy(m_model);
 
     return ErrorCode::OK;
 }
@@ -1467,8 +1466,8 @@ void joj::GLTFImporter::print_scenes()
 
 void joj::GLTFImporter::build_model()
 {
-    m_model.meshes = m_meshes; // Copia todas as meshes importadas
-    m_model.nodes = m_nodes;
+    m_model.set_gltf_meshes(m_meshes); // Copia todas as meshes importadas
+    m_model.set_gltf_nodes(m_nodes); // Copia todos os nós importados
 
     std::unordered_set<i32> child_nodes;
     for (const auto& node : m_nodes)
@@ -1479,12 +1478,13 @@ void joj::GLTFImporter::build_model()
         }
     }
 
-    m_model.root_nodes.clear();
+    m_model.clear_root_nodes(); // Limpa os nós raiz existentes
+    // Adiciona os nós que não são filhos de nenhum outro nó como nós raiz
     for (size_t i = 0; i < m_nodes.size(); ++i)
     {
         if (child_nodes.find(i) == child_nodes.end()) 
         {
-            m_model.root_nodes.push_back(static_cast<i32>(i));
+            m_model.add_root_node(static_cast<i32>(i));
         }
     }
 
@@ -1493,28 +1493,28 @@ void joj::GLTFImporter::build_model()
     std::cout << "=== GLTF Model Info ===" << std::endl;
 
     // Quantidade de meshes
-    std::cout << "Total Meshes: " << m_model.meshes.size() << std::endl;
+    std::cout << "Total Meshes: " << m_model.get_gltf_meshes_count() << std::endl;
 
     // Quantidade de nós
-    std::cout << "Total Nodes: " << m_model.nodes.size() << std::endl;
+    std::cout << "Total Nodes: " << m_model.get_gltf_nodes_count() << std::endl;
 
     // Nós raiz
     std::cout << "Root Nodes: ";
-    for (i32 root : m_model.root_nodes)
-    {
+    for (const i32 root : m_model.get_root_nodes())
         std::cout << root << " ";
-    }
     std::cout << std::endl;
 
     // Informações detalhadas dos nós
     std::cout << "\nNodes:\n";
-    for (size_t i = 0; i < m_model.nodes.size(); ++i)
+    for (size_t i = 0; i < m_model.get_gltf_nodes_count(); ++i)
     {
-        const auto& node = m_model.nodes[i];
-        std::cout << "Node " << i << " - Name: " << node.name << std::endl;
-        std::cout << "  Mesh Index: " << node.mesh_index << std::endl;
+        const GLTFNode* node = m_model.get_node(i);
+        JOJ_ASSERT(node != nullptr, "Node is null!");
+
+        std::cout << "Node " << i << " - Name: " << node->name << std::endl;
+        std::cout << "  Mesh Index: " << node->mesh_index << std::endl;
         std::cout << "  Children: ";
-        for (i32 child : node.children)
+        for (i32 child : node->children)
         {
             std::cout << child << " ";
         }
@@ -1841,22 +1841,24 @@ void joj::GLTFImporter::setup_aggregated_mesh(const GLTFNode& node, Mesh& mesh)
 
     for (const auto& child_index : node.children)
     {
-        const auto& child_node = m_model.nodes[child_index];
+        const GLTFNode* child_node = m_model.get_node(child_index);
+        JOJ_ASSERT(child_node != nullptr, "Child node is null!");
 
-        std::cout << "Processing Child Node: " << child_index << " (" << child_node.name << ")\n";
+        std::cout << "Processing Child Node: " << child_index << " (" << child_node->name << ")\n";
 
         // Ignore nodes without meshes
-        if (child_node.mesh_index == -1)
+        if (child_node->mesh_index == -1)
         {
             std::cout << "  Skipping node (no mesh)\n";
             continue;
         }
 
-        std::cout << "  Mesh Index: " << child_node.mesh_index << "\n";
+        std::cout << "  Mesh Index: " << child_node->mesh_index << "\n";
 
-        const auto& gltf_mesh = m_model.meshes[child_node.mesh_index];
+        const GLTFMesh* gltf_mesh = m_model.get_gltf_mesh(child_node->mesh_index);
+        JOJ_ASSERT(gltf_mesh != nullptr, "GLTFMesh is null!");
 
-        for (const auto& primitive : gltf_mesh.primitives)
+        for (const auto& primitive : gltf_mesh->primitives)
         {
             std::cout << "    Processing Primitive...\n";
             std::cout << "      Position Accessor: " << primitive.position_acessor << "\n";
@@ -1922,17 +1924,17 @@ void joj::GLTFImporter::setup_aggregated_mesh(const GLTFNode& node, Mesh& mesh)
 
 void joj::GLTFImporter::build_aggregated_meshes()
 {
-    for (i32 root_index : m_model.root_nodes)
+    for (const i32 root_index : m_model.get_root_nodes())
     {
-        const auto& root_node = m_model.nodes[root_index];
+        const GLTFNode* root_node = m_model.get_node(root_index);
+        JOJ_ASSERT(root_node != nullptr, "Root node is null!");
 
-        if (is_aggregator_node(root_node))
+        if (is_aggregator_node(*root_node))
         {
-            std::cout << "Aggregating mesh for node: " << root_node.name << "\n";
+            std::cout << "Aggregating mesh for node: " << root_node->name << "\n";
             Mesh aggregated_mesh;
-            setup_aggregated_mesh(root_node, aggregated_mesh);
-            
-            m_model.aggregated_meshes.push_back(std::move(aggregated_mesh));
+            setup_aggregated_mesh(*root_node, aggregated_mesh);
+            m_model.add_aggregated_mesh(aggregated_mesh);
         }
     }
 }
@@ -1946,7 +1948,7 @@ void joj::GLTFImporter::setup_aggregated_meshes(Mesh& mesh)
     u32 vertex_offset = 0;
     u32 index_offset = 0;
 
-    for (const auto& gltf_mesh : m_model.meshes)
+    for (const auto& gltf_mesh : m_model.get_gltf_meshes())
     {
         for (const auto& primitive : gltf_mesh.primitives)
         {
