@@ -1641,6 +1641,7 @@ void joj::GLTFImporter::setup_mesh(GLTFMesh& gltf_mesh, Mesh& mesh)
     std::cout << "Indices size: " << indices.size() << std::endl;
     std::cout << "Submeshes size: " << submeshes.size() << std::endl;
 
+    /*
     // Print vertices
     for (const auto& vertex : vertices)
     {
@@ -1669,4 +1670,5 @@ void joj::GLTFImporter::setup_mesh(GLTFMesh& gltf_mesh, Mesh& mesh)
         std::cout << "    Index start: " << submesh.index_start << std::endl;
         std::cout << "    Index count: " << submesh.index_count << std::endl;
     }
+    */
 }

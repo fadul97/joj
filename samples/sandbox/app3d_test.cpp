@@ -83,15 +83,15 @@ void App3DTest::build_buffers()
 {
     // Load GLTF file
     m_beautiful_game_importer;
-    if (m_beautiful_game_importer.load("models/Box.gltf") != joj::ErrorCode::OK)
+    if (m_beautiful_game_importer.load("models/ABeautifulGame.gltf") != joj::ErrorCode::OK)
         return;
 
     m_model;
     m_beautiful_game_importer.get_meshes(m_model.meshes);
-    m_model.print_info();
+    // m_model.print_info();
 
     joj::Mesh mesh;
-    m_beautiful_game_importer.setup_mesh(m_model.meshes[0], mesh);
+    m_beautiful_game_importer.setup_mesh(m_model.meshes[4], mesh);
 
     std::vector<joj::Vertex::ColorTanPosNormalTex> vertices_data;
     vertices_data.reserve(mesh.get_vertex_count());
@@ -216,8 +216,6 @@ void App3DTest::build_buffers()
         if (m_shader.create_input_layout(layout) != joj::ErrorCode::OK)
             return;
     }
-
-
 
     m_cb = joj::D3D11ConstantBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
     if (m_cb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr) != joj::ErrorCode::OK)
