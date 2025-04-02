@@ -5,6 +5,7 @@
 #include "joj/utils/json_parser.h"
 #include "joj/core/logger.h"
 #include <algorithm>
+#include <unordered_set>
 
 joj::GLTFImporter::GLTFImporter()
     : m_gltf_filename(""), m_bin_filename("")
@@ -61,6 +62,11 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
     if (!load_scenes())
         return ErrorCode::FAILED;
     // print_scenes();
+
+    build_model();
+    build_aggregated_meshes();
+
+    print_model_hierarchy(m_model);
 
     return ErrorCode::OK;
 }
@@ -1451,6 +1457,65 @@ void joj::GLTFImporter::print_scenes()
     }
 }
 
+void joj::GLTFImporter::build_model()
+{
+    m_model.meshes = m_meshes; // Copia todas as meshes importadas
+    m_model.nodes = m_nodes;
+
+    std::unordered_set<i32> child_nodes;
+    for (const auto& node : m_nodes)
+    {
+        for (i32 child_index : node.children)
+        {
+            child_nodes.insert(child_index);
+        }
+    }
+
+    m_model.root_nodes.clear();
+    for (size_t i = 0; i < m_nodes.size(); ++i)
+    {
+        if (child_nodes.find(i) == child_nodes.end()) 
+        {
+            m_model.root_nodes.push_back(static_cast<i32>(i));
+        }
+    }
+
+    /*
+    */
+    std::cout << "=== GLTF Model Info ===" << std::endl;
+
+    // Quantidade de meshes
+    std::cout << "Total Meshes: " << m_model.meshes.size() << std::endl;
+
+    // Quantidade de nós
+    std::cout << "Total Nodes: " << m_model.nodes.size() << std::endl;
+
+    // Nós raiz
+    std::cout << "Root Nodes: ";
+    for (i32 root : m_model.root_nodes)
+    {
+        std::cout << root << " ";
+    }
+    std::cout << std::endl;
+
+    // Informações detalhadas dos nós
+    std::cout << "\nNodes:\n";
+    for (size_t i = 0; i < m_model.nodes.size(); ++i)
+    {
+        const auto& node = m_model.nodes[i];
+        std::cout << "Node " << i << " - Name: " << node.name << std::endl;
+        std::cout << "  Mesh Index: " << node.mesh_index << std::endl;
+        std::cout << "  Children: ";
+        for (i32 child : node.children)
+        {
+            std::cout << child << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << "=======================\n";
+}
+
 void joj::GLTFImporter::get_vertices(std::vector<GLTFVertex>& vertices)
 {
 }
@@ -1671,4 +1736,160 @@ void joj::GLTFImporter::setup_mesh(GLTFMesh& gltf_mesh, Mesh& mesh)
         std::cout << "    Index count: " << submesh.index_count << std::endl;
     }
     */
+}
+
+void joj::GLTFImporter::setup_aggregated_mesh(const GLTFNode& node, Mesh& mesh)
+{
+    std::vector<Vertex::ColorTanPosNormalTex> vertices;
+    std::vector<u16> indices;
+    std::vector<Submesh> submeshes;
+
+    u32 vertex_offset = 0;
+    u32 index_offset = 0;
+
+    for (const auto& child_index : node.children)
+    {
+        const auto& child_node = m_model.nodes[child_index];
+
+        std::cout << "Processing Child Node: " << child_index << " (" << child_node.name << ")\n";
+
+        // Ignore nodes without meshes
+        if (child_node.mesh_index == -1)
+        {
+            std::cout << "  Skipping node (no mesh)\n";
+            continue;
+        }
+
+        std::cout << "  Mesh Index: " << child_node.mesh_index << "\n";
+
+        const auto& gltf_mesh = m_model.meshes[child_node.mesh_index];
+
+        for (const auto& primitive : gltf_mesh.primitives)
+        {
+            std::cout << "    Processing Primitive...\n";
+            std::cout << "      Position Accessor: " << primitive.position_acessor << "\n";
+            std::cout << "      Indices Accessor: " << primitive.indices_acessor << "\n";
+
+            Submesh submesh;
+            submesh.vertex_start = vertex_offset;
+            submesh.index_start = index_offset;
+
+            // Verificar se os accessors são válidos antes de acessá-los
+            if (primitive.position_acessor < 0 || primitive.position_acessor >= m_accessors.size())
+            {
+                std::cerr << "ERROR: Invalid position_acessor index: " << primitive.position_acessor << "\n";
+                continue;
+            }
+            if (primitive.indices_acessor < 0 || primitive.indices_acessor >= m_accessors.size())
+            {
+                std::cerr << "ERROR: Invalid indices_acessor index: " << primitive.indices_acessor << "\n";
+                continue;
+            }
+
+            // Ler os buffers
+            auto position_accessor = get_accessor(primitive.position_acessor);
+            auto indices_accessor = get_accessor(primitive.indices_acessor);
+
+            std::cout << "      Vertex Count: " << position_accessor.count << "\n";
+            std::cout << "      Index Count: " << indices_accessor.count << "\n";
+
+            submesh.vertex_count = position_accessor.count;
+            submesh.index_count = indices_accessor.count;
+
+            // Atualizar os offsets
+            vertex_offset += submesh.vertex_count;
+            index_offset += submesh.index_count;
+
+            submeshes.push_back(submesh);
+
+            // Verificar antes de ler os buffers
+            if (primitive.position_acessor < 0 || primitive.position_acessor >= m_accessors.size())
+            {
+                std::cerr << "ERROR: Invalid position_acessor index (again): " << primitive.position_acessor << "\n";
+                continue;
+            }
+
+            // Carregar os vértices e índices
+            auto prim_vertices = read_buffer<Vertex::ColorTanPosNormalTex>(primitive.position_acessor);
+            std::cout << "      Read " << prim_vertices.size() << " vertices\n";
+
+            vertices.insert(vertices.end(), prim_vertices.begin(), prim_vertices.end());
+
+            auto prim_indices = read_buffer<u16>(primitive.indices_acessor);
+            std::cout << "      Read " << prim_indices.size() << " indices\n";
+
+            indices.insert(indices.end(), prim_indices.begin(), prim_indices.end());
+        }
+    }
+
+    // Passar os dados para o Mesh final
+    mesh.set_vertices(vertices);
+    mesh.set_indices(indices);
+    mesh.set_submeshes(submeshes);
+}
+
+void joj::GLTFImporter::build_aggregated_meshes()
+{
+    for (i32 root_index : m_model.root_nodes)
+    {
+        const auto& root_node = m_model.nodes[root_index];
+
+        if (is_aggregator_node(root_node))
+        {
+            std::cout << "Aggregating mesh for node: " << root_node.name << "\n";
+            Mesh aggregated_mesh;
+            setup_aggregated_mesh(root_node, aggregated_mesh);
+            
+            m_model.aggregated_meshes.push_back(std::move(aggregated_mesh));
+        }
+    }
+}
+
+void joj::GLTFImporter::setup_aggregated_meshes(Mesh& mesh)
+{
+    std::vector<Vertex::ColorTanPosNormalTex> vertices;
+    std::vector<u16> indices;
+    std::vector<Submesh> submeshes;
+
+    u32 vertex_offset = 0;
+    u32 index_offset = 0;
+
+    for (const auto& gltf_mesh : m_model.meshes)
+    {
+        for (const auto& primitive : gltf_mesh.primitives)
+        {
+            Submesh submesh;
+            submesh.vertex_start = vertex_offset;
+            submesh.index_start = index_offset;
+
+            // Ler buffers
+            auto position_accessor = get_accessor(primitive.position_acessor);
+            auto indices_accessor = get_accessor(primitive.indices_acessor);
+
+            submesh.vertex_count = position_accessor.count;
+            submesh.index_count = indices_accessor.count;
+
+            // Atualizar offsets
+            vertex_offset += submesh.vertex_count;
+            index_offset += submesh.index_count;
+
+            submeshes.push_back(submesh);
+
+            // Carregar os vértices
+            auto prim_vertices = read_buffer<Vertex::ColorTanPosNormalTex>(primitive.position_acessor);
+            vertices.insert(vertices.end(), prim_vertices.begin(), prim_vertices.end());
+
+            // Carregar os índices e ajustar os offsets
+            auto prim_indices = read_buffer<u16>(primitive.indices_acessor);
+            for (auto& index : prim_indices)
+                index += submesh.vertex_start; // Ajustar índice para os novos vértices
+
+            indices.insert(indices.end(), prim_indices.begin(), prim_indices.end());
+        }
+    }
+
+    // Passar os dados agregados para o Mesh final
+    mesh.set_vertices(vertices);
+    mesh.set_indices(indices);
+    mesh.set_submeshes(submeshes);
 }

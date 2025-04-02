@@ -10,3 +10,8 @@ joj::GLTFNode::GLTFNode()
 joj::GLTFNode::~GLTFNode()
 {
 }
+
+b8 joj::is_aggregator_node(const GLTFNode& node)
+{
+    return (node.children.size() > 0 && node.mesh_index == -1);
+}

@@ -21,7 +21,6 @@
 
 // ------------------------------------------------------------------------------------------------
 #include "joj/core/logger.h"
-#include "joj/resources/mesh.h"
 
 inline std::vector<u8> load_binary_data(const std::string& filename)
 {
@@ -83,19 +82,20 @@ void App3DTest::build_buffers()
 {
     // Load GLTF file
     m_beautiful_game_importer;
-    if (m_beautiful_game_importer.load("models/ABeautifulGame.gltf") != joj::ErrorCode::OK)
+    if (m_beautiful_game_importer.load("models/Lantern.gltf") != joj::ErrorCode::OK)
         return;
 
     m_model;
-    m_beautiful_game_importer.get_meshes(m_model.meshes);
+    m_beautiful_game_importer.get_meshes(m_model.meshes); // tamanho de m_model.meshes é 3
     // m_model.print_info();
 
-    joj::Mesh mesh;
-    m_beautiful_game_importer.setup_mesh(m_model.meshes[4], mesh);
+    m_mesh;
+    m_beautiful_game_importer.setup_mesh(m_model.meshes[0], m_mesh);
+    m_beautiful_game_importer.setup_aggregated_meshes(m_mesh);
 
     std::vector<joj::Vertex::ColorTanPosNormalTex> vertices_data;
-    vertices_data.reserve(mesh.get_vertex_count());
-    const auto& vertices = mesh.get_vertex_data();
+    vertices_data.reserve(m_mesh.get_vertex_count());
+    const auto& vertices = m_mesh.get_vertex_data();
     for (const auto& vertex : vertices)
     {
         joj::Vertex::ColorTanPosNormalTex v;
@@ -106,8 +106,8 @@ void App3DTest::build_buffers()
     }
     
     std::vector<u16> indices_data;
-    indices_data.reserve(mesh.get_index_count());
-    const auto& indices = mesh.get_index_data();
+    indices_data.reserve(m_mesh.get_index_count());
+    const auto& indices = m_mesh.get_index_data();
     for (const auto& index : indices)
     {
         indices_data.push_back(index);
@@ -126,20 +126,20 @@ void App3DTest::build_buffers()
     if (m_use_new_vertex)
     {
         std::cout << "Using new vertex format." << std::endl;
-        const u32 vertices_size = static_cast<u32>(mesh.get_vertex_count());
+        const u32 vertices_size = static_cast<u32>(m_mesh.get_vertex_count());
         m_vertex_cout = vertices_size;
         JOJ_DEBUG("Vertices count: %d", m_vertex_cout);
         m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
         if (m_vb.create(joj::BufferUsage::Default, joj::CPUAccessType::None,
-            sizeof(joj::Vertex::ColorTanPosNormalTex) * vertices_size, &mesh.get_vertex_data()) != joj::ErrorCode::OK)
+            sizeof(joj::Vertex::ColorTanPosNormalTex) * vertices_size, &m_mesh.get_vertex_data()) != joj::ErrorCode::OK)
             return;
     
         // Create index buffer
-        const u32 indices_size = static_cast<u32>(mesh.get_index_count());
+        const u32 indices_size = static_cast<u32>(m_mesh.get_index_count());
         m_index_count = indices_size;
         JOJ_DEBUG("Indices count: %d", m_index_count);
         m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
-        if (m_ib.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(u16) * indices_size, &mesh.get_index_data()) != joj::ErrorCode::OK)
+        if (m_ib.create(joj::BufferUsage::Default, joj::CPUAccessType::None, sizeof(u16) * indices_size, &m_mesh.get_index_data()) != joj::ErrorCode::OK)
             return;
 
         // Create shader
@@ -268,109 +268,9 @@ void App3DTest::draw()
             m_lightcb.update(lightBuffer);
         }
 
-        m_cb.bind_to_vertex_shader(0, 1);
-        {
-            joj::JMatrix4x4 W = DirectX::XMMatrixRotationY(rotation); // XMMatrixIdentity();
-            joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
-            joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
-            joj::JMatrix4x4 WVP = W * V * P;
-    
-            ConstantBuffer cbData = {};
-            XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
-            XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
-            XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
-            XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
-            m_cb.update(cbData);
-        }
+        draw_model(m_model, joj::float4x4_identity());
 
-        m_lightcb.bind_to_pixel_shader(1, 1);
-        {
-            LightBuffer lightBuffer;
-            lightBuffer.diffuseColor = joj::JFloat4(1.0f, 0.7f, 0.7f, 1.0);
-            lightBuffer.lightDirection = joj::JFloat3(0.0f, 0.0f, 1.0f);
-            m_lightcb.update(lightBuffer);
-        }
-
-        // Bind and Draw the rect
-        u32 stride;
-        if (m_use_new_vertex)
-            stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
-        else
-            stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
-        constexpr u32 offset = 0;
-        m_vb.bind(0, 1, &stride, &offset);
-        m_ib.bind(joj::DataFormat::R16_UINT, offset);
-        m_shader.bind();
-        m_renderer->draw_indexed(m_index_count, 0, 0);
-
-        // Per object updates
-        m_cb.bind_to_vertex_shader(0, 1);
-        // Draw first model - top right
-        {
-            // Move world matrix to the right and up
-            joj::JMatrix4x4 W = DirectX::XMMatrixIdentity();
-            W = DirectX::XMMatrixRotationY(rotation * 2.0f) * DirectX::XMMatrixTranslation(2.0f, 2.0f, 0.0f);
-            
-            joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
-            joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
-            joj::JMatrix4x4 WVP = W * V * P;
-    
-            ConstantBuffer cbData = {};
-            DirectX::XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
-            DirectX::XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
-            DirectX::XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
-            DirectX::XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
-            m_cb.update(cbData);
-            
-            // Bind and Draw the rect
-            joj::JFloat4x4 worldMatrix;
-            DirectX::XMStoreFloat4x4(&worldMatrix, W);
-            draw_model(m_model, worldMatrix);
-        }
-
-        // Draw second model - center
-        {
-            joj::JMatrix4x4 W = DirectX::XMMatrixIdentity();
-            
-            joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
-            joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
-            joj::JMatrix4x4 WVP = W * V * P;
-    
-            ConstantBuffer cbData = {};
-            DirectX::XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
-            DirectX::XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
-            DirectX::XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
-            DirectX::XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
-            m_cb.update(cbData);
-            
-            // Bind and Draw the rect
-            joj::JFloat4x4 worldMatrix;
-            DirectX::XMStoreFloat4x4(&worldMatrix, W);
-            draw_model(m_model, worldMatrix);
-        }
-
-        // Draw third model - bottom right
-        {
-            // Move world matrix to the left and down
-            joj::JMatrix4x4 W = DirectX::XMMatrixIdentity();
-            W = DirectX::XMMatrixTranslation(-2.0f, -2.0f, 0.0f) * DirectX::XMMatrixRotationY(-rotation * 4.0f);
-            
-            joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
-            joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
-            joj::JMatrix4x4 WVP = W * V * P;
-    
-            ConstantBuffer cbData = {};
-            DirectX::XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
-            DirectX::XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
-            DirectX::XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
-            DirectX::XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
-            m_cb.update(cbData);
-            
-            // Bind and Draw the rect
-            joj::JFloat4x4 worldMatrix;
-            DirectX::XMStoreFloat4x4(&worldMatrix, W);
-            draw_model(m_model, worldMatrix);
-        }
+        draw_modelNew(m_model, joj::float4x4_identity());
     }
     m_renderer->end_frame();
 }
@@ -414,10 +314,10 @@ void App3DTest::update_animations(const f32 dt)
 
 void App3DTest::process_mouse_input(const f32 dt)
 {
-    f32 speed = dt * 0.5f;
+    f32 speed = dt * 10.0f;
 
     if (m_input->is_key_down(joj::KEY_CONTROL))
-        speed = dt * 5.0f;
+        speed = dt * 40.0f;
 
     if (m_input->is_key_down('W'))
         m_camera.walk(speed);
@@ -453,13 +353,13 @@ void App3DTest::draw_model(const joj::GLTFModel& model, const joj::JFloat4x4& pa
 
         for (const auto& node : model.nodes)
         {
-            if (node.get_mesh() == mesh_index)
+            if (node.mesh_index == mesh_index)
             {
                 // Aplicar transformações do nó (posição, rotação e escala)
-                joj::JMatrix4x4 translation = DirectX::XMMatrixTranslation(node.get_position().x, node.get_position().y, node.get_position().z);
-                DirectX::XMFLOAT4 rotationQuaternion = {node.get_rotation().x, node.get_rotation().y, node.get_rotation().z, node.get_rotation().w};
+                joj::JMatrix4x4 translation = DirectX::XMMatrixTranslation(node.translation.x, node.translation.y, node.translation.z);
+                DirectX::XMFLOAT4 rotationQuaternion = {node.rotation.x, node.rotation.y, node.rotation.z, node.rotation.w};
                 joj::JMatrix4x4 rotation = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&rotationQuaternion));
-                joj::JMatrix4x4 scale = DirectX::XMMatrixScaling(node.get_scale().x, node.get_scale().y, node.get_scale().z);
+                joj::JMatrix4x4 scale = DirectX::XMMatrixScaling(node.scale.x, node.scale.y, node.scale.z);
 
                 worldMatrix = DirectX::XMMatrixMultiply(scale, rotation);
                 worldMatrix = DirectX::XMMatrixMultiply(worldMatrix, translation);
@@ -482,11 +382,6 @@ void App3DTest::draw_model(const joj::GLTFModel& model, const joj::JFloat4x4& pa
         DirectX::XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
         DirectX::XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
         m_cb.update(cbData);
-
-        if (mesh_index == 4)
-        {
-            std::cout << "Drawing Chessboard mesh: " << mesh.name << std::endl;
-        }
 
         // Bind dos buffers antes do draw
         u32 stride;
@@ -514,6 +409,41 @@ void App3DTest::draw_model(const joj::GLTFModel& model, const joj::JFloat4x4& pa
             std::cout << "[DRAW CALL]: (Unnamed Mesh) (" << index_count << " indices)" << std::endl;
             */
         }
+    }
+}
+
+void App3DTest::draw_modelNew(const joj::GLTFModel& model, const joj::JFloat4x4& parent_transform)
+{
+    joj::JMatrix4x4 worldMatrix = DirectX::XMLoadFloat4x4(&parent_transform);
+
+    m_cb.bind_to_vertex_shader(0, 1);
+    // Calcular matrizes de câmera e projeção
+    joj::JMatrix4x4 W = worldMatrix;
+    joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
+    joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
+    joj::JMatrix4x4 WVP = W * V * P;
+
+    // Atualizar constantes do shader
+    ConstantBuffer cbData = {};
+    DirectX::XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
+    DirectX::XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
+    DirectX::XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
+    DirectX::XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
+    m_cb.update(cbData);
+
+    constexpr u32 stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
+    constexpr u32 offset = 0;
+
+    m_vb.bind(0, 1, &stride, &offset);
+    m_ib.bind(joj::DataFormat::R16_UINT, offset);
+
+    // Bind do shader
+    m_shader.bind();
+
+    // Renderizar cada primitiva dentro da mesh
+    for (const auto& submesh : m_mesh.get_submeshes())
+    {
+        m_renderer->draw_indexed(submesh.index_count, submesh.index_start, submesh.vertex_start);
     }
 }
 
@@ -573,9 +503,9 @@ void App3DTest::create_buffers_for_model(joj::GLTFModel& model, joj::IRenderer* 
         std::string node_name = "(Unnamed Node)";
         for (const auto& node : model.nodes)
         {
-            if (node.get_mesh() == mesh_index)
+            if (node.mesh_index == mesh_index)
             {
-                node_name = node.get_name(); // Supondo que sua estrutura SceneNode tenha um método get_name()
+                node_name = node.name; // Supondo que sua estrutura SceneNode tenha um método get_name()
                 break; // Encontrou, pode sair do loop
             }
         }

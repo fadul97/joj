@@ -15,6 +15,7 @@
 #include "gltf_skin.h"
 #include "gltf_scene.h"
 #include "gltf_node.h"
+#include "gltf_model.h"
 #include "joj/resources/buffer.h"
 #include "joj/resources/animation.h"
 #include "joj/utils/json_value.h"
@@ -53,6 +54,9 @@ namespace joj
         const GLTFBufferView& get_buffer_view(const GLTFAccessor& accessor) const;
 
         void setup_mesh(GLTFMesh& gltf_mesh, Mesh& mesh);
+        void setup_aggregated_mesh(const GLTFNode& node, Mesh& mesh);
+        void build_aggregated_meshes();
+        void setup_aggregated_meshes(Mesh& mesh);
 
         template <typename T>
         std::vector<T> read_buffer(const u32 accessor_index) const
@@ -101,6 +105,8 @@ namespace joj
         i32 m_scale_count;
 
         JsonValue m_root;
+        
+        GLTFModel m_model;
 
         b8 parse_json();
 
@@ -131,6 +137,8 @@ namespace joj
         b8 load_scenes();
         void print_scenes();
 
+        void build_model();
+
         template <typename T>
         std::vector<T> read_buffer_internal(const Buffer& buffer, const GLTFAccessor& accessor, const GLTFBufferView& bufferView) const
         {
@@ -140,10 +148,24 @@ namespace joj
             size_t stride = (bufferView.byte_stride > 0) ? bufferView.byte_stride : element_size;
             size_t start_offset = bufferView.byte_offset + accessor.byte_offset;
 
+            std::cout << "Reading buffer... " << std::endl;
+            std::cout << "  Element Size: " << element_size << std::endl;
+            std::cout << "  Count: " << count << std::endl;
+            std::cout << "  Stride: " << stride << std::endl;
+            std::cout << "  Start Offset: " << start_offset << std::endl;
+            std::cout << "  Buffer Size: " << buffer.data.size() << std::endl;
+
             data.resize(count);
             for (size_t i = 0; i < count; i++)
             {
                 size_t offset = start_offset + (i * stride);
+
+                if (offset + element_size > buffer.data.size())
+                {
+                    std::cerr << "ERROR: Offset " << offset << " exceeds buffer size " << buffer.data.size() << std::endl;
+                    break;
+                }
+
                 memcpy(&data[i], &buffer.data[offset], element_size);
             }
 

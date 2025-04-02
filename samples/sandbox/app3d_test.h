@@ -18,6 +18,7 @@
 #include "joj/resources/old_gltf_importer.h"
 #include "joj/resources/gltf/gltf_importer.h"
 #include "joj/resources/gltf/gltf_model.h"
+#include "joj/resources/mesh.h"
 
 // Constant Objects ------------------------------------------------------------
 
@@ -60,6 +61,7 @@ public:
     void update_animations(const f32 dt);
     void process_mouse_input(const f32 dt);
 
+    void draw_modelNew(const joj::GLTFModel& model, const joj::JFloat4x4& parent_transform);
     void draw_model(const joj::GLTFModel& model, const joj::JFloat4x4& parent_transform);
     u32 get_index_count_for_primitive(const joj::GLTFPrimitive& primitive);
     void create_buffers_for_model(joj::GLTFModel& model, joj::IRenderer* renderer);
@@ -82,6 +84,7 @@ public:
 
     joj::GLTFImporter m_beautiful_game_importer;
     joj::GLTFModel m_model;
+    joj::Mesh m_mesh;
     b8 m_use_new_vertex;
 };
 

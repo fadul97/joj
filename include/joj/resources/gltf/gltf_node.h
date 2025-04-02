@@ -27,6 +27,8 @@ namespace joj
         std::vector<i32> weights; // Morph target weights
         std::string name;        
     };
+
+    JOJ_API b8 is_aggregator_node(const GLTFNode& node);
 }
 
 #endif // _JOJ_GLTF_NODE_H
