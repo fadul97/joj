@@ -57,20 +57,7 @@ public:
     void setup_camera();
     void build_buffers();
 
-    f32 m_current_time = 0.0f;
-    void update_animations(const f32 dt);
     void process_mouse_input(const f32 dt);
-
-    void draw_modelNew(const joj::GLTFModel& model, const joj::JFloat4x4& parent_transform);
-    void draw_model(const joj::GLTFModel& model, const joj::JFloat4x4& parent_transform);
-    u32 get_index_count_for_primitive(const joj::GLTFPrimitive& primitive);
-    void create_buffers_for_model(joj::GLTFModel& model, joj::IRenderer* renderer);
-
-    u32 m_index_count = 0;
-    u32 m_vertex_cout = 0;
-
-    u32 m_gltf_index_count = 0;
-    u32 m_gltf_vertex_count = 0;
 
     // ----------------------------------------------------
     joj::D3D11VertexBuffer m_vb;
@@ -82,10 +69,8 @@ public:
     joj::FreeCamera m_camera;
     joj::JFloat2 m_last_mouse_pos;
 
-    joj::GLTFImporter m_beautiful_game_importer;
-    joj::GLTFModel m_model;
-    joj::Mesh m_mesh;
-    b8 m_use_new_vertex;
+    joj::GLTFImporter m_model_importer;
+    joj::GLTFModel* m_model;
 };
 
 #endif // _JOJ_3D_APP_TEST_H
