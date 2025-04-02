@@ -3,6 +3,7 @@
 
 #include "joj/core/defines.h"
 
+#include "joj/core/math/matrix4x4.h"
 #include <string>
 
 namespace joj
@@ -12,6 +13,7 @@ namespace joj
         Submesh();
         ~Submesh();
 
+        Matrix4x4 local_transform;
         std::string name;
         i32 vertex_start;
         i32 vertex_count;

@@ -7,6 +7,7 @@ joj::Submesh::Submesh()
     , index_start(-1)
     , index_count(-1)
 {
+    local_transform = Matrix4x4::identity();
 }
 
 joj::Submesh::~Submesh()

@@ -45,11 +45,11 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
 
     if (!load_nodes())
         return ErrorCode::FAILED;
-    // print_nodes();
+    print_nodes();
 
     if (!load_meshes())
         return ErrorCode::FAILED;
-    // print_meshes();
+    print_meshes();
 
     if (!load_animations())
         return ErrorCode::FAILED;
@@ -729,11 +729,19 @@ void joj::GLTFImporter::print_nodes()
         std::cout << "    Scale: " << node.scale.to_string() << std::endl;
         std::cout << "    Mesh: " << node.mesh_index << std::endl;
         std::cout << "    Skin: " << node.skin_index << std::endl;
+        std::cout << "    Camera: " << node.camera_index << std::endl;
         if (!node.children.empty())
         {
             std::cout << "    Children: ";
             for (const auto& child : node.children)
                 std::cout << child << " ";
+            std::cout << std::endl;
+        }
+        if (!node.weights.empty())
+        {
+            std::cout << "    Weights: ";
+            for (const auto& weight : node.weights)
+                std::cout << weight << " ";
             std::cout << std::endl;
         }
         ++i;
