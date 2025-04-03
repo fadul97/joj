@@ -121,27 +121,39 @@ namespace joj
 
         b8 load_buffers();
         void print_buffers();
+        void write_buffers_to_file(const char* filename) const;
 
         b8 load_buffer_views();
         void print_buffer_views();
+        void write_buffer_views_to_file(const char* filename) const;
 
         b8 load_accessors();
         void print_accessors();
+        void write_accessors_to_file(const char* filename) const;
 
         b8 load_nodes();
         void print_nodes();
+        void write_nodes_to_file(const char* filename) const;
 
         b8 load_meshes();
         void print_meshes();
+        void write_meshes_to_file(const char* filename) const;
 
         b8 load_animations();
         void print_animations();
+        void write_animations_to_file(const char* filename) const;
 
         b8 load_skins();
         void print_skins();
+        void write_skins_to_file(const char* filename) const;
 
         b8 load_scenes();
         void print_scenes();
+        void write_scenes_to_file(const char* filename) const;
+
+        void write_vec3_vector_to_file(const char* filename, const std::vector<Vector3>& data, const char* top_line) const;
+        void write_vec4_vector_to_file(const char* filename, const std::vector<Vector4>& data, const char* top_line) const;
+        void write_u16_vector_to_file(const char* filename, const std::vector<u16>& data, const char* top_line) const;
 
         void build_model();
         void build_model_new();
@@ -176,6 +188,7 @@ namespace joj
             
             return result;
         }
+
         template <typename T>
         std::vector<T> read_buffer_internal(const Buffer& buffer, const GLTFAccessor& accessor, const GLTFBufferView& bufferView) const
         {
@@ -185,6 +198,7 @@ namespace joj
             size_t stride = (bufferView.byte_stride > 0) ? bufferView.byte_stride : element_size;
             size_t start_offset = bufferView.byte_offset + accessor.byte_offset;
 
+            /*
             std::cout << "    Reading buffer... " << std::endl;
             std::cout << "        Element Size: " << element_size << " bytes" << std::endl;
             std::cout << "        Count: " << count << std::endl;
@@ -192,6 +206,7 @@ namespace joj
             std::cout << "        Start Offset: " << start_offset << std::endl;
             std::cout << "        Buffer View Size: " << bufferView.byte_length << std::endl;
             std::cout << "        Buffer Size: " << buffer.data.size() << std::endl;
+            */
 
             data.resize(count);
             for (size_t i = 0; i < count; i++)

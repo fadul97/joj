@@ -36,42 +36,62 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
     if (!load_buffers())
         return ErrorCode::FAILED;
     // print_buffers();
+    // TODO: Use m_gltf_filename to get the base filename
+    const std::string base_filename = "ABeautifulGame_";
+    const std::string buffer_filename = base_filename + "BUFFERS.txt";
+    write_buffers_to_file(buffer_filename.c_str());
 
     if (!load_buffer_views())
         return ErrorCode::FAILED;
     // print_buffer_views();
+    const std::string buffer_view_filename = base_filename + "BUFFER_VIEWS.txt";
+    write_buffer_views_to_file(buffer_view_filename.c_str());
 
     if (!load_accessors())
         return ErrorCode::FAILED;
     // print_accessors();
+    const std::string accessor_filename = base_filename + "ACCESSORS.txt";
+    write_accessors_to_file(accessor_filename.c_str());
 
     if (!load_nodes())
         return ErrorCode::FAILED;
-    print_nodes();
+    // print_nodes();
+    const std::string node_filename = base_filename + "NODES.txt";
+    write_nodes_to_file(node_filename.c_str());
 
     if (!load_meshes())
         return ErrorCode::FAILED;
-    print_meshes();
+    // print_meshes();
+    const std::string mesh_filename = base_filename + "MESHES.txt";
+    write_meshes_to_file(mesh_filename.c_str());
 
     if (!load_animations())
         return ErrorCode::FAILED;
     // print_animations();
+    const std::string animation_filename = base_filename + "ANIMATIONS.txt";
+    write_animations_to_file(animation_filename.c_str());
 
     if (!load_skins())
         return ErrorCode::FAILED;
     // print_skins();
+    const std::string skin_filename = base_filename + "SKINS.txt";
+    write_skins_to_file(skin_filename.c_str());
 
     if (!load_scenes())
         return ErrorCode::FAILED;
     // print_scenes();
+    const std::string scene_filename = base_filename + "SCENES.txt";
+    write_scenes_to_file(scene_filename.c_str());
 
-    build_model();
-    build_model_new();
-    build_aggregated_meshes();
+    // build_model();
+    // build_model_new();
+    // build_aggregated_meshes();
 
+    JOJ_DEBUG("Building scene...");
     build_scene();
     m_scene.write_vertices_and_indices_to_file("Lantern_VERTICES.txt");
     m_scene.write_submesh_data_to_file("Lantern_SUBMESHES.txt");
+    JOJ_DEBUG("Scene built successfully.");
 
     return ErrorCode::OK;
 }
@@ -170,6 +190,26 @@ void joj::GLTFImporter::print_buffers()
         std::cout << "    Buffer type: " << buffer_type_to_string(buffer.type) << std::endl;
         ++i;
     }
+}
+
+void joj::GLTFImporter::write_buffers_to_file(const char* filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open())
+        return;
+
+    file << "Total loaded buffers: " << m_buffers.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& buffer : m_buffers)
+    {
+        file << "Buffer " << i << " (" << buffer.size << " bytes): " << std::endl;
+        file << "    Buffer filename: " << buffer.filename << std::endl;
+        file << "    Buffer type: " << buffer_type_to_string(buffer.type) << std::endl;
+        ++i;
+    }
+
+    JOJ_DEBUG("File written to: %s", filename);
 }
 
 b8 joj::GLTFImporter::load_buffer_views()
@@ -302,6 +342,30 @@ void joj::GLTFImporter::print_buffer_views()
         std::cout << "    Target: " << buffer_view_target_to_string(view.target) << std::endl;
         ++i;
     }
+}
+
+void joj::GLTFImporter::write_buffer_views_to_file(const char* filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open())
+        return;
+
+    file << "Total loaded buffer views: " << m_buffer_views.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& view : m_buffer_views)
+    {
+        file << "BufferView " << i << ": " << std::endl;
+        file << "    Buffer: " << view.buffer << std::endl;
+        file << "    Byte offset: " << view.byte_offset << std::endl;
+        file << "    Byte length: " << view.byte_length << std::endl;
+        file << "    Byte stride: " << view.byte_stride << std::endl;
+        file << "    Target: " << buffer_view_target_to_string(view.target) << std::endl;
+        ++i;
+    }
+
+    file.close();
+    JOJ_DEBUG("File written to: %s", filename);
 }
 
 b8 joj::GLTFImporter::load_accessors()
@@ -458,6 +522,30 @@ void joj::GLTFImporter::print_accessors()
         std::cout << "    Byte offset: " << acc.byte_offset << std::endl;
         ++i;
     }
+}
+
+void joj::GLTFImporter::write_accessors_to_file(const char* filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open())
+        return;
+
+    file << "Total loaded accessors: " << m_accessors.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& acc : m_accessors)
+    {
+        file << "Accessor " << i << ": " << std::endl;
+        file << "    Data type: " << data_type_to_string(acc.data_type) << std::endl;
+        file << "    Component type: " << component_type_to_string(acc.component_type) << std::endl;
+        file << "    Count: " << acc.count << std::endl;
+        file << "    Buffer view: " << acc.buffer_view << std::endl;
+        file << "    Byte offset: " << acc.byte_offset << std::endl;
+        ++i;
+    }
+
+    file.close();
+    JOJ_DEBUG("File written to: %s", filename);
 }
 
 b8 joj::GLTFImporter::load_nodes()
@@ -752,6 +840,46 @@ void joj::GLTFImporter::print_nodes()
         }
         ++i;
     }
+}
+
+void joj::GLTFImporter::write_nodes_to_file(const char* filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open())
+        return;
+
+    file << "Total loaded nodes: " << m_nodes.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& node : m_nodes)
+    {
+        file << "Node " << i << ": " << std::endl;
+        file << "    Name: " << node.name << std::endl;
+        file << "    Translation: " << node.translation.to_string() << std::endl;
+        file << "    Rotation: " << node.rotation.to_string() << std::endl;
+        file << "    Scale: " << node.scale.to_string() << std::endl;
+        file << "    Mesh: " << node.mesh_index << std::endl;
+        file << "    Skin: " << node.skin_index << std::endl;
+        file << "    Camera: " << node.camera_index << std::endl;
+        if (!node.children.empty())
+        {
+            file << "    Children: ";
+            for (const auto& child : node.children)
+                file << child << " ";
+            file << std::endl;
+        }
+        if (!node.weights.empty())
+        {
+            file << "    Weights: ";
+            for (const auto& weight : node.weights)
+            file << weight << " ";
+            file << std::endl;
+        }
+        ++i;
+    }
+
+    file.close();
+    JOJ_DEBUG("File written to: %s", filename);
 }
 
 b8 joj::GLTFImporter::load_meshes()
@@ -1057,6 +1185,42 @@ void joj::GLTFImporter::print_meshes()
     }
 }
 
+void joj::GLTFImporter::write_meshes_to_file(const char* filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open())
+        return;
+
+    file << "Total loaded meshes: " << m_meshes.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& mesh : m_meshes)
+    {
+        file << "Mesh " << i << ": " << std::endl;
+        file << "    Name: " << mesh.name << std::endl;
+        i32 j = 0;
+        for (const auto& primitive : mesh.primitives)
+        {
+            file << "    Primitive " << j << ": " << std::endl;
+            file << "        Position accessor (attr): " << primitive.position_acessor << std::endl;
+            file << "        Normal accessor (attr): " << primitive.normal_acessor << std::endl;
+            file << "        Tangent accessor (attr): " << primitive.tangent_acessor << std::endl;
+            file << "        Texcoord accessor (attr): " << primitive.texcoord_acessor << std::endl;
+            file << "        Color accessor (attr): " << primitive.color_acessor << std::endl;
+            file << "        Joint accessor (attr): " << primitive.joint_acessor << std::endl;
+            file << "        Weight accessor (attr): " << primitive.weight_acessor << std::endl;
+            file << "        Indices accessor: " << primitive.indices_acessor << std::endl;
+            file << "        Material index: " << primitive.material_index << std::endl;
+            file << "        Mode: " << primitive_mode_to_str(primitive.mode) << std::endl;
+            ++j;
+        }
+        ++i;
+    }
+
+    file.close();
+    JOJ_DEBUG("File written to: %s", filename);
+}
+
 b8 joj::GLTFImporter::load_animations()
 {
     if (!m_root.has_key("animations"))
@@ -1288,6 +1452,46 @@ void joj::GLTFImporter::print_animations()
     }
 }
 
+void joj::GLTFImporter::write_animations_to_file(const char* filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open())
+        return;
+
+    file << "Total loaded animations: " << m_animations.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& anim : m_animations)
+    {
+        file << "Animation " << i << ": " << std::endl;
+        file << "    Name: " << anim.name << std::endl;
+
+        i32 j = 0;
+        for (const auto& channel : anim.channels)
+        {
+            file << "    Channel " << j << ": " << std::endl;
+            file << "        Sampler: " << channel.sampler << std::endl;
+            file << "        Target: " << channel.target_node << std::endl;
+            file << "        Path: " << animation_channel_type_to_string(channel.type) << std::endl;
+            ++j;
+        }
+
+        i32 k = 0;
+        for (const auto& sampler : anim.samplers)
+        {
+            file << "    Sampler " << k << ": " << std::endl;
+            file << "        Input: " << sampler.input << std::endl;
+            file << "        Output: " << sampler.output << std::endl;
+            file << "        Interpolation: " << interpolation_type_to_string(sampler.interpolation) << std::endl;
+            ++k;
+        }
+        ++i;
+    }
+
+    file.close();
+    JOJ_DEBUG("File written to: %s", filename);
+}
+
 b8 joj::GLTFImporter::load_skins()
 {
     if (!m_root.has_key("skins"))
@@ -1398,6 +1602,35 @@ void joj::GLTFImporter::print_skins()
     }
 }
 
+void joj::GLTFImporter::write_skins_to_file(const char* filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open())
+        return;
+
+    file << "Total loaded skins: " << m_skins.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& skin : m_skins)
+    {
+        file << "Skin " << i << ": " << std::endl;
+        file << "    Name: " << skin.name << std::endl;
+        file << "    Inverse bind matrices accessor index: " << skin.inverse_bind_matrices_accessor_index << std::endl;
+        file << "    Skeleton root node index: " << skin.skeleton_root_node_index << std::endl;
+        if (!skin.joint_indices.empty())
+        {
+            file << "    Joint indices: ";
+            for (const auto& joint : skin.joint_indices)
+                file << joint << " ";
+            file << std::endl;
+        }
+        ++i;
+    }
+
+    file.close();
+    JOJ_DEBUG("File written to: %s", filename);
+}
+
 b8 joj::GLTFImporter::load_scenes()
 {
     if (!m_root.has_key("scenes"))
@@ -1471,6 +1704,102 @@ void joj::GLTFImporter::print_scenes()
     }
 }
 
+void joj::GLTFImporter::write_scenes_to_file(const char* filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open())
+        return;
+
+        file << "Total loaded scenes: " << m_scenes.size() << std::endl;
+
+    i32 i = 0;
+    for (const auto& scene : m_scenes)
+    {
+        file << "Scene " << i << ": " << std::endl;
+        file << "    Name: " << scene.name << std::endl;
+        if (!scene.root_nodes.empty())
+        {
+            file << "    Root nodes: ";
+            for (const auto& node : scene.root_nodes)
+                file << node << " ";
+            file << std::endl;
+        }
+        ++i;
+    }
+
+    file.close();
+    JOJ_DEBUG("File written to: %s", filename);
+}
+
+void joj::GLTFImporter::write_vec3_vector_to_file(const char* filename, const std::vector<Vector3>& data, const char* top_line) const
+{
+    std::fstream output_file(filename);
+    if (!output_file.is_open())
+    {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+
+    output_file << top_line;
+    output_file << "    Vector size: " << data.size() << std::endl;
+    output_file << "    => Vertices:\n";
+    
+    i32 count = 0;
+    for (const auto& vec : data)
+    {
+        output_file << "        " << count++ << ": " << std::fixed << std::setprecision(4) << vec.x << ", " << vec.y << ", " << vec.z << "\n";
+    }
+
+    output_file.close();
+    JOJ_DEBUG("File written to: %s", filename);
+}
+
+void joj::GLTFImporter::write_vec4_vector_to_file(const char* filename, const std::vector<Vector4>& data, const char* top_line) const
+{
+    std::fstream output_file(filename);
+    if (!output_file.is_open())
+    {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+
+    output_file << top_line;
+    output_file << "    Vector size: " << data.size() << std::endl;
+    output_file << "    => Vertices:\n";
+    
+    i32 count = 0;
+    for (const auto& vec : data)
+    {
+        output_file << "        " << count++ << ": " << std::fixed << std::setprecision(4) << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << "\n";
+    }
+
+    output_file.close();
+    JOJ_DEBUG("File written to: %s", filename);
+}
+
+void joj::GLTFImporter::write_u16_vector_to_file(const char* filename, const std::vector<u16>& data, const char* top_line) const
+{
+    std::fstream output_file(filename);
+    if (!output_file.is_open())
+    {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+
+    output_file << top_line;
+    output_file << "    Indices size: " << data.size() << std::endl;
+    output_file << "    => Indices:\n";
+    
+    i32 count = 0;
+    for (const auto& index : data)
+    {
+        output_file << "        " << index << "\n";
+    }
+
+    output_file.close();
+    JOJ_DEBUG("File written to: %s", filename);
+}
+
 void joj::GLTFImporter::build_model()
 {
     m_model.set_gltf_meshes(m_meshes); // Copia todas as meshes importadas
@@ -1496,28 +1825,27 @@ void joj::GLTFImporter::build_model()
     }
 
     /*
-    */
     std::cout << "=== GLTF Model Info ===" << std::endl;
-
+    
     // Quantidade de meshes
     std::cout << "Total Meshes: " << m_model.get_gltf_meshes_count() << std::endl;
-
+    
     // Quantidade de nós
     std::cout << "Total Nodes: " << m_model.get_gltf_nodes_count() << std::endl;
-
+    
     // Nós raiz
     std::cout << "Root Nodes: ";
     for (const i32 root : m_model.get_root_nodes())
-        std::cout << root << " ";
+    std::cout << root << " ";
     std::cout << std::endl;
-
+    
     // Informações detalhadas dos nós
     std::cout << "\nNodes:\n";
     for (size_t i = 0; i < m_model.get_gltf_nodes_count(); ++i)
     {
         const GLTFNode* node = m_model.get_node(i);
         JOJ_ASSERT(node != nullptr, "Node is null!");
-
+        
         std::cout << "Node " << i << " - Name: " << node->name << std::endl;
         std::cout << "  Mesh Index: " << node->mesh_index << std::endl;
         std::cout << "  Children: ";
@@ -1527,8 +1855,9 @@ void joj::GLTFImporter::build_model()
         }
         std::cout << std::endl;
     }
-
+    
     std::cout << "=======================\n";
+    */
 }
 
 void joj::GLTFImporter::build_model_new()
@@ -1538,10 +1867,10 @@ void joj::GLTFImporter::build_model_new()
     // Print number of buffers
     std::cout << "Total Buffers: " << m_buffers.size() << std::endl;
     for (size_t i = 0; i < m_buffers.size(); ++i)
-        std::cout << "    Buffer " << i << ": " << m_buffers[i].data.size() << " bytes" << std::endl;
+    std::cout << "    Buffer " << i << ": " << m_buffers[i].data.size() << " bytes" << std::endl;
 
     // Check how many scenes there are
-    std::cout << "Total Scenes: " << m_scenes.size() << std::endl;
+    // std::cout << "Total Scenes: " << m_scenes.size() << std::endl;
     for (size_t i = 0; i < m_scenes.size(); ++i)
     {
         const GLTFSceneData& scene = m_scenes[i];
@@ -1658,6 +1987,7 @@ void joj::GLTFImporter::build_scene()
 
     // Debug info
     {
+        /*
         // Print number of buffers
         std::cout << "Total Buffers: " << m_buffers.size() << std::endl;
         for (size_t i = 0; i < m_buffers.size(); ++i)
@@ -1674,6 +2004,7 @@ void joj::GLTFImporter::build_scene()
             std::cout << node << " ";
             std::cout << std::endl;
         }
+        */
     }
 
     // If there are no scenes, return
@@ -1688,7 +2019,7 @@ void joj::GLTFImporter::build_scene()
 
     // Get the first scene
     const GLTFSceneData& main_scene = m_scenes[main_scene_index];
-    std::cout << "Default Scene: " << main_scene.name << std::endl;
+    // std::cout << "Default Scene: " << main_scene.name << std::endl;
 
     for (const auto& node_index : main_scene.root_nodes)
     {
@@ -1750,7 +2081,6 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
         {
             // Fix precision to 4 decimal places
             debug_file << "        " << count++ << ": " << std::fixed << std::setprecision(4) << pos.x << ", " << pos.y << ", " << pos.z << "\n";
-            // debug_file << "Vertex " << count++ << ": " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
         }
         debug_file.close();
 
@@ -1776,7 +2106,6 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
     // Get normals from primitive
     if (primitive.normal_acessor != -1)
     {
-        // Read the buffer data
         std::vector<Vector3> read_normals = process_accessor<Vector3>(primitive.normal_acessor);
 
         // Add normals to vertices
@@ -1875,17 +2204,19 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
     {
         std::vector<u16> read_indices = process_accessor<u16>(primitive.indices_acessor);
 
+        i32 count = 0;
+        /*
         // Print read indices
         std::cout << "Indices: ";
-        i32 count = 0;
         for (const auto& index : read_indices)
         {
             std::cout << index << " ";
             if (count++ > 20)
-                break;
+            break;
         }
         std::cout << std::endl;
         std::cout << "=======================================================" << std::endl;
+        */
 
         // Write the indices to a file
         std::string debug_output_file = "debug_indices.txt";
@@ -1894,7 +2225,8 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
             return;
 
         count = 0;
-        const i32 base_index_offset = m_scene.get_vertex_count();
+        i32 base_index_offset = m_scene.get_vertex_count();
+        base_index_offset = 0;
         debug_file << "Base Index Offset: " << base_index_offset << std::endl;
         debug_file << "Index count: " << read_indices.size() << std::endl;
         debug_file << "    => Indices: \n";
@@ -1903,6 +2235,27 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
             debug_file << "        " << base_index_offset + index << "\n";
         }
         debug_file.close();
+
+        /*! 
+         *  \brief     Pushing read indices to the indices vector using a base index offset!
+         *
+         *  \warning   The way it works is that it adds the base index offset to the read indices.
+         *  That means that the indices are not 0-based when added to the indices vector.
+         *  It will consider the size of the Scene indices vector and add the base index offset to it.
+         *  For example:
+         *  If the indices vector has 0 elements, the base index offset will be 0, and the
+         *  read indices will be added as is.
+         * 
+         *  If the indices vector has 10 elements, the base index offset will be 10, and the
+         *  read indices will be added 10 so that it can refer to the correct vertex in the scene.
+         * 
+         *  \note      This is important because the indices are not 0-based when added to the indices vector,
+         * so that the draw method should use 0 as the vertex_start location.
+         * 
+         * \note       If we were to use 0 as the base index offset, the indices would be added as is,
+         * but the draw method would have to use the vertex_start location as the base index offset.
+         * 
+         */
 
         // Add indices to vertices
         for (const auto& index : read_indices)

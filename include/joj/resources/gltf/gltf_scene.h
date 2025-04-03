@@ -42,6 +42,7 @@ namespace joj
         void print_info() const;
 
         void draw(IRenderer* renderer) const;
+        void draw_mesh_index(IRenderer* renderer, const u32 submesh) const;
 
     private:
         std::string m_name;
