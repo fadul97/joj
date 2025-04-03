@@ -39,6 +39,7 @@ set(SOURCE_FILES
     gltf/gltf_skin.cpp
     gltf/gltf_node.cpp
     gltf/gltf_model.cpp
+    gltf/gltf_scene.cpp
     gltf/gltf_importer.cpp
 )
 

@@ -16,6 +16,7 @@
 #include "gltf_scene_data.h"
 #include "gltf_node.h"
 #include "gltf_model.h"
+#include "gltf_scene.h"
 #include "joj/resources/buffer.h"
 #include "joj/resources/animation.h"
 #include "joj/utils/json_value.h"
@@ -46,6 +47,7 @@ namespace joj
         void get_vertices_and_indices(std::vector<GLTFVertex>& vertices, std::vector<u16>& indices);
 
         const GLTFModel* get_model() const;
+        const GLTFScene* get_scene() const;
 
         void get_meshes(std::vector<GLTFMesh>& meshes);
 
@@ -110,6 +112,7 @@ namespace joj
         JsonValue m_root;
         
         GLTFModel m_model;
+        GLTFScene m_scene;
 
         b8 parse_json();
 
@@ -143,6 +146,11 @@ namespace joj
         void build_model();
         void build_model_new();
 
+        void build_scene();
+        void process_root_node(const u32 node_index);
+        void process_mesh(const u32 mesh_index);
+        void process_primitive(const GLTFPrimitive& primitive, const std::string& mesh_name);
+
         template <typename T>
         std::vector<T> read_buffer_internal(const Buffer& buffer, const GLTFAccessor& accessor, const GLTFBufferView& bufferView) const
         {
@@ -152,12 +160,13 @@ namespace joj
             size_t stride = (bufferView.byte_stride > 0) ? bufferView.byte_stride : element_size;
             size_t start_offset = bufferView.byte_offset + accessor.byte_offset;
 
-            std::cout << "Reading buffer... " << std::endl;
-            std::cout << "  Element Size: " << element_size << std::endl;
-            std::cout << "  Count: " << count << std::endl;
-            std::cout << "  Stride: " << stride << std::endl;
-            std::cout << "  Start Offset: " << start_offset << std::endl;
-            std::cout << "  Buffer Size: " << buffer.data.size() << std::endl;
+            std::cout << "    Reading buffer... " << std::endl;
+            std::cout << "        Element Size: " << element_size << std::endl;
+            std::cout << "        Count: " << count << std::endl;
+            std::cout << "        Stride: " << stride << std::endl;
+            std::cout << "        Start Offset: " << start_offset << std::endl;
+            std::cout << "        Buffer View Size: " << bufferView.byte_length << std::endl;
+            std::cout << "        Buffer Size: " << buffer.data.size() << std::endl;
 
             data.resize(count);
             for (size_t i = 0; i < count; i++)

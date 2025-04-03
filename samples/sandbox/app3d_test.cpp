@@ -85,13 +85,59 @@ void App3DTest::build_buffers()
     if (m_model_importer.load(filename) != joj::ErrorCode::OK)
         return;
 
-    m_model = m_model_importer.get_model();
-    if (m_model == nullptr)
+    m_scene = m_model_importer.get_scene();
+    if (m_scene == nullptr)
         return;
-    m_model->write_data_to_file("Lantern_VERTICES.txt");
+
+    // Print scene info
+    m_scene->print_info();
+    m_scene->write_vertices_and_indices_to_file("Scene_Vertices_Indices.txt");
+
+    // Print vertices, indices and submesh count
+    std::cout << "Vertices count: " << m_scene->get_vertex_count() << std::endl; // 4145
+    std::cout << "Indices count: " << m_scene->get_index_count() << std::endl;   // 16182
+    std::cout << "Submesh count: " << m_scene->get_submesh_count() << std::endl; // 3
+
+    std::vector<joj::Vertex::ColorTanPosNormalTex> vertices_data;
+    vertices_data.reserve(m_scene->get_vertex_count());
+    const auto& vertices = m_scene->get_vertex_data();
+    for (const auto& vertex : vertices)
+    {
+        joj::Vertex::ColorTanPosNormalTex v;
+        v.pos = vertex.pos;
+        v.color = vertex.color;
+        v.normal = vertex.normal;
+        vertices_data.push_back(v);
+    }
+    
+    std::vector<u16> indices_data;
+    indices_data.reserve(m_scene->get_index_count());
+    const auto& indices = m_scene->get_index_data();
+    for (const auto& index : indices)
+    {
+        indices_data.push_back(index);
+    }
+
+    // Print vertices and indices size
+    const i32 vertex_count = m_scene->get_vertex_count();
+    const i32 index_count = m_scene->get_index_count();
+    std::cout << "Vertices size: " << vertices_data.size() << std::endl;
+    std::cout << "Indices size: " << indices_data.size() << std::endl;
 
     m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
     m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
+
+    if (m_vb.create(joj::BufferUsage::Default,
+        joj::CPUAccessType::None,
+        vertex_count * sizeof(joj::Vertex::ColorTanPosNormalTex),
+        vertices_data.data()) != joj::ErrorCode::OK)
+        return;
+
+    if (m_ib.create(joj::BufferUsage::Default,
+        joj::CPUAccessType::None,
+        index_count * sizeof(u16),
+        indices_data.data()) != joj::ErrorCode::OK)
+        return;
 
     // Create shader
     m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
@@ -154,6 +200,39 @@ void App3DTest::draw()
             lightBuffer.diffuseColor = joj::JFloat4(0.7f, 0.7f, 0.7f, 1.0);
             lightBuffer.lightDirection = joj::JFloat3(0.0f, 0.0f, 1.0f);
             m_lightcb.update(lightBuffer);
+        }
+
+        // Per object updates
+        m_cb.bind_to_vertex_shader(0, 1);
+        {
+            joj::JMatrix4x4 W = DirectX::XMMatrixIdentity();
+            W = DirectX::XMMatrixRotationY(rotation * 2.0f) * DirectX::XMMatrixTranslation(2.0f, 2.0f, 0.0f);
+            
+            joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
+            joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
+            joj::JMatrix4x4 WVP = W * V * P;
+    
+            ConstantBuffer cbData = {};
+            DirectX::XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
+            DirectX::XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
+            DirectX::XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
+            DirectX::XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
+            m_cb.update(cbData);
+            
+            constexpr u32 stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
+            constexpr u32 offset = 0;
+            m_vb.bind(0, 1, &stride, &offset);
+            m_ib.bind(joj::DataFormat::R16_UINT, offset);
+            m_shader.bind();
+
+            i32 vertex_start = 1682;
+            i32 vertex_count = 2463;
+            i32 index_start = 6360;
+            i32 index_count = 9822;
+
+            m_renderer->draw_indexed(index_count, index_start, 0);
+
+            // m_scene->draw(m_renderer);
         }
     }
     m_renderer->end_frame();

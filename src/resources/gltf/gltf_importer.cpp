@@ -68,6 +68,10 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
     build_model_new();
     build_aggregated_meshes();
 
+    build_scene();
+    m_scene.write_vertices_and_indices_to_file("Lantern_VERTICES.txt");
+    m_scene.write_submesh_data_to_file("Lantern_SUBMESHES.txt");
+
     return ErrorCode::OK;
 }
 
@@ -1647,12 +1651,319 @@ void joj::GLTFImporter::build_model_new()
     }
 }
 
+void joj::GLTFImporter::build_scene()
+{
+    std::vector<Vertex::ColorTanPosNormalTex> vertices;
+
+    // Debug info
+    {
+        // Print number of buffers
+        std::cout << "Total Buffers: " << m_buffers.size() << std::endl;
+        for (size_t i = 0; i < m_buffers.size(); ++i)
+        std::cout << "    Buffer " << i << ": " << m_buffers[i].data.size() << " bytes" << std::endl;
+        
+        // Check how many scenes there are
+        std::cout << "Total Scenes: " << m_scenes.size() << std::endl;
+        for (size_t i = 0; i < m_scenes.size(); ++i)
+        {
+            const GLTFSceneData& scene = m_scenes[i];
+            std::cout << "    Scene " << i << ": " << scene.name << std::endl;
+            std::cout << "        Root Nodes: ";
+            for (const auto& node : scene.root_nodes)
+            std::cout << node << " ";
+            std::cout << std::endl;
+        }
+    }
+
+    // If there are no scenes, return
+    if (m_scenes.empty())
+    {
+        std::cout << "No scenes found." << std::endl;
+        return;
+    }
+
+    // TODO: Hacky way to test the scene
+    constexpr i32 main_scene_index = 0;
+
+    // Get the first scene
+    const GLTFSceneData& main_scene = m_scenes[main_scene_index];
+    std::cout << "Default Scene: " << main_scene.name << std::endl;
+
+    for (const auto& node_index : main_scene.root_nodes)
+    {
+        process_root_node(node_index);
+    }
+
+}
+
+void joj::GLTFImporter::process_root_node(const u32 node_index)
+{
+    // Get node from index
+    const GLTFNode& node = m_nodes[node_index];
+
+    if (node.mesh_index != -1)
+    {
+        // Process the mesh
+        process_mesh(node.mesh_index);
+    }
+
+    for (const auto& child_index : node.children)
+    {
+        process_root_node(child_index);
+    }
+}
+
+void joj::GLTFImporter::process_mesh(const u32 mesh_index)
+{
+    // Get node from index
+    const GLTFMesh& mesh = m_meshes[mesh_index];
+
+    for (const auto& primitive : mesh.primitives)
+    {
+        process_primitive(primitive, mesh.name);
+    }
+}
+
+void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const std::string& mesh_name)
+{
+    std::vector<Vector3> positions;
+    std::vector<Vector3> normals;
+    std::vector<Vector4> colors;
+    std::vector<Vector2> texcoords;
+    std::vector<Vector4> tangents;
+    std::vector<u16> indices;
+
+    // Get positions from primitive
+    if (primitive.position_acessor != -1)
+    {
+        const GLTFAccessor& position_accessor = m_accessors[primitive.position_acessor];
+        const GLTFBufferView& position_buffer_view = m_buffer_views[position_accessor.buffer_view];
+        const Buffer& position_buffer = m_buffers[position_buffer_view.buffer];
+
+        // Read the buffer data
+        std::vector<Vector3> read_positions = read_buffer_internal<Vector3>(position_buffer, position_accessor, position_buffer_view);
+
+        // Add positions to vertices
+        for (const auto& pos : read_positions)
+        {
+            positions.push_back(pos);
+        }
+
+        std::string output_file = "positions.txt";
+        std::ofstream file(output_file);
+        if (file.is_open())
+        {
+            i32 count = 0;
+            for (const auto& pos : positions)
+            {
+                file << "Vertex " << count++ << ": " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+            }
+            file.close();
+        }
+    }
+
+    // Get normals from primitive
+    if (primitive.normal_acessor != -1)
+    {
+        const GLTFAccessor& normal_accessor = m_accessors[primitive.normal_acessor];
+        const GLTFBufferView& normal_buffer_view = m_buffer_views[normal_accessor.buffer_view];
+        const Buffer& normal_buffer = m_buffers[normal_buffer_view.buffer];
+
+        // Read the buffer data
+        std::vector<Vector3> read_normals = read_buffer_internal<Vector3>(normal_buffer, normal_accessor, normal_buffer_view);
+
+        // Add normals to vertices
+        for (const auto& norm : read_normals)
+        {
+            normals.push_back(norm);
+        }
+
+        std::string output_file = "normals.txt";
+        std::ofstream file(output_file);
+        if (file.is_open())
+        {
+            i32 count = 0;
+            for (const auto& norm : normals)
+            {
+                file << "Normal " << count++ << ": " << norm.x << ", " << norm.y << ", " << norm.z << std::endl;
+            }
+            file.close();
+        }
+    }
+
+    // Get colors from primitive
+    if (primitive.color_acessor != -1)
+    {
+        const GLTFAccessor& color_accessor = m_accessors[primitive.color_acessor];
+        const GLTFBufferView& color_buffer_view = m_buffer_views[color_accessor.buffer_view];
+        const Buffer& color_buffer = m_buffers[color_buffer_view.buffer];
+
+        // Read the buffer data
+        std::vector<Vector4> read_colors = read_buffer_internal<Vector4>(color_buffer, color_accessor, color_buffer_view);
+
+        // Add colors to vertices
+        for (const auto& col : read_colors)
+        {
+            colors.push_back(col);
+        }
+
+        std::string output_file = "colors.txt";
+        std::ofstream file(output_file);
+        if (file.is_open())
+        {
+            i32 count = 0;
+            for (const auto& col : colors)
+            {
+                file << "Color " << count++ << ": " << col.x << ", " << col.y << ", " << col.z << ", " << col.w << std::endl;
+            }
+            file.close();
+        }
+    }
+
+    // Get texcoords from primitive
+    if (primitive.texcoord_acessor != -1)
+    {
+        const GLTFAccessor& texcoord_accessor = m_accessors[primitive.texcoord_acessor];
+        const GLTFBufferView& texcoord_buffer_view = m_buffer_views[texcoord_accessor.buffer_view];
+        const Buffer& texcoord_buffer = m_buffers[texcoord_buffer_view.buffer];
+
+        // Read the buffer data
+        std::vector<Vector2> read_texcoords = read_buffer_internal<Vector2>(texcoord_buffer, texcoord_accessor, texcoord_buffer_view);
+
+        // Add texcoords to vertices
+        for (const auto& tex : read_texcoords)
+        {
+            texcoords.push_back(tex);
+        }
+
+        std::string output_file = "texcoords.txt";
+        std::ofstream file(output_file);
+        if (file.is_open())
+        {
+            i32 count = 0;
+            for (const auto& tex : texcoords)
+            {
+                file << "Texcoord " << count++ << ": " << tex.x << ", " << tex.y << std::endl;
+            }
+            file.close();
+        }
+    }
+
+    // Get tangents from primitive
+    if (primitive.tangent_acessor != -1)
+    {
+        const GLTFAccessor& tangent_accessor = m_accessors[primitive.tangent_acessor];
+        const GLTFBufferView& tangent_buffer_view = m_buffer_views[tangent_accessor.buffer_view];
+        const Buffer& tangent_buffer = m_buffers[tangent_buffer_view.buffer];
+
+        // Read the buffer data
+        std::vector<Vector4> read_tangents = read_buffer_internal<Vector4>(tangent_buffer, tangent_accessor, tangent_buffer_view);
+
+        // Add tangents to vertices
+        for (const auto& tan : read_tangents)
+        {
+            tangents.push_back(tan);
+        }
+
+        std::string output_file = "tangents.txt";
+        std::ofstream file(output_file);
+        if (file.is_open())
+        {
+            i32 count = 0;
+            for (const auto& tan : tangents)
+            {
+                file << "Tangent " << count++ << ": " << tan.x << ", " << tan.y << ", " << tan.z << ", " << tan.w << std::endl;
+            }
+            file.close();
+        }
+    }
+
+    // Get indices from primitive
+    if (primitive.indices_acessor != -1)
+    {
+        const GLTFAccessor& indices_accessor = m_accessors[primitive.indices_acessor];
+        const GLTFBufferView& indices_buffer_view = m_buffer_views[indices_accessor.buffer_view];
+        const Buffer& indices_buffer = m_buffers[indices_buffer_view.buffer];
+
+        // Print Mesh name and accessors info
+        std::cout << "=======================================================" << std::endl;
+        std::cout << "Mesh Name: " << mesh_name << std::endl;
+        std::cout << "    Indices Accessor: " << indices_accessor.buffer_view << std::endl;
+        std::cout << "    Indices Buffer View: " << indices_buffer_view.buffer << std::endl;
+        std::cout << "    Indices Buffer: " << indices_buffer.data.size() << " bytes" << std::endl;
+
+        // Read the buffer data
+        std::vector<u16> read_indices = read_buffer_internal<u16>(indices_buffer, indices_accessor, indices_buffer_view);
+
+        // Print read indices
+        std::cout << "Indices: ";
+        i32 count = 0;
+        for (const auto& index : read_indices)
+        {
+            std::cout << index << " ";
+            if (count++ > 20)
+                break;
+        }
+        std::cout << std::endl;
+        std::cout << "=======================================================" << std::endl;
+
+        // Add indices to vertices
+        for (const auto& index : read_indices)
+        {
+            indices.push_back(index);
+        }
+
+        std::string output_file = "indices.txt";
+        std::ofstream file(output_file);
+        if (file.is_open())
+        {
+            i32 count = 0;
+            for (const auto& index : indices)
+            {
+                file << "Index " << count++ << ": " << index << std::endl;
+            }
+            file.close();
+        }
+    }
+
+    std::vector<Vertex::ColorTanPosNormalTex> vertices;
+
+    // Add the vertices to the scene
+    for (size_t i = 0; i < positions.size(); ++i)
+    {
+        Vertex::ColorTanPosNormalTex vertex;
+        vertex.pos = positions[i];
+        vertex.normal = (i < normals.size()) ? normals[i] : Vector3(0, 0, 1);
+        vertex.color = (i < colors.size()) ? colors[i] : Vector4(1, 1, 1, 1);
+        vertex.tex = (i < texcoords.size()) ? texcoords[i] : Vector2(0, 0);
+        vertex.tangentU = (i < tangents.size()) ? tangents[i] : Vector4(0, 0, 0, 1);
+
+        vertices.push_back(vertex);
+    }
+
+    // Create and setup Submesh
+    Submesh submesh;
+    submesh.name = mesh_name;
+
+    submesh.vertex_start = m_scene.get_vertex_count();
+    submesh.index_start = m_scene.get_index_count();
+
+    m_scene.add_vertices(vertices);
+    m_scene.add_indices(indices);
+
+    submesh.vertex_count = static_cast<u32>(vertices.size());
+    submesh.index_count = static_cast<u32>(indices.size());
+
+    m_scene.add_submesh(submesh);
+}
+
 void joj::GLTFImporter::get_vertices(std::vector<GLTFVertex>& vertices)
 {
 }
 
 void joj::GLTFImporter::get_indices(std::vector<u16>& indices)
 {
+    
 }
 
 void joj::GLTFImporter::get_vertices_and_indices(std::vector<GLTFVertex>& vertices, std::vector<u16>& indices)
@@ -1729,6 +2040,11 @@ void joj::GLTFImporter::get_vertices_and_indices(std::vector<GLTFVertex>& vertic
 const joj::GLTFModel* joj::GLTFImporter::get_model() const
 {
     return &m_model;
+}
+
+const joj::GLTFScene* joj::GLTFImporter::get_scene() const
+{
+    return &m_scene;
 }
 
 void joj::GLTFImporter::get_meshes(std::vector<GLTFMesh>& meshes)

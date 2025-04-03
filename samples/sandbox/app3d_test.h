@@ -18,6 +18,7 @@
 #include "joj/resources/old_gltf_importer.h"
 #include "joj/resources/gltf/gltf_importer.h"
 #include "joj/resources/gltf/gltf_model.h"
+#include "joj/resources/gltf/gltf_scene.h"
 #include "joj/resources/mesh.h"
 
 // Constant Objects ------------------------------------------------------------
@@ -70,7 +71,7 @@ public:
     joj::JFloat2 m_last_mouse_pos;
 
     joj::GLTFImporter m_model_importer;
-    const joj::GLTFModel* m_model;
+    const joj::GLTFScene* m_scene;
 };
 
 #endif // _JOJ_3D_APP_TEST_H
