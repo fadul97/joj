@@ -204,8 +204,6 @@ void joj::GLTFScene::print_info() const
 void joj::GLTFScene::draw(IRenderer* renderer) const
 {
     JOJ_ASSERT(renderer != nullptr, "Renderer is null!");
-    JOJ_ASSERT(renderer->get_device() != nullptr, "Renderer device is null!");
-    JOJ_ASSERT(renderer->get_cmd_list() != nullptr, "Renderer context is null!");
 
     for (const auto& submesh : m_submeshes)
     {

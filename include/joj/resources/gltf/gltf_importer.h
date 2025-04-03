@@ -152,6 +152,31 @@ namespace joj
         void process_primitive(const GLTFPrimitive& primitive, const std::string& mesh_name);
 
         template <typename T>
+        std::vector<T> process_accessor(const i32 accessor_index)
+        {
+            std::vector<T> result;
+
+            // If the accessor index is invalid, return an empty vector
+            if (accessor_index == -1)
+            {
+                return result;
+            }
+
+            // Get the accessor from the index
+            const GLTFAccessor& accessor = m_accessors[accessor_index];
+
+            // Get the buffer view from the accessor
+            const GLTFBufferView& buffer_view = m_buffer_views[accessor.buffer_view];
+
+            // Get the buffer from the buffer view
+            const Buffer& buffer = m_buffers[buffer_view.buffer];
+
+            // Read the buffer data
+            result = read_buffer_internal<T>(buffer, accessor, buffer_view);
+            
+            return result;
+        }
+        template <typename T>
         std::vector<T> read_buffer_internal(const Buffer& buffer, const GLTFAccessor& accessor, const GLTFBufferView& bufferView) const
         {
             std::vector<T> data;
@@ -161,7 +186,7 @@ namespace joj
             size_t start_offset = bufferView.byte_offset + accessor.byte_offset;
 
             std::cout << "    Reading buffer... " << std::endl;
-            std::cout << "        Element Size: " << element_size << std::endl;
+            std::cout << "        Element Size: " << element_size << " bytes" << std::endl;
             std::cout << "        Count: " << count << std::endl;
             std::cout << "        Stride: " << stride << std::endl;
             std::cout << "        Start Offset: " << start_offset << std::endl;

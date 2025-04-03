@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <unordered_set>
 #include "joj/core/jmacros.h"
+#include <iomanip>
 
 joj::GLTFImporter::GLTFImporter()
     : m_gltf_filename(""), m_bin_filename("")
@@ -1736,12 +1737,22 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
     // Get positions from primitive
     if (primitive.position_acessor != -1)
     {
-        const GLTFAccessor& position_accessor = m_accessors[primitive.position_acessor];
-        const GLTFBufferView& position_buffer_view = m_buffer_views[position_accessor.buffer_view];
-        const Buffer& position_buffer = m_buffers[position_buffer_view.buffer];
+        std::vector<Vector3> read_positions = process_accessor<Vector3>(primitive.position_acessor);
 
-        // Read the buffer data
-        std::vector<Vector3> read_positions = read_buffer_internal<Vector3>(position_buffer, position_accessor, position_buffer_view);
+        // Write the indices to a file
+        std::string debug_output_file = "debug_positions.txt";
+        std::ofstream debug_file(debug_output_file);
+        if (!debug_file.is_open())
+            return;
+
+        i32 count = m_scene.get_vertex_count();
+        for (const auto& pos : read_positions)
+        {
+            // Fix precision to 4 decimal places
+            debug_file << "        " << count++ << ": " << std::fixed << std::setprecision(4) << pos.x << ", " << pos.y << ", " << pos.z << "\n";
+            // debug_file << "Vertex " << count++ << ": " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+        }
+        debug_file.close();
 
         // Add positions to vertices
         for (const auto& pos : read_positions)
@@ -1765,12 +1776,8 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
     // Get normals from primitive
     if (primitive.normal_acessor != -1)
     {
-        const GLTFAccessor& normal_accessor = m_accessors[primitive.normal_acessor];
-        const GLTFBufferView& normal_buffer_view = m_buffer_views[normal_accessor.buffer_view];
-        const Buffer& normal_buffer = m_buffers[normal_buffer_view.buffer];
-
         // Read the buffer data
-        std::vector<Vector3> read_normals = read_buffer_internal<Vector3>(normal_buffer, normal_accessor, normal_buffer_view);
+        std::vector<Vector3> read_normals = process_accessor<Vector3>(primitive.normal_acessor);
 
         // Add normals to vertices
         for (const auto& norm : read_normals)
@@ -1794,12 +1801,7 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
     // Get colors from primitive
     if (primitive.color_acessor != -1)
     {
-        const GLTFAccessor& color_accessor = m_accessors[primitive.color_acessor];
-        const GLTFBufferView& color_buffer_view = m_buffer_views[color_accessor.buffer_view];
-        const Buffer& color_buffer = m_buffers[color_buffer_view.buffer];
-
-        // Read the buffer data
-        std::vector<Vector4> read_colors = read_buffer_internal<Vector4>(color_buffer, color_accessor, color_buffer_view);
+        std::vector<Vector4> read_colors = process_accessor<Vector4>(primitive.color_acessor);
 
         // Add colors to vertices
         for (const auto& col : read_colors)
@@ -1823,12 +1825,7 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
     // Get texcoords from primitive
     if (primitive.texcoord_acessor != -1)
     {
-        const GLTFAccessor& texcoord_accessor = m_accessors[primitive.texcoord_acessor];
-        const GLTFBufferView& texcoord_buffer_view = m_buffer_views[texcoord_accessor.buffer_view];
-        const Buffer& texcoord_buffer = m_buffers[texcoord_buffer_view.buffer];
-
-        // Read the buffer data
-        std::vector<Vector2> read_texcoords = read_buffer_internal<Vector2>(texcoord_buffer, texcoord_accessor, texcoord_buffer_view);
+        std::vector<Vector2> read_texcoords = process_accessor<Vector2>(primitive.texcoord_acessor);
 
         // Add texcoords to vertices
         for (const auto& tex : read_texcoords)
@@ -1852,12 +1849,7 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
     // Get tangents from primitive
     if (primitive.tangent_acessor != -1)
     {
-        const GLTFAccessor& tangent_accessor = m_accessors[primitive.tangent_acessor];
-        const GLTFBufferView& tangent_buffer_view = m_buffer_views[tangent_accessor.buffer_view];
-        const Buffer& tangent_buffer = m_buffers[tangent_buffer_view.buffer];
-
-        // Read the buffer data
-        std::vector<Vector4> read_tangents = read_buffer_internal<Vector4>(tangent_buffer, tangent_accessor, tangent_buffer_view);
+        std::vector<Vector4> read_tangents = process_accessor<Vector4>(primitive.tangent_acessor);
 
         // Add tangents to vertices
         for (const auto& tan : read_tangents)
@@ -1881,19 +1873,7 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
     // Get indices from primitive
     if (primitive.indices_acessor != -1)
     {
-        const GLTFAccessor& indices_accessor = m_accessors[primitive.indices_acessor];
-        const GLTFBufferView& indices_buffer_view = m_buffer_views[indices_accessor.buffer_view];
-        const Buffer& indices_buffer = m_buffers[indices_buffer_view.buffer];
-
-        // Print Mesh name and accessors info
-        std::cout << "=======================================================" << std::endl;
-        std::cout << "Mesh Name: " << mesh_name << std::endl;
-        std::cout << "    Indices Accessor: " << indices_accessor.buffer_view << std::endl;
-        std::cout << "    Indices Buffer View: " << indices_buffer_view.buffer << std::endl;
-        std::cout << "    Indices Buffer: " << indices_buffer.data.size() << " bytes" << std::endl;
-
-        // Read the buffer data
-        std::vector<u16> read_indices = read_buffer_internal<u16>(indices_buffer, indices_accessor, indices_buffer_view);
+        std::vector<u16> read_indices = process_accessor<u16>(primitive.indices_acessor);
 
         // Print read indices
         std::cout << "Indices: ";
@@ -1907,10 +1887,27 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
         std::cout << std::endl;
         std::cout << "=======================================================" << std::endl;
 
+        // Write the indices to a file
+        std::string debug_output_file = "debug_indices.txt";
+        std::ofstream debug_file(debug_output_file);
+        if (!debug_file.is_open())
+            return;
+
+        count = 0;
+        const i32 base_index_offset = m_scene.get_vertex_count();
+        debug_file << "Base Index Offset: " << base_index_offset << std::endl;
+        debug_file << "Index count: " << read_indices.size() << std::endl;
+        debug_file << "    => Indices: \n";
+        for (const auto& index : read_indices)
+        {
+            debug_file << "        " << base_index_offset + index << "\n";
+        }
+        debug_file.close();
+
         // Add indices to vertices
         for (const auto& index : read_indices)
         {
-            indices.push_back(index);
+            indices.push_back(base_index_offset + index);
         }
 
         std::string output_file = "indices.txt";

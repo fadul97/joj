@@ -14,6 +14,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <iomanip>
 #include <cstdlib> // rand()
 #include <unordered_map>
 #include "joj/renderer/shader_library.h"
@@ -109,6 +110,32 @@ void App3DTest::build_buffers()
         v.normal = vertex.normal;
         vertices_data.push_back(v);
     }
+
+    // Print vertices size
+    const i32 vertex_count = m_scene->get_vertex_count();
+    std::cout << "Vertices size: " << vertices_data.size() << std::endl;
+
+    // Write vertices to file
+    std::ofstream vertices_file("APPvertices.txt");
+    if (vertices_file.is_open())
+    {
+        i32 count = 0;
+        vertices_file << "Vertices count: " << vertices_data.size() << std::endl;
+        vertices_file << "    => Vertices:\n";
+        for (const auto& vertex : vertices_data)
+        {
+            // Fix precision to 4 decimal places
+            vertices_file << "        " << count++ << ": " << std::fixed << std::setprecision(4) << vertex.pos.x << ", " << vertex.pos.y << ", " << vertex.pos.z << "\n";
+        }
+        vertices_file.close();
+    }
+
+    for (size_t i = 0; i < 5; i++) {
+        std::cout << "Vertex " << i << ": " 
+                  << vertices_data[i].pos.x << ", "
+                  << vertices_data[i].pos.y << ", "
+                  << vertices_data[i].pos.z << std::endl;
+    }
     
     std::vector<u16> indices_data;
     indices_data.reserve(m_scene->get_index_count());
@@ -118,10 +145,21 @@ void App3DTest::build_buffers()
         indices_data.push_back(index);
     }
 
-    // Print vertices and indices size
-    const i32 vertex_count = m_scene->get_vertex_count();
+    // Write indices to file
+    std::ofstream indices_file("APPindices.txt");
+    if (indices_file.is_open())
+    {
+        indices_file << "Indices count: " << indices_data.size() << std::endl;
+        indices_file << "    => Indices:\n";
+        for (const auto& index : indices_data)
+        {
+            indices_file << "        " << index << "\n";
+        }
+        indices_file.close();
+    }
+
+    // Print indices size
     const i32 index_count = m_scene->get_index_count();
-    std::cout << "Vertices size: " << vertices_data.size() << std::endl;
     std::cout << "Indices size: " << indices_data.size() << std::endl;
 
     m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
@@ -151,10 +189,12 @@ void App3DTest::build_buffers()
     {
         { "COLOR",    0, joj::DataFormat::R32G32B32A32_FLOAT, 0,  0, joj::InputClassification::PerVertexData, 0 },
         { "TANGENT",  0, joj::DataFormat::R32G32B32A32_FLOAT, 0, 16, joj::InputClassification::PerVertexData, 0 },
-        { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0, 28, joj::InputClassification::PerVertexData, 0 },
-        { "NORMAL",   0, joj::DataFormat::R32G32B32_FLOAT,    0, 40, joj::InputClassification::PerVertexData, 0 },
-        { "TEXCOORD", 0, joj::DataFormat::R32G32_FLOAT,       0, 52, joj::InputClassification::PerVertexData, 0 },
+        { "POSITION", 0, joj::DataFormat::R32G32B32_FLOAT,    0, 32, joj::InputClassification::PerVertexData, 0 },
+        { "NORMAL",   0, joj::DataFormat::R32G32B32_FLOAT,    0, 44, joj::InputClassification::PerVertexData, 0 },
+        { "TEXCOORD", 0, joj::DataFormat::R32G32_FLOAT,       0, 56, joj::InputClassification::PerVertexData, 0 },
     };
+
+    std::cout << "Vertex Struct Size: " << sizeof(joj::Vertex::ColorTanPosNormalTex) << std::endl;
 
     if (m_shader.create_input_layout(layout) != joj::ErrorCode::OK)
         return;
@@ -205,34 +245,29 @@ void App3DTest::draw()
         // Per object updates
         m_cb.bind_to_vertex_shader(0, 1);
         {
-            joj::JMatrix4x4 W = DirectX::XMMatrixIdentity();
-            W = DirectX::XMMatrixRotationY(rotation * 2.0f) * DirectX::XMMatrixTranslation(2.0f, 2.0f, 0.0f);
+            joj::JMatrix4x4 worldMatrix = DirectX::XMMatrixIdentity();
+            // W = DirectX::XMMatrixRotationY(rotation * 2.0f) * DirectX::XMMatrixTranslation(2.0f, 2.0f, 0.0f);
             
+            // Calcular matrizes de câmera e projeção
+            joj::JMatrix4x4 W = worldMatrix;
             joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
             joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
             joj::JMatrix4x4 WVP = W * V * P;
-    
+
+            // Atualizar constantes do shader
             ConstantBuffer cbData = {};
             DirectX::XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
             DirectX::XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
             DirectX::XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
             DirectX::XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
             m_cb.update(cbData);
-            
+
             constexpr u32 stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
             constexpr u32 offset = 0;
             m_vb.bind(0, 1, &stride, &offset);
             m_ib.bind(joj::DataFormat::R16_UINT, offset);
             m_shader.bind();
-
-            i32 vertex_start = 1682;
-            i32 vertex_count = 2463;
-            i32 index_start = 6360;
-            i32 index_count = 9822;
-
-            m_renderer->draw_indexed(index_count, index_start, 0);
-
-            // m_scene->draw(m_renderer);
+            m_scene->draw(m_renderer);
         }
     }
     m_renderer->end_frame();
