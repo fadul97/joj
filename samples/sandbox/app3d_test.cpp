@@ -90,16 +90,20 @@ void App3DTest::build_buffers()
     if (m_scene == nullptr)
         return;
 
+    // Print Scene submeshes count
+    JOJ_DEBUG("Submeshes count: %d", m_scene->get_submesh_count());
+
     // Print scene info
-    m_scene->print_info();
-    m_scene->write_vertices_and_indices_to_file("Scene_Vertices_Indices.txt");
+    // m_scene->print_info();
+    // m_scene->write_vertices_and_indices_to_file("Scene_Vertices_Indices.txt");
 
     // Print vertices, indices and submesh count
-    std::cout << "Vertices count: " << m_scene->get_vertex_count() << std::endl; // 4145
-    std::cout << "Indices count: " << m_scene->get_index_count() << std::endl;   // 16182
-    std::cout << "Submesh count: " << m_scene->get_submesh_count() << std::endl; // 3
+    // std::cout << "Vertices count: " << m_scene->get_vertex_count() << std::endl; // 4145
+    // std::cout << "Indices count: " << m_scene->get_index_count() << std::endl;   // 16182
+    // std::cout << "Submesh count: " << m_scene->get_submesh_count() << std::endl; // 3
 
     std::vector<joj::Vertex::ColorTanPosNormalTex> vertices_data;
+    /*
     vertices_data.reserve(m_scene->get_vertex_count());
     const auto& vertices = m_scene->get_vertex_data();
     for (const auto& vertex : vertices)
@@ -110,12 +114,16 @@ void App3DTest::build_buffers()
         v.normal = vertex.normal;
         vertices_data.push_back(v);
     }
+    */
+   std::cout << "Inserting vertices data..." << std::endl;
+   vertices_data.insert(vertices_data.begin(), m_scene->get_vertex_data().begin(), m_scene->get_vertex_data().end());
 
     // Print vertices size
     const i32 vertex_count = m_scene->get_vertex_count();
     std::cout << "Vertices size: " << vertices_data.size() << std::endl;
 
     // Write vertices to file
+    /*
     std::ofstream vertices_file("APPvertices.txt");
     if (vertices_file.is_open())
     {
@@ -129,23 +137,22 @@ void App3DTest::build_buffers()
         }
         vertices_file.close();
     }
+    */
 
-    for (size_t i = 0; i < 5; i++) {
-        std::cout << "Vertex " << i << ": " 
-                  << vertices_data[i].pos.x << ", "
-                  << vertices_data[i].pos.y << ", "
-                  << vertices_data[i].pos.z << std::endl;
-    }
-    
     std::vector<u16> indices_data;
+    /*
     indices_data.reserve(m_scene->get_index_count());
     const auto& indices = m_scene->get_index_data();
     for (const auto& index : indices)
     {
         indices_data.push_back(index);
     }
+    */
+    std::cout << "Inserting indices data..." << std::endl;
+    indices_data.insert(indices_data.begin(), m_scene->get_index_data().begin(), m_scene->get_index_data().end());
 
     // Write indices to file
+    /*
     std::ofstream indices_file("APPindices.txt");
     if (indices_file.is_open())
     {
@@ -157,6 +164,7 @@ void App3DTest::build_buffers()
         }
         indices_file.close();
     }
+    */
 
     // Print indices size
     const i32 index_count = m_scene->get_index_count();
@@ -172,10 +180,10 @@ void App3DTest::build_buffers()
         return;
 
     if (m_ib.create(joj::BufferUsage::Default,
-        joj::CPUAccessType::None,
-        index_count * sizeof(u16),
-        indices_data.data()) != joj::ErrorCode::OK)
-        return;
+    joj::CPUAccessType::None,
+    index_count * sizeof(u16),
+    indices_data.data()) != joj::ErrorCode::OK)
+    return;
 
     // Create shader
     m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
@@ -193,8 +201,6 @@ void App3DTest::build_buffers()
         { "NORMAL",   0, joj::DataFormat::R32G32B32_FLOAT,    0, 44, joj::InputClassification::PerVertexData, 0 },
         { "TEXCOORD", 0, joj::DataFormat::R32G32_FLOAT,       0, 56, joj::InputClassification::PerVertexData, 0 },
     };
-
-    std::cout << "Vertex Struct Size: " << sizeof(joj::Vertex::ColorTanPosNormalTex) << std::endl;
 
     if (m_shader.create_input_layout(layout) != joj::ErrorCode::OK)
         return;
@@ -221,10 +227,20 @@ void App3DTest::update(const f32 dt)
     if (m_input->is_key_pressed(joj::KEY_ESCAPE))
         joj::Engine::close();
 
+    if (m_input->is_key_pressed('T'))
+        toogle_movement_speed_decrease = !toogle_movement_speed_decrease;
+
+    if (m_input->is_key_pressed('I'))
+    {
+        m_submesh_index = (m_submesh_index + 1) % m_scene->get_submesh_count();
+        std::cout << "Submesh index: " << m_submesh_index << std::endl;
+    }
+
     const f32 speed = 10.0f * dt;;
     rotation -= 0.0174532925f * 0.1f;
     if (rotation < 0.0f)
         rotation += 360.0f;
+    
 
     process_mouse_input(dt);
 }
@@ -265,9 +281,39 @@ void App3DTest::draw()
             constexpr u32 stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
             constexpr u32 offset = 0;
             m_vb.bind(0, 1, &stride, &offset);
-            m_ib.bind(joj::DataFormat::R16_UINT, offset);
+            if (m_submesh_index != 4)
+                m_ib.bind(joj::DataFormat::R16_UINT, offset);
             m_shader.bind();
+            // m_scene->draw_mesh_index(m_renderer, m_submesh_index);
             m_scene->draw(m_renderer);
+        }
+
+        m_cb.bind_to_vertex_shader(0, 1);
+        {
+            joj::JMatrix4x4 worldMatrix = DirectX::XMMatrixIdentity();
+            worldMatrix = DirectX::XMMatrixRotationY(rotation * 2.0f) * DirectX::XMMatrixTranslation(-20.0f, 0.0f, 0.0f);
+            
+            // Calcular matrizes de câmera e projeção
+            joj::JMatrix4x4 W = worldMatrix;
+            joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
+            joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
+            joj::JMatrix4x4 WVP = W * V * P;
+
+            // Atualizar constantes do shader
+            ConstantBuffer cbData = {};
+            DirectX::XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
+            DirectX::XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
+            DirectX::XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
+            DirectX::XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
+            m_cb.update(cbData);
+
+            constexpr u32 stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
+            constexpr u32 offset = 0;
+            m_vb.bind(0, 1, &stride, &offset);
+            if (m_submesh_index != 4)
+                m_ib.bind(joj::DataFormat::R16_UINT, offset);
+            m_shader.bind();
+            m_scene->draw_mesh_index(m_renderer, m_submesh_index);
         }
     }
     m_renderer->end_frame();
@@ -309,8 +355,11 @@ void App3DTest::process_mouse_input(const f32 dt)
 {
     f32 speed = dt * 10.0f;
 
+    if (toogle_movement_speed_decrease)
+        speed = dt * 1.0f;
+
     if (m_input->is_key_down(joj::KEY_CONTROL))
-        speed = dt * 40.0f;
+        speed += dt * 40.0f;
 
     if (m_input->is_key_down('W'))
         m_camera.walk(speed);

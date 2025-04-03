@@ -60,6 +60,9 @@ public:
 
     void process_mouse_input(const f32 dt);
 
+    b8 toogle_movement_speed_decrease = false;
+    u32 m_submesh_index = 0;
+
     // ----------------------------------------------------
     joj::D3D11VertexBuffer m_vb;
     joj::D3D11IndexBuffer m_ib;

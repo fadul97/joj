@@ -207,7 +207,7 @@ void joj::GLTFScene::draw(IRenderer* renderer) const
 
     for (const auto& submesh : m_submeshes)
     {
-        renderer->draw_indexed(submesh.index_count, submesh.index_start, 0);
+        renderer->draw_indexed(submesh.index_count, submesh.index_start, submesh.vertex_start);
     }
 }
 
@@ -216,25 +216,6 @@ void joj::GLTFScene::draw_mesh_index(IRenderer* renderer, const u32 submesh) con
     JOJ_ASSERT(renderer != nullptr, "Renderer is null!");
     JOJ_ASSERT(submesh < m_submeshes.size(), "Submesh index out of range!");
 
-    if (submesh == 4)
-    {
-        const auto& submesh_data = m_submeshes[4];
-        renderer->draw_indexed(submesh_data.index_count, submesh_data.index_start, 0);
-        // renderer->draw(submesh_data.vertex_count, submesh_data.vertex_start);
-        static b8 drawn = true;
-        if (drawn)
-        {
-            std::cout << "Submesh name: " << submesh_data.name << "\n";
-            std::cout << "    Vertex Start: " << submesh_data.vertex_start << "\n";
-            std::cout << "    Vertex Count: " << submesh_data.vertex_count << "\n";
-            std::cout << "    Index Start: " << submesh_data.index_start << "\n";
-            std::cout << "    Index Count: " << submesh_data.index_count << "\n";
-            drawn = false;
-        }
-        return;
-    }
-
     const auto& submesh_data = m_submeshes[submesh];
     renderer->draw_indexed(submesh_data.index_count, submesh_data.index_start, submesh_data.vertex_start);
-
 }
