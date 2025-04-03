@@ -32,6 +32,30 @@ samples/models/RiggedSimple0.bin
 samples/models/skinAnimation.bin
 samples/models/skinGeometry.bin
 samples/models/skinningData.bin
+samples/models/2CylinderEngine.gltf
+samples/models/2CylinderEngine0.bin
+samples/models/ABeautifulGame.bin
+samples/models/ABeautifulGame.gltf
+samples/models/Avocado.bin
+samples/models/Avocado.gltf
+samples/models/Avocado_baseColor.png
+samples/models/Avocado_normal.png
+samples/models/Avocado_roughnessMetallic.png
+samples/models/BoxVertexColors.gltf
+samples/models/Cubes2.bin
+samples/models/Cubes2.gltf
+samples/models/Fox.bin
+samples/models/Fox.gltf
+samples/models/Lantern.bin
+samples/models/Lantern.gltf
+samples/models/Lantern_baseColor.png
+samples/models/Lantern_emissive.png
+samples/models/Lantern_normal.png
+samples/models/Lantern_roughnessMetallic.png
+samples/models/Sponza.bin
+samples/models/Sponza.gltf
+samples/models/Texture.png
+samples/models/buffer.bin
 
 # Project File Tree
 tree.txt

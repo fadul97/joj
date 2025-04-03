@@ -8,6 +8,7 @@
 #include <vector>
 #include <variant>
 #include <iostream>
+#include <memory>
 
 namespace joj
 {
@@ -80,6 +81,21 @@ namespace joj
          * @param value The array value.
          */
         JsonValue(const Array& value);
+
+        /**
+         * @brief Construct a new Json Value object by copying another Json Value object.
+         * 
+         * @param other The other Json Value object.
+         */
+        JsonValue(const JsonValue& other);
+
+        /**
+         * @brief Construct a new Json Value object using the assignment operator.
+         * 
+         * @param other The other Json Value object.
+         * @return JsonValue& The current Json Value object.
+         */
+        JsonValue& operator=(const JsonValue& other);
 
         /**
          * @brief Access the JSON value by key only if it is an object.
@@ -236,7 +252,7 @@ namespace joj
 
     private:
         /** @brief The JSON value. */
-        Value m_value;
+        std::unique_ptr<Value> m_value;
 
         /**
          * @brief Print the JSON value.

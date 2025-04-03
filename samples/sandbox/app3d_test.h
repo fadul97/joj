@@ -74,7 +74,7 @@ public:
     joj::JFloat2 m_last_mouse_pos;
 
     joj::GLTFImporter m_model_importer;
-    const joj::GLTFScene* m_scene;
+    const joj::GLTFScene* m_scene = nullptr;
 };
 
 #endif // _JOJ_3D_APP_TEST_H

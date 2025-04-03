@@ -281,8 +281,7 @@ void App3DTest::draw()
             constexpr u32 stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
             constexpr u32 offset = 0;
             m_vb.bind(0, 1, &stride, &offset);
-            if (m_submesh_index != 4)
-                m_ib.bind(joj::DataFormat::R16_UINT, offset);
+            m_ib.bind(joj::DataFormat::R16_UINT, offset);
             m_shader.bind();
             // m_scene->draw_mesh_index(m_renderer, m_submesh_index);
             m_scene->draw(m_renderer);
@@ -310,8 +309,7 @@ void App3DTest::draw()
             constexpr u32 stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
             constexpr u32 offset = 0;
             m_vb.bind(0, 1, &stride, &offset);
-            if (m_submesh_index != 4)
-                m_ib.bind(joj::DataFormat::R16_UINT, offset);
+            m_ib.bind(joj::DataFormat::R16_UINT, offset);
             m_shader.bind();
             m_scene->draw_mesh_index(m_renderer, m_submesh_index);
         }
