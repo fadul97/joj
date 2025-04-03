@@ -10,6 +10,8 @@
 #include "DirectXMath.h"
 #endif
 
+#include "vector3.h"
+
 namespace joj
 {
     class JOJ_API Vector4

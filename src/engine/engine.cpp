@@ -1,11 +1,13 @@
 #include "joj/engine/engine.h"
 
+#if JOJ_PLATFORM_WINDOWS
+
 #include <iostream>
 #include <sstream>
 #include "joj/core/logger.h"
 #include "joj/core/jmacros.h"
-#include <windowsx.h>
 #include "joj/renderer/d3d11/graphics_device_d3d11.h"
+#include <windowsx.h>
 
 joj::Win32Window* joj::Engine::s_window = nullptr;
 joj::Win32Input* joj::Engine::s_input = nullptr;
@@ -335,3 +337,5 @@ void joj::Engine::close()
 {
 	s_running = false;
 }
+
+#endif // JOJ_PLATFORM_WINDOWS

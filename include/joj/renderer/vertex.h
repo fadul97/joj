@@ -3,16 +3,20 @@
 
 #include "joj/core/defines.h"
 
-#include <wtypes.h>
-
-// TODO: Remove this include
-#include <DirectXMath.h>
 #include "joj/core/math/vector3.h"
 #include "joj/core/math/vector4.h"
 
+#if JOJ_PLATFORM_WINDOWS
+#include <DirectXMath.h>
+#elif JOJ_PLATFORM_LINUX
+#include "joj/core/math/vector2.h"
+#endif
+
 namespace joj
 {
+#if JOJ_PLATFORM_WINDOWS
     using Vector2 = DirectX::XMFLOAT2;
+#endif
 
     namespace Vertex
     {
@@ -133,7 +137,8 @@ namespace joj
 			Vector2 tex;
 			Vector4 tangentU;
 			Vector3 weights;
-			BYTE bone_indices[4];
+			// FIXME: bone_indices should not be a u32[4]
+			u32 bone_indices[4];
 		};
     }
 

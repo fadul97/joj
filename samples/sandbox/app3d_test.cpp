@@ -1,5 +1,7 @@
 ﻿#include "app3d_test.h"
 
+#if JOJ_PLATFORM_WINDOWS
+
 #include "joj/core/logger.h"
 #include "joj/core/jmacros.h"
 #include "joj/renderer/vertex.h"
@@ -373,3 +375,5 @@ void App3DTest::process_mouse_input(const f32 dt)
 
     m_camera.update_view_matrix();
 }
+
+#endif // JOJ_PLATFORM_WINDOWS

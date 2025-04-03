@@ -16,6 +16,8 @@
 
 #include "joj/core/defines.h"
 
+#if JOJ_PLATFORM_WINDOWS
+
 #include "joj/platform/win32/window_win32.h"
 #include "joj/platform/win32/input_win32.h"
 #include "joj/platform/win32/timer_win32.h"
@@ -71,5 +73,7 @@ namespace joj
         f32 get_frametime();
     };
 }
+
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_ENGINE_H

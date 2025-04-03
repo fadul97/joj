@@ -1,5 +1,7 @@
 #include "joj/systems/camera/camera.h"
 
+#if JOJ_PLATFORM_WINDOWS
+
 joj::Camera::Camera()
     : m_view{ float4x4_identity() }, m_proj{ float4x4_identity() },
     m_left{ -1.0f }, m_right{ 1.0f },
@@ -38,3 +40,5 @@ void joj::Camera::set_zoom(const f32 zoom)
     m_zoom = zoom;
     update();
 }
+
+#endif // JOJ_PLATFORM_WINDOWS

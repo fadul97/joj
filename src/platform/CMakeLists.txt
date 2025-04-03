@@ -72,7 +72,9 @@ target_link_directories(
 # -----------------------------------------------------------------------------
 # Link libraries
 
-target_link_libraries(jojPlatform PUBLIC jojCore User32.lib Gdi32.lib winmm.lib)
+if (WIN32)
+    target_link_libraries(jojPlatform PUBLIC jojCore User32.lib Gdi32.lib winmm.lib)
+endif()
 
 # -----------------------------------------------------------------------------
 # Set output directories

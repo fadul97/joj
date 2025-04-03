@@ -4,6 +4,8 @@
 // Includes --------------------------------------------------------------------
 #include "joj/application/app.h"
 
+#if JOJ_PLATFORM_WINDOWS
+
 #include "joj/renderer/d3d11/shader_d3d11.h"
 #include "joj/renderer/d3d11/vertex_buffer_d3d11.h"
 #include "joj/renderer/d3d11/index_buffer_d3d11.h"
@@ -76,5 +78,7 @@ public:
     joj::GLTFImporter m_model_importer;
     const joj::GLTFScene* m_scene = nullptr;
 };
+
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_3D_APP_TEST_H

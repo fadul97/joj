@@ -4,6 +4,8 @@
 #include "joj/core/defines.h"
 
 #include "joj/math/jmath.h"
+#include "joj/core/math/vector3.h"
+#include "joj/core/math/vector4.h"
 
 namespace joj
 {
@@ -11,10 +13,10 @@ namespace joj
 	{
 		DirectionalLight();
 
-		JFloat4 ambient;
-		JFloat4 diffuse;
-		JFloat4 specular;
-		JFloat3 direction;
+		Vector4 ambient;
+		Vector4 diffuse;
+		Vector4 specular;
+		Vector3 direction;
 		f32 pad; // Padding
 	};
 
@@ -22,16 +24,16 @@ namespace joj
 	{
 		PointLight();
 
-		JFloat4 ambient;
-		JFloat4 diffuse;
-		JFloat4 specular;
+		Vector4 ambient;
+		Vector4 diffuse;
+		Vector4 specular;
 
 		// HLSL: Packed into 4D vector: (Position, Range)
-		JFloat3 position;
+		Vector3 position;
 		f32 range;
 
 		// HLSL: Packed into 4D vector: (A0, A1, A2, pad)
-		JFloat3 att;
+		Vector3 att;
 		f32 pad; // Padding
 	};
 
@@ -39,20 +41,20 @@ namespace joj
 	{
 		SpotLight();
 
-		JFloat4 ambient;
-		JFloat4 diffuse;
-		JFloat4 specular;
+		Vector4 ambient;
+		Vector4 diffuse;
+		Vector4 specular;
 
 		// HLSL: Packed into 4D vector: (Position, Range)
-		JFloat3 position;
+		Vector3 position;
 		f32 range;
 
 		// HLSL: Packed into 4D vector: (direction, Spot)
-		JFloat3 direction;
+		Vector3 direction;
 		f32 spot;
 
 		// HLSL: Packed into 4D vector: (att, pad)
-		JFloat3 att;
+		Vector3 att;
 		f32 pad; // Padding
 	};
 }

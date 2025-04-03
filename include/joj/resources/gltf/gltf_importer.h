@@ -22,6 +22,9 @@
 #include "joj/utils/json_value.h"
 #include "joj/resources/mesh.h"
 
+// TODO: Use Namespace Memory
+#include <string.h>
+
 namespace joj
 {
     struct GLTFVertex

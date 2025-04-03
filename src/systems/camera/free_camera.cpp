@@ -1,5 +1,7 @@
 #include "joj/systems/camera/free_camera.h"
 
+#if JOJ_PLATFORM_WINDOWS
+
 joj::FreeCamera::FreeCamera()
     : m_movement_speed{20.0f}, m_view_dirty{true},
     m_position{0.0f, 0.0f, 0.0f}, m_right{1.0f, 0.0f, 0.0f},
@@ -315,3 +317,5 @@ void joj::FreeCamera::update_view_matrix()
         m_view_dirty = false;
     }
 }
+
+#endif // JOJ_PLATFORM_WINDOWS

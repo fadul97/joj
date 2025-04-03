@@ -1,5 +1,7 @@
 #include "joj/systems/camera/camera2d.h"
 
+#if JOJ_PLATFORM_WINDOWS
+
 #include "joj/core/logger.h"
 
 joj::Camera2D::Camera2D()
@@ -92,3 +94,5 @@ void joj::Camera2D::update()
         m_view_dirty = false;
     }
 }
+
+#endif // JOJ_PLATFORM_WINDOWS

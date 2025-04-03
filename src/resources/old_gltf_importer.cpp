@@ -93,6 +93,7 @@ void joj::apply_all_animations(OLDGLTFAnimation& animation, f32 time, OLDGLTFNod
             }
             else if (channel.path == "rotation")
             {
+                /*
                 // Converter Vector4 para XMVECTOR (quaternion do DirectXMath)
                 DirectX::XMVECTOR q0 = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&keyframes[k0].rotation));
                 DirectX::XMVECTOR q1 = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&keyframes[k1].rotation));
@@ -102,6 +103,7 @@ void joj::apply_all_animations(OLDGLTFAnimation& animation, f32 time, OLDGLTFNod
 
                 Vector4 vec4_interpolated_ration = Vector4(interpolatedRotation);
                 node.SetRotation(vec4_interpolated_ration);
+                */
             }
         }
         else
@@ -118,11 +120,13 @@ void joj::apply_all_animations(OLDGLTFAnimation& animation, f32 time, OLDGLTFNod
             }
             else if (channel.path == "rotation")
             {
+                /*
                 // Converter Vector4 para XMVECTOR
                 DirectX::XMVECTOR lastRotation = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&keyframes.back().rotation));
 
                 Vector4 vec4_interpolated_ration = Vector4(lastRotation);
                 node.SetRotation(vec4_interpolated_ration);
+                */
             }
         }
     }

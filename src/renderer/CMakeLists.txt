@@ -69,17 +69,19 @@ target_link_directories(
 # -----------------------------------------------------------------------------
 # Link libraries
 
-target_link_libraries(jojRenderer PRIVATE
-    jojCore
-    User32.lib
-    Gdi32.lib
-    winmm.lib
-    dxgi.lib
-    dxguid.lib
-    d3d11.lib
-    D3DCompiler.lib
-    jojPlatform
-)
+if (WIN32)
+    target_link_libraries(jojRenderer PRIVATE
+        jojCore
+        User32.lib
+        Gdi32.lib
+        winmm.lib
+        dxgi.lib
+        dxguid.lib
+        d3d11.lib
+        D3DCompiler.lib
+        jojPlatform
+    )
+endif()
 
 # -----------------------------------------------------------------------------
 # Set output directories

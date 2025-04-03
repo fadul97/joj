@@ -16,17 +16,3 @@ b8 joj::is_aggregator_node(const GLTFNode& node)
 {
     return (node.children.size() > 0 && node.mesh_index == -1);
 }
-
-joj::Matrix4x4 joj::compute_local_transform(const GLTFNode& node)
-{
-    DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(node.translation.x, node.translation.y, node.translation.z);
-    DirectX::XMVECTOR q = node.rotation.to_XMVECTOR();
-    DirectX::XMMATRIX R = DirectX::XMMatrixRotationQuaternion(q);
-    DirectX::XMMATRIX S = DirectX::XMMatrixScaling(node.scale.x, node.scale.y, node.scale.z);
-    DirectX::XMMATRIX SRT = S * R * T;
-
-    Matrix4x4 local_transform;
-    local_transform.from_XMMATRIX(SRT);
-
-    return local_transform;
-}

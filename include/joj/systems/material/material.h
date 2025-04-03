@@ -3,9 +3,7 @@
 
 #include "joj/core/defines.h"
 
-#if JOJ_PLATFORM_WINDOWS
-
-#include "joj/math/jvector4.h"
+#include "joj/core/math/vector4.h"
 
 namespace joj
 {
@@ -13,13 +11,11 @@ namespace joj
 	{
 		Material();
 
-		JVector4 ambient;
-		JVector4 diffuse;
-		JVector4 specular; // w = SpecPower
-		JVector4 reflect;
+		Vector4 ambient;
+		Vector4 diffuse;
+		Vector4 specular; // w = SpecPower
+		Vector4 reflect;
 	};
 }
-
-#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_MATERIAL_H

@@ -3,10 +3,15 @@
 
 #include "joj/core/defines.h"
 
+#if JOJ_PLATFORM_WINDOWS
+
 #include "joj/math/jmath.h"
 
 namespace joj
 {
+    struct JFloat3;
+    struct JFloat4x4;
+
     class JOJ_API Camera
     {
     public:
@@ -48,5 +53,7 @@ namespace joj
         virtual void update() = 0;
     };
 }
+
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_CAMERA_H

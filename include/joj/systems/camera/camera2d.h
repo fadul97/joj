@@ -3,6 +3,8 @@
 
 #include "joj/core/defines.h"
 
+#if JOJ_PLATFORM_WINDOWS
+
 #include "camera.h"
 
 namespace joj
@@ -28,5 +30,7 @@ namespace joj
         void update() override;
     };
 }
+
+#endif // JOJ_PLATFORM_WINDOWS
 
 #endif // _JOJ_CAMERA_2D_H
