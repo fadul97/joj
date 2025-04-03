@@ -18,9 +18,9 @@
 #include <unordered_map>
 #include "joj/renderer/shader_library.h"
 #include "joj/utils/json_parser.h"
+#include "joj/core/logger.h"
 
 // ------------------------------------------------------------------------------------------------
-#include "joj/core/logger.h"
 
 inline std::vector<u8> load_binary_data(const std::string& filename)
 {
@@ -80,6 +80,16 @@ void App3DTest::setup_camera()
 
 void App3DTest::build_buffers()
 {
+    // Load binary data from file
+    const char* filename = "models/Lantern.gltf";
+    if (m_model_importer.load(filename) != joj::ErrorCode::OK)
+        return;
+
+    m_model = m_model_importer.get_model();
+    if (m_model == nullptr)
+        return;
+    m_model->write_data_to_file("Lantern_VERTICES.txt");
+
     m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
     m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
 

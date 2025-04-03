@@ -13,7 +13,7 @@
 #include "gltf_mesh.h"
 #include "gltf_animation.h"
 #include "gltf_skin.h"
-#include "gltf_scene.h"
+#include "gltf_scene_data.h"
 #include "gltf_node.h"
 #include "gltf_model.h"
 #include "joj/resources/buffer.h"
@@ -89,7 +89,7 @@ namespace joj
         std::vector<GLTFMesh> m_meshes;
         std::vector<GLTFAnimation> m_animations;
         std::vector<GLTFSkin> m_skins;
-        std::vector<GLTFScene> m_scenes;
+        std::vector<GLTFSceneData> m_scenes;
 
         i32 m_positions_byte_offset;
         i32 m_normals_byte_offset;

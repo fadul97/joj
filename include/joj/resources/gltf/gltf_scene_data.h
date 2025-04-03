@@ -1,5 +1,5 @@
-#ifndef _JOJ_GLTF_SCENE_H
-#define _JOJ_GLTF_SCENE_H
+#ifndef _JOJ_GLTF_SCENE_DATA_H
+#define _JOJ_GLTF_SCENE_DATA_H
 
 #include "joj/core/defines.h"
 
@@ -8,11 +8,11 @@
 
 namespace joj
 {
-    struct JOJ_API GLTFScene
+    struct JOJ_API GLTFSceneData
     {
         std::string name;
         std::vector<i32> root_nodes;
     };
 }
 
-#endif // _JOJ_GLTF_SCENE_H
+#endif // _JOJ_GLTF_SCENE_DATA_H

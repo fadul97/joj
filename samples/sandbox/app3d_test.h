@@ -70,7 +70,7 @@ public:
     joj::JFloat2 m_last_mouse_pos;
 
     joj::GLTFImporter m_model_importer;
-    joj::GLTFModel* m_model;
+    const joj::GLTFModel* m_model;
 };
 
 #endif // _JOJ_3D_APP_TEST_H

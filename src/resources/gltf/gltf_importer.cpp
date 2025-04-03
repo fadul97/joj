@@ -1402,7 +1402,7 @@ b8 joj::GLTFImporter::load_scenes()
     i32 i = 0;
     for (const auto& scene : scenes)
     {
-        GLTFScene s;
+        GLTFSceneData s;
         if (scene.has_key("name"))
         {
             if (scene["name"].is_string())
@@ -1539,7 +1539,7 @@ void joj::GLTFImporter::build_model_new()
     std::cout << "Total Scenes: " << m_scenes.size() << std::endl;
     for (size_t i = 0; i < m_scenes.size(); ++i)
     {
-        const GLTFScene& scene = m_scenes[i];
+        const GLTFSceneData& scene = m_scenes[i];
         std::cout << "    Scene " << i << ": " << scene.name << std::endl;
         std::cout << "        Root Nodes: ";
         for (const auto& node : scene.root_nodes)
@@ -1555,7 +1555,7 @@ void joj::GLTFImporter::build_model_new()
     }
 
     // Get the root nodes of the first scene
-    const GLTFScene& scene = m_scenes[0];
+    const GLTFSceneData& scene = m_scenes[0];
     std::cout << "Default Scene: " << scene.name << std::endl;
 
     // If there are multiple root nodes, we cannot set a default node
