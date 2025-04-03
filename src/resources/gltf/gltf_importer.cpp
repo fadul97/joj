@@ -65,6 +65,7 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
     // print_scenes();
 
     build_model();
+    build_model_new();
     build_aggregated_meshes();
 
     return ErrorCode::OK;
@@ -538,6 +539,7 @@ b8 joj::GLTFImporter::load_nodes()
                 auto matrix = node["matrix"].as_array();
                 if (matrix.size() == 16)
                 {
+                    n.matrix_defined = 1;
                     n.matrix = Matrix4x4(
                         matrix[0].as_float(), matrix[1].as_float(), matrix[2].as_float(), matrix[3].as_float(),
                         matrix[4].as_float(), matrix[5].as_float(), matrix[6].as_float(), matrix[7].as_float(),
@@ -1524,6 +1526,127 @@ void joj::GLTFImporter::build_model()
     std::cout << "=======================\n";
 }
 
+void joj::GLTFImporter::build_model_new()
+{
+    std::vector<Vertex::ColorTanPosNormalTex> vertices;
+
+    // Print number of buffers
+    std::cout << "Total Buffers: " << m_buffers.size() << std::endl;
+    for (size_t i = 0; i < m_buffers.size(); ++i)
+        std::cout << "    Buffer " << i << ": " << m_buffers[i].data.size() << " bytes" << std::endl;
+
+    // Check how many scenes there are
+    std::cout << "Total Scenes: " << m_scenes.size() << std::endl;
+    for (size_t i = 0; i < m_scenes.size(); ++i)
+    {
+        const GLTFScene& scene = m_scenes[i];
+        std::cout << "    Scene " << i << ": " << scene.name << std::endl;
+        std::cout << "        Root Nodes: ";
+        for (const auto& node : scene.root_nodes)
+            std::cout << node << " ";
+        std::cout << std::endl;
+    }
+
+    // If there are no scenes, we cannot set a default scene
+    if (m_scenes.size() > 1)
+    {
+        std::cout << "Multiple scenes found. No default scene set." << std::endl;
+        return;
+    }
+
+    // Get the root nodes of the first scene
+    const GLTFScene& scene = m_scenes[0];
+    std::cout << "Default Scene: " << scene.name << std::endl;
+
+    // If there are multiple root nodes, we cannot set a default node
+    if (scene.root_nodes.size() > 1)
+    {
+        std::cout << "Multiple root nodes found. No default node set." << std::endl;
+        return;
+    }
+
+    // Get the node of the first scene
+    const GLTFNode& node = m_nodes[scene.root_nodes[0]];
+    std::cout << "Default Node: " << node.name << std::endl;
+
+    if (node.mesh_index == -1)
+    {
+        std::cout << "Mesh index is -1. No mesh found for the default node. Maybe it is a composition node." << std::endl;
+
+        // Maybe it is the father of other nodes
+        if (node.children.empty())
+        {
+            std::cout << "No children found for the default node." << std::endl;
+            return;
+        }
+
+        for (const auto& child : node.children)
+        {
+            const GLTFNode& child_node = m_nodes[child];
+            if (child_node.mesh_index == -1)
+            {
+                std::cout << "Child Node: " << child_node.name << " has no mesh." << std::endl;
+                continue;
+            }
+
+            std::cout << "Child Node: " << child_node.name << std::endl;
+            std::cout << "Mesh Index: " << child_node.mesh_index << std::endl;
+
+            const GLTFMesh& child_mesh = m_meshes[child_node.mesh_index];
+            std::cout << "Child Mesh: " << child_mesh.name << std::endl;
+
+            if (child_mesh.primitives.empty())
+            {
+                std::cout << "No primitives found for the child mesh." << std::endl;
+                continue;
+            }
+
+            // Get position data for each primitive in the child mesh
+            for (size_t i = 0; i < child_mesh.primitives.size(); ++i)
+            {
+                const GLTFPrimitive& primitive = child_mesh.primitives[i];
+
+                if (primitive.position_acessor == -1)
+                {
+                    std::cout << "No position accessor found for child primitive " << i << "." << std::endl;
+                    continue;
+                }
+
+                const GLTFAccessor& position_accessor = m_accessors[primitive.position_acessor];
+                const GLTFBufferView& position_buffer_view = m_buffer_views[position_accessor.buffer_view];
+                JOJ_ASSERT(position_buffer_view.buffer == 0, "Position buffer is NOT 0!");
+                const Buffer& position_buffer = m_buffers[position_buffer_view.buffer];
+
+                std::vector<Vector3> positions = read_buffer_internal<Vector3>(position_buffer, position_accessor, position_buffer_view);
+                // Add positions to vertices
+                for (const auto& pos : positions)
+                {
+                    Vertex::ColorTanPosNormalTex vertex;
+                    vertex.pos = pos;
+                    vertices.push_back(vertex);
+                }
+            }
+        }
+    }
+
+    // Write the vertices to a file
+    std::string output_file = "vertices.txt";
+    std::ofstream file(output_file);
+    if (file.is_open())
+    {
+        i32 count = 0;
+        for (const auto& vertex : vertices)
+        {
+            file << "Vertex " << count++ << ": " << vertex.pos.x << ", " << vertex.pos.y << ", " << vertex.pos.z << std::endl;
+        }
+        file.close();
+    }
+    else
+    {
+        std::cout << "Unable to open file to write vertices." << std::endl;
+    }
+}
+
 void joj::GLTFImporter::get_vertices(std::vector<GLTFVertex>& vertices)
 {
 }
@@ -1601,6 +1724,11 @@ void joj::GLTFImporter::get_vertices_and_indices(std::vector<GLTFVertex>& vertic
             indices.insert(indices.end(), indices_data.begin(), indices_data.end());
         }
     }
+}
+
+const joj::GLTFModel* joj::GLTFImporter::get_model() const
+{
+    return &m_model;
 }
 
 void joj::GLTFImporter::get_meshes(std::vector<GLTFMesh>& meshes)

@@ -45,6 +45,8 @@ namespace joj
         void get_indices(std::vector<u16>& indices);
         void get_vertices_and_indices(std::vector<GLTFVertex>& vertices, std::vector<u16>& indices);
 
+        const GLTFModel* get_model() const;
+
         void get_meshes(std::vector<GLTFMesh>& meshes);
 
         std::vector<GLTFAccessor>& get_accessors();
@@ -139,6 +141,7 @@ namespace joj
         void print_scenes();
 
         void build_model();
+        void build_model_new();
 
         template <typename T>
         std::vector<T> read_buffer_internal(const Buffer& buffer, const GLTFAccessor& accessor, const GLTFBufferView& bufferView) const

@@ -19,6 +19,7 @@ namespace joj
         i32 camera_index;
         std::vector<i32> children;
         i32 skin_index;
+        i32 matrix_defined;
         Matrix4x4 matrix;        
         i32 mesh_index;
         Vector4 rotation; // Quaternion

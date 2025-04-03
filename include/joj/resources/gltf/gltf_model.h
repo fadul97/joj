@@ -6,6 +6,8 @@
 #include <vector>
 #include "gltf_mesh.h"
 #include "gltf_node.h"
+#include "joj/renderer/vertex.h"
+#include "joj/resources/submesh.h"
 
 namespace joj
 {
@@ -29,6 +31,14 @@ namespace joj
         void set_gltf_nodes(const std::vector<GLTFNode>& nodes);
         void set_root_nodes(const std::vector<i32>& root_nodes);
         void set_aggregated_meshes(const std::vector<Mesh>& meshes);
+
+        const std::vector<Vertex::ColorTanPosNormalTex>& get_vertices() const;
+        const std::vector<u16>& get_indices() const;
+        const std::vector<Submesh>& get_submeshes() const;
+
+        const i32 get_vertex_count() const;
+        const i32 get_index_count() const;
+        const i32 get_submesh_count() const;
 
         const std::vector<GLTFMesh>& get_gltf_meshes() const;
         const GLTFMesh* get_gltf_mesh(const i32 index) const;
@@ -56,7 +66,12 @@ namespace joj
         void print_meshes() const;
         void print_nodes() const;
 
+        void write_data_to_file(const char* filename) const;
+
     private:
+        std::vector<Vertex::ColorTanPosNormalTex> m_vertices;
+        std::vector<u16> m_indices;
+        std::vector<Submesh> m_submeshes;
         std::vector<GLTFMesh> m_gltf_meshes;
         std::vector<GLTFNode> m_gltf_nodes;
         std::vector<i32> m_root_nodes;

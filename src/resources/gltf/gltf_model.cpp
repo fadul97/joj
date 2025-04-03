@@ -3,6 +3,9 @@
 #include "joj/core/logger.h"
 #include "joj/resources/mesh.h"
 #include <iostream>
+#include "joj/core/jmacros.h"
+#include <fstream>
+#include <filesystem>
 
 joj::GLTFModel::GLTFModel()
 {
@@ -75,6 +78,36 @@ void joj::GLTFModel::set_root_nodes(const std::vector<i32>& root_nodes)
 void joj::GLTFModel::set_aggregated_meshes(const std::vector<Mesh>& meshes)
 {
     m_aggregated_meshes = meshes;
+}
+
+const std::vector<joj::Vertex::ColorTanPosNormalTex>& joj::GLTFModel::get_vertices() const
+{
+    return m_vertices;
+}
+
+const std::vector<u16>& joj::GLTFModel::get_indices() const
+{
+    return m_indices;
+}
+
+const std::vector<joj::Submesh>& joj::GLTFModel::get_submeshes() const
+{
+    return m_submeshes;
+}
+
+const i32 joj::GLTFModel::get_vertex_count() const
+{
+    return static_cast<i32>(m_vertices.size());
+}
+
+const i32 joj::GLTFModel::get_index_count() const
+{
+    return static_cast<i32>(m_indices.size());
+}
+
+const i32 joj::GLTFModel::get_submesh_count() const
+{
+    return static_cast<i32>(m_submeshes.size());
 }
 
 const std::vector<joj::GLTFMesh>& joj::GLTFModel::get_gltf_meshes() const
@@ -310,4 +343,94 @@ void joj::GLTFModel::print_nodes() const
     }
 
     std::cout << "==================================================\n";
+}
+
+void joj::GLTFModel::write_data_to_file(const char* filename) const
+{
+    JOJ_ASSERT(filename != nullptr, "Filename is null.");
+
+    namespace fs = std::filesystem;
+
+    if (fs::exists(filename))
+    {
+        std::string new_filename = "";
+        new_filename += filename;
+        new_filename += "-old";
+
+        while (fs::exists(new_filename))
+            new_filename += "-old";
+
+        fs::rename(filename, new_filename);
+        std::cout << "Renamed existing file to: " << new_filename << std::endl;
+    }
+
+    std::ofstream vertices_file(filename);
+    if (!vertices_file.is_open())
+    {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+
+    vertices_file << "Vertices Count: " << get_vertex_count() << "\n";
+    vertices_file << "Indices Count: " << get_index_count() << "\n";
+    vertices_file << "Submeshes Count: " << get_gltf_meshes_count() << "\n";
+
+    // Write GLTF meshes
+    i32 mesh_index = 0;
+    for (const auto& mesh : get_gltf_meshes())
+    {
+        vertices_file << "Mesh[" << mesh_index++ << "]: " << mesh.name << "\n";
+        vertices_file << "    Primitives: " << mesh.primitives.size() << "\n";
+
+        for (const auto& primitive : mesh.primitives)
+        {
+            vertices_file << "        Primitive: " << primitive.indices_acessor << "\n";
+            vertices_file << "            Position Accessor: " << primitive.position_acessor << "\n";
+            vertices_file << "            Normal Accessor: " << primitive.normal_acessor << "\n";
+            vertices_file << "            Color Accessor: " << primitive.color_acessor << "\n";
+        }
+    }
+
+    // Write vertices for each submesh in mesh Model
+    i32 submesh_index = 0;
+    for (const auto& submesh : get_submeshes())
+    {
+        vertices_file << "Submesh[" << submesh_index++ << "]: " << submesh.name << "\n";
+        vertices_file << "    Vertex Start: " << submesh.vertex_start << "\n";
+        vertices_file << "    Vertex Count: " << submesh.vertex_count << "\n";
+        vertices_file << "    Index Start: " << submesh.index_start << "\n";
+        vertices_file << "    Index Count: " << submesh.index_count << "\n";
+
+        vertices_file << "    Vertices: \n";
+        for (i32 i = submesh.vertex_start; i < submesh.vertex_start + submesh.vertex_count; ++i)
+        {
+            const auto& vertex = get_vertices()[i];
+            vertices_file << "        " << vertex.pos.x << ", " << vertex.pos.y << ", " << vertex.pos.z << "\n";
+        }
+
+        vertices_file << "    Indices: \n";
+        for (i32 i = submesh.index_start; i < submesh.index_start + submesh.index_count; ++i)
+        {
+            const auto& index = get_indices()[i];
+            vertices_file << "        " << index << "\n";
+        }
+
+        ++submesh_index;
+    }
+
+    // Write vertices
+    vertices_file << "Vertices: \n";
+    i32 vertex_index = 0;
+    for (const auto& vertex : get_vertices())
+    {
+        vertices_file << "Vertex[" << vertex_index++ << "]: " << vertex.pos.x << ", " << vertex.pos.y << ", " << vertex.pos.z << "\n";
+    }
+    vertices_file << "Indices: \n";
+    i32 index_index = 0;
+    for (const auto& index : get_indices())
+    {
+        vertices_file << "Index[" << index_index++ << "]: " << index << "\n";
+    }
+
+    vertices_file.close();
 }
