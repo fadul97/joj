@@ -23,7 +23,7 @@
 #include "joj/utils/json_parser.h"
 #include "joj/core/logger.h"
 
-constexpr f32 MOUSE_MOVEMENT_SPEED = 150.0f;
+constexpr f32 MOUSE_MOVEMENT_SPEED = 200.0f;
 
 // ------------------------------------------------------------------------------------------------
 
@@ -97,6 +97,9 @@ void App3DTest::build_buffers()
     // m_scene->print_info();
     // m_scene->write_vertices_and_indices_to_file("Scene_Vertices_Indices.txt");
 
+    // Write submesh info to file
+    m_scene->write_submesh_data_to_file("Scene_Submeshes.txt");
+
     // Print vertices, indices and submesh count
     // std::cout << "Vertices count: " << m_scene->get_vertex_count() << std::endl; // 4145
     // std::cout << "Indices count: " << m_scene->get_index_count() << std::endl;   // 16182
@@ -139,7 +142,7 @@ void App3DTest::build_buffers()
     }
     */
 
-    std::vector<u16> indices_data;
+    std::vector<u32> indices_data;
     /*
     indices_data.reserve(m_scene->get_index_count());
     const auto& indices = m_scene->get_index_data();
@@ -177,13 +180,17 @@ void App3DTest::build_buffers()
         joj::CPUAccessType::None,
         vertex_count * sizeof(joj::Vertex::ColorTanPosNormalTex),
         vertices_data.data()) != joj::ErrorCode::OK)
+    {
         return;
+    }
 
     if (m_ib.create(joj::BufferUsage::Default,
-    joj::CPUAccessType::None,
-    index_count * sizeof(u16),
-    indices_data.data()) != joj::ErrorCode::OK)
-    return;
+        joj::CPUAccessType::None,
+        index_count * sizeof(u32),
+        indices_data.data()) != joj::ErrorCode::OK)
+    {
+        return;
+    }
 
     // Create shader
     m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
@@ -230,6 +237,9 @@ void App3DTest::update(const f32 dt)
     if (m_input->is_key_pressed('T'))
         toogle_movement_speed_decrease = !toogle_movement_speed_decrease;
 
+    if (m_input->is_key_pressed('C'))
+        m_wireframe = !m_wireframe;
+
     if (m_input->is_key_pressed('I'))
     {
         m_submesh_index = (m_submesh_index + 1) % m_scene->get_submesh_count();
@@ -249,6 +259,8 @@ void App3DTest::draw()
 {
     m_renderer->begin_frame();
     {
+        m_renderer->set_rasterizer_state(m_wireframe ? joj::RasterizerState::Wireframe : joj::RasterizerState::Solid);
+
         // Per frame updates
         m_lightcb.bind_to_pixel_shader(1, 1);
         {
@@ -281,7 +293,7 @@ void App3DTest::draw()
             constexpr u32 stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
             constexpr u32 offset = 0;
             m_vb.bind(0, 1, &stride, &offset);
-            m_ib.bind(joj::DataFormat::R16_UINT, offset);
+            m_ib.bind(joj::DataFormat::R32_UINT, offset);
             m_shader.bind();
             // m_scene->draw_mesh_index(m_renderer, m_submesh_index);
             m_scene->draw(m_renderer);

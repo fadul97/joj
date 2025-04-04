@@ -19,7 +19,7 @@ namespace joj
         ~GLTFScene();
 
         void add_vertices(const std::vector<Vertex::ColorTanPosNormalTex>& vertices);
-        void add_indices(const std::vector<u16>& indices);
+        void add_indices(const std::vector<u32>& indices);
         void add_submesh(const Submesh& submesh);
 
         void write_vertices_to_file(const char* filename) const;
@@ -30,11 +30,11 @@ namespace joj
 
         void set_name(const std::string& name);
         void set_vertices(const std::vector<Vertex::ColorTanPosNormalTex>& vertices);
-        void set_indices(const std::vector<u16>& indices);
+        void set_indices(const std::vector<u32>& indices);
         
         const std::string& get_name() const;
         const std::vector<Vertex::ColorTanPosNormalTex>& get_vertex_data() const;
-        const std::vector<u16>& get_index_data() const;
+        const std::vector<u32>& get_index_data() const;
         const std::vector<Submesh>& get_submeshes() const;
 
         const i32 get_vertex_count() const;
@@ -49,7 +49,7 @@ namespace joj
     private:
         std::string m_name;
         std::vector<Vertex::ColorTanPosNormalTex> m_vertices;
-        std::vector<u16> m_indices;
+        std::vector<u32> m_indices;
         std::vector<Submesh> m_submeshes;
     };
 }

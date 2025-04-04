@@ -24,7 +24,7 @@ void joj::GLTFScene::add_vertices(const std::vector<Vertex::ColorTanPosNormalTex
     m_vertices.insert(m_vertices.end(), vertices.begin(), vertices.end());
 }
 
-void joj::GLTFScene::add_indices(const std::vector<u16>& indices)
+void joj::GLTFScene::add_indices(const std::vector<u32>& indices)
 {
     m_indices.insert(m_indices.end(), indices.begin(), indices.end());
 }
@@ -179,7 +179,7 @@ void joj::GLTFScene::set_vertices(const std::vector<Vertex::ColorTanPosNormalTex
     m_vertices = vertices;
 }
 
-void joj::GLTFScene::set_indices(const std::vector<u16>& indices)
+void joj::GLTFScene::set_indices(const std::vector<u32>& indices)
 {
     m_indices = indices;
 }
@@ -194,7 +194,7 @@ const std::vector<joj::Vertex::ColorTanPosNormalTex>& joj::GLTFScene::get_vertex
     return m_vertices;
 }
 
-const std::vector<u16>& joj::GLTFScene::get_index_data() const
+const std::vector<u32>& joj::GLTFScene::get_index_data() const
 {
     return m_indices;
 }
@@ -257,6 +257,11 @@ void joj::GLTFScene::draw_mesh_index(IRenderer* renderer, const u32 submesh_inde
 
     const auto& submesh = m_submeshes[submesh_index];
 #if JOJ_PLATFORM_WINDOWS
+    if (submesh_index == 4)
+    {
+        renderer->draw_indexed(submesh.index_count, submesh.index_start, submesh.vertex_start);
+        return;
+    }
     renderer->draw_indexed(submesh.index_count, submesh.index_start, submesh.vertex_start);
 #endif
 }

@@ -64,6 +64,7 @@ public:
 
     b8 toogle_movement_speed_decrease = false;
     u32 m_submesh_index = 0;
+    b8 m_wireframe = false;
 
     // ----------------------------------------------------
     joj::D3D11VertexBuffer m_vb;

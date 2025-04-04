@@ -2063,7 +2063,12 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
     std::vector<Vector4> colors;
     std::vector<Vector2> texcoords;
     std::vector<Vector4> tangents;
-    std::vector<u16> indices;
+    std::vector<u32> indices;
+
+    if (mesh_name == "Chessboard")
+    {
+        std::cout << "Mesh name: " << mesh_name << std::endl;
+    }
 
     // Get positions from primitive
     if (primitive.position_acessor != -1)
@@ -2202,9 +2207,69 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
     // Get indices from primitive
     if (primitive.indices_acessor != -1)
     {
-        std::vector<u16> read_indices = process_accessor<u16>(primitive.indices_acessor);
+        // Get acessor component type
+        const GLTFAccessor& accessor = m_accessors[primitive.indices_acessor];
 
+        switch (accessor.component_type)
+        {
+        case ComponentType::U16:
+        {
+            std::vector<u16> read_indices = process_accessor<u16>(primitive.indices_acessor);
+
+            std::string debug_output_file = "debug_indices.txt";
+            std::ofstream debug_file(debug_output_file);
+            if (!debug_file.is_open())
+                return;
+
+            debug_file << "Index count: " << read_indices.size() << std::endl;
+            debug_file << "    => Indices: \n";
+            for (const auto& index : read_indices)
+            {
+                debug_file << "        " << index << "\n";
+            }
+            debug_file.close();
+
+            // Add indices to vertices
+            for (const auto& index : read_indices)
+            {
+                indices.push_back(static_cast<u32>(index));
+            }
+        }
+            break;
+        case ComponentType::U32:
+        {
+            std::vector<u32> read_indices = process_accessor<u32>(primitive.indices_acessor);
+
+            std::string debug_output_file = "debug_indices.txt";
+            std::ofstream debug_file(debug_output_file);
+            if (!debug_file.is_open())
+                return;
+
+            debug_file << "Index count: " << read_indices.size() << std::endl;
+            debug_file << "    => Indices: \n";
+            for (const auto& index : read_indices)
+            {
+                debug_file << "        " << index << "\n";
+            }
+            debug_file.close();
+
+            for (const auto& index : read_indices)
+            {
+                indices.push_back(index);
+            }
+        }
+            break;
+        default:
+            JOJ_ERROR(ErrorCode::FAILED, "Different component type for Accessor.");
+            break;
+        }
+
+
+        /*
+        std::vector<u16> read_indices = process_accessor<u16>(primitive.indices_acessor);
+        
         i32 count = 0;
+        */
         /*
         // Print read indices
         std::cout << "Indices: ";
@@ -2217,61 +2282,64 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
         std::cout << std::endl;
         std::cout << "=======================================================" << std::endl;
         */
-
+       
+        /*
         // Write the indices to a file
         std::string debug_output_file = "debug_indices.txt";
         std::ofstream debug_file(debug_output_file);
         if (!debug_file.is_open())
-            return;
-
-        /*!
-         *  \brief     Pushing read indices to the indices vector using a number N as base index offset!
-         *             -> Check base_index_offset variable below to see if it is 0 or not.
-         *             -> Using 0 as base index offset will add the read indices as is to the indices vector.
-         *             -> Using 10 as base index offset will add the read indices + 10 to the indices vector.
-         *
-         * !
-         * \warning    Check the base_index_offset variable to see if it is 0 or not!
-         * !
-         *
-         *  \warning   The way it works is that it adds the base index offset to the read indices.
-         *  That means that the indices are not 0-based when added to the indices vector.
-         *  It will consider the size of the Scene indices vector and add the base index offset to it.
-         *  For example:
-         *  If the indices vector has 0 elements, the base index offset will be 0, and the
-         *  read indices will be added as is.
-         *
-         *  If the indices vector has 10 elements, the base index offset will be 10, and the
-         *  read indices will be added 10 so that it can refer to the correct vertex in the scene.
-         *
-         *  \note      This is important because the indices are not 0-based when added to the indices vector,
-         * so that the draw method should use 0 as the vertex_start location.
-         *
-         * \note       If we were to use 0 as the base index offset, the indices would be added as is,
-         * but the draw method would have to use the vertex_start location as the base index offset.
-         *
-         * \warning   This is a hacky way to do it, but it works for now.
-         */
-
-        count = 0;
-        i32 base_index_offset = m_scene.get_vertex_count();
-        base_index_offset = 0; // !
-        debug_file << "Base Index Offset: " << base_index_offset << std::endl;
-        debug_file << "Index count: " << read_indices.size() << std::endl;
-        debug_file << "    => Indices: \n";
-        for (const auto& index : read_indices)
-        {
-            debug_file << "        " << base_index_offset + index << "\n";
+        return;
+        */
+       
+       /*!
+       *  \brief     Pushing read indices to the indices vector using a number N as base index offset!
+       *             -> Check base_index_offset variable below to see if it is 0 or not.
+       *             -> Using 0 as base index offset will add the read indices as is to the indices vector.
+       *             -> Using 10 as base index offset will add the read indices + 10 to the indices vector.
+       *
+       * !
+       * \warning    Check the base_index_offset variable to see if it is 0 or not!
+       * !
+       *
+       *  \warning   The way it works is that it adds the base index offset to the read indices.
+       *  That means that the indices are not 0-based when added to the indices vector.
+       *  It will consider the size of the Scene indices vector and add the base index offset to it.
+       *  For example:
+       *  If the indices vector has 0 elements, the base index offset will be 0, and the
+       *  read indices will be added as is.
+       *
+       *  If the indices vector has 10 elements, the base index offset will be 10, and the
+       *  read indices will be added 10 so that it can refer to the correct vertex in the scene.
+       *
+       *  \note      This is important because the indices are not 0-based when added to the indices vector,
+       * so that the draw method should use 0 as the vertex_start location.
+       *
+       * \note       If we were to use 0 as the base index offset, the indices would be added as is,
+       * but the draw method would have to use the vertex_start location as the base index offset.
+       *
+       * \warning   This is a hacky way to do it, but it works for now.
+       */
+      
+       /*
+       count = 0;
+       i32 base_index_offset = m_scene.get_vertex_count();
+       base_index_offset = 0; // !
+       debug_file << "Base Index Offset: " << base_index_offset << std::endl;
+       debug_file << "Index count: " << read_indices.size() << std::endl;
+       debug_file << "    => Indices: \n";
+       for (const auto& index : read_indices)
+       {
+        debug_file << "        " << base_index_offset + index << "\n";
         }
         debug_file.close();
-
-
+        
+        
         // Add indices to vertices
         for (const auto& index : read_indices)
         {
             indices.push_back(base_index_offset + index);
         }
-
+        
         std::string output_file = "indices.txt";
         std::ofstream file(output_file);
         if (file.is_open())
@@ -2283,6 +2351,7 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
             }
             file.close();
         }
+        */
     }
 
     std::vector<Vertex::ColorTanPosNormalTex> vertices;
