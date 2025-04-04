@@ -5,6 +5,7 @@
 
 #include "vector3.h"
 #include "vector4.h"
+#include "math_types.h"
 
 #if JOJ_PLATFORM_WINDOWS
 

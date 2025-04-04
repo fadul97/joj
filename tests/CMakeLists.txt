@@ -6,39 +6,57 @@ project(jojTests)
 # -----------------------------------------------------------------------------
 
 # JVector3 Tests
-add_executable(jojTestsJVec3
-    joj_tests_vec3.cpp
+add_executable(jojTestsVector3
+    joj_tests_vector3.cpp
 )
 
-target_include_directories(jojTestsJVec3
+target_include_directories(jojTestsVector3
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include/
 )
 
-target_link_directories(jojTestsJVec3
+target_link_directories(jojTestsVector3
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/
 )
 
-target_link_libraries(jojTestsJVec3 joj)
+target_link_libraries(jojTestsVector3 joj)
 # -----------------------------------------------------------------------------
 
 # JVector4 Tests
-add_executable(jojTestsJVec4
-    joj_tests_vec4.cpp
+add_executable(jojTestsVector4
+    joj_tests_vector4.cpp
 )
 
-target_include_directories(jojTestsJVec4
+target_include_directories(jojTestsVector4
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include/
 )
 
-target_link_directories(jojTestsJVec4
+target_link_directories(jojTestsVector4
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/
 )
 
-target_link_libraries(jojTestsJVec4 joj)
+target_link_libraries(jojTestsVector4 joj)
+# -----------------------------------------------------------------------------
+
+# JVector4 Tests
+add_executable(jojTestsvec3
+    joj_tests_vec3.cpp
+)
+
+target_include_directories(jojTestsvec3
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/
+)
+
+target_link_directories(jojTestsvec3
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/
+)
+
+target_link_libraries(jojTestsvec3 joj)
 # -----------------------------------------------------------------------------
 
 # JVector4 Tests
