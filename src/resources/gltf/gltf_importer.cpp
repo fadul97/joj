@@ -2224,9 +2224,38 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
         if (!debug_file.is_open())
             return;
 
+        /*!
+         *  \brief     Pushing read indices to the indices vector using a number N as base index offset!
+         *             -> Check base_index_offset variable below to see if it is 0 or not.
+         *             -> Using 0 as base index offset will add the read indices as is to the indices vector.
+         *             -> Using 10 as base index offset will add the read indices + 10 to the indices vector.
+         *
+         * !
+         * \warning    Check the base_index_offset variable to see if it is 0 or not!
+         * !
+         *
+         *  \warning   The way it works is that it adds the base index offset to the read indices.
+         *  That means that the indices are not 0-based when added to the indices vector.
+         *  It will consider the size of the Scene indices vector and add the base index offset to it.
+         *  For example:
+         *  If the indices vector has 0 elements, the base index offset will be 0, and the
+         *  read indices will be added as is.
+         *
+         *  If the indices vector has 10 elements, the base index offset will be 10, and the
+         *  read indices will be added 10 so that it can refer to the correct vertex in the scene.
+         *
+         *  \note      This is important because the indices are not 0-based when added to the indices vector,
+         * so that the draw method should use 0 as the vertex_start location.
+         *
+         * \note       If we were to use 0 as the base index offset, the indices would be added as is,
+         * but the draw method would have to use the vertex_start location as the base index offset.
+         *
+         * \warning   This is a hacky way to do it, but it works for now.
+         */
+
         count = 0;
         i32 base_index_offset = m_scene.get_vertex_count();
-        base_index_offset = 0;
+        base_index_offset = 0; // !
         debug_file << "Base Index Offset: " << base_index_offset << std::endl;
         debug_file << "Index count: " << read_indices.size() << std::endl;
         debug_file << "    => Indices: \n";
@@ -2236,26 +2265,6 @@ void joj::GLTFImporter::process_primitive(const GLTFPrimitive& primitive, const 
         }
         debug_file.close();
 
-        /*! 
-         *  \brief     Pushing read indices to the indices vector using a base index offset!
-         *
-         *  \warning   The way it works is that it adds the base index offset to the read indices.
-         *  That means that the indices are not 0-based when added to the indices vector.
-         *  It will consider the size of the Scene indices vector and add the base index offset to it.
-         *  For example:
-         *  If the indices vector has 0 elements, the base index offset will be 0, and the
-         *  read indices will be added as is.
-         * 
-         *  If the indices vector has 10 elements, the base index offset will be 10, and the
-         *  read indices will be added 10 so that it can refer to the correct vertex in the scene.
-         * 
-         *  \note      This is important because the indices are not 0-based when added to the indices vector,
-         * so that the draw method should use 0 as the vertex_start location.
-         * 
-         * \note       If we were to use 0 as the base index offset, the indices would be added as is,
-         * but the draw method would have to use the vertex_start location as the base index offset.
-         * 
-         */
 
         // Add indices to vertices
         for (const auto& index : read_indices)
