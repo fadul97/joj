@@ -56,6 +56,8 @@ samples/models/Sponza.bin
 samples/models/Sponza.gltf
 samples/models/Texture.png
 samples/models/buffer.bin
+samples/models/BASEmodel.bin
+samples/models/BASEmodel.gltf
 
 # Project File Tree
 tree.txt

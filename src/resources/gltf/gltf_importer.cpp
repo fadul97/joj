@@ -37,7 +37,7 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
         return ErrorCode::FAILED;
     // print_buffers();
     // TODO: Use m_gltf_filename to get the base filename
-    const std::string base_filename = "ABeautifulGame_";
+    const std::string base_filename = "Sponza_";
     const std::string buffer_filename = base_filename + "BUFFERS.txt";
     write_buffers_to_file(buffer_filename.c_str());
 

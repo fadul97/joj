@@ -23,6 +23,8 @@
 #include "joj/utils/json_parser.h"
 #include "joj/core/logger.h"
 
+constexpr f32 MOUSE_MOVEMENT_SPEED = 150.0f;
+
 // ------------------------------------------------------------------------------------------------
 
 inline std::vector<u8> load_binary_data(const std::string& filename)
@@ -73,14 +75,14 @@ App3DTest::~App3DTest()
 void App3DTest::setup_camera()
 {
     m_camera.set_pos(0.0f, 5.0f, -15.0f);
-    m_camera.set_lens(0.25f * J_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
+    m_camera.set_lens(0.25f * J_PI, 800.0f / 600.0f, 0.1f, 10000.0f);
     m_camera.look_at(m_camera.get_pos(), joj::JFloat3(0.0f, 0.0f, 0.0f), m_camera.get_up());
 }
 
 void App3DTest::build_buffers()
 {
     // Load binary data from file
-    const char* filename = "models/Lantern.gltf";
+    const char* filename = "models/Sponza.gltf";
     if (m_model_importer.load(filename) != joj::ErrorCode::OK)
         return;
 
@@ -285,6 +287,7 @@ void App3DTest::draw()
             m_scene->draw(m_renderer);
         }
 
+        /*
         m_cb.bind_to_vertex_shader(0, 1);
         {
             joj::JMatrix4x4 worldMatrix = DirectX::XMMatrixIdentity();
@@ -295,7 +298,7 @@ void App3DTest::draw()
             joj::JMatrix4x4 V = m_camera.get_view().to_XMMATRIX();
             joj::JMatrix4x4 P = m_camera.get_proj().to_XMMATRIX();
             joj::JMatrix4x4 WVP = W * V * P;
-
+            
             // Atualizar constantes do shader
             ConstantBuffer cbData = {};
             DirectX::XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
@@ -303,7 +306,7 @@ void App3DTest::draw()
             DirectX::XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
             DirectX::XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
             m_cb.update(cbData);
-
+            
             constexpr u32 stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
             constexpr u32 offset = 0;
             m_vb.bind(0, 1, &stride, &offset);
@@ -311,6 +314,7 @@ void App3DTest::draw()
             m_shader.bind();
             m_scene->draw_mesh_index(m_renderer, m_submesh_index);
         }
+        */
     }
     m_renderer->end_frame();
 }
@@ -349,13 +353,13 @@ void App3DTest::on_mouse_move(WPARAM button_state, i32 x, i32 y)
 
 void App3DTest::process_mouse_input(const f32 dt)
 {
-    f32 speed = dt * 10.0f;
+    f32 speed = dt * MOUSE_MOVEMENT_SPEED;
 
     if (toogle_movement_speed_decrease)
-        speed = dt * 1.0f;
+        speed *= 0.5f;
 
     if (m_input->is_key_down(joj::KEY_CONTROL))
-        speed += dt * 40.0f;
+        speed *= 4.0f;
 
     if (m_input->is_key_down('W'))
         m_camera.walk(speed);
