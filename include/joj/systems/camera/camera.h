@@ -6,36 +6,35 @@
 #if JOJ_PLATFORM_WINDOWS
 
 #include "joj/math/jmath.h"
+#include "joj/core/math/matrix4x4.h"
+#include "joj/core/math/vector3.h"
 
 namespace joj
 {
-    struct JFloat3;
-    struct JFloat4x4;
-
     class JOJ_API Camera
     {
     public:
         Camera();
         virtual ~Camera();
 
-        const JFloat4x4& get_view() const;
-        const JFloat4x4& get_proj() const;
+        const Matrix4x4& get_view() const;
+        const Matrix4x4& get_proj() const;
 
         void set_viewport(const f32 left, const f32 right, const f32 bottom, const f32 top);
         void set_zoom(const f32 zoom);
-        virtual void set_position(const JFloat3& position) = 0;
+        virtual void set_position(const Vector3& position) = 0;
         virtual void set_position(const f32 x, const f32 y, const f32 z) = 0;
-        virtual void set_rotation(const JFloat3& rotation) = 0;
+        virtual void set_rotation(const Vector3& rotation) = 0;
 
-        virtual JFloat3 get_position() const = 0;
+        virtual Vector3 get_position() const = 0;
 
         virtual void translate(const f32 dx, const f32 dy, const f32 dz) = 0;
         virtual void move_to(const f32 x, const f32 y, const f32 z) = 0;
-        virtual void move(const JFloat3& offset) = 0;
+        virtual void move(const Vector3& offset) = 0;
 
     protected:
-        JFloat4x4 m_view;
-        JFloat4x4 m_proj;
+        Matrix4x4 m_view;
+        Matrix4x4 m_proj;
 
         b8 m_view_dirty;
 

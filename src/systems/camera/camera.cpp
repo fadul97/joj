@@ -3,7 +3,7 @@
 #if JOJ_PLATFORM_WINDOWS
 
 joj::Camera::Camera()
-    : m_view{ float4x4_identity() }, m_proj{ float4x4_identity() },
+    : m_view{ Matrix4x4::identity() }, m_proj{ Matrix4x4::identity() },
     m_left{ -1.0f }, m_right{ 1.0f },
     m_bottom{ 1.0f }, m_top{ -1.0f },
     m_zoom{ 1.0f }, m_rotation{ 0.0f },
@@ -16,12 +16,12 @@ joj::Camera::~Camera()
 {
 }
 
-const joj::JFloat4x4& joj::Camera::get_view() const
+const joj::Matrix4x4& joj::Camera::get_view() const
 {
     return m_view;
 }
 
-const joj::JFloat4x4& joj::Camera::get_proj() const
+const joj::Matrix4x4& joj::Camera::get_proj() const
 {
     return m_proj;
 }

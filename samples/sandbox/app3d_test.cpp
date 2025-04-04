@@ -268,8 +268,8 @@ void App3DTest::draw()
             
             // Calcular matrizes de câmera e projeção
             joj::JMatrix4x4 W = worldMatrix;
-            joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
-            joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
+            joj::JMatrix4x4 V = m_camera.get_view().to_XMMATRIX();
+            joj::JMatrix4x4 P = m_camera.get_proj().to_XMMATRIX();
             joj::JMatrix4x4 WVP = W * V * P;
 
             // Atualizar constantes do shader
@@ -296,8 +296,8 @@ void App3DTest::draw()
             
             // Calcular matrizes de câmera e projeção
             joj::JMatrix4x4 W = worldMatrix;
-            joj::JMatrix4x4 V = DirectX::XMLoadFloat4x4(&m_camera.get_view());
-            joj::JMatrix4x4 P = DirectX::XMLoadFloat4x4(&m_camera.get_proj());
+            joj::JMatrix4x4 V = m_camera.get_view().to_XMMATRIX();
+            joj::JMatrix4x4 P = m_camera.get_proj().to_XMMATRIX();
             joj::JMatrix4x4 WVP = W * V * P;
 
             // Atualizar constantes do shader

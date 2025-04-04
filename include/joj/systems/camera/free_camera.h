@@ -6,6 +6,8 @@
 #if JOJ_PLATFORM_WINDOWS
 
 #include "joj/math/jmath.h"
+#include "joj/core/math/matrix4x4.h"
+#include "joj/core/math/vector3.h"
 
 namespace joj
 {
@@ -29,13 +31,13 @@ namespace joj
         FreeCamera();
         ~FreeCamera();
 
-        JFloat3 get_pos() const;
+        Vector3 get_pos() const;
         void set_pos(const f32 x, const f32 y, const f32 z);
-        void set_pos(const JFloat3& v);
+        void set_pos(const Vector3& v);
 
-        JFloat3 get_right() const;
-        JFloat3 get_up() const;
-        JFloat3 get_target() const;
+        Vector3 get_right() const;
+        Vector3 get_up() const;
+        Vector3 get_target() const;
 
         f32 get_nearZ() const;
         f32 get_farZ() const;
@@ -50,16 +52,16 @@ namespace joj
 
         void set_lens(const f32 yfov, const f32 aspect, const f32 znear, const f32 zfar);
 
-        void look_at(const JFloat3& pos, const JFloat3& target, const JFloat3& world_up);
+        void look_at(const Vector3& pos, const Vector3& target, const Vector3& world_up);
 
-        const JFloat4x4& get_view();
-        const JFloat4x4& get_proj();
+        const Matrix4x4& get_view();
+        const Matrix4x4& get_proj();
 
         void strafe(const f32 d);
         void walk(const f32 d);
 
         // FIXME: 
-        void move(CameraMovement direction, f32 dt);
+        void move(const CameraMovement direction, const f32 dt);
 
         void pitch(const f32 angle);
         void rotateY(const f32 angle);
@@ -67,10 +69,10 @@ namespace joj
         void update_view_matrix();
 
     private:
-        JFloat3 m_position;
-        JFloat3 m_right;
-        JFloat3 m_up;
-        JFloat3 m_target;
+        Vector3 m_position;
+        Vector3 m_right;
+        Vector3 m_up;
+        Vector3 m_target;
 
         f32 m_nearz;
         f32 m_farz;
@@ -81,8 +83,8 @@ namespace joj
 
         b8 m_view_dirty;
 
-        JFloat4x4 m_view;
-        JFloat4x4 m_proj;
+        Matrix4x4 m_view;
+        Matrix4x4 m_proj;
 
         f32 m_movement_speed;
     };

@@ -16,15 +16,15 @@ namespace joj
         Camera2D(const f32 left, const f32 right, const f32 bottom, const f32 top);
         ~Camera2D();
 
-        void set_position(const JFloat3& position) override;
+        void set_position(const Vector3& position) override;
         void set_position(const f32 x, const f32 y, const f32 z) override;
-        void set_rotation(const JFloat3& rotation) override;
+        void set_rotation(const Vector3& rotation) override;
 
-        JFloat3 get_position() const override;
+        Vector3 get_position() const override;
 
         void translate(const f32 dx, const f32 dy, const f32 dz) override;
         void move_to(const f32 x, const f32 y, const f32 z) override;
-        void move(const JFloat3& offset) override;
+        void move(const Vector3& offset) override;
 
     protected:
         void update() override;

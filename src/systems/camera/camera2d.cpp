@@ -1,3 +1,5 @@
+// FIXME: Remove DirectX dependency in this file.
+
 #include "joj/systems/camera/camera2d.h"
 
 #if JOJ_PLATFORM_WINDOWS
@@ -24,7 +26,7 @@ joj::Camera2D::~Camera2D()
 {
 }
 
-void joj::Camera2D::set_position(const JFloat3& position)
+void joj::Camera2D::set_position(const Vector3& position)
 {
     m_x = position.x;
     m_y = position.y;
@@ -40,14 +42,14 @@ void joj::Camera2D::set_position(const f32 x, const f32 y, const f32 z)
     update();
 }
 
-void joj::Camera2D::set_rotation(const JFloat3& rotation)
+void joj::Camera2D::set_rotation(const Vector3& rotation)
 {
     JOJ_TODO();
 }
 
-joj::JFloat3 joj::Camera2D::get_position() const
+joj::Vector3 joj::Camera2D::get_position() const
 {
-    return JFloat3{ m_x, m_y, 0.0f };
+    return Vector3{ m_x, m_y, 0.0f };
 }
 
 void joj::Camera2D::translate(const f32 dx, const f32 dy, const f32 dz)
@@ -66,7 +68,7 @@ void joj::Camera2D::move_to(const f32 x, const f32 y, const f32 z)
     update();
 }
 
-void joj::Camera2D::move(const JFloat3& offset)
+void joj::Camera2D::move(const Vector3& offset)
 {
     m_x += offset.x;
     m_y += offset.y;
@@ -88,8 +90,8 @@ void joj::Camera2D::update()
             m_left / m_zoom, m_right / m_zoom, m_bottom / m_zoom, m_top / m_zoom, -1.0f, 1.0f);
 
         // Armazena as matrizes
-        DirectX::XMStoreFloat4x4(&m_view, view);
-        DirectX::XMStoreFloat4x4(&m_proj, proj);
+        m_view.from_XMMATRIX(view);
+        m_proj.from_XMMATRIX(proj);
 
         m_view_dirty = false;
     }
