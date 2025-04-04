@@ -72,13 +72,9 @@ App3DTest::~App3DTest()
 
 void App3DTest::setup_camera()
 {
-    m_camera.update_view_matrix();
     m_camera.set_pos(0.0f, 5.0f, -15.0f);
-    m_camera.update_view_matrix();
     m_camera.set_lens(0.25f * J_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
-    m_camera.update_view_matrix();
     m_camera.look_at(m_camera.get_pos(), joj::JFloat3(0.0f, 0.0f, 0.0f), m_camera.get_up());
-    m_camera.update_view_matrix();
 }
 
 void App3DTest::build_buffers()
@@ -372,8 +368,6 @@ void App3DTest::process_mouse_input(const f32 dt)
 
     if (m_input->is_key_down(joj::KEY_D))
         m_camera.strafe(speed);
-
-    m_camera.update_view_matrix();
 }
 
 #endif // JOJ_PLATFORM_WINDOWS

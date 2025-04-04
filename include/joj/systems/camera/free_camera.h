@@ -66,8 +66,6 @@ namespace joj
         void pitch(const f32 angle);
         void rotateY(const f32 angle);
 
-        void update_view_matrix();
-
     private:
         Vector3 m_position;
         Vector3 m_right;
@@ -87,6 +85,8 @@ namespace joj
         Matrix4x4 m_proj;
 
         f32 m_movement_speed;
+
+        void update();
     };
 }
 

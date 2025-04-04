@@ -18,6 +18,8 @@ joj::FreeCamera::FreeCamera()
     m_view = Matrix4x4::identity();
     m_proj = Matrix4x4::identity();
     set_lens(0.25f * J_PI, 1.0f, 1.0f, 100.0f);
+
+    update();
 }
 
 joj::FreeCamera::~FreeCamera()
@@ -34,7 +36,9 @@ void joj::FreeCamera::set_pos(const f32 x, const f32 y, const f32 z)
     m_position.x = x;
     m_position.y = y;
     m_position.z = z;
+
     m_view_dirty = true;
+    update();
 }
 
 void joj::FreeCamera::set_pos(const Vector3& v)
@@ -138,6 +142,7 @@ void joj::FreeCamera::look_at(const Vector3& pos, const Vector3& target, const V
     m_up = Vector3(U.x, U.y, U.z);
 
     m_view_dirty = true;
+    update();
 }
 
 const joj::Matrix4x4& joj::FreeCamera::get_view()
@@ -162,6 +167,7 @@ void joj::FreeCamera::strafe(const f32 d)
     m_position = Vector3(srp.x, srp.y, srp.z);
 
     m_view_dirty = true;
+    update();
 }
 
 void joj::FreeCamera::walk(const f32 d)
@@ -175,6 +181,7 @@ void joj::FreeCamera::walk(const f32 d)
     m_position = Vector3(slp.x, slp.y, slp.z);
 
     m_view_dirty = true;
+    update();
 }
 
 void joj::FreeCamera::move(const CameraMovement direction, const f32 dt)
@@ -267,6 +274,7 @@ void joj::FreeCamera::pitch(const f32 angle)
     m_target = Vector3(target_normal.m128_f32[0], target_normal.m128_f32[1], target_normal.m128_f32[2]);
 
     m_view_dirty = true;
+    update();
 }
 
 void joj::FreeCamera::rotateY(const f32 angle)
@@ -290,9 +298,10 @@ void joj::FreeCamera::rotateY(const f32 angle)
     m_target = Vector3(target_normal.m128_f32[0], target_normal.m128_f32[1], target_normal.m128_f32[2]);
 
     m_view_dirty = true;
+    update();
 }
 
-void joj::FreeCamera::update_view_matrix()
+void joj::FreeCamera::update()
 {
     if (m_view_dirty)
     {
