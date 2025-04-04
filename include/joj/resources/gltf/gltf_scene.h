@@ -25,6 +25,7 @@ namespace joj
         void write_vertices_to_file(const char* filename) const;
         void write_indices_to_file(const char* filename) const;
         void write_vertices_and_indices_to_file(const char* filename) const;
+        void write_submeshes_to_file(const char* filename) const;
         void write_submesh_data_to_file(const char* filename) const;
 
         void set_name(const std::string& name);
@@ -34,6 +35,7 @@ namespace joj
         const std::string& get_name() const;
         const std::vector<Vertex::ColorTanPosNormalTex>& get_vertex_data() const;
         const std::vector<u16>& get_index_data() const;
+        const std::vector<Submesh>& get_submeshes() const;
 
         const i32 get_vertex_count() const;
         const i32 get_index_count() const;
@@ -42,7 +44,7 @@ namespace joj
         void print_info() const;
 
         void draw(IRenderer* renderer) const;
-        void draw_mesh_index(IRenderer* renderer, const u32 submesh) const;
+        void draw_mesh_index(IRenderer* renderer, const u32 submesh_index) const;
 
     private:
         std::string m_name;

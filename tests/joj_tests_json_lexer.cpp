@@ -2264,6 +2264,17 @@ JOJ_TEST(JSON_TEST_BiggerCubeSRT)
     assert(buffers[0]["uri"].as_string() == "BiggerCubeSRT.bin");
 }
 
+// FIXME: Is this a valid test?
+JOJ_TEST(JSON_TEST_Sponza)
+{
+    std::string json = R"(
+        {
+            "name": "Cube",
+            "vertices": [0, 1, 2]
+        }
+    )";
+}
+
 int main() {
     joj::JTestSuite::instance().run();
     return 0;

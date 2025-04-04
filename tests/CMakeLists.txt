@@ -109,3 +109,36 @@ target_link_directories(jojTestsJScript
 
 target_link_libraries(jojTestsJScript joj)
 # -----------------------------------------------------------------------------
+
+# JScript Tests
+add_executable(jojTestsGLTFImporter
+    joj_tests_gltf_importer.cpp
+)
+
+# Resource folders
+set(MODELS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/models)
+    
+# Executable directory
+set(OUTPUT_DIR $<TARGET_FILE_DIR:jojTestsGLTFImporter>)
+    
+# Create custom target to copy resources 
+add_custom_target(copy_models ALL
+    COMMAND ${CMAKE_COMMAND} -E echo "Copying models to '${OUTPUT_DIR}'..."
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${MODELS_DIR} ${OUTPUT_DIR}/models
+)
+    
+# Add copy_models target to jojTestsGLTFImporter (resources will be copied before running executable)
+add_dependencies(jojTestsGLTFImporter copy_models)
+
+target_include_directories(jojTestsGLTFImporter
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/
+)
+
+target_link_directories(jojTestsGLTFImporter
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/
+)
+
+target_link_libraries(jojTestsGLTFImporter joj)
+# -----------------------------------------------------------------------------

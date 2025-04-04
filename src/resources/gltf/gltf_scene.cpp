@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include "joj/core/logger.h"
 
 #if JOJ_PLATFORM_WINDOWS
 #include "joj/renderer/d3d11/renderer_d3d11.h"
@@ -119,7 +120,7 @@ Submesh Name[0]: LanternPole_Body
     file.close();
 }
 
-void joj::GLTFScene::write_submesh_data_to_file(const char* filename) const
+void joj::GLTFScene::write_submeshes_to_file(const char* filename) const
 {
     std::ofstream file(filename);
     if (!file.is_open())
@@ -134,6 +135,37 @@ void joj::GLTFScene::write_submesh_data_to_file(const char* filename) const
         file << "    Index Start: " << submesh.index_start << "\n";
         file << "    Index Count: " << submesh.index_count << "\n";
     }
+    file.close();
+}
+
+void joj::GLTFScene::write_submesh_data_to_file(const char* filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open())
+        return;
+
+    i32 count = 0;
+    for (const auto& submesh : m_submeshes)
+        file << submesh.vertex_start << ", ";
+    file << "\n";
+
+    for (const auto& submesh : m_submeshes)
+        file << submesh.vertex_count << ", ";
+    file << "\n";
+
+    for (const auto& submesh : m_submeshes)
+        file << submesh.index_start << ", ";
+    file << "\n";
+
+    for (const auto& submesh : m_submeshes)
+        file << submesh.index_count << ", ";
+    file << "\n";
+
+    for (const auto& submesh : m_submeshes)
+        file << submesh.name << ", ";
+    file << "\n";
+
+    JOJ_DEBUG("Submesh data written to file: %s", filename);
     file.close();
 }
 
@@ -165,6 +197,11 @@ const std::vector<joj::Vertex::ColorTanPosNormalTex>& joj::GLTFScene::get_vertex
 const std::vector<u16>& joj::GLTFScene::get_index_data() const
 {
     return m_indices;
+}
+
+const std::vector<joj::Submesh>& joj::GLTFScene::get_submeshes() const
+{
+    return m_submeshes;
 }
 
 const i32 joj::GLTFScene::get_vertex_count() const
@@ -213,13 +250,13 @@ void joj::GLTFScene::draw(IRenderer* renderer) const
     }
 }
 
-void joj::GLTFScene::draw_mesh_index(IRenderer* renderer, const u32 submesh) const
+void joj::GLTFScene::draw_mesh_index(IRenderer* renderer, const u32 submesh_index) const
 {
     JOJ_ASSERT(renderer != nullptr, "Renderer is null!");
-    JOJ_ASSERT(submesh < m_submeshes.size(), "Submesh index out of range!");
+    JOJ_ASSERT(submesh_index < m_submeshes.size(), "Submesh index out of range!");
 
-    const auto& submesh_data = m_submeshes[submesh];
+    const auto& submesh = m_submeshes[submesh_index];
 #if JOJ_PLATFORM_WINDOWS
-    renderer->draw_indexed(submesh_data.index_count, submesh_data.index_start, submesh_data.vertex_start);
+    renderer->draw_indexed(submesh.index_count, submesh.index_start, submesh.vertex_start);
 #endif
 }
