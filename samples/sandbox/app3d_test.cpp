@@ -23,7 +23,7 @@
 #include "joj/utils/json_parser.h"
 #include "joj/core/logger.h"
 
-constexpr f32 MOUSE_MOVEMENT_SPEED = 200.0f;
+constexpr f32 MOUSE_MOVEMENT_SPEED = 5.0f;
 
 // ------------------------------------------------------------------------------------------------
 
@@ -82,16 +82,13 @@ void App3DTest::setup_camera()
 void App3DTest::build_buffers()
 {
     // Load binary data from file
-    const char* filename = "models/Sponza.gltf";
+    const char* filename = "models/RiggedSimple.gltf";
     if (m_model_importer.load(filename) != joj::ErrorCode::OK)
         return;
 
     m_scene = m_model_importer.get_scene();
     if (m_scene == nullptr)
         return;
-
-    // Print Scene submeshes count
-    JOJ_DEBUG("Submeshes count: %d", m_scene->get_submesh_count());
 
     // Print scene info
     // m_scene->print_info();
@@ -226,6 +223,9 @@ void App3DTest::init()
     setup_camera();
     build_buffers();
     m_renderer->set_rasterizer_state(joj::RasterizerState::Solid);
+
+    // Print Scene submeshes count
+    JOJ_DEBUG("Submeshes count: %d", m_scene->get_submesh_count());
 }
 
 static f32 rotation = 0.0f;

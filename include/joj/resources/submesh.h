@@ -13,7 +13,6 @@ namespace joj
         Submesh();
         ~Submesh();
 
-        Matrix4x4 local_transform;
         std::string name;
         i32 vertex_start;
         i32 vertex_count;

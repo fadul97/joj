@@ -58,6 +58,16 @@ samples/models/Texture.png
 samples/models/buffer.bin
 samples/models/BASEmodel.bin
 samples/models/BASEmodel.gltf
+samples/models/CarConcept.data.bin
+samples/models/CarConcept.gltf
+samples/models/Corset.bin
+samples/models/Corset.gltf
+samples/models/DamagedHelmet.bin
+samples/models/DamagedHelmet.gltf
+samples/models/MyGLTFTestScene0.bin
+samples/models/MyGLTFTestScene0.gltf
+samples/models/guy.bin
+samples/models/guy.gltf
 
 # Project File Tree
 tree.txt

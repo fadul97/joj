@@ -28,7 +28,6 @@ set(SOURCE_FILES
     animation_channel_type.cpp
     interpolation_type.cpp
     submesh.cpp
-    mesh.cpp
 
     gltf/gltf_animation_sampler.cpp
     gltf/gltf_buffer_view.cpp

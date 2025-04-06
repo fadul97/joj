@@ -37,7 +37,7 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
         return ErrorCode::FAILED;
     // print_buffers();
     // TODO: Use m_gltf_filename to get the base filename
-    const std::string base_filename = "Sponza_";
+    const std::string base_filename = "RiggedSimple_";
     const std::string buffer_filename = base_filename + "BUFFERS.txt";
     write_buffers_to_file(buffer_filename.c_str());
 
@@ -89,8 +89,8 @@ joj::ErrorCode joj::GLTFImporter::load(const char* file_path)
 
     JOJ_DEBUG("Building scene...");
     build_scene();
-    m_scene.write_vertices_and_indices_to_file("Lantern_VERTICES.txt");
-    m_scene.write_submesh_data_to_file("Lantern_SUBMESHES.txt");
+    m_scene.write_vertices_and_indices_to_file("RiggedSimple_VERTICES.txt");
+    m_scene.write_submesh_data_to_file("RiggedSimple_SUBMESHES.txt");
     JOJ_DEBUG("Scene built successfully.");
 
     return ErrorCode::OK;
@@ -1471,7 +1471,7 @@ void joj::GLTFImporter::write_animations_to_file(const char* filename) const
         {
             file << "    Channel " << j << ": " << std::endl;
             file << "        Sampler: " << channel.sampler << std::endl;
-            file << "        Target: " << channel.target_node << std::endl;
+            file << "        Target Node: " << channel.target_node << std::endl;
             file << "        Path: " << animation_channel_type_to_string(channel.type) << std::endl;
             ++j;
         }
@@ -2578,9 +2578,12 @@ void joj::GLTFImporter::setup_mesh(GLTFMesh& gltf_mesh, Mesh& mesh)
     }
 
     // Passar os dados para o Mesh
-    mesh.set_vertices(vertices);
-    mesh.set_indices(indices);
-    mesh.set_submeshes(submeshes);
+    // mesh.set_vertices(vertices);
+    // mesh.set_indices(indices);
+    // mesh.set_submeshes(submeshes);
+    mesh.vertices = vertices;
+    mesh.indices = indices;
+    mesh.submeshes = submeshes;
 
     // Print size of vertices and indices
     std::cout << "Vertices size: " << vertices.size() << std::endl;
@@ -2692,9 +2695,12 @@ void joj::GLTFImporter::setup_meshes(std::vector<GLTFMesh>& gltf_meshes, Mesh& m
     }
 
     // Passar os dados para o Mesh
-    mesh.set_vertices(vertices);
-    mesh.set_indices(indices);
-    mesh.set_submeshes(submeshes);
+    // mesh.set_vertices(vertices);
+    // mesh.set_indices(indices);
+    // mesh.set_submeshes(submeshes);
+    mesh.vertices = vertices;
+    mesh.indices = indices;
+    mesh.submeshes = submeshes;
 
     // Print de depuração
     std::cout << "Total Vertices: " << vertices.size() << std::endl;
@@ -2789,9 +2795,12 @@ void joj::GLTFImporter::setup_aggregated_mesh(const GLTFNode& node, Mesh& mesh)
     }
 
     // Passar os dados para o Mesh final
-    mesh.set_vertices(vertices);
-    mesh.set_indices(indices);
-    mesh.set_submeshes(submeshes);
+    // mesh.set_vertices(vertices);
+    // mesh.set_indices(indices);
+    // mesh.set_submeshes(submeshes);
+    mesh.vertices = vertices;
+    mesh.indices = indices;
+    mesh.submeshes = submeshes;
 }
 
 void joj::GLTFImporter::build_aggregated_meshes()
@@ -2857,7 +2866,10 @@ void joj::GLTFImporter::setup_aggregated_meshes(Mesh& mesh)
     }
 
     // Passar os dados agregados para o Mesh final
-    mesh.set_vertices(vertices);
-    mesh.set_indices(indices);
-    mesh.set_submeshes(submeshes);
+    // mesh.set_vertices(vertices);
+    // mesh.set_indices(indices);
+    // mesh.set_submeshes(submeshes);
+    mesh.vertices = vertices;
+    mesh.indices = indices;
+    mesh.submeshes = submeshes;
 }
