@@ -2578,12 +2578,9 @@ void joj::GLTFImporter::setup_mesh(GLTFMesh& gltf_mesh, Mesh& mesh)
     }
 
     // Passar os dados para o Mesh
-    // mesh.set_vertices(vertices);
+    mesh.set_vertices(vertices);
     // mesh.set_indices(indices);
-    // mesh.set_submeshes(submeshes);
-    mesh.vertices = vertices;
-    mesh.indices = indices;
-    mesh.submeshes = submeshes;
+    mesh.set_submeshes(submeshes);
 
     // Print size of vertices and indices
     std::cout << "Vertices size: " << vertices.size() << std::endl;
@@ -2695,12 +2692,9 @@ void joj::GLTFImporter::setup_meshes(std::vector<GLTFMesh>& gltf_meshes, Mesh& m
     }
 
     // Passar os dados para o Mesh
-    // mesh.set_vertices(vertices);
+    mesh.set_vertices(vertices);
     // mesh.set_indices(indices);
-    // mesh.set_submeshes(submeshes);
-    mesh.vertices = vertices;
-    mesh.indices = indices;
-    mesh.submeshes = submeshes;
+    mesh.set_submeshes(submeshes);
 
     // Print de depuração
     std::cout << "Total Vertices: " << vertices.size() << std::endl;
@@ -2795,12 +2789,12 @@ void joj::GLTFImporter::setup_aggregated_mesh(const GLTFNode& node, Mesh& mesh)
     }
 
     // Passar os dados para o Mesh final
-    // mesh.set_vertices(vertices);
+    mesh.set_vertices(vertices);
     // mesh.set_indices(indices);
-    // mesh.set_submeshes(submeshes);
-    mesh.vertices = vertices;
-    mesh.indices = indices;
-    mesh.submeshes = submeshes;
+    mesh.set_submeshes(submeshes);
+    // mesh.vertices = vertices;
+    // mesh.indices = indices;
+    // mesh.submeshes = submeshes;
 }
 
 void joj::GLTFImporter::build_aggregated_meshes()
@@ -2866,10 +2860,10 @@ void joj::GLTFImporter::setup_aggregated_meshes(Mesh& mesh)
     }
 
     // Passar os dados agregados para o Mesh final
-    // mesh.set_vertices(vertices);
+    mesh.set_vertices(vertices);
     // mesh.set_indices(indices);
-    // mesh.set_submeshes(submeshes);
-    mesh.vertices = vertices;
-    mesh.indices = indices;
-    mesh.submeshes = submeshes;
+    mesh.set_submeshes(submeshes);
+    // mesh.vertices = vertices;
+    // mesh.indices = indices;
+    // mesh.submeshes = submeshes;
 }
