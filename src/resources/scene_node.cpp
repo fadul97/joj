@@ -3,22 +3,25 @@
 joj::SceneNode::SceneNode()
     : m_name(""), m_position(Vector3(0.0f, 0.0f, 0.0f))
     , m_rotation(Vector4(0.0f, 0.0f, 0.0f, 1.0f)), m_scale(Vector3(1.0f, 1.0f, 1.0f))
-    , m_children_indices(), m_parent_index(-1), m_mesh(-1), m_skin(-1)
+    , m_mesh(nullptr), m_parent(nullptr)
 {
+    m_local_matrix = Matrix4x4::identity();
 }
 
 joj::SceneNode::SceneNode(const std::string& name)
     : m_name(name), m_position(Vector3(0.0f, 0.0f, 0.0f))
     , m_rotation(Vector4(0.0f, 0.0f, 0.0f, 1.0f)), m_scale(Vector3(1.0f, 1.0f, 1.0f))
-    , m_children_indices(), m_parent_index(-1), m_mesh(-1), m_skin(-1)
+    , m_mesh(nullptr), m_parent(nullptr)
 {
+    m_local_matrix = Matrix4x4::identity();
 }
 
 joj::SceneNode::SceneNode(const std::string& name, const i32 parent_index)
     : m_name(name), m_position(Vector3(0.0f, 0.0f, 0.0f))
     , m_rotation(Vector4(0.0f, 0.0f, 0.0f, 1.0f)), m_scale(Vector3(1.0f, 1.0f, 1.0f))
-    , m_children_indices(), m_parent_index(parent_index), m_mesh(-1), m_skin(-1)
+    , m_mesh(nullptr), m_parent(nullptr)
 {
+    m_local_matrix = Matrix4x4::identity();
 }
 
 joj::SceneNode::~SceneNode()
@@ -45,24 +48,19 @@ void joj::SceneNode::set_scale(const Vector3& scl)
     m_scale = scl;
 }
 
-void joj::SceneNode::set_mesh(const i32 mesh_index)
+void joj::SceneNode::set_mesh(const Mesh* mesh)
 {
-    m_mesh = mesh_index;
+    m_mesh = mesh;
 }
 
-void joj::SceneNode::set_skin(const i32 skin_index)
+void joj::SceneNode::add_child(const SceneNode* child_node)
 {
-    m_skin = skin_index;
+    m_children.push_back(child_node);
 }
 
-void joj::SceneNode::add_child(const i32& child_index)
+void joj::SceneNode::set_parent(const SceneNode* parent_node)
 {
-    m_children_indices.push_back(child_index);
-}
-
-void joj::SceneNode::set_parent(const i32& parent_index)
-{
-    m_parent_index = parent_index;
+    m_parent = parent_node;
 }
 
 std::string joj::SceneNode::get_name() const
@@ -85,22 +83,17 @@ joj::Vector3 joj::SceneNode::get_scale() const
     return m_scale;
 }
 
-i32 joj::SceneNode::get_mesh() const
+const joj::Mesh* joj::SceneNode::get_mesh() const
 {
     return m_mesh;
 }
 
-i32 joj::SceneNode::get_skin() const
+const std::vector<const joj::SceneNode*>& joj::SceneNode::get_children() const
 {
-    return m_skin;
+    return m_children;
 }
 
-std::vector<i32> joj::SceneNode::get_children_indices() const
+const joj::SceneNode* joj::SceneNode::get_parent() const
 {
-    return m_children_indices;
-}
-
-i32 joj::SceneNode::get_parent_index() const
-{
-    return m_parent_index;
+    return m_parent;
 }
