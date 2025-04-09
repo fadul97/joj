@@ -27,41 +27,6 @@ constexpr f32 MOUSE_MOVEMENT_SPEED = 5.0f;
 
 // ------------------------------------------------------------------------------------------------
 
-inline std::vector<u8> load_binary_data(const std::string& filename)
-{
-    std::ifstream file(filename, std::ios::binary);
-    if (!file.is_open())
-        throw std::runtime_error("Failed to open binary buffer file.");
-
-    file.seekg(0, std::ios::end); // Go to the end of the file
-    size_t size = file.tellg(); // Get the file size
-    std::cout << "File size: " << size << std::endl;
-    file.seekg(0, std::ios::beg); // Go back to the beginning of the file
-
-    std::vector<u8> data(size);
-    file.read(reinterpret_cast<char*>(data.data()), size);
-
-    return data;
-}
-
-inline std::vector<joj::Vector3> load_positions_from_buffer(const std::vector<u8>& buffer, size_t byteOffset, size_t count)
-{
-    const joj::Vector3* data = reinterpret_cast<const joj::Vector3*>(buffer.data() + byteOffset);
-    return std::vector<joj::Vector3>(data, data + count);
-}
-
-inline std::vector<joj::Vector3> load_normals_from_buffer(const std::vector<u8>& buffer, size_t byteOffset, size_t count)
-{
-    const joj::Vector3* data = reinterpret_cast<const joj::Vector3*>(buffer.data() + byteOffset);
-    return std::vector<joj::Vector3>(data, data + count);
-}
-
-inline std::vector<uint16_t> load_indices_from_buffer(const std::vector<u8>& buffer, size_t byteOffset, size_t count)
-{
-    const uint16_t* data = reinterpret_cast<const uint16_t*>(buffer.data() + byteOffset);
-    return std::vector<uint16_t>(data, data + count);
-}
-
 App3DTest::App3DTest()
 {
     m_last_mouse_pos = { 0, 0 };
@@ -82,7 +47,7 @@ void App3DTest::setup_camera()
 void App3DTest::build_buffers()
 {
     // Load binary data from file
-    const char* filename = "models/RiggedSimple.gltf";
+    const char* filename = "models/AnimSimpleCube.gltf";
     if (m_model_importer.load(filename) != joj::ErrorCode::OK)
         return;
 
@@ -90,82 +55,17 @@ void App3DTest::build_buffers()
     if (m_scene == nullptr)
         return;
 
-    // Print scene info
-    // m_scene->print_info();
-    // m_scene->write_vertices_and_indices_to_file("Scene_Vertices_Indices.txt");
-
     // Write submesh info to file
     m_scene->write_submesh_data_to_file("Scene_Submeshes.txt");
 
-    // Print vertices, indices and submesh count
-    // std::cout << "Vertices count: " << m_scene->get_vertex_count() << std::endl; // 4145
-    // std::cout << "Indices count: " << m_scene->get_index_count() << std::endl;   // 16182
-    // std::cout << "Submesh count: " << m_scene->get_submesh_count() << std::endl; // 3
-
     std::vector<joj::Vertex::ColorTanPosNormalTex> vertices_data;
-    /*
-    vertices_data.reserve(m_scene->get_vertex_count());
-    const auto& vertices = m_scene->get_vertex_data();
-    for (const auto& vertex : vertices)
-    {
-        joj::Vertex::ColorTanPosNormalTex v;
-        v.pos = vertex.pos;
-        v.color = vertex.color;
-        v.normal = vertex.normal;
-        vertices_data.push_back(v);
-    }
-    */
-   std::cout << "Inserting vertices data..." << std::endl;
-   vertices_data.insert(vertices_data.begin(), m_scene->get_vertex_data().begin(), m_scene->get_vertex_data().end());
-
+    vertices_data.insert(vertices_data.begin(), m_scene->get_vertex_data().begin(), m_scene->get_vertex_data().end());
     // Print vertices size
     const i32 vertex_count = m_scene->get_vertex_count();
     std::cout << "Vertices size: " << vertices_data.size() << std::endl;
 
-    // Write vertices to file
-    /*
-    std::ofstream vertices_file("APPvertices.txt");
-    if (vertices_file.is_open())
-    {
-        i32 count = 0;
-        vertices_file << "Vertices count: " << vertices_data.size() << std::endl;
-        vertices_file << "    => Vertices:\n";
-        for (const auto& vertex : vertices_data)
-        {
-            // Fix precision to 4 decimal places
-            vertices_file << "        " << count++ << ": " << std::fixed << std::setprecision(4) << vertex.pos.x << ", " << vertex.pos.y << ", " << vertex.pos.z << "\n";
-        }
-        vertices_file.close();
-    }
-    */
-
     std::vector<u32> indices_data;
-    /*
-    indices_data.reserve(m_scene->get_index_count());
-    const auto& indices = m_scene->get_index_data();
-    for (const auto& index : indices)
-    {
-        indices_data.push_back(index);
-    }
-    */
-    std::cout << "Inserting indices data..." << std::endl;
     indices_data.insert(indices_data.begin(), m_scene->get_index_data().begin(), m_scene->get_index_data().end());
-
-    // Write indices to file
-    /*
-    std::ofstream indices_file("APPindices.txt");
-    if (indices_file.is_open())
-    {
-        indices_file << "Indices count: " << indices_data.size() << std::endl;
-        indices_file << "    => Indices:\n";
-        for (const auto& index : indices_data)
-        {
-            indices_file << "        " << index << "\n";
-        }
-        indices_file.close();
-    }
-    */
-
     // Print indices size
     const i32 index_count = m_scene->get_index_count();
     std::cout << "Indices size: " << indices_data.size() << std::endl;
@@ -173,28 +73,28 @@ void App3DTest::build_buffers()
     m_vb = joj::D3D11VertexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
     m_ib = joj::D3D11IndexBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
 
-    if (m_vb.create(joj::BufferUsage::Default,
+    if JOJ_FAILED(m_vb.create(joj::BufferUsage::Default,
         joj::CPUAccessType::None,
         vertex_count * sizeof(joj::Vertex::ColorTanPosNormalTex),
-        vertices_data.data()) != joj::ErrorCode::OK)
+        vertices_data.data()))
     {
         return;
     }
 
-    if (m_ib.create(joj::BufferUsage::Default,
+    if JOJ_FAILED(m_ib.create(joj::BufferUsage::Default,
         joj::CPUAccessType::None,
         index_count * sizeof(u32),
-        indices_data.data()) != joj::ErrorCode::OK)
+        indices_data.data()))
     {
         return;
     }
 
     // Create shader
     m_shader = joj::D3D11Shader(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_shader.compile_vertex_shader(joj::ShaderLibrary::ColorTanPosNormalTexWithCamera, "VS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+    if JOJ_FAILED(m_shader.compile_vertex_shader(joj::ShaderLibrary::ColorTanPosNormalTexWithCamera, "VS", joj::ShaderModel::Default))
         return;
 
-    if (m_shader.compile_pixel_shader(joj::ShaderLibrary::ColorTanPosNormalTexWithCamera, "PS", joj::ShaderModel::Default) != joj::ErrorCode::OK)
+    if JOJ_FAILED(m_shader.compile_pixel_shader(joj::ShaderLibrary::ColorTanPosNormalTexWithCamera, "PS", joj::ShaderModel::Default))
         return;
 
     std::vector<joj::InputDesc> layout =
@@ -206,15 +106,15 @@ void App3DTest::build_buffers()
         { "TEXCOORD", 0, joj::DataFormat::R32G32_FLOAT,       0, 56, joj::InputClassification::PerVertexData, 0 },
     };
 
-    if (m_shader.create_input_layout(layout) != joj::ErrorCode::OK)
+    if JOJ_FAILED(m_shader.create_input_layout(layout))
         return;
 
     m_cb = joj::D3D11ConstantBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_cb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr) != joj::ErrorCode::OK)
+    if JOJ_FAILED(m_cb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(ConstantBuffer)), nullptr))
         return;
     
     m_lightcb = joj::D3D11ConstantBuffer(m_renderer->get_device(), m_renderer->get_cmd_list());
-    if (m_lightcb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(LightBuffer)), nullptr) != joj::ErrorCode::OK)
+    if JOJ_FAILED(m_lightcb.create(joj::BufferUsage::Dynamic, joj::CPUAccessType::Write, joj::calculate_cb_byte_size(sizeof(LightBuffer)), nullptr))
         return;
 }
 
@@ -298,35 +198,6 @@ void App3DTest::draw()
             // m_scene->draw_mesh_index(m_renderer, m_submesh_index);
             m_scene->draw(m_renderer);
         }
-
-        /*
-        m_cb.bind_to_vertex_shader(0, 1);
-        {
-            joj::JMatrix4x4 worldMatrix = DirectX::XMMatrixIdentity();
-            worldMatrix = DirectX::XMMatrixRotationY(rotation * 2.0f) * DirectX::XMMatrixTranslation(-20.0f, 0.0f, 0.0f);
-            
-            // Calcular matrizes de câmera e projeção
-            joj::JMatrix4x4 W = worldMatrix;
-            joj::JMatrix4x4 V = m_camera.get_view().to_XMMATRIX();
-            joj::JMatrix4x4 P = m_camera.get_proj().to_XMMATRIX();
-            joj::JMatrix4x4 WVP = W * V * P;
-            
-            // Atualizar constantes do shader
-            ConstantBuffer cbData = {};
-            DirectX::XMStoreFloat4x4(&cbData.wvp, XMMatrixTranspose(WVP));
-            DirectX::XMStoreFloat4x4(&cbData.worldMatrix, XMMatrixTranspose(W));
-            DirectX::XMStoreFloat4x4(&cbData.viewMatrix, XMMatrixTranspose(V));
-            DirectX::XMStoreFloat4x4(&cbData.projectionMatrix, XMMatrixTranspose(P));
-            m_cb.update(cbData);
-            
-            constexpr u32 stride = sizeof(joj::Vertex::ColorTanPosNormalTex);
-            constexpr u32 offset = 0;
-            m_vb.bind(0, 1, &stride, &offset);
-            m_ib.bind(joj::DataFormat::R16_UINT, offset);
-            m_shader.bind();
-            m_scene->draw_mesh_index(m_renderer, m_submesh_index);
-        }
-        */
     }
     m_renderer->end_frame();
 }
