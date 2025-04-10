@@ -1,6 +1,1 @@
-func principal() {
-	var x = 10;
-	var y : dec = 20.05;
-	var z;
-	var a : letra;
-}
+var y : dec = 20.05;

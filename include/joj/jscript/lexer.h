@@ -23,7 +23,7 @@ namespace joj
         std::vector<Token> tokenize();
 
         const u32 get_line() const;
-        const u32 get_errors_count() const;
+        const u32 get_error_count() const;
 
     private:
         std::string m_source;
@@ -39,7 +39,7 @@ namespace joj
     inline const u32 Lexer::get_line() const
     { return m_lineno; }
 
-    inline const u32 Lexer::get_errors_count() const
+    inline const u32 Lexer::get_error_count() const
     { return m_errors; }
 }
 

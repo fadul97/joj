@@ -17,32 +17,18 @@ namespace joj
 
         void start();
 
+        u32 get_error_count() const;
+
     private:
         Lexer& m_lexer;
         Token* m_lookahead;
         SymbolTable* m_symtable;
 
-        void program();
-        void block();
-        void declarations();
         void declaration();
-        Statement* statements();
-        Statement* statement();
 
-        Expression* local();
-        Expression* Bool();
+        b8 match(const TokenType type);
 
-        Expression* join();
-        Expression* equality();
-
-        Expression* rel();
-        Expression* ari();
-        Expression* term();
-        Expression* unary();
-        Expression* factor();
-
-        void expr();
-        b8 match(TokenType type);
+        u32 m_errors;
     };
 }
 
