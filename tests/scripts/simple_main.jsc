@@ -1,6 +1,6 @@
-func main() {
-	let x = 10;
-	let y : float = 20.05;
-	let z;
-	let a : char;
+func principal() {
+	var x = 10;
+	var y : dec = 20.05;
+	var z;
+	var a : letra;
 }
