@@ -77,40 +77,40 @@ target_link_directories(jojTestsJson
 target_link_libraries(jojTestsJson joj)
 # -----------------------------------------------------------------------------
 
-# JScript Tests
-add_executable(jojTestsJScript
-    joj_tests_jscript.cpp
+# EAP Tests
+add_executable(jojTestsEAP
+    joj_tests_eap.cpp
 )
 
 # Resource folders
 set(SCRIPTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
     
 # Executable directory
-set(OUTPUT_DIR $<TARGET_FILE_DIR:jojTestsJScript>)
+set(OUTPUT_DIR $<TARGET_FILE_DIR:jojTestsEAP>)
     
 # Create custom target to copy resources 
 add_custom_target(copy_scripts ALL
-    COMMAND ${CMAKE_COMMAND} -E echo "Copying jscripts to '${OUTPUT_DIR}'..."
+    COMMAND ${CMAKE_COMMAND} -E echo "Copying eap scripts to '${OUTPUT_DIR}'..."
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SCRIPTS_DIR} ${OUTPUT_DIR}/scripts
 )
     
-# Add copy_scripts target to jojTestsJScript (resources will be copied before running executable)
-add_dependencies(jojTestsJScript copy_scripts)
+# Add copy_scripts target to jojTestsEAP (resources will be copied before running executable)
+add_dependencies(jojTestsEAP copy_scripts)
 
-target_include_directories(jojTestsJScript
+target_include_directories(jojTestsEAP
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include/
 )
 
-target_link_directories(jojTestsJScript
+target_link_directories(jojTestsEAP
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/
 )
 
-target_link_libraries(jojTestsJScript joj)
+target_link_libraries(jojTestsEAP joj)
 # -----------------------------------------------------------------------------
 
-# JScript Tests
+# GLTFImporter Tests
 add_executable(jojTestsGLTFImporter
     joj_tests_gltf_importer.cpp
 )

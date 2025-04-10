@@ -56,24 +56,24 @@ add_subdirectory(renderer)
 add_subdirectory(systems)
 add_subdirectory(engine)
 add_subdirectory(application)
-add_subdirectory(jscript)
+add_subdirectory(eap)
 add_subdirectory(utils)
 add_subdirectory(resources)
 
 # -----------------------------------------------------------------------------
 # Set include directories
 
-target_include_directories(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils jojResources jojScript)
+target_include_directories(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils jojResources jojEAP)
 
 # -----------------------------------------------------------------------------
 # Set link directories
 
-target_link_directories(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils jojResources jojScript)
+target_link_directories(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils jojResources jojEAP)
 
 # -----------------------------------------------------------------------------
 # Link libraries
 
-target_link_libraries(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils jojResources jojScript)
+target_link_libraries(joj PRIVATE jojCore jojPlatform jojRenderer jojSystems jojEngine jojApplication jojUtils jojResources jojEAP)
 
 # -----------------------------------------------------------------------------
 # Set output directories

@@ -1,4 +1,4 @@
-# PATH: src/jscript/CMakeLists.txt
+# PATH: src/eap/CMakeLists.txt
 cmake_minimum_required(VERSION 3.22)
 project(joj)
 
@@ -13,9 +13,9 @@ set(SOURCE_FILES
 )
 
 # -----------------------------------------------------------------------------
-# jojScript
+# jojEAP
 
-add_library(jojScript
+add_library(jojEAP
     ${SOURCE_FILES}
 )
 
@@ -23,13 +23,13 @@ add_library(jojScript
 # Set Build options macro
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(jojScript PRIVATE JOJ_BUILDING_DLL) # Export
+    target_compile_definitions(jojEAP PRIVATE JOJ_BUILDING_DLL) # Export
 endif()
 
 # -----------------------------------------------------------------------------
 # Set include directories
 
-target_include_directories(jojScript PRIVATE
+target_include_directories(jojEAP PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/
 )
 
@@ -37,7 +37,7 @@ target_include_directories(jojScript PRIVATE
 # Set Link directories
 
 target_link_directories(
-    jojScript
+    jojEAP
     PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/../core/
 )
@@ -45,14 +45,14 @@ target_link_directories(
 # -----------------------------------------------------------------------------
 # Link libraries
 
-target_link_libraries(jojScript PRIVATE
+target_link_libraries(jojEAP PRIVATE
     jojCore
 )
 
 # -----------------------------------------------------------------------------
 # Set output directories
 
-set_target_properties(jojScript PROPERTIES
+set_target_properties(jojEAP PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"

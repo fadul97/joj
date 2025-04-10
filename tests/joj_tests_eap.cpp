@@ -1,11 +1,11 @@
 #include "joj/test/jtest_macros.h"
-#include "joj/jscript/lexer.h"
-#include "joj/jscript/parser.h"
+#include "joj/eap/lexer.h"
+#include "joj/eap/parser.h"
 
 JOJ_TEST(Lexer_Var_Declaration)
 {
     // std::cout << "\n";
-    joj::Lexer lexer("scripts/var_declaration.jsc");
+    joj::Lexer lexer("scripts/var_declaration.eap");
     lexer.start();
 
     joj::Token* token = lexer.scan();
@@ -27,7 +27,7 @@ JOJ_TEST(Lexer_Var_Declaration)
 
 JOJ_TEST(Parser_Var_Declaration)
 {
-    joj::Lexer lexer("scripts/var_declaration.jsc");
+    joj::Lexer lexer("scripts/var_declaration.eap");
     joj::Parser parser(lexer);
 
     parser.start();

@@ -1,6 +1,6 @@
-#include "joj/jscript/lexer.h"
+#include "joj/eap/lexer.h"
 
-#include "joj/jscript/keywords.h"
+#include "joj/eap/keywords.h"
 #include "joj/core/logger.h"
 #include <cctype>
 #include <sstream>
