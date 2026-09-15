@@ -46,14 +46,22 @@ int main(int argc, char** argv)
         window,
         screen->root,
         0, 0,
-        150, 150,
+        800, 600,
         10,
         XCB_WINDOW_CLASS_INPUT_OUTPUT,
         screen->root_visual,
         masks, values);
 
+    unsigned int gfx_mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
+    unsigned int gfx_values[3] = { screen->black_pixel, 0, 0 };
+
+    xcb_gcontext_t graphics_context = xcb_generate_id(connection);
+    xcb_create_gc(connection, graphics_context, window, gfx_mask, gfx_values);
+
     xcb_map_window(connection, window);
     xcb_flush(connection);
+
+    xcb_rectangle_t r = { 20, 20, 60, 60 };
 
     bool running = true;
     while (running)
@@ -69,6 +77,10 @@ int main(int argc, char** argv)
                 running = false;
             }
         }
+
+        case XCB_EXPOSE:
+            xcb_poly_fill_rectangle(connection, window, graphics_context, 1, &r);
+            xcb_flush(connection);
 
         default:
             break;
