@@ -1,5 +1,6 @@
 #include <inttypes.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <xcb/xcb.h>
 
@@ -30,6 +31,9 @@ int main(int argc, char** argv)
     printf("\tWhite pixel: %" PRIu32 "\n", screen->white_pixel);
     printf("\tBlack pixel: %" PRIu32 "\n", screen->black_pixel);
 
+    unsigned int masks = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
+    unsigned int values[3] = { screen->white_pixel, XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_KEY_PRESS, 0 };
+
     xcb_window_t window = xcb_generate_id(connection);
     if (window < 0)
     {
@@ -46,11 +50,35 @@ int main(int argc, char** argv)
         10,
         XCB_WINDOW_CLASS_INPUT_OUTPUT,
         screen->root_visual,
-        0, nullptr);
+        masks, values);
 
     xcb_map_window(connection, window);
     xcb_flush(connection);
-    sleep(3);
+
+    bool running = true;
+    while (running)
+    {
+        xcb_generic_event_t* e = xcb_wait_for_event(connection);
+        switch (e->response_type & ~0x80)
+        {
+        case XCB_KEY_PRESS: {
+            xcb_key_press_event_t* key_press_event = (xcb_key_press_event_t*)e;
+            // 9 = Escape key
+            if (key_press_event->detail == 9)
+            {
+                running = false;
+            }
+        }
+
+        default:
+            break;
+        }
+
+        if (e)
+        {
+            free(e);
+        }
+    }
 
     xcb_disconnect(connection);
 
