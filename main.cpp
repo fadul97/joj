@@ -31,6 +31,8 @@ int main(int argc, char** argv)
     printf("\tWhite pixel: %" PRIu32 "\n", screen->white_pixel);
     printf("\tBlack pixel: %" PRIu32 "\n", screen->black_pixel);
 
+    printf("\tWidth - 1920: %" PRIu16 "\n", screen->width_in_pixels - 1920);
+
     unsigned int masks = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
     unsigned int values[3] = { screen->white_pixel, XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_KEY_PRESS, 0 };
 
@@ -41,13 +43,13 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    xcb_void_cookie_t create_window_cookie = xcb_create_window(connection,
+    [[maybe_unused]] xcb_void_cookie_t create_window_cookie = xcb_create_window(connection,
         XCB_COPY_FROM_PARENT,
         window,
         screen->root,
         0, 0,
         800, 600,
-        10,
+        0,
         XCB_WINDOW_CLASS_INPUT_OUTPUT,
         screen->root_visual,
         masks, values);
