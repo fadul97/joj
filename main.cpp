@@ -1,3 +1,4 @@
+#include "joj/joj.hpp"
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -97,5 +98,6 @@ int main(int argc, char** argv)
     xcb_disconnect(connection);
 
     printf("Hello, World!\n");
+    joj::print();
     return 0;
 }

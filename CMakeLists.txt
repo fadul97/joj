@@ -4,19 +4,50 @@ project(joj
     DESCRIPTION "JOJ Game Engine"
     LANGUAGES CXX)
 
+# -----------------------------------------------------------------------------
+# Help CMake find header files
+#
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# -----------------------------------------------------------------------------
+# Specify the C++ Standard
+#
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(joj main.cpp)
+# -----------------------------------------------------------------------------
+# Add subdirecories
+#
+add_subdirectory(include)
+add_subdirectory(src)
 
-target_link_libraries(joj PRIVATE xcb)
+# -----------------------------------------------------------------------------
+# Specify executable
+#
+add_executable(jojLauncher main.cpp)
 
-target_compile_options(joj
+# -----------------------------------------------------------------------------
+# Include directories
+#
+target_include_directories(jojLauncher PRIVATE include/)
+
+# -----------------------------------------------------------------------------
+# Link libraries
+#
+target_link_libraries(jojLauncher PRIVATE xcb joj)
+
+# -----------------------------------------------------------------------------
+# Specify compile options
+#
+target_compile_options(jojLauncher
     PRIVATE
         -fsanitize=address
         -Wall)
 
-target_link_options(joj
+# -----------------------------------------------------------------------------
+# Specify link options
+#
+target_link_options(jojLauncher
     PRIVATE
         -fsanitize=address)
