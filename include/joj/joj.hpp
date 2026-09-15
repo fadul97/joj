@@ -3,7 +3,12 @@
 
 namespace joj {
 
-void print();
+struct Args {
+    int argc{ -1 };
+    char** argv{ nullptr };
+};
+
+int main(Args const& args);
 
 } // namespace joj
 
