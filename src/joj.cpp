@@ -1,5 +1,7 @@
 #include "joj/joj.hpp"
 
+#include "joj/core/typedefs.h"
+
 // STD Includes
 #include <inttypes.h>
 #include <stdio.h>
@@ -109,7 +111,7 @@ int main(Args const& args)
 
     xcb_disconnect(connection);
 
-    printf("Hello, JOJ!\n");
+    printf("Hello, JOJ on %s!\n", PLATFORM_NAME);
     return 0;
 }
 
