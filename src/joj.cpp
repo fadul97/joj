@@ -18,7 +18,8 @@
 #include "joj/core/typedefs.h"
 #include "joj/core/types.h"
 
-#define VK_FAILED(result) ((result) != VK_SUCCESS)
+#define JOJ_VK_FAILED_AGAINST_SUCCESS(result) ((result) != VK_SUCCESS)
+#define JOJ_VK_FAILED(result) ((result) != VK_SUCCESS && (result) != VK_INCOMPLETE)
 
 namespace joj {
 
@@ -125,6 +126,32 @@ i32 main(MainArgs const& args)
         VK_KHR_XCB_SURFACE_EXTENSION_NAME
     };
 
+    u32 extensions_count{ 0 };
+    VkResult result = vkEnumerateInstanceExtensionProperties(nullptr, &extensions_count, nullptr);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to enumate Vulkan instance extension properties.\n");
+        xcb_disconnect(connection);
+        return -1;
+    }
+
+    VkExtensionProperties* extension_properties = new VkExtensionProperties[extensions_count];
+    result = vkEnumerateInstanceExtensionProperties(nullptr, &extensions_count, extension_properties);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to enumate Vulkan instance extension properties.\n");
+        delete[] extension_properties;
+        xcb_disconnect(connection);
+        return -1;
+    }
+
+    for (u32 i = 0; i < extensions_count; ++i)
+    {
+        printf("Extension[%d]: `%s`.\n", i, extension_properties[i].extensionName);
+    }
+
+    delete[] extension_properties;
+
     // Describe instance
     VkInstanceCreateInfo const instance_ci{
         // IF of the struct
@@ -137,18 +164,18 @@ i32 main(MainArgs const& args)
         // Number of global layers to enable
         .enabledLayerCount = 0,
         // Pointer to layer names
-        .ppEnabledLayerNames = extensions,
+        .ppEnabledLayerNames = nullptr,
         // Number of global extensions to enblae
-        .enabledExtensionCount = 0,
+        .enabledExtensionCount = 3,
         // Pointer to extension names
-        .ppEnabledExtensionNames = nullptr,
+        .ppEnabledExtensionNames = extensions,
     };
 
     VkAllocationCallbacks* m_allocator{ nullptr };
 
     VkInstance m_instance{ nullptr };
-    VkResult result = vkCreateInstance(&instance_ci, m_allocator, &m_instance);
-    if VK_FAILED (result)
+    result = vkCreateInstance(&instance_ci, m_allocator, &m_instance);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
     {
         printf("[ERROR]: Failed to create Vulkan Instance.\n");
         xcb_disconnect(connection);
