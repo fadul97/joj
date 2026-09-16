@@ -4,14 +4,15 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 // XCB Includes
-#include <vulkan/vulkan_core.h>
 #include <xcb/xcb.h>
 
 // Vulkan Includes
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_xcb.h>
 
 // joj Includes
@@ -22,6 +23,110 @@
 #define JOJ_VK_FAILED(result) ((result) != VK_SUCCESS && (result) != VK_INCOMPLETE)
 
 namespace joj {
+
+static b8 check_validation_layer_support()
+{
+    u32 layers_count{ 0 };
+    VkResult result = vkEnumerateInstanceLayerProperties(&layers_count, nullptr);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to enumerate Vulkan instance layer properties.\n");
+        return false;
+    }
+
+    VkLayerProperties* layers = new VkLayerProperties[layers_count];
+    result = vkEnumerateInstanceLayerProperties(&layers_count, layers);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to enumerate Vulkan instance layer properties.\n");
+        delete[] layers;
+        return false;
+    }
+
+    char const* const validation_layers[]{
+#if JOJ_MODE_DEBUG
+        "VK_LAYER_KHRONOS_validation"
+#endif
+    };
+
+    for (u32 i = 0; i < layers_count; ++i)
+    {
+        printf("Validation layer[%d]: `%s`.\n", i, layers[i].layerName);
+    }
+
+    b8 layer_found{ false };
+    for (u32 i = 0; i < layers_count; ++i)
+    {
+        if (strcmp(validation_layers[0], layers[i].layerName) == 0)
+        {
+            layer_found = true;
+            break;
+        }
+    }
+
+    delete[] layers;
+
+    if (!layer_found)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+    VkDebugUtilsMessageTypeFlagsEXT message_type,
+    VkDebugUtilsMessengerCallbackDataEXT const* callback_data,
+    void* user_data)
+{
+    switch (message_severity)
+    {
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+        printf("[VULKAN VERBOSE]: %s.\n", callback_data->pMessage);
+        break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+        printf("[VULKAN WARNING]: %s.\n", callback_data->pMessage);
+        break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+        printf("[VULKAN ERROR]: %s.\n", callback_data->pMessage);
+        break;
+    default:
+        printf("[VULKAN UNKNOWN]: %s.\n", callback_data->pMessage);
+        break;
+    }
+
+    // switch (message_type)
+    // {
+    // case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
+    // case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
+    // case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
+    // default:
+    //     break;
+    // }
+
+    return VK_FALSE;
+}
+
+static VkResult create_debug_utils_messenger_ext(
+    VkInstance instance, VkDebugUtilsMessengerCreateInfoEXT const* create_info,
+    VkAllocationCallbacks const* allocator, VkDebugUtilsMessengerEXT* debug_messenger)
+{
+    PFN_vkCreateDebugUtilsMessengerEXT func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+    JOJ_ASSERT(func);
+
+    return func(instance, create_info, allocator, debug_messenger);
+}
+
+static void destroy_debug_utils_messenger_ext(
+    VkInstance instance, VkDebugUtilsMessengerEXT debug_messenger,
+    VkAllocationCallbacks const* allocator)
+{
+    PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+    JOJ_ASSERT(func);
+
+    func(instance, debug_messenger, allocator);
+}
 
 i32 main(MainArgs const& args)
 {
@@ -152,19 +257,60 @@ i32 main(MainArgs const& args)
 
     delete[] extension_properties;
 
-    // Describe instance
-    VkInstanceCreateInfo const instance_ci{
-        // IF of the struct
-        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+#if JOJ_MODE_DEBUG
+    constexpr b8 ENABLE_VALIDATION_LAYERS{ true };
+#else
+    constexpr b8 ENABLE_VALIDATION_LAYERS{ false };
+#endif
+
+    char const* const validation_layers[]{
+#if JOJ_MODE_DEBUG
+        "VK_LAYER_KHRONOS_validation"
+#endif
+    };
+
+    if (ENABLE_VALIDATION_LAYERS && !check_validation_layer_support())
+    {
+        printf("[ERROR]: Validation layers not supported.\n");
+        xcb_disconnect(connection);
+        return -1;
+    }
+
+    VkDebugUtilsMessengerCreateInfoEXT const debugger_ci{
+        // ID of the struct
+        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
         // Struct extension
         .pNext = nullptr,
+        // Reserved for future use
+        .flags = 0,
+        // Which severy of events will call the debug callback function
+        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT // All diagnostics
+            // | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT                 // Informational message - can be helpful when debugging
+            | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT // Expose a usage that may cause a bug
+            | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,  // Condition violated
+        // Which type of events will call the debug callback function
+        .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT // Some general event ocurred
+            | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT       // Something ocurred that may indicate invalid usage
+            | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,     // Indicate something that might not be a non-optimal way of doing things
+        // The application callback that should be called
+        .pfnUserCallback = debug_callback,
+        // Pointer to the any data the user wants to use in the callback
+        .pUserData = nullptr,
+    };
+
+    // Describe instance
+    VkInstanceCreateInfo const instance_ci{
+        // ID of the struct
+        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        // Struct extension
+        .pNext = &debugger_ci,
         // Behaviour of this instance
         .flags = 0,
         .pApplicationInfo = &app_info,
         // Number of global layers to enable
-        .enabledLayerCount = 0,
+        .enabledLayerCount = 1,
         // Pointer to layer names
-        .ppEnabledLayerNames = nullptr,
+        .ppEnabledLayerNames = validation_layers,
         // Number of global extensions to enblae
         .enabledExtensionCount = 3,
         // Pointer to extension names
@@ -181,6 +327,23 @@ i32 main(MainArgs const& args)
         xcb_disconnect(connection);
         return -1;
     }
+
+    // ------------------------------------------------------------------------
+    // Create Vulkan Debugger
+    // ------------------------------------------------------------------------
+
+#if JOJ_MODE_DEBUG
+    VkDebugUtilsMessengerEXT m_debugger{ nullptr };
+
+    result = create_debug_utils_messenger_ext(m_instance, &debugger_ci, m_allocator, &m_debugger);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        printf("[ERROR]: Failed to create Vulkan Debugger.\n");
+        vkDestroyInstance(m_instance, m_allocator);
+        xcb_disconnect(connection);
+        return -1;
+    }
+#endif // JOJ_MODE_DEBUG
 
     xcb_rectangle_t r = { 20, 20, 60, 60 };
 
@@ -212,6 +375,10 @@ i32 main(MainArgs const& args)
             free(e);
         }
     }
+
+#if JOJ_MODE_DEBUG
+    destroy_debug_utils_messenger_ext(m_instance, m_debugger, m_allocator);
+#endif
 
     vkDestroyInstance(m_instance, m_allocator);
 
