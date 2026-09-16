@@ -11,6 +11,8 @@ set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
 #
 set(HEADER_FILES
     # Core
+    ${JOJ_DIR}/joj/core/typedefs.h
+    ${JOJ_DIR}/joj/core/types.h
     ${JOJ_DIR}/joj/core/lib.hpp
     ${JOJ_DIR}/joj/core/assert.hpp
 
