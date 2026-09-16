@@ -1,7 +1,5 @@
 #include "joj/joj.hpp"
 
-#include "joj/core/typedefs.h"
-
 // STD Includes
 #include <inttypes.h>
 #include <stdio.h>
@@ -10,6 +8,10 @@
 
 // XCB Includes
 #include <xcb/xcb.h>
+
+// joj Includes
+#include "joj/core/assert.hpp"
+#include "joj/core/typedefs.h"
 
 namespace joj {
 

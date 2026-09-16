@@ -9,12 +9,17 @@ set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
 # -----------------------------------------------------------------------------
 # Specify headers
 #
-set(HEADER_FILES ${JOJ_DIR}/joj/core/lib.hpp)
+set(HEADER_FILES
+    ${JOJ_DIR}/joj/core/lib.hpp
+    ${JOJ_DIR}/joj/core/assert.hpp
+)
 
 # -----------------------------------------------------------------------------
 # Specify source
 #
-set(SOURCE_FILES lib.cpp)
+set(SOURCE_FILES
+    lib.cpp
+)
 
 # -----------------------------------------------------------------------------
 # Build jojCore Library

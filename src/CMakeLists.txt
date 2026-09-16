@@ -14,12 +14,16 @@ add_subdirectory(core)
 # -----------------------------------------------------------------------------
 # Specify headers
 #
-set(JOJ_HEADERS ${JOJ_DIR}/joj/joj.hpp)
+set(JOJ_HEADERS
+    ${JOJ_DIR}/joj/joj.hpp
+)
 
 # -----------------------------------------------------------------------------
 # Specify source
 #
-set(JOJ_SOURCES joj.cpp)
+set(JOJ_SOURCES
+    joj.cpp
+)
 
 # -----------------------------------------------------------------------------
 # Build joj Library
