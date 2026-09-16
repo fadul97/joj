@@ -31,6 +31,11 @@
 #endif
 
 // ============================================================================
+// Dev or Release modes (in CMake or here?)
+//
+// #define JOJ_MODE_DEBUG
+
+// ============================================================================
 // Array len macro
 //
 #define JOJ_ARRAY_LEN(arr) ((arr) / sizeof(arr[0]))

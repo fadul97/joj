@@ -17,6 +17,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # -----------------------------------------------------------------------------
+# Specify build mode (Debug always for now)
+#
+add_compile_definitions(JOJ_MODE_DEBUG=1)
+
+# -----------------------------------------------------------------------------
 # Add subdirecories
 #
 add_subdirectory(include)
