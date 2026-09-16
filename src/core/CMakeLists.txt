@@ -10,8 +10,15 @@ set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
 # Specify headers
 #
 set(HEADER_FILES
+    # Core
     ${JOJ_DIR}/joj/core/lib.hpp
     ${JOJ_DIR}/joj/core/assert.hpp
+
+    # Containers
+    ${JOJ_DIR}/joj/core/containers/fixed_vector.hpp
+
+    # String
+    ${JOJ_DIR}/joj/core/string/string.hpp
 )
 
 # -----------------------------------------------------------------------------

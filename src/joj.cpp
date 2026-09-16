@@ -14,12 +14,18 @@
 
 namespace joj {
 
-int main(Args const& args)
+int main(MainArgs const& args)
 {
-    if (args.argc > 1)
+    if (args.argv.capacity() > 1)
     {
-        printf("Error: arg `%s` not expected.\n", args.argv[1]);
-        return args.argc;
+        printf("Error: arg `%s` not expected.\n", args.argv[1].c_str());
+        return args.argv.capacity();
+    }
+
+    // Debug
+    for (unsigned int i = 0; i < args.argv.capacity(); ++i)
+    {
+        printf("Argv[%d]: `%s`\n", i, args.argv[i].c_str());
     }
 
     int screen_num = 0;

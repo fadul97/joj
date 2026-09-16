@@ -2,10 +2,12 @@
 
 int main(int argc, char** argv)
 {
-    joj::Args const args = {
-        .argc = argc,
-        .argv = argv
-    };
+    joj::MainArgs args;
+    args.argv.reserve(argc);
+    for (int i = 0; i < argc; ++i)
+    {
+        args.argv[i] = argv[i];
+    }
 
     return joj::main(args);
 }
