@@ -12,6 +12,11 @@ set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
 add_subdirectory(core)
 
 # -----------------------------------------------------------------------------
+# Vulkan package is required
+#
+find_package(Vulkan REQUIRED glslc)
+
+# -----------------------------------------------------------------------------
 # Specify headers
 #
 set(JOJ_HEADERS
@@ -38,7 +43,11 @@ target_include_directories(joj PRIVATE ${JOJ_DIR})
 # -----------------------------------------------------------------------------
 # Link libraries
 #
-target_link_libraries(joj PRIVATE jojCore)
+target_link_libraries(joj
+    PRIVATE
+        jojCore
+        Vulkan::Vulkan
+)
 
 
 # -----------------------------------------------------------------------------
