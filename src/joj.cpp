@@ -10,7 +10,6 @@
 #include <xcb/xcb.h>
 
 // joj Includes
-#include "joj/core/assert.hpp"
 #include "joj/core/typedefs.h"
 
 namespace joj {
