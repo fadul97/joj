@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.20)
 project(joj)
 
 # -----------------------------------------------------------------------------
+# Add subdirecories
+#
+add_subdirectory(error)
+
+# -----------------------------------------------------------------------------
 # Specify joj base directory
 #
 set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
@@ -16,6 +21,9 @@ set(HEADER_FILES
     ${JOJ_DIR}/joj/core/lib.hpp
     ${JOJ_DIR}/joj/core/assert.hpp
 
+    # Error
+    ${JOJ_DIR}/joj/core/error/error_code.hpp
+
     # Containers
     ${JOJ_DIR}/joj/core/containers/fixed_vector.hpp
 
@@ -27,7 +35,11 @@ set(HEADER_FILES
 # Specify source
 #
 set(SOURCE_FILES
+    # Core
     lib.cpp
+
+    # Error
+    error/error_code.cpp
 )
 
 # -----------------------------------------------------------------------------
