@@ -16,6 +16,8 @@
 #include <vulkan/vulkan_xcb.h>
 
 // joj Includes
+#include "joj/core/error/error_code.hpp"
+#include "joj/core/logging/logger.hpp"
 #include "joj/core/typedefs.h"
 #include "joj/core/types.h"
 
@@ -383,6 +385,13 @@ i32 main(MainArgs const& args)
     vkDestroyInstance(m_instance, m_allocator);
 
     xcb_disconnect(connection);
+
+    for (u32 i = 0; i < static_cast<u32>(ErrorCode::MAX); ++i)
+    {
+        JOJ_LOG_TRACE("\t[%d]: `%s`.\n", i, error_code_to_cstr(static_cast<ErrorCode>(i)));
+    }
+
+    JOJ_TODO();
 
     printf("Hello, JOJ on %s!\n", PLATFORM_NAME);
     return 0;
