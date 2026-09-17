@@ -24,6 +24,9 @@ set(HEADER_FILES
     # Error
     ${JOJ_DIR}/joj/core/error/error_code.hpp
 
+    # Logging
+    ${JOJ_DIR}/joj/core/logging/logger.hpp
+
     # Containers
     ${JOJ_DIR}/joj/core/containers/fixed_vector.hpp
 
@@ -40,6 +43,9 @@ set(SOURCE_FILES
 
     # Error
     error/error_code.cpp
+
+    # Logger
+    logging/logger.cpp
 )
 
 # -----------------------------------------------------------------------------
