@@ -53,6 +53,7 @@ private:
 
             delete[] m_data;
             m_data = nullptr;
+            m_allocated = false;
         }
     }
 
@@ -62,6 +63,7 @@ private:
         JOJ_ASSERT(!m_allocated);
         m_data = new T[m_capacity];
         JOJ_ASSERT(m_data);
+        m_allocated = true;
     }
 };
 

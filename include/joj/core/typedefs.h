@@ -38,7 +38,7 @@
 // ============================================================================
 // Array len macro
 //
-#define JOJ_ARRAY_LEN(arr) ((arr) / sizeof(arr[0]))
+#define JOJ_ARRAY_LEN(arr) (sizeof(arr) / sizeof(arr[0]))
 
 // ============================================================================
 // Custom copy operations on type (not sure if necessary)
