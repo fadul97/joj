@@ -17,6 +17,7 @@
 
 // joj Includes
 #include "joj/core/error/error_code.hpp"
+#include "joj/core/lib.hpp"
 #include "joj/core/logging/logger.hpp"
 #include "joj/core/typedefs.h"
 #include "joj/core/types.h"
@@ -25,6 +26,15 @@
 #define JOJ_VK_FAILED(result) ((result) != VK_SUCCESS && (result) != VK_INCOMPLETE)
 
 namespace joj {
+
+VkInstance m_instance{ nullptr };
+VkAllocationCallbacks* m_allocator{ nullptr };
+#if JOJ_MODE_DEBUG
+VkDebugUtilsMessengerEXT m_debugger{ nullptr };
+#endif
+VkPhysicalDevice m_physical_device{ nullptr };
+VkDevice m_device{ nullptr };
+VkQueue m_graphics_queue{ nullptr };
 
 static b8 check_validation_layer_support()
 {
@@ -170,20 +180,76 @@ static QueueFamilyIndices find_queue_families(VkPhysicalDevice physical_device)
 
 static b8 is_physical_device_suitable(VkPhysicalDevice physical_device)
 {
-    // VkPhysicalDeviceProperties device_properties;
-    // vkGetPhysicalDeviceProperties(physical_device, &device_properties);
-    //
-    // VkPhysicalDeviceFeatures device_features;
-    // vkGetPhysicalDeviceFeatures(physical_device, &device_features);
-    //
+    QueueFamilyIndices indices = find_queue_families(physical_device);
+    return indices.graphics_index != JOJ_U32_MAX;
+}
+
+static void create_logical_device()
+{
+    QueueFamilyIndices indices = find_queue_families(m_physical_device);
+
+    constexpr f32 queue_priority{ 1.0f };
+    VkDeviceQueueCreateInfo const device_queue_ci{
+        // Structure ID
+        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+        // Struc extension
+        .pNext = nullptr,
+        // Behaviour of the queues
+        .flags = 0,
+        // Index of the queue in the device to create
+        .queueFamilyIndex = indices.graphics_index,
+        // Number of queues to create
+        .queueCount = 1,
+        // Priorities of each queue
+        .pQueuePriorities = &queue_priority,
+    };
+
+    VkPhysicalDeviceProperties device_properties;
+    vkGetPhysicalDeviceProperties(m_physical_device, &device_properties);
+
+    VkPhysicalDeviceFeatures device_features;
+    vkGetPhysicalDeviceFeatures(m_physical_device, &device_features);
+
     // b8 const is_suitable = //
     //     device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
     //     && device_features.geometryShader;
     //
     // return is_suitable;
+    //
 
-    QueueFamilyIndices indices = find_queue_families(physical_device);
-    return indices.graphics_index != JOJ_U32_MAX;
+    VkDeviceCreateInfo const device_ci{
+        // Structure ID
+        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        // Struct extension
+        .pNext = nullptr,
+        // Reserved for future use
+        .flags = 0,
+        // Number of queues to create
+        .queueCreateInfoCount = 1,
+        // Pointer to queue create descriptions
+        .pQueueCreateInfos = &device_queue_ci,
+
+        // enabledLayerCount is legacy and not used
+        .enabledLayerCount = 0,
+        // ppEnabledLayerNames is legacy and not used
+        .ppEnabledLayerNames = nullptr,
+
+        // Number of extensions to enable
+        .enabledExtensionCount = 0,
+        // Pointer to array of extensions
+        .ppEnabledExtensionNames = nullptr,
+        // All the features to be enabled
+        .pEnabledFeatures = &device_features,
+    };
+
+    VkResult result = vkCreateDevice(m_physical_device, &device_ci, m_allocator, &m_device);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to create Vulkan device.\n");
+        abort();
+    }
+
+    vkGetDeviceQueue(m_device, indices.graphics_index, 0, &m_graphics_queue);
 }
 
 i32 main(MainArgs const& args)
@@ -375,9 +441,6 @@ i32 main(MainArgs const& args)
         .ppEnabledExtensionNames = extensions,
     };
 
-    VkAllocationCallbacks* m_allocator{ nullptr };
-
-    VkInstance m_instance{ nullptr };
     result = vkCreateInstance(&instance_ci, m_allocator, &m_instance);
     if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
     {
@@ -406,8 +469,6 @@ i32 main(MainArgs const& args)
     // ------------------------------------------------------------------------
     // Select Vulkan Physical Device
     // ------------------------------------------------------------------------
-
-    VkPhysicalDevice m_physical_device{ nullptr };
 
     u32 device_count{ 0 };
     result = vkEnumeratePhysicalDevices(m_instance, &device_count, nullptr);
@@ -457,6 +518,8 @@ i32 main(MainArgs const& args)
         return -1;
     }
 
+    create_logical_device();
+
     xcb_rectangle_t r = { 20, 20, 60, 60 };
 
     b8 running = true;
@@ -488,13 +551,19 @@ i32 main(MainArgs const& args)
         }
     }
 
+    vkDestroyDevice(m_device, m_allocator);
+    m_device = nullptr;
+
 #if JOJ_MODE_DEBUG
     destroy_debug_utils_messenger_ext(m_instance, m_debugger, m_allocator);
+    m_debugger = nullptr;
 #endif
 
     vkDestroyInstance(m_instance, m_allocator);
+    m_instance = nullptr;
 
     xcb_disconnect(connection);
+    connection = nullptr;
 
     for (u32 i = 0; i < static_cast<u32>(ErrorCode::MAX); ++i)
     {
