@@ -593,6 +593,10 @@ i32 main(MainArgs const& args)
 
     create_logical_device();
 
+    // ------------------------------------------------------------------------
+    // Create Vulkan Vulkan Swapchain
+    // ------------------------------------------------------------------------
+
     xcb_rectangle_t r = { 20, 20, 60, 60 };
 
     b8 running = true;
