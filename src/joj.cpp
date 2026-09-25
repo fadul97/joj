@@ -130,6 +130,62 @@ static void destroy_debug_utils_messenger_ext(
     func(instance, debug_messenger, allocator);
 }
 
+struct QueueFamilyIndices {
+    u32 graphics_index{ JOJ_U32_MAX };
+};
+
+static QueueFamilyIndices find_queue_families(VkPhysicalDevice physical_device)
+{
+    QueueFamilyIndices indices;
+    JOJ_ASSERT_DEBUG(indices.graphics_index == JOJ_U32_MAX);
+
+    u32 queue_family_count{ 0 };
+    vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, nullptr);
+
+    VkQueueFamilyProperties* queue_families = new VkQueueFamilyProperties[queue_family_count];
+    vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, queue_families);
+
+    i32 graphics_index = 0;
+    for (u32 i = 0; i < queue_family_count; ++i)
+    {
+        VkQueueFamilyProperties queue_family = queue_families[i];
+        if (queue_family.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+        {
+            indices.graphics_index = graphics_index;
+        }
+
+        if (indices.graphics_index != JOJ_U32_MAX)
+        {
+            break;
+        }
+
+        ++graphics_index;
+    }
+
+    delete[] queue_families;
+    queue_families = nullptr;
+
+    return indices;
+}
+
+static b8 is_physical_device_suitable(VkPhysicalDevice physical_device)
+{
+    // VkPhysicalDeviceProperties device_properties;
+    // vkGetPhysicalDeviceProperties(physical_device, &device_properties);
+    //
+    // VkPhysicalDeviceFeatures device_features;
+    // vkGetPhysicalDeviceFeatures(physical_device, &device_features);
+    //
+    // b8 const is_suitable = //
+    //     device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
+    //     && device_features.geometryShader;
+    //
+    // return is_suitable;
+
+    QueueFamilyIndices indices = find_queue_families(physical_device);
+    return indices.graphics_index != JOJ_U32_MAX;
+}
+
 i32 main(MainArgs const& args)
 {
     if (args.argv.capacity() > 1)
@@ -346,6 +402,60 @@ i32 main(MainArgs const& args)
         return -1;
     }
 #endif // JOJ_MODE_DEBUG
+
+    // ------------------------------------------------------------------------
+    // Select Vulkan Physical Device
+    // ------------------------------------------------------------------------
+
+    VkPhysicalDevice m_physical_device{ nullptr };
+
+    u32 device_count{ 0 };
+    result = vkEnumeratePhysicalDevices(m_instance, &device_count, nullptr);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to enumate Vulkan physical devices.\n");
+        vkDestroyInstance(m_instance, m_allocator);
+        xcb_disconnect(connection);
+        return -1;
+    }
+
+    if (device_count == 0)
+    {
+        printf("[ERROR]: No devies with Vulkan support.\n");
+        vkDestroyInstance(m_instance, m_allocator);
+        xcb_disconnect(connection);
+        return -1;
+    }
+
+    VkPhysicalDevice* physical_devices = new VkPhysicalDevice[device_count];
+    result = vkEnumeratePhysicalDevices(m_instance, &device_count, physical_devices);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to enumate Vulkan physical devices.\n");
+        delete[] physical_devices;
+        vkDestroyInstance(m_instance, m_allocator);
+        xcb_disconnect(connection);
+        return -1;
+    }
+
+    for (u32 i = 0; i < device_count; ++i)
+    {
+        VkPhysicalDevice physical_device = physical_devices[i];
+        if (is_physical_device_suitable(physical_device))
+        {
+            m_physical_device = physical_device;
+        }
+    }
+    delete[] physical_devices;
+    physical_devices = nullptr;
+
+    if (m_physical_device == nullptr)
+    {
+        printf("[ERROR]: Failed to find a suitable Vulkan physical device.\n");
+        vkDestroyInstance(m_instance, m_allocator);
+        xcb_disconnect(connection);
+        return -1;
+    }
 
     xcb_rectangle_t r = { 20, 20, 60, 60 };
 
