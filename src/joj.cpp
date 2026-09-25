@@ -36,6 +36,7 @@ VkPhysicalDevice m_physical_device{ nullptr };
 VkDevice m_device{ nullptr };
 VkQueue m_graphics_queue{ nullptr };
 VkSurfaceKHR m_surface{ nullptr };
+VkQueue m_presentation_queue{ nullptr };
 
 static b8 check_validation_layer_support()
 {
@@ -143,12 +144,14 @@ static void destroy_debug_utils_messenger_ext(
 
 struct QueueFamilyIndices {
     u32 graphics_index{ JOJ_U32_MAX };
+    u32 presentation_index{ JOJ_U32_MAX };
 };
 
 static QueueFamilyIndices find_queue_families(VkPhysicalDevice physical_device)
 {
     QueueFamilyIndices indices;
     JOJ_ASSERT_DEBUG(indices.graphics_index == JOJ_U32_MAX);
+    JOJ_ASSERT_DEBUG(indices.presentation_index == JOJ_U32_MAX);
 
     u32 queue_family_count{ 0 };
     vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, nullptr);
@@ -156,21 +159,34 @@ static QueueFamilyIndices find_queue_families(VkPhysicalDevice physical_device)
     VkQueueFamilyProperties* queue_families = new VkQueueFamilyProperties[queue_family_count];
     vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, queue_families);
 
-    i32 graphics_index = 0;
+    i32 queues_index = 0;
     for (u32 i = 0; i < queue_family_count; ++i)
     {
         VkQueueFamilyProperties queue_family = queue_families[i];
         if (queue_family.queueFlags & VK_QUEUE_GRAPHICS_BIT)
         {
-            indices.graphics_index = graphics_index;
+            indices.graphics_index = queues_index;
         }
 
-        if (indices.graphics_index != JOJ_U32_MAX)
+        VkBool32 present_support{ false };
+        VkResult result = vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, queues_index, m_surface, &present_support);
+        if JOJ_VK_FAILED (result)
+        {
+            printf("[ERRO]: Failed to get Vulkan queue family presentation index.\n");
+            return indices;
+        }
+
+        if (present_support)
+        {
+            indices.presentation_index = queues_index;
+        }
+
+        if (indices.graphics_index != JOJ_U32_MAX && indices.presentation_index != JOJ_U32_MAX)
         {
             break;
         }
 
-        ++graphics_index;
+        ++queues_index;
     }
 
     delete[] queue_families;
@@ -182,41 +198,57 @@ static QueueFamilyIndices find_queue_families(VkPhysicalDevice physical_device)
 static b8 is_physical_device_suitable(VkPhysicalDevice physical_device)
 {
     QueueFamilyIndices indices = find_queue_families(physical_device);
-    return indices.graphics_index != JOJ_U32_MAX;
+
+    return indices.graphics_index != JOJ_U32_MAX && indices.presentation_index != JOJ_U32_MAX;
 }
 
 static void create_logical_device()
 {
     QueueFamilyIndices indices = find_queue_families(m_physical_device);
 
+    u32 queue_count{ 1 };
+    u32* unique_queue_families{ nullptr };
+    if (indices.graphics_index == indices.presentation_index)
+    {
+        unique_queue_families = new u32[queue_count];
+        unique_queue_families[0] = indices.graphics_index;
+    }
+    else
+    {
+        queue_count = 2;
+        unique_queue_families = new u32[queue_count];
+        unique_queue_families[0] = indices.graphics_index;
+        unique_queue_families[1] = indices.presentation_index;
+    }
+
+    VkDeviceQueueCreateInfo* queue_cis = new VkDeviceQueueCreateInfo[queue_count];
+
     constexpr f32 queue_priority{ 1.0f };
-    VkDeviceQueueCreateInfo const device_queue_ci{
-        // Structure ID
-        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-        // Struc extension
-        .pNext = nullptr,
-        // Behaviour of the queues
-        .flags = 0,
-        // Index of the queue in the device to create
-        .queueFamilyIndex = indices.graphics_index,
-        // Number of queues to create
-        .queueCount = 1,
-        // Priorities of each queue
-        .pQueuePriorities = &queue_priority,
-    };
+    for (u32 i = 0; i < queue_count; ++i)
+    {
+        VkDeviceQueueCreateInfo const device_queue_ci{
+            // Structure ID
+            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            // Struc extension
+            .pNext = nullptr,
+            // Behaviour of the queues
+            .flags = 0,
+            // Index of the queue in the device to create
+            .queueFamilyIndex = unique_queue_families[i],
+            // Number of queues to create
+            .queueCount = 1,
+            // Priorities of each queue
+            .pQueuePriorities = &queue_priority,
+        };
+
+        queue_cis[i] = device_queue_ci;
+    }
 
     VkPhysicalDeviceProperties device_properties;
     vkGetPhysicalDeviceProperties(m_physical_device, &device_properties);
 
     VkPhysicalDeviceFeatures device_features;
     vkGetPhysicalDeviceFeatures(m_physical_device, &device_features);
-
-    // b8 const is_suitable = //
-    //     device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
-    //     && device_features.geometryShader;
-    //
-    // return is_suitable;
-    //
 
     VkDeviceCreateInfo const device_ci{
         // Structure ID
@@ -226,9 +258,9 @@ static void create_logical_device()
         // Reserved for future use
         .flags = 0,
         // Number of queues to create
-        .queueCreateInfoCount = 1,
+        .queueCreateInfoCount = queue_count,
         // Pointer to queue create descriptions
-        .pQueueCreateInfos = &device_queue_ci,
+        .pQueueCreateInfos = queue_cis,
 
         // enabledLayerCount is legacy and not used
         .enabledLayerCount = 0,
@@ -246,11 +278,21 @@ static void create_logical_device()
     VkResult result = vkCreateDevice(m_physical_device, &device_ci, m_allocator, &m_device);
     if JOJ_VK_FAILED (result)
     {
+        delete[] unique_queue_families;
+        unique_queue_families = nullptr;
+        delete[] queue_cis;
+        queue_cis = nullptr;
         printf("[ERROR]: Failed to create Vulkan device.\n");
         abort();
     }
 
     vkGetDeviceQueue(m_device, indices.graphics_index, 0, &m_graphics_queue);
+    vkGetDeviceQueue(m_device, indices.presentation_index, 0, &m_presentation_queue);
+
+    delete[] unique_queue_families;
+    unique_queue_families = nullptr;
+    delete[] queue_cis;
+    queue_cis = nullptr;
 }
 
 i32 main(MainArgs const& args)
@@ -488,7 +530,6 @@ i32 main(MainArgs const& args)
     if JOJ_VK_FAILED (result)
     {
         printf("[ERROR]: Failed to create Vulkan surface for XCB.\n");
-        vkDestroyDevice(m_device, m_allocator);
         vkDestroyInstance(m_instance, m_allocator);
         xcb_disconnect(connection);
         return -1;
