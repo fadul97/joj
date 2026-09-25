@@ -35,6 +35,7 @@ VkDebugUtilsMessengerEXT m_debugger{ nullptr };
 VkPhysicalDevice m_physical_device{ nullptr };
 VkDevice m_device{ nullptr };
 VkQueue m_graphics_queue{ nullptr };
+VkSurfaceKHR m_surface{ nullptr };
 
 static b8 check_validation_layer_support()
 {
@@ -467,6 +468,33 @@ i32 main(MainArgs const& args)
 #endif // JOJ_MODE_DEBUG
 
     // ------------------------------------------------------------------------
+    // Create Vulkan Surface
+    // ------------------------------------------------------------------------
+
+    VkXcbSurfaceCreateInfoKHR const surface_ci{
+        // Structure ID
+        .sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
+        // Struct extension
+        .pNext = nullptr,
+        // For future use
+        .flags = 0,
+        // Connection to the X server
+        .connection = connection,
+        // Window handle
+        .window = window,
+    };
+
+    result = vkCreateXcbSurfaceKHR(m_instance, &surface_ci, m_allocator, &m_surface);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to create Vulkan surface for XCB.\n");
+        vkDestroyDevice(m_device, m_allocator);
+        vkDestroyInstance(m_instance, m_allocator);
+        xcb_disconnect(connection);
+        return -1;
+    }
+
+    // ------------------------------------------------------------------------
     // Select Vulkan Physical Device
     // ------------------------------------------------------------------------
 
@@ -518,6 +546,10 @@ i32 main(MainArgs const& args)
         return -1;
     }
 
+    // ------------------------------------------------------------------------
+    // Create Vulkan Logical Device
+    // ------------------------------------------------------------------------
+
     create_logical_device();
 
     xcb_rectangle_t r = { 20, 20, 60, 60 };
@@ -553,6 +585,9 @@ i32 main(MainArgs const& args)
 
     vkDestroyDevice(m_device, m_allocator);
     m_device = nullptr;
+
+    vkDestroySurfaceKHR(m_instance, m_surface, m_allocator);
+    m_surface = nullptr;
 
 #if JOJ_MODE_DEBUG
     destroy_debug_utils_messenger_ext(m_instance, m_debugger, m_allocator);
