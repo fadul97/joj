@@ -35,4 +35,7 @@ static_assert(sizeof(f64) == 8);
 static_assert(sizeof(b8) == 1);
 static_assert(sizeof(b32) == 4);
 
+#define JOJ_U32_MAX UINT32_MAX
+#define JOJ_U64_MAX UINT64_MAX
+
 #endif // _JOJ_TYPES_H
