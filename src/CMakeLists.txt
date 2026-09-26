@@ -3,9 +3,10 @@ cmake_minimum_required(VERSION 3.20)
 project(joj)
 
 # -----------------------------------------------------------------------------
-# Specify joj base directory
+# Specify libs directories
 #
 set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
+set(LFT_DIR "${CMAKE_SOURCE_DIR}/")
 
 # -----------------------------------------------------------------------------
 # Add subdirecories
@@ -40,7 +41,11 @@ add_library(joj ${JOJ_HEADERS} ${JOJ_SOURCES})
 # -----------------------------------------------------------------------------
 # Include directories
 #
-target_include_directories(joj PRIVATE ${JOJ_DIR})
+target_include_directories(joj
+    PRIVATE
+    ${JOJ_DIR}
+    ${LFT_DIR}
+)
 
 # -----------------------------------------------------------------------------
 # Link libraries
@@ -49,6 +54,7 @@ target_link_libraries(joj
     PRIVATE
         jojCore
         jojPlatform
+        lft
         Vulkan::Vulkan
 )
 

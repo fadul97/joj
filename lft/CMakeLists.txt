@@ -1,7 +1,8 @@
+# PATH: lft/CMakeLists.txt
 cmake_minimum_required(VERSION 3.20)
-project(joj
+project(lft
     VERSION 0.0.1
-    DESCRIPTION "JOJ Game Engine"
+    DESCRIPTION "Leonardo Fadul Toolkit"
     LANGUAGES CXX)
 
 # -----------------------------------------------------------------------------
@@ -17,36 +18,54 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # -----------------------------------------------------------------------------
-# Specify build mode (Debug always for now)
+# Specify lft base directory
 #
-add_compile_definitions(JOJ_MODE_DEBUG=1)
+set(LFT_DIR "${CMAKE_SOURCE_DIR}/lft/")
 
 # -----------------------------------------------------------------------------
-# Add subdirecories
+# Specify headers
 #
-add_subdirectory(include)
-add_subdirectory(src)
-add_subdirectory(lft)
+set(HEADER_FILES
+    # Core
+    ${LFT_DIR}/typedefs.h
+    ${LFT_DIR}/types.hpp
+    ${LFT_DIR}/lib.hpp
+    ${LFT_DIR}/assert.hpp
+
+    # Containers
+    ${LFT_DIR}/fixed_vector.hpp
+
+    # String
+    ${LFT_DIR}/string.hpp
+)
 
 # -----------------------------------------------------------------------------
-# Specify executable
+# Specify source
 #
-add_executable(jojLauncher main.cpp)
+set(SOURCE_FILES
+    # Core
+    lib.cpp
+)
+
+# -----------------------------------------------------------------------------
+# Build lft Library
+#
+add_library(lft ${HEADER_FILES} ${SOURCE_FILES})
 
 # -----------------------------------------------------------------------------
 # Include directories
 #
-target_include_directories(jojLauncher PRIVATE include/)
+target_include_directories(lft PRIVATE ${LFT_DIR})
 
 # -----------------------------------------------------------------------------
 # Link libraries
 #
-target_link_libraries(jojLauncher PRIVATE xcb joj)
+
 
 # -----------------------------------------------------------------------------
 # Specify compile options
 #
-target_compile_options(jojLauncher
+target_compile_options(lft
     PRIVATE
         -fsanitize=address
         -Wall)
@@ -54,6 +73,6 @@ target_compile_options(jojLauncher
 # -----------------------------------------------------------------------------
 # Specify link options
 #
-target_link_options(jojLauncher
+target_link_options(lft
     PRIVATE
         -fsanitize=address)
