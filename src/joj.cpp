@@ -51,6 +51,7 @@ VkSwapchainKHR m_swapchain{ nullptr };
 FixedVector<VkImage> m_swapchain_images{};
 VkFormat m_swapchain_image_format{ VK_FORMAT_MAX_ENUM };
 VkExtent2D m_swapchain_extent{};
+FixedVector<VkImageView> m_swapchain_image_views{};
 
 static b8 check_validation_layer_support()
 {
@@ -558,6 +559,43 @@ static void create_swapchain()
     }
 }
 
+static void create_image_views()
+{
+    m_swapchain_image_views.reserve(m_swapchain_images.capacity());
+
+    for (u32 i = 0; i < m_swapchain_images.capacity(); ++i)
+    {
+        VkImageViewCreateInfo const image_view_ci{
+            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+            .image = m_swapchain_images[i],
+            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+            .format = m_swapchain_image_format,
+            .components = {
+                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+            },
+            .subresourceRange = {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            }
+        };
+
+        VkResult result = vkCreateImageView(m_device, &image_view_ci, m_allocator, &m_swapchain_image_views[i]);
+        if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+        {
+            printf("[ERROR]: Failed to create Vulkan image view.\n");
+            abort();
+        }
+    }
+}
+
 i32 main(MainArgs const& args)
 {
     if (args.argv.capacity() > 1)
@@ -876,6 +914,8 @@ i32 main(MainArgs const& args)
         return -1;
     }
 
+    create_image_views();
+
     xcb_rectangle_t r = { 20, 20, 60, 60 };
 
     b8 running = true;
@@ -906,6 +946,12 @@ i32 main(MainArgs const& args)
             free(e);
         }
     }
+
+    for (u32 i = 0; i < m_swapchain_image_views.capacity(); ++i)
+    {
+        vkDestroyImageView(m_device, m_swapchain_image_views[i], m_allocator);
+    }
+    m_swapchain_image_views.clear();
 
     m_swapchain_images.clear();
 
