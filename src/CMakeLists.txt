@@ -13,6 +13,7 @@ set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
 #
 add_subdirectory(core)
 add_subdirectory(platform)
+add_subdirectory(gfx)
 
 # -----------------------------------------------------------------------------
 # Vulkan package is required
@@ -55,6 +56,7 @@ target_link_libraries(joj
     PRIVATE
         jojCore
         jojPlatform
+        jojGFX
         lft
         Vulkan::Vulkan
 )

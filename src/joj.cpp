@@ -22,6 +22,7 @@
 #include "joj/core/logging/logger.hpp"
 #include "joj/core/typedefs.h"
 #include "joj/core/types.h"
+#include "joj/gfx/renderer.hpp"
 #include "joj/platform/display_server.hpp"
 
 namespace joj {
@@ -930,6 +931,10 @@ i32 main(MainArgs const& args)
     }
 
     JOJ_TODO();
+
+    gfx::Renderer renderer;
+    renderer.initialize();
+    renderer.shutdown();
 
     printf("Hello, JOJ on %s!\n", PLATFORM_NAME);
     return 0;
