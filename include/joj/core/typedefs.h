@@ -51,6 +51,14 @@
 #define JOJ_ARRAY_LEN(arr) (sizeof(arr) / sizeof(arr[0]))
 
 // ============================================================================
+// Default constructors and destructors
+//
+#define JOJ_MAKE_DEFAULT_CTORS_AND_DTORS(klass) \
+public:                                         \
+    klass() noexcept = default;                 \
+    ~klass() noexcept = default;
+
+// ============================================================================
 // Custom copy operations on type (not sure if necessary)
 //
 #define JOJ_MAKE_CUSTOM_COPYABLE(klass) \
