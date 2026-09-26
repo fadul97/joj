@@ -21,6 +21,7 @@
 #include "joj/core/logging/logger.hpp"
 #include "joj/core/typedefs.h"
 #include "joj/core/types.h"
+#include "joj/platform/display_server.hpp"
 
 namespace joj {
 
@@ -614,62 +615,16 @@ i32 main(MainArgs const& args)
     // Create Window
     // ------------------------------------------------------------------------
 
-    i32 screen_num = 0;
-    xcb_connection_t* connection = xcb_connect(nullptr, &screen_num);
-    i32 ret = xcb_connection_has_error(connection);
-    if (ret != 0)
+    DisplayServer display_server;
+    JOJ_ASSERT_DEBUG(display_server.data == nullptr);
+
+    if JOJ_FAILED (display_server_create(&display_server))
     {
-        printf("Failed to connect to server.\n");
+        printf("[ERROR]: Failed to create DisplayServer.\n");
         return -1;
     }
 
-    xcb_setup_t const* setup = xcb_get_setup(connection);
-    xcb_screen_iterator_t iter = xcb_setup_roots_iterator(setup);
-
-    for (i32 i = 0; i < screen_num; ++i)
-    {
-        xcb_screen_next(&iter);
-    }
-
-    xcb_screen_t* screen = iter.data;
-
-    printf("Information of screen %" PRIu32 ":\n", screen->root);
-    printf("\tWidth: %" PRIu16 "\n", screen->width_in_pixels);
-    printf("\tHeight: %" PRIu16 "\n", screen->height_in_pixels);
-    printf("\tWhite pixel: %" PRIu32 "\n", screen->white_pixel);
-    printf("\tBlack pixel: %" PRIu32 "\n", screen->black_pixel);
-
-    printf("\tWidth - 1920: %" PRIu16 "\n", screen->width_in_pixels - 1920);
-
-    u32 masks = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
-    u32 values[3] = { screen->white_pixel, XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_KEY_PRESS, 0 };
-
-    xcb_window_t window = xcb_generate_id(connection);
-    if (window < 0)
-    {
-        printf("Failed to generate Window ID.\n");
-        return -1;
-    }
-
-    [[maybe_unused]] xcb_void_cookie_t create_window_cookie = xcb_create_window(connection,
-        XCB_COPY_FROM_PARENT,
-        window,
-        screen->root,
-        0, 0,
-        800, 600,
-        0,
-        XCB_WINDOW_CLASS_INPUT_OUTPUT,
-        screen->root_visual,
-        masks, values);
-
-    u32 gfx_mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
-    u32 gfx_values[3] = { screen->black_pixel, 0, 0 };
-
-    xcb_gcontext_t graphics_context = xcb_generate_id(connection);
-    xcb_create_gc(connection, graphics_context, window, gfx_mask, gfx_values);
-
-    xcb_map_window(connection, window);
-    xcb_flush(connection);
+    printf("\nDisplayServer created.\n");
 
     // ------------------------------------------------------------------------
     // Create Vulkan Instance
@@ -704,7 +659,7 @@ i32 main(MainArgs const& args)
     if JOJ_VK_FAILED (result)
     {
         printf("[ERROR]: Failed to enumate Vulkan instance extension properties.\n");
-        xcb_disconnect(connection);
+        display_server_destroy(&display_server);
         return -1;
     }
 
@@ -714,7 +669,7 @@ i32 main(MainArgs const& args)
     {
         printf("[ERROR]: Failed to enumate Vulkan instance extension properties.\n");
         delete[] extension_properties;
-        xcb_disconnect(connection);
+        display_server_destroy(&display_server);
         return -1;
     }
 
@@ -740,7 +695,7 @@ i32 main(MainArgs const& args)
     if (ENABLE_VALIDATION_LAYERS && !check_validation_layer_support())
     {
         printf("[ERROR]: Validation layers not supported.\n");
-        xcb_disconnect(connection);
+        display_server_destroy(&display_server);
         return -1;
     }
 
@@ -789,7 +744,7 @@ i32 main(MainArgs const& args)
     if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
     {
         printf("[ERROR]: Failed to create Vulkan Instance.\n");
-        xcb_disconnect(connection);
+        display_server_destroy(&display_server);
         return -1;
     }
 
@@ -803,7 +758,7 @@ i32 main(MainArgs const& args)
     {
         printf("[ERROR]: Failed to create Vulkan Debugger.\n");
         vkDestroyInstance(m_instance, m_allocator);
-        xcb_disconnect(connection);
+        display_server_destroy(&display_server);
         return -1;
     }
 #endif // JOJ_MODE_DEBUG
@@ -812,6 +767,7 @@ i32 main(MainArgs const& args)
     // Create Vulkan Surface
     // ------------------------------------------------------------------------
 
+    JOJ_ASSERT(display_server.data->connection != nullptr);
     VkXcbSurfaceCreateInfoKHR const surface_ci{
         // Structure ID
         .sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
@@ -820,9 +776,9 @@ i32 main(MainArgs const& args)
         // For future use
         .flags = 0,
         // Connection to the X server
-        .connection = connection,
+        .connection = display_server.data->connection,
         // Window handle
-        .window = window,
+        .window = display_server.data->handle,
     };
 
     result = vkCreateXcbSurfaceKHR(m_instance, &surface_ci, m_allocator, &m_surface);
@@ -830,7 +786,7 @@ i32 main(MainArgs const& args)
     {
         printf("[ERROR]: Failed to create Vulkan surface for XCB.\n");
         vkDestroyInstance(m_instance, m_allocator);
-        xcb_disconnect(connection);
+        display_server_destroy(&display_server);
         return -1;
     }
 
@@ -844,7 +800,7 @@ i32 main(MainArgs const& args)
     {
         printf("[ERROR]: Failed to enumate Vulkan physical devices.\n");
         vkDestroyInstance(m_instance, m_allocator);
-        xcb_disconnect(connection);
+        display_server_destroy(&display_server);
         return -1;
     }
 
@@ -852,7 +808,7 @@ i32 main(MainArgs const& args)
     {
         printf("[ERROR]: No devies with Vulkan support.\n");
         vkDestroyInstance(m_instance, m_allocator);
-        xcb_disconnect(connection);
+        display_server_destroy(&display_server);
         return -1;
     }
 
@@ -863,7 +819,7 @@ i32 main(MainArgs const& args)
         printf("[ERROR]: Failed to enumate Vulkan physical devices.\n");
         delete[] physical_devices;
         vkDestroyInstance(m_instance, m_allocator);
-        xcb_disconnect(connection);
+        display_server_destroy(&display_server);
         return -1;
     }
 
@@ -882,7 +838,7 @@ i32 main(MainArgs const& args)
     {
         printf("[ERROR]: Failed to find a suitable Vulkan physical device.\n");
         vkDestroyInstance(m_instance, m_allocator);
-        xcb_disconnect(connection);
+        display_server_destroy(&display_server);
         return -1;
     }
 
@@ -916,34 +872,12 @@ i32 main(MainArgs const& args)
 
     create_image_views();
 
-    xcb_rectangle_t r = { 20, 20, 60, 60 };
-
     b8 running = true;
     while (running)
     {
-        xcb_generic_event_t* e = xcb_wait_for_event(connection);
-        switch (e->response_type & ~0x80)
+        if (!display_server_process_events(&display_server))
         {
-        case XCB_KEY_PRESS: {
-            xcb_key_press_event_t* key_press_event = (xcb_key_press_event_t*)e;
-            // 9 = Escape key
-            if (key_press_event->detail == 9)
-            {
-                running = false;
-            }
-        }
-
-        case XCB_EXPOSE:
-            xcb_poly_fill_rectangle(connection, window, graphics_context, 1, &r);
-            xcb_flush(connection);
-
-        default:
-            break;
-        }
-
-        if (e)
-        {
-            free(e);
+            running = false;
         }
     }
 
@@ -987,8 +921,7 @@ i32 main(MainArgs const& args)
         m_instance = nullptr;
     }
 
-    xcb_disconnect(connection);
-    connection = nullptr;
+    display_server_destroy(&display_server);
 
     for (u32 i = 0; i < static_cast<u32>(ErrorCode::MAX); ++i)
     {
