@@ -1,53 +1,56 @@
+# PATH: eap/CMakeLists.txt
 cmake_minimum_required(VERSION 3.20)
-project(joj
+project(eap
     VERSION 0.0.1
-    DESCRIPTION "JOJ Game Engine"
+    DESCRIPTION "Espalhe A Palavra"
     LANGUAGES CXX)
 
 # -----------------------------------------------------------------------------
-# Help CMake find header files
+# Specify libs directories
 #
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# -----------------------------------------------------------------------------
-# Specify the C++ Standard
-#
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-# -----------------------------------------------------------------------------
-# Specify build mode (Debug always for now)
-#
-add_compile_definitions(JOJ_MODE_DEBUG=1)
+set(LFT_DIR "${CMAKE_SOURCE_DIR}/")
 
 # -----------------------------------------------------------------------------
 # Add subdirecories
 #
-add_subdirectory(include)
-add_subdirectory(src)
-add_subdirectory(lft)
-add_subdirectory(eap)
 
 # -----------------------------------------------------------------------------
-# Specify executable
+# Specify source
 #
-add_executable(jojLauncher main.cpp)
+set(EAP_SOURCES
+    main.cpp
+)
+
+# -----------------------------------------------------------------------------
+# Build eap Library
+#
+add_executable(eap ${EAP_HEADERS} ${EAP_SOURCES})
 
 # -----------------------------------------------------------------------------
 # Include directories
 #
-target_include_directories(jojLauncher PRIVATE include/)
+target_include_directories(eap
+    PUBLIC
+    ${LFT_DIR}
+)
 
 # -----------------------------------------------------------------------------
 # Link libraries
 #
-target_link_libraries(jojLauncher PRIVATE joj)
+target_link_libraries(eap
+    PRIVATE
+        lft
+)
+
+# -----------------------------------------------------------------------------
+# Set target properties
+#
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/eap/)
 
 # -----------------------------------------------------------------------------
 # Specify compile options
 #
-target_compile_options(jojLauncher
+target_compile_options(eap
     PRIVATE
         -fsanitize=address
         -Wall)
@@ -55,6 +58,7 @@ target_compile_options(jojLauncher
 # -----------------------------------------------------------------------------
 # Specify link options
 #
-target_link_options(jojLauncher
+target_link_options(eap
     PRIVATE
         -fsanitize=address)
+
