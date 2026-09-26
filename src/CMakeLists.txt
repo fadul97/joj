@@ -1,3 +1,4 @@
+# PATH: src/CMakeLists.txt
 cmake_minimum_required(VERSION 3.20)
 project(joj)
 
@@ -10,6 +11,7 @@ set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
 # Add subdirecories
 #
 add_subdirectory(core)
+add_subdirectory(platform)
 
 # -----------------------------------------------------------------------------
 # Vulkan package is required
@@ -46,6 +48,7 @@ target_include_directories(joj PRIVATE ${JOJ_DIR})
 target_link_libraries(joj
     PRIVATE
         jojCore
+        jojPlatform
         Vulkan::Vulkan
 )
 
