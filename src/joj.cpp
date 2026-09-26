@@ -1,11 +1,11 @@
 #include "joj/joj.hpp"
 
 // STD Includes
-#include <inttypes.h>
+// #include <inttypes.h>
 #include <stdio.h>
-#include <stdlib.h>
+// #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+// #include <unistd.h>
 
 // XCB Includes
 #include <xcb/xcb.h>
@@ -16,6 +16,7 @@
 #include <vulkan/vulkan_xcb.h>
 
 // joj Includes
+#include "joj/core/assert.hpp"
 #include "joj/core/error/error_code.hpp"
 #include "joj/core/lib.hpp"
 #include "joj/core/logging/logger.hpp"
@@ -49,10 +50,10 @@ VkQueue m_graphics_queue{ nullptr };
 VkSurfaceKHR m_surface{ nullptr };
 VkQueue m_presentation_queue{ nullptr };
 VkSwapchainKHR m_swapchain{ nullptr };
-FixedVector<VkImage> m_swapchain_images{};
+lft::FixedVector<VkImage> m_swapchain_images{};
 VkFormat m_swapchain_image_format{ VK_FORMAT_MAX_ENUM };
 VkExtent2D m_swapchain_extent{};
-FixedVector<VkImageView> m_swapchain_image_views{};
+lft::FixedVector<VkImageView> m_swapchain_image_views{};
 
 static b8 check_validation_layer_support()
 {
@@ -253,9 +254,9 @@ static b8 check_device_extension_support(VkPhysicalDevice physical_device)
 struct SwapchainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities{};
 
-    FixedVector<VkSurfaceFormatKHR> formats{};
+    lft::FixedVector<VkSurfaceFormatKHR> formats{};
 
-    FixedVector<VkPresentModeKHR> present_modes{};
+    lft::FixedVector<VkPresentModeKHR> present_modes{};
 };
 
 SwapchainSupportDetails query_swapchain_support(VkPhysicalDevice physical_device)
@@ -440,7 +441,7 @@ static void create_logical_device()
     queue_cis = nullptr;
 }
 
-VkSurfaceFormatKHR select_swapchain_surface_format(FixedVector<VkSurfaceFormatKHR> const& available_formats)
+VkSurfaceFormatKHR select_swapchain_surface_format(lft::FixedVector<VkSurfaceFormatKHR> const& available_formats)
 {
     for (u32 i = 0; i < available_formats.capacity(); ++i)
     {
@@ -456,7 +457,7 @@ VkSurfaceFormatKHR select_swapchain_surface_format(FixedVector<VkSurfaceFormatKH
     return available_formats[0];
 }
 
-VkPresentModeKHR select_swapchain_present_mode(FixedVector<VkPresentModeKHR> const& available_present_modes)
+VkPresentModeKHR select_swapchain_present_mode(lft::FixedVector<VkPresentModeKHR> const& available_present_modes)
 {
     for (u32 i = 0; i < available_present_modes.capacity(); ++i)
     {

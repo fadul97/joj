@@ -41,7 +41,7 @@ target_include_directories(jojLauncher PRIVATE include/)
 # -----------------------------------------------------------------------------
 # Link libraries
 #
-target_link_libraries(jojLauncher PRIVATE xcb joj)
+target_link_libraries(jojLauncher PRIVATE joj)
 
 # -----------------------------------------------------------------------------
 # Specify compile options

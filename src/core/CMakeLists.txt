@@ -27,12 +27,6 @@ set(HEADER_FILES
 
     # Logging
     ${JOJ_DIR}/joj/core/logging/logger.hpp
-
-    # Containers
-    ${JOJ_DIR}/joj/core/containers/fixed_vector.hpp
-
-    # String
-    ${JOJ_DIR}/joj/core/string/string.hpp
 )
 
 # -----------------------------------------------------------------------------

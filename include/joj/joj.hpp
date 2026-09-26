@@ -1,13 +1,13 @@
 #ifndef _JOJ_HPP
 #define _JOJ_HPP
 
-#include "joj/core/containers/fixed_vector.hpp"
-#include "joj/core/string/string.hpp"
+#include "lft/fixed_vector.hpp"
+#include "lft/string.hpp"
 
 namespace joj {
 
 struct MainArgs {
-    FixedVector<String> argv{};
+    lft::FixedVector<lft::String> argv{};
 };
 
 int main(MainArgs const& args);

@@ -5,8 +5,8 @@ project(joj)
 # -----------------------------------------------------------------------------
 # Specify libs directories
 #
-set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
 set(LFT_DIR "${CMAKE_SOURCE_DIR}/")
+set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
 
 # -----------------------------------------------------------------------------
 # Add subdirecories
@@ -42,9 +42,10 @@ add_library(joj ${JOJ_HEADERS} ${JOJ_SOURCES})
 # Include directories
 #
 target_include_directories(joj
+    PUBLIC
+    ${LFT_DIR}
     PRIVATE
     ${JOJ_DIR}
-    ${LFT_DIR}
 )
 
 # -----------------------------------------------------------------------------
