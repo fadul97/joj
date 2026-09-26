@@ -195,11 +195,53 @@ static QueueFamilyIndices find_queue_families(VkPhysicalDevice physical_device)
     return indices;
 }
 
+static b8 check_device_extension_support(VkPhysicalDevice physical_device)
+{
+    u32 extensions_count{ 0 };
+    VkResult result = vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extensions_count, nullptr);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to enumerate device extensions.\n");
+        return false;
+    }
+
+    VkExtensionProperties* available_extensions = new VkExtensionProperties[extensions_count];
+    JOJ_ASSERT_DEBUG(available_extensions);
+    result = vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extensions_count, available_extensions);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to enumerate device extensions.\n");
+        return false;
+    }
+
+    char const* const extensions[]{
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
+
+    b8 extension_supported = false;
+    for (u32 i = 0; i < extensions_count; ++i)
+    {
+        if (strcmp(extensions[0], available_extensions[i].extensionName) == 0)
+        {
+            printf("Extensions `%s` suppported.\n", extensions[0]);
+            extension_supported = true;
+        }
+    }
+
+    delete[] available_extensions;
+    available_extensions = nullptr;
+
+    return extension_supported;
+}
+
 static b8 is_physical_device_suitable(VkPhysicalDevice physical_device)
 {
     QueueFamilyIndices indices = find_queue_families(physical_device);
 
-    return indices.graphics_index != JOJ_U32_MAX && indices.presentation_index != JOJ_U32_MAX;
+    b8 const indices_complete = indices.graphics_index != JOJ_U32_MAX && indices.presentation_index != JOJ_U32_MAX;
+    b8 const extensions_supported = check_device_extension_support(physical_device);
+
+    return indices_complete && extensions_supported;
 }
 
 static void create_logical_device()
