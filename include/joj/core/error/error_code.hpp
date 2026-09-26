@@ -4,14 +4,20 @@
 #include "joj/core/types.h"
 
 #undef X
-#define LIST_OF_ERROR_CODES                           \
-    /** @brief Generic error code. */                 \
-    X(FAILED)                                         \
-                                                      \
-    /** @brief Used when assertion fails. */          \
-    X(ASSERTION_FAILED)                               \
-                                                      \
-    /** @brief Used to signal maximum error value. */ \
+#define LIST_OF_ERROR_CODES                                  \
+    /** @brief Generic error code. */                        \
+    X(FAILED)                                                \
+                                                             \
+    /** @brief Used when assertion fails. */                 \
+    X(ASSERTION_FAILED)                                      \
+                                                             \
+    /** @brief Used when DisplayServer connection fails. */  \
+    X(DISPLAY_SERVER_CONNECTION_FAILED)                      \
+                                                             \
+    /** @brief Used when DisplayServer ID creation fails. */ \
+    X(DISPLAY_SERVER_HANDLE_CREATION)                        \
+                                                             \
+    /** @brief Used to signal maximum error value. */        \
     X(MAX)
 
 namespace joj {
