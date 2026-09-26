@@ -2,6 +2,7 @@
 #define _JOJ_FIXED_VECTOR_HPP
 
 #include "joj/core/assert.hpp"
+#include "joj/core/types.h"
 
 namespace joj {
 
@@ -9,7 +10,7 @@ template<typename T>
 class FixedVector {
 public:
     constexpr FixedVector() noexcept = default;
-    constexpr explicit FixedVector(unsigned int const capacity) noexcept
+    constexpr explicit FixedVector(u32 const capacity) noexcept
         : m_capacity{ capacity }
     {
         alloc();
@@ -20,33 +21,22 @@ public:
         clear();
     }
 
-    constexpr T& operator[](unsigned int const index) const noexcept
+    constexpr T& operator[](u32 const index) const noexcept
     {
         JOJ_ASSERT(index < m_capacity);
         return m_data[index];
     }
-
-    constexpr unsigned int capacity() const noexcept
-    {
-        return m_capacity;
-    }
-
-    constexpr void reserve(unsigned int const capacity)
+    constexpr void reserve(u32 const capacity)
     {
         m_capacity = capacity;
         alloc();
     }
 
-private:
-    T* m_data{ nullptr };
-    unsigned int m_capacity{ 0 };
-    bool m_allocated{ false }; // TODO(leonardo): maybe not needed.
-
     constexpr void clear() noexcept
     {
         if (m_data)
         {
-            for (unsigned int i = 0; i < m_capacity; ++i)
+            for (u32 i = 0; i < m_capacity; ++i)
             {
                 m_data[i].~T();
             }
@@ -54,8 +44,29 @@ private:
             delete[] m_data;
             m_data = nullptr;
             m_allocated = false;
+            m_capacity = 0;
         }
     }
+
+    constexpr b8 empty() const noexcept
+    {
+        return m_data == nullptr;
+    }
+
+    constexpr T* data() const noexcept
+    {
+        return m_data;
+    }
+
+    constexpr u32 capacity() const noexcept
+    {
+        return m_capacity;
+    }
+
+private:
+    T* m_data{ nullptr };
+    u32 m_capacity{ 0 };
+    bool m_allocated{ false }; // TODO(leonardo): maybe not needed.
 
     constexpr void alloc() noexcept
     {
