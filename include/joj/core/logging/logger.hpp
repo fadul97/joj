@@ -25,9 +25,10 @@ void log(LogLevel const level, char const* file, u32 const line, char const* fun
 } // namespace joj
 
 #if JOJ_MODE_DEBUG
-#define JOJ_LOG_TRACE(msg, ...) joj::log(joj::LogLevel::TRACE, __FILE__, __LINE__, __FUNCTION__, msg, __VA_ARGS__);
+#define JOJ_LOG_TRACE(msg, ...) joj::log(joj::LogLevel::TRACE, __FILE__, __LINE__, __FUNCTION__, msg __VA_OPT__(, __VA_ARGS__));
 #define JOJ_TODO() joj::log(joj::LogLevel::TODO, __FILE__, __LINE__, __FUNCTION__, "");
 #else
+#define JOJ_LOG_TRACE(msg, ...) joj::log(joj::LogLevel::TRACE, __FILE__, __LINE__, __FUNCTION__, msg __VA_OPT__(, __VA_ARGS__));
 #define JOJ_TODO() joj::log(joj::LogLevel::TODO, __FILE__, __LINE__, __FUNCTION__, "");
 #endif
 
