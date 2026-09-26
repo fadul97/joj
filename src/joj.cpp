@@ -22,6 +22,16 @@
 #include "joj/core/typedefs.h"
 #include "joj/core/types.h"
 
+namespace joj {
+
+template<class T>
+constexpr T const& clamp(T const& v, T const& lo, T const& hi)
+{
+    return v < lo ? lo : ((v > hi) ? hi : v);
+}
+
+} // namespace joj
+
 #define JOJ_VK_FAILED_AGAINST_SUCCESS(result) ((result) != VK_SUCCESS)
 #define JOJ_VK_FAILED(result) ((result) != VK_SUCCESS && (result) != VK_INCOMPLETE)
 
@@ -37,6 +47,10 @@ VkDevice m_device{ nullptr };
 VkQueue m_graphics_queue{ nullptr };
 VkSurfaceKHR m_surface{ nullptr };
 VkQueue m_presentation_queue{ nullptr };
+VkSwapchainKHR m_swapchain{ nullptr };
+FixedVector<VkImage> m_swapchain_images{};
+VkFormat m_swapchain_image_format{ VK_FORMAT_MAX_ENUM };
+VkExtent2D m_swapchain_extent{};
 
 static b8 check_validation_layer_support()
 {
@@ -234,6 +248,80 @@ static b8 check_device_extension_support(VkPhysicalDevice physical_device)
     return extension_supported;
 }
 
+struct SwapchainSupportDetails {
+    VkSurfaceCapabilitiesKHR capabilities{};
+
+    FixedVector<VkSurfaceFormatKHR> formats{};
+
+    FixedVector<VkPresentModeKHR> present_modes{};
+};
+
+SwapchainSupportDetails query_swapchain_support(VkPhysicalDevice physical_device)
+{
+    SwapchainSupportDetails details;
+    JOJ_ASSERT_DEBUG(details.formats.data() == nullptr);
+    JOJ_ASSERT_DEBUG(details.formats.capacity() == 0);
+    JOJ_ASSERT_DEBUG(details.present_modes.data() == nullptr);
+    JOJ_ASSERT_DEBUG(details.present_modes.capacity() == 0);
+
+    VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical_device, m_surface, &details.capabilities);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        printf("[ERROR]: Failed to Vulkan physical device surface capabilities.\n");
+        return details;
+    }
+
+    u32 formats_count{ 0 };
+    result = vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, m_surface, &formats_count, nullptr);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to Vulkan physical device surface formats.\n");
+        return details;
+    }
+
+    if (formats_count == 0)
+    {
+        printf("[ERROR]: NO Vulkan physical device surface format supported.\n");
+        return details;
+    }
+
+    details.formats.reserve(formats_count);
+
+    result = vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, m_surface, &formats_count, details.formats.data());
+    if JOJ_VK_FAILED (result)
+    {
+        details.formats.clear();
+        printf("[ERROR]: Failed to Vulkan physical device surface formats.\n");
+        return details;
+    }
+
+    u32 present_modes_count{ 0 };
+    result = vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, m_surface, &present_modes_count, nullptr);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to Vulkan physical device surface present modes.\n");
+        return details;
+    }
+
+    if (present_modes_count == 0)
+    {
+        printf("[ERROR]: NO Vulkan physical device surface present modes supported.\n");
+        return details;
+    }
+
+    details.present_modes.reserve(present_modes_count);
+
+    result = vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, m_surface, &present_modes_count, details.present_modes.data());
+    if JOJ_VK_FAILED (result)
+    {
+        details.present_modes.clear();
+        printf("[ERROR]: Failed to Vulkan physical device surface present modes.\n");
+        return details;
+    }
+
+    return details;
+}
+
 static b8 is_physical_device_suitable(VkPhysicalDevice physical_device)
 {
     QueueFamilyIndices indices = find_queue_families(physical_device);
@@ -241,7 +329,14 @@ static b8 is_physical_device_suitable(VkPhysicalDevice physical_device)
     b8 const indices_complete = indices.graphics_index != JOJ_U32_MAX && indices.presentation_index != JOJ_U32_MAX;
     b8 const extensions_supported = check_device_extension_support(physical_device);
 
-    return indices_complete && extensions_supported;
+    b8 swapchain_adequate{ false };
+    if (extensions_supported)
+    {
+        SwapchainSupportDetails swapchain_support = query_swapchain_support(physical_device);
+        swapchain_adequate = !swapchain_support.formats.empty() && !swapchain_support.present_modes.empty();
+    }
+
+    return indices_complete && extensions_supported && swapchain_adequate;
 }
 
 static void create_logical_device()
@@ -292,6 +387,12 @@ static void create_logical_device()
     VkPhysicalDeviceFeatures device_features;
     vkGetPhysicalDeviceFeatures(m_physical_device, &device_features);
 
+    char const* const extensions[]{
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
+
+    u32 const extensions_count = JOJ_ARRAY_LEN(extensions);
+
     VkDeviceCreateInfo const device_ci{
         // Structure ID
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
@@ -310,9 +411,9 @@ static void create_logical_device()
         .ppEnabledLayerNames = nullptr,
 
         // Number of extensions to enable
-        .enabledExtensionCount = 0,
+        .enabledExtensionCount = extensions_count,
         // Pointer to array of extensions
-        .ppEnabledExtensionNames = nullptr,
+        .ppEnabledExtensionNames = extensions,
         // All the features to be enabled
         .pEnabledFeatures = &device_features,
     };
@@ -335,6 +436,126 @@ static void create_logical_device()
     unique_queue_families = nullptr;
     delete[] queue_cis;
     queue_cis = nullptr;
+}
+
+VkSurfaceFormatKHR select_swapchain_surface_format(FixedVector<VkSurfaceFormatKHR> const& available_formats)
+{
+    for (u32 i = 0; i < available_formats.capacity(); ++i)
+    {
+        VkSurfaceFormatKHR const& format = available_formats[i];
+        if (format.format == VK_FORMAT_B8G8R8A8_SRGB && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+        {
+            printf("[INFO]: Swapchain surface format: VK_FORMAT_B8G8R8A8_SRGB\n");
+            printf("[INFO]: Swapchain surface color space: VK_COLOR_SPACE_SRGB_NONLINEAR_KHR\n");
+            return format;
+        }
+    }
+
+    return available_formats[0];
+}
+
+VkPresentModeKHR select_swapchain_present_mode(FixedVector<VkPresentModeKHR> const& available_present_modes)
+{
+    for (u32 i = 0; i < available_present_modes.capacity(); ++i)
+    {
+        if (available_present_modes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
+        {
+            printf("[INFO]: Swapchain present mode: VK_PRESENT_MODE_MAILBOX_KHR\n");
+            return available_present_modes[i];
+        }
+    }
+
+    printf("[INFO]: Swapchain present mode: VK_PRESENT_MODE_FIFO_KHR\n");
+    return VK_PRESENT_MODE_FIFO_KHR;
+}
+
+VkExtent2D select_swapchain_extent(VkSurfaceCapabilitiesKHR const& capabilities)
+{
+    if (capabilities.currentExtent.width != JOJ_U32_MAX)
+    {
+        return capabilities.currentExtent;
+    }
+    else
+    {
+        // TODO(leonardo): remove hardcoded swapchain extent size
+        u32 const width{ 800 };
+        u32 const height{ 600 };
+
+        VkExtent2D const actual_extent{
+            .width = clamp(width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
+            .height = clamp(height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
+        };
+
+        return actual_extent;
+    }
+}
+
+static void create_swapchain()
+{
+    SwapchainSupportDetails swapchain_support = query_swapchain_support(m_physical_device);
+
+    VkSurfaceFormatKHR const surface_format = select_swapchain_surface_format(swapchain_support.formats);
+    VkPresentModeKHR const present_mode = select_swapchain_present_mode(swapchain_support.present_modes);
+    VkExtent2D const extent = select_swapchain_extent(swapchain_support.capabilities);
+
+    m_swapchain_image_format = surface_format.format;
+    m_swapchain_extent = extent;
+
+    u32 image_count = swapchain_support.capabilities.minImageCount + 1;
+    if (swapchain_support.capabilities.maxImageCount > 0 && image_count > swapchain_support.capabilities.maxImageCount)
+    {
+        image_count = swapchain_support.capabilities.maxImageCount;
+    }
+
+    QueueFamilyIndices const indices = find_queue_families(m_physical_device);
+    u32 queue_family_indices[]{ indices.graphics_index, indices.presentation_index };
+
+    VkSharingMode image_sharing_mode{ VK_SHARING_MODE_MAX_ENUM };
+    u32 queue_family_index_count{ 0 };
+    u32* pqueue_family_indices{ nullptr };
+    if (indices.graphics_index != indices.presentation_index)
+    {
+        image_sharing_mode = VK_SHARING_MODE_CONCURRENT;
+        queue_family_index_count = 2;
+        pqueue_family_indices = queue_family_indices;
+    }
+    else
+    {
+        image_sharing_mode = VK_SHARING_MODE_EXCLUSIVE;
+        queue_family_index_count = 0;
+        pqueue_family_indices = nullptr;
+    }
+
+    VkSwapchainCreateInfoKHR const swapchain_ci{
+        // Structure ID
+        .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+        // Struct extension
+        .pNext = nullptr,
+        // Indicates parameters of the swapchain creation
+        .flags = 0,
+        .surface = m_surface,
+        .minImageCount = image_count,
+        .imageFormat = surface_format.format,
+        .imageColorSpace = surface_format.colorSpace,
+        .imageExtent = extent,
+        .imageArrayLayers = 1,
+        .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        .imageSharingMode = image_sharing_mode,
+        .queueFamilyIndexCount = queue_family_index_count,
+        .pQueueFamilyIndices = pqueue_family_indices,
+        .preTransform = swapchain_support.capabilities.currentTransform,
+        .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+        .presentMode = present_mode,
+        .clipped = true,
+        .oldSwapchain = nullptr,
+    };
+
+    VkResult result = vkCreateSwapchainKHR(m_device, &swapchain_ci, m_allocator, &m_swapchain);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        printf("[ERROR]: Failed to create Vulkan swapchain.\n");
+        abort();
+    }
 }
 
 i32 main(MainArgs const& args)
@@ -539,8 +760,6 @@ i32 main(MainArgs const& args)
     // ------------------------------------------------------------------------
 
 #if JOJ_MODE_DEBUG
-    VkDebugUtilsMessengerEXT m_debugger{ nullptr };
-
     result = create_debug_utils_messenger_ext(m_instance, &debugger_ci, m_allocator, &m_debugger);
     if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
     {
@@ -639,6 +858,24 @@ i32 main(MainArgs const& args)
     // Create Vulkan Vulkan Swapchain
     // ------------------------------------------------------------------------
 
+    create_swapchain();
+
+    u32 swapchain_images_count{ 0 };
+    result = vkGetSwapchainImagesKHR(m_device, m_swapchain, &swapchain_images_count, nullptr);
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to get Vulkan swapchain images.\n");
+        return -1;
+    }
+
+    m_swapchain_images.reserve(swapchain_images_count);
+    result = vkGetSwapchainImagesKHR(m_device, m_swapchain, &swapchain_images_count, m_swapchain_images.data());
+    if JOJ_VK_FAILED (result)
+    {
+        printf("[ERROR]: Failed to get Vulkan swapchain images.\n");
+        return -1;
+    }
+
     xcb_rectangle_t r = { 20, 20, 60, 60 };
 
     b8 running = true;
@@ -670,19 +907,39 @@ i32 main(MainArgs const& args)
         }
     }
 
-    vkDestroyDevice(m_device, m_allocator);
-    m_device = nullptr;
+    m_swapchain_images.clear();
 
-    vkDestroySurfaceKHR(m_instance, m_surface, m_allocator);
-    m_surface = nullptr;
+    if (m_swapchain)
+    {
+        vkDestroySwapchainKHR(m_device, m_swapchain, m_allocator);
+        m_swapchain = nullptr;
+    }
+
+    if (m_device)
+    {
+        vkDestroyDevice(m_device, m_allocator);
+        m_device = nullptr;
+    }
+
+    if (m_surface)
+    {
+        vkDestroySurfaceKHR(m_instance, m_surface, m_allocator);
+        m_surface = nullptr;
+    }
 
 #if JOJ_MODE_DEBUG
-    destroy_debug_utils_messenger_ext(m_instance, m_debugger, m_allocator);
-    m_debugger = nullptr;
+    if (m_debugger)
+    {
+        destroy_debug_utils_messenger_ext(m_instance, m_debugger, m_allocator);
+        m_debugger = nullptr;
+    }
 #endif
 
-    vkDestroyInstance(m_instance, m_allocator);
-    m_instance = nullptr;
+    if (m_instance)
+    {
+        vkDestroyInstance(m_instance, m_allocator);
+        m_instance = nullptr;
+    }
 
     xcb_disconnect(connection);
     connection = nullptr;
