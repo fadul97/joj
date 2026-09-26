@@ -36,6 +36,16 @@
 // #define JOJ_MODE_DEBUG
 
 // ============================================================================
+// Export macros
+//
+// TODO(leonardo): set visibility
+#ifdef JOJ_PLATFORM_LINUX
+#define JOJ_API
+#else
+#define JOJ_API
+#endif
+
+// ============================================================================
 // Array len macro
 //
 #define JOJ_ARRAY_LEN(arr) (sizeof(arr) / sizeof(arr[0]))
