@@ -451,12 +451,32 @@ ErrorCode RendererBackend::initialize(DisplayServer const* const display_server)
 
     create_command_buffer();
 
+    create_sync_objects();
+
     JOJ_LOG_TRACE("RendererBackend initialized...\n");
     return ErrorCode::OK;
 }
 
 void RendererBackend::shutdown() noexcept
 {
+    if (m_image_available_semaphore)
+    {
+        vkDestroySemaphore(m_device, m_image_available_semaphore, m_allocator);
+        m_image_available_semaphore = nullptr;
+    }
+
+    if (m_render_finished_semaphore)
+    {
+        vkDestroySemaphore(m_device, m_render_finished_semaphore, m_allocator);
+        m_render_finished_semaphore = nullptr;
+    }
+
+    if (m_fence)
+    {
+        vkDestroyFence(m_device, m_fence, m_allocator);
+        m_fence = nullptr;
+    }
+
     if (m_command_pool)
     {
         vkDestroyCommandPool(m_device, m_command_pool, m_allocator);
@@ -515,6 +535,60 @@ void RendererBackend::shutdown() noexcept
         m_instance = nullptr;
     }
     JOJ_LOG_TRACE("RendererBackend shutdown...\n");
+}
+
+// ============================================================================
+
+void RendererBackend::render() noexcept
+{
+    VkResult result = vkWaitForFences(m_device, 1, &m_fence, true, JOJ_U64_MAX);
+    if (result != VK_SUCCESS && result != VK_TIMEOUT)
+    {
+        JOJ_LOG_TRACE("[ERROR]: Failed to wait for fences.\n");
+        return;
+    }
+
+    result = vkResetFences(m_device, 1, &m_fence);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        JOJ_LOG_TRACE("[ERRO]: Failed to reset fence.\n");
+        return;
+    }
+
+    u32 image_index{ 0 };
+    result = vkAcquireNextImageKHR(m_device, m_swapchain, JOJ_U64_MAX, m_image_available_semaphore, nullptr, &image_index);
+    if (result != VK_SUCCESS && result != VK_TIMEOUT && result != VK_SUBOPTIMAL_KHR && result != VK_NOT_READY)
+    {
+        JOJ_LOG_TRACE("[ERROR]: Failed to acquire next swapchain image.\n");
+        return;
+    }
+
+    result = vkResetCommandBuffer(m_command_buffer, 0);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        JOJ_LOG_TRACE("[ERRO]: Failed to reset command buffer.\n");
+        return;
+    }
+
+    record_command_buffer(m_command_buffer, image_index);
+
+    VkSemaphore const wait_semaphores[]{ m_image_available_semaphore };
+
+    VkPipelineStageFlags const wait_stages[]{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+    VkSemaphore const signal_semaphores[]{ m_render_finished_semaphore };
+
+    VkSubmitInfo const submit_info{
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .pNext = nullptr,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = wait_semaphores,
+        .pWaitDstStageMask = wait_stages,
+        .commandBufferCount = 1,
+        .pCommandBuffers = &m_command_buffer,
+        .signalSemaphoreCount = 1,
+        .pSignalSemaphores = signal_semaphores,
+    };
 }
 
 // ============================================================================
@@ -1042,6 +1116,47 @@ void RendererBackend::record_command_buffer(VkCommandBuffer command_buffer, u32 
     {
         JOJ_LOG_TRACE("[ERROR]: Failed to end Vulkan command buffer.\n");
         // return ErrorCode::VULKAN_COMMAND_BUFFER_END;
+        JOJ_ASSERT(false);
+    }
+}
+
+// ============================================================================
+
+void RendererBackend::create_sync_objects()
+{
+    VkSemaphoreCreateInfo const semaphore_ci{
+        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+    };
+
+    VkFenceCreateInfo const fence_ci{
+        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = VK_FENCE_CREATE_SIGNALED_BIT,
+    };
+
+    VkResult result = vkCreateSemaphore(m_device, &semaphore_ci, m_allocator, &m_image_available_semaphore);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        JOJ_LOG_TRACE("[ERROR]: Failed to create Vulkan semaphore.\n");
+        // return ErrorCode::VULKAN_SEMAPHORE_CREATION;
+        JOJ_ASSERT(false);
+    }
+
+    result = vkCreateSemaphore(m_device, &semaphore_ci, m_allocator, &m_render_finished_semaphore);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        JOJ_LOG_TRACE("[ERROR]: Failed to create Vulkan semaphore.\n");
+        // return ErrorCode::VULKAN_SEMAPHORE_CREATION;
+        JOJ_ASSERT(false);
+    }
+
+    result = vkCreateFence(m_device, &fence_ci, m_allocator, &m_fence);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        JOJ_LOG_TRACE("[ERROR]: Failed to create Vulkan fence.\n");
+        // return ErrorCode::VULKAN_FENCE_CREATION;
         JOJ_ASSERT(false);
     }
 }

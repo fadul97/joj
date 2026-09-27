@@ -21,6 +21,8 @@ public:
     ErrorCode initialize(DisplayServer const* const display_server) noexcept;
     void shutdown() noexcept;
 
+    void render() noexcept;
+
 private:
     VkInstance m_instance{ nullptr };
     VkAllocationCallbacks* m_allocator{ nullptr };
@@ -41,6 +43,9 @@ private:
     lft::FixedVector<VkFramebuffer> m_framebuffers{};
     VkCommandPool m_command_pool{ nullptr };
     VkCommandBuffer m_command_buffer{ nullptr };
+    VkSemaphore m_image_available_semaphore{ nullptr };
+    VkSemaphore m_render_finished_semaphore{ nullptr };
+    VkFence m_fence{ nullptr };
 
     struct QueueFamilyIndices {
         u32 graphics_index{ JOJ_U32_MAX };
@@ -76,6 +81,8 @@ private:
     void create_command_buffer();
 
     void record_command_buffer(VkCommandBuffer command_buffer, u32 current_image_index);
+
+    void create_sync_objects();
 };
 
 } // namespace joj::gfx::rhi::vk

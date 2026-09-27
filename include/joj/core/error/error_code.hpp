@@ -67,6 +67,12 @@
     /** @brief Used whend backend fails to end a Vulkan command buffer. */       \
     X(VULKAN_COMMAND_BUFFER_END)                                                 \
                                                                                  \
+    /** @brief Used whend backend fails to create a Vulkan semaphore. */         \
+    X(VULKAN_SEMAPHORE_CREATION)                                                 \
+                                                                                 \
+    /** @brief Used whend backend fails to create a Vulkan fence. */             \
+    X(VULKAN_FENCE_CREATION)                                                     \
+                                                                                 \
     /** @brief Used to signal maximum error value. */                            \
     X(MAX)
 
