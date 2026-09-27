@@ -443,12 +443,22 @@ ErrorCode RendererBackend::initialize(DisplayServer const* const display_server)
 
     create_image_views();
 
+    create_render_pass();
+
+    create_framebuffers();
+
     JOJ_LOG_TRACE("RendererBackend initialized...\n");
     return ErrorCode::OK;
 }
 
 void RendererBackend::shutdown() noexcept
 {
+    for (u32 i = 0; i < m_framebuffers.capacity(); ++i)
+    {
+        vkDestroyFramebuffer(m_device, m_framebuffers[i], m_allocator);
+    }
+    m_framebuffers.clear();
+
     if (m_render_pass)
     {
         vkDestroyRenderPass(m_device, m_render_pass, m_allocator);
@@ -868,14 +878,27 @@ void RendererBackend::create_render_pass()
         .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
     };
 
+    VkSubpassDescription const subpass{
+        .flags = 0,
+        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+        .inputAttachmentCount = 0,
+        .pInputAttachments = nullptr,
+        .colorAttachmentCount = 1,
+        .pColorAttachments = &color_attach_ref,
+        .pResolveAttachments = nullptr,
+        .pDepthStencilAttachment = nullptr,
+        .preserveAttachmentCount = 0,
+        .pPreserveAttachments = nullptr,
+    };
+
     VkRenderPassCreateInfo const render_pass_ci{
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
         .pNext = nullptr,
         .flags = 0,
         .attachmentCount = 1,
         .pAttachments = &color_attachment,
-        .subpassCount = 0,
-        .pSubpasses = nullptr,
+        .subpassCount = 1,
+        .pSubpasses = &subpass,
         .dependencyCount = 0,
         .pDependencies = nullptr,
     };
@@ -886,6 +909,39 @@ void RendererBackend::create_render_pass()
         JOJ_LOG_TRACE("[ERROR]: Failed to create Vulkan render pass.\n");
         // return ErrorCode::VULKAN_RENDER_PASS_CREATION;
         JOJ_ASSERT(false);
+    }
+}
+
+// ============================================================================
+
+void RendererBackend::create_framebuffers()
+{
+    m_framebuffers.reserve(m_swapchain_image_views.capacity());
+    for (u32 i = 0; i < m_swapchain_image_views.capacity(); ++i)
+    {
+        VkImageView const attachments[]{
+            m_swapchain_image_views[i]
+        };
+
+        VkFramebufferCreateInfo const framebuffer_ci{
+            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+            .renderPass = m_render_pass,
+            .attachmentCount = 1,
+            .pAttachments = attachments,
+            .width = m_swapchain_extent.width,
+            .height = m_swapchain_extent.height,
+            .layers = 1,
+        };
+
+        VkResult result = vkCreateFramebuffer(m_device, &framebuffer_ci, m_allocator, &m_framebuffers[i]);
+        if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+        {
+            JOJ_LOG_TRACE("[ERROR]: Failed to create Vulkan framebuffer.\n");
+            // return ErrorCode::VULKAN_FRAMEBUFFER_CREATION;
+            JOJ_ASSERT(false);
+        }
     }
 }
 

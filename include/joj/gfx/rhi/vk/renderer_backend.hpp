@@ -38,6 +38,7 @@ private:
     VkExtent2D m_swapchain_extent{};
     lft::FixedVector<VkImageView> m_swapchain_image_views{};
     VkRenderPass m_render_pass{ nullptr };
+    lft::FixedVector<VkFramebuffer> m_framebuffers{};
 
     struct QueueFamilyIndices {
         u32 graphics_index{ JOJ_U32_MAX };
@@ -65,6 +66,8 @@ private:
     void create_image_views();
 
     void create_render_pass();
+
+    void create_framebuffers();
 };
 
 } // namespace joj::gfx::rhi::vk

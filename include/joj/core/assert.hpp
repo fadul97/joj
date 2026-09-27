@@ -12,6 +12,14 @@
     }                     \
     while (0);
 
+#define JOJ_ASSERT_CODE(err_code)             \
+    do                                        \
+    {                                         \
+        if (err_code() != joj::ErrorCode::OK) \
+            joj::abort();                     \
+    }                                         \
+    while (0);
+
 #if JOJ_MODE_DEBUG
 #define JOJ_ASSERT_DEBUG(cond) \
     do                         \

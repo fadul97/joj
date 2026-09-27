@@ -52,6 +52,9 @@
     /** @brief Used whend backend fails to create a Vulkan render pass. */       \
     X(VULKAN_RENDER_PASS_CREATION)                                               \
                                                                                  \
+    /** @brief Used whend backend fails to create a Vulkan framebuffer. */       \
+    X(VULKAN_FRAMEBUFFER_CREATION)                                               \
+                                                                                 \
     /** @brief Used to signal maximum error value. */                            \
     X(MAX)
 
