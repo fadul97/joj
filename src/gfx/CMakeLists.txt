@@ -16,16 +16,25 @@ set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
 # Specify headers
 #
 set(HEADER_FILES
-    # Linux
+    # GFX
     ${JOJ_DIR}/joj/gfx/renderer.hpp
+
+    # RHI
+    ${JOJ_DIR}/joj/gfx/rhi/typedefs.hpp
+
+    # Vulkan
+    ${JOJ_DIR}/joj/gfx/rhi/vk/renderer_backend.hpp
 )
 
 # -----------------------------------------------------------------------------
 # Specify source
 #
 set(SOURCE_FILES
-    # Core
+    # GFX
     renderer.cpp
+
+    # Vulkan
+    rhi/vk/renderer_backend.cpp
 )
 
 # -----------------------------------------------------------------------------

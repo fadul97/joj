@@ -3,6 +3,7 @@
 
 #include "joj/core/error/error_code.hpp"
 #include "joj/core/typedefs.h"
+#include "joj/gfx/rhi/typedefs.hpp"
 
 namespace joj::gfx {
 
@@ -12,6 +13,9 @@ class Renderer {
 public:
     ErrorCode initialize() noexcept;
     void shutdown() noexcept;
+
+private:
+    rhi::vk::RendererBackend* m_backend{ nullptr };
 };
 
 } // namespace joj::gfx

@@ -16,7 +16,6 @@ set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
 # Specify headers
 #
 set(HEADER_FILES
-    # Linux
     ${JOJ_DIR}/joj/platform/display_server.hpp
 )
 
@@ -24,7 +23,7 @@ set(HEADER_FILES
 # Specify source
 #
 set(SOURCE_FILES
-    # Core
+    # Linux
     linux/display_server_xcb.cpp
 )
 
