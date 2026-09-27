@@ -39,6 +39,8 @@ private:
     lft::FixedVector<VkImageView> m_swapchain_image_views{};
     VkRenderPass m_render_pass{ nullptr };
     lft::FixedVector<VkFramebuffer> m_framebuffers{};
+    VkCommandPool m_command_pool{ nullptr };
+    VkCommandBuffer m_command_buffer{ nullptr };
 
     struct QueueFamilyIndices {
         u32 graphics_index{ JOJ_U32_MAX };
@@ -68,6 +70,12 @@ private:
     void create_render_pass();
 
     void create_framebuffers();
+
+    void create_command_pool();
+
+    void create_command_buffer();
+
+    void record_command_buffer(VkCommandBuffer command_buffer, u32 current_image_index);
 };
 
 } // namespace joj::gfx::rhi::vk

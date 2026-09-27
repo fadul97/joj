@@ -447,12 +447,22 @@ ErrorCode RendererBackend::initialize(DisplayServer const* const display_server)
 
     create_framebuffers();
 
+    create_command_pool();
+
+    create_command_buffer();
+
     JOJ_LOG_TRACE("RendererBackend initialized...\n");
     return ErrorCode::OK;
 }
 
 void RendererBackend::shutdown() noexcept
 {
+    if (m_command_pool)
+    {
+        vkDestroyCommandPool(m_device, m_command_pool, m_allocator);
+        m_command_pool = nullptr;
+    }
+
     for (u32 i = 0; i < m_framebuffers.capacity(); ++i)
     {
         vkDestroyFramebuffer(m_device, m_framebuffers[i], m_allocator);
@@ -942,6 +952,97 @@ void RendererBackend::create_framebuffers()
             // return ErrorCode::VULKAN_FRAMEBUFFER_CREATION;
             JOJ_ASSERT(false);
         }
+    }
+}
+
+// ============================================================================
+
+void RendererBackend::create_command_pool()
+{
+    QueueFamilyIndices queue_family_indices = find_queue_families(m_physical_device);
+
+    VkCommandPoolCreateInfo const command_pool_ci{
+        .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+        .queueFamilyIndex = queue_family_indices.graphics_index,
+    };
+
+    VkResult result = vkCreateCommandPool(m_device, &command_pool_ci, m_allocator, &m_command_pool);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        JOJ_LOG_TRACE("[ERROR]: Failed to create Vulkan command pool.\n");
+        // return ErrorCode::VULKAN_COMMAND_POOL_CREATION;
+        JOJ_ASSERT(false);
+    }
+}
+
+// ============================================================================
+
+void RendererBackend::create_command_buffer()
+{
+    VkCommandBufferAllocateInfo const command_buffer_ai{
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+        .pNext = nullptr,
+        .commandPool = m_command_pool,
+        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+        .commandBufferCount = 1,
+
+    };
+
+    VkResult result = vkAllocateCommandBuffers(m_device, &command_buffer_ai, &m_command_buffer);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        JOJ_LOG_TRACE("[ERROR]: Failed to create Vulkan command buffer.\n");
+        // return ErrorCode::VULKAN_COMMAND_BUFFER_CREATION;
+        JOJ_ASSERT(false);
+    }
+}
+
+// ============================================================================
+
+void RendererBackend::record_command_buffer(VkCommandBuffer command_buffer, u32 current_image_index)
+{
+    VkCommandBufferBeginInfo const command_buffer_begin_info{
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        .pInheritanceInfo = nullptr,
+    };
+
+    VkResult result = vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        JOJ_LOG_TRACE("[ERROR]: Failed to begin Vulkan command buffer.\n");
+        // return ErrorCode::VULKAN_COMMAND_BUFFER_BEGIN;
+        JOJ_ASSERT(false);
+    }
+
+    VkClearValue clear_color{ { { 0.0f, 0.0f, 1.0f, 1.0f } } };
+
+    VkRenderPassBeginInfo const render_pass_begin_info{
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .pNext = nullptr,
+        .renderPass = m_render_pass,
+        .framebuffer = m_framebuffers[current_image_index],
+        .renderArea = {
+            .offset = { 0, 0 },
+            .extent = m_swapchain_extent,
+        },
+        .clearValueCount = 1,
+        .pClearValues = &clear_color,
+    };
+
+    vkCmdBeginRenderPass(command_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
+
+    vkCmdEndRenderPass(command_buffer);
+
+    result = vkEndCommandBuffer(command_buffer);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        JOJ_LOG_TRACE("[ERROR]: Failed to end Vulkan command buffer.\n");
+        // return ErrorCode::VULKAN_COMMAND_BUFFER_END;
+        JOJ_ASSERT(false);
     }
 }
 

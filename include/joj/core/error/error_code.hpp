@@ -55,6 +55,18 @@
     /** @brief Used whend backend fails to create a Vulkan framebuffer. */       \
     X(VULKAN_FRAMEBUFFER_CREATION)                                               \
                                                                                  \
+    /** @brief Used whend backend fails to create a Vulkan command pool. */      \
+    X(VULKAN_COMMAND_POOL_CREATION)                                              \
+                                                                                 \
+    /** @brief Used whend backend fails to create a Vulkan command buffer. */    \
+    X(VULKAN_COMMAND_BUFFER_CREATION)                                            \
+                                                                                 \
+    /** @brief Used whend backend fails to begin a Vulkan command buffer. */     \
+    X(VULKAN_COMMAND_BUFFER_BEGIN)                                               \
+                                                                                 \
+    /** @brief Used whend backend fails to end a Vulkan command buffer. */       \
+    X(VULKAN_COMMAND_BUFFER_END)                                                 \
+                                                                                 \
     /** @brief Used to signal maximum error value. */                            \
     X(MAX)
 
