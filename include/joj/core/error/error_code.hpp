@@ -49,6 +49,9 @@
     /** @brief Used whend backend fails to find get Swapchain images. */         \
     X(VULKAN_SWAPCHAIN_IMAGES_MISSING)                                           \
                                                                                  \
+    /** @brief Used whend backend fails to create a Vulkan render pass. */       \
+    X(VULKAN_RENDER_PASS_CREATION)                                               \
+                                                                                 \
     /** @brief Used to signal maximum error value. */                            \
     X(MAX)
 

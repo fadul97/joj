@@ -37,6 +37,7 @@ private:
     VkFormat m_swapchain_image_format{ VK_FORMAT_MAX_ENUM };
     VkExtent2D m_swapchain_extent{};
     lft::FixedVector<VkImageView> m_swapchain_image_views{};
+    VkRenderPass m_render_pass{ nullptr };
 
     struct QueueFamilyIndices {
         u32 graphics_index{ JOJ_U32_MAX };
@@ -62,6 +63,8 @@ private:
     void create_swapchain();
 
     void create_image_views();
+
+    void create_render_pass();
 };
 
 } // namespace joj::gfx::rhi::vk

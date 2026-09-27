@@ -5,6 +5,7 @@
 
 // 3rd Party Includes
 #include <lft/algorithm.hpp>
+#include <vulkan/vulkan_core.h>
 
 #include "joj/core/assert.hpp"
 #include "joj/core/logging/logger.hpp"
@@ -448,6 +449,12 @@ ErrorCode RendererBackend::initialize(DisplayServer const* const display_server)
 
 void RendererBackend::shutdown() noexcept
 {
+    if (m_render_pass)
+    {
+        vkDestroyRenderPass(m_device, m_render_pass, m_allocator);
+        m_render_pass = nullptr;
+    }
+
     for (u32 i = 0; i < m_swapchain_image_views.capacity(); ++i)
     {
         vkDestroyImageView(m_device, m_swapchain_image_views[i], m_allocator);
@@ -837,6 +844,48 @@ void RendererBackend::create_image_views()
             JOJ_LOG_TRACE("[ERROR]: Failed to create Vulkan image view.\n");
             abort();
         }
+    }
+}
+
+// ============================================================================
+
+void RendererBackend::create_render_pass()
+{
+    VkAttachmentDescription const color_attachment{
+        .flags = 0,
+        .format = m_swapchain_image_format,
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+    };
+
+    VkAttachmentReference const color_attach_ref{
+        .attachment = 0,
+        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+    };
+
+    VkRenderPassCreateInfo const render_pass_ci{
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        .attachmentCount = 1,
+        .pAttachments = &color_attachment,
+        .subpassCount = 0,
+        .pSubpasses = nullptr,
+        .dependencyCount = 0,
+        .pDependencies = nullptr,
+    };
+
+    VkResult result = vkCreateRenderPass(m_device, &render_pass_ci, m_allocator, &m_render_pass);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        JOJ_LOG_TRACE("[ERROR]: Failed to create Vulkan render pass.\n");
+        // return ErrorCode::VULKAN_RENDER_PASS_CREATION;
+        JOJ_ASSERT(false);
     }
 }
 
