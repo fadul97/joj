@@ -10,6 +10,7 @@ add_subdirectory(rhi)
 # -----------------------------------------------------------------------------
 # Specify joj base directory
 #
+set(LFT_DIR "${CMAKE_SOURCE_DIR}/")
 set(JOJ_DIR "${CMAKE_SOURCE_DIR}/include/")
 
 # -----------------------------------------------------------------------------
@@ -23,6 +24,8 @@ set(HEADER_FILES
     ${JOJ_DIR}/joj/gfx/rhi/typedefs.hpp
 
     # Vulkan
+    ${JOJ_DIR}/joj/gfx/rhi/vk/utils.hpp
+    ${JOJ_DIR}/joj/gfx/rhi/vk/platform.hpp
     ${JOJ_DIR}/joj/gfx/rhi/vk/renderer_backend.hpp
 )
 
@@ -34,6 +37,7 @@ set(SOURCE_FILES
     renderer.cpp
 
     # Vulkan
+    rhi/vk/platform.cpp
     rhi/vk/renderer_backend.cpp
 )
 
@@ -45,7 +49,11 @@ add_library(jojGFX ${HEADER_FILES} ${SOURCE_FILES})
 # -----------------------------------------------------------------------------
 # Include directories
 #
-target_include_directories(jojGFX PRIVATE ${JOJ_DIR})
+target_include_directories(jojGFX
+    PRIVATE
+    ${LFT_DIR}
+    ${JOJ_DIR}
+)
 
 # -----------------------------------------------------------------------------
 # Link libraries
@@ -53,6 +61,7 @@ target_include_directories(jojGFX PRIVATE ${JOJ_DIR})
 target_link_libraries(jojGFX
     PRIVATE
         jojCore
+        lft
 )
 
 # -----------------------------------------------------------------------------

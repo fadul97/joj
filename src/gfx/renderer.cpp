@@ -5,14 +5,14 @@
 
 namespace joj::gfx {
 
-ErrorCode Renderer::initialize() noexcept
+ErrorCode Renderer::initialize(DisplayServer const* const display_server) noexcept
 {
     JOJ_ASSERT(m_backend == nullptr);
 
     m_backend = new rhi::vk::RendererBackend{};
     JOJ_ASSERT(m_backend);
 
-    return m_backend->initialize();
+    return m_backend->initialize(display_server);
 }
 
 void Renderer::shutdown() noexcept

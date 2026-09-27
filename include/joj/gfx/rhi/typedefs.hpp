@@ -1,6 +1,12 @@
 #ifndef _JOJ_RHI_TYPEDEFS_HPP
 #define _JOJ_RHI_TYPEDEFS_HPP
 
+namespace joj {
+
+struct DisplayServer;
+
+} // namespace joj
+
 namespace joj::gfx::rhi::vk {
 
 class RendererBackend;

@@ -11,7 +11,7 @@ class Renderer {
     JOJ_MAKE_DEFAULT_CTORS_AND_DTORS(Renderer);
 
 public:
-    ErrorCode initialize() noexcept;
+    ErrorCode initialize(DisplayServer const* const display_server) noexcept;
     void shutdown() noexcept;
 
 private:

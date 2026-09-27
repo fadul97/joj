@@ -622,8 +622,14 @@ i32 main(MainArgs const& args)
     printf("\nDisplayServer created.\n");
 
     // ------------------------------------------------------------------------
-    // Create Vulkan Instance
+    // Initialize Renderer
     // ------------------------------------------------------------------------
+
+    gfx::Renderer renderer;
+    if JOJ_FAILED (renderer.initialize(&display_server))
+    {
+        return -1;
+    }
 
     // Describe application
     VkApplicationInfo const app_info{
@@ -916,8 +922,6 @@ i32 main(MainArgs const& args)
         m_instance = nullptr;
     }
 
-    display_server_destroy(&display_server);
-
     for (u32 i = 0; i < static_cast<u32>(ErrorCode::MAX); ++i)
     {
         JOJ_LOG_TRACE("\t[%d]: `%s`.\n", i, error_code_to_cstr(static_cast<ErrorCode>(i)));
@@ -925,8 +929,8 @@ i32 main(MainArgs const& args)
 
     JOJ_TODO();
 
-    gfx::Renderer renderer;
-    renderer.initialize();
+    display_server_destroy(&display_server);
+
     renderer.shutdown();
 
     printf("Hello, JOJ on %s!\n", PLATFORM_NAME);
