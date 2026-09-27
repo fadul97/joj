@@ -1,7 +1,6 @@
 #include "joj/gfx/renderer.hpp"
 
 #include "joj/core/assert.hpp"
-#include "joj/core/logging/logger.hpp"
 #include "joj/gfx/rhi/vk/renderer_backend.hpp"
 
 namespace joj::gfx {

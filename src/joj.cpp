@@ -15,6 +15,9 @@
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_xcb.h>
 
+// 3rd Party Includes
+#include <lft/algorithm.hpp>
+
 // joj Includes
 #include "joj/core/assert.hpp"
 #include "joj/core/error/error_code.hpp"
@@ -24,16 +27,6 @@
 #include "joj/core/types.h"
 #include "joj/gfx/renderer.hpp"
 #include "joj/platform/display_server.hpp"
-
-namespace joj {
-
-template<class T>
-constexpr T const& clamp(T const& v, T const& lo, T const& hi)
-{
-    return v < lo ? lo : ((v > hi) ? hi : v);
-}
-
-} // namespace joj
 
 #define JOJ_VK_FAILED_AGAINST_SUCCESS(result) ((result) != VK_SUCCESS)
 #define JOJ_VK_FAILED(result) ((result) != VK_SUCCESS && (result) != VK_INCOMPLETE)
@@ -486,8 +479,8 @@ VkExtent2D select_swapchain_extent(VkSurfaceCapabilitiesKHR const& capabilities)
         u32 const height{ 600 };
 
         VkExtent2D const actual_extent{
-            .width = clamp(width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
-            .height = clamp(height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
+            .width = lft::clamp(width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
+            .height = lft::clamp(height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
         };
 
         return actual_extent;
