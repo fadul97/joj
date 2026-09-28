@@ -44,10 +44,6 @@ private:
     VkRenderPass m_render_pass{ nullptr };
     lft::FixedVector<VkFramebuffer> m_framebuffers{};
     VkCommandPool m_command_pool{ nullptr };
-    // VkCommandBuffer m_command_buffer{ nullptr };
-    // VkSemaphore m_image_available_semaphore{ nullptr };
-    // VkSemaphore m_render_finished_semaphore{ nullptr };
-    // VkFence m_fence{ nullptr };
     lft::FixedVector<VkFence> m_fences{};
     lft::FixedVector<VkSemaphore> m_acquire_semaphores{};
     lft::FixedVector<VkSemaphore> m_submit_semaphores{};
