@@ -60,6 +60,8 @@ i32 main(MainArgs const& args)
         {
             running = false;
         }
+
+        renderer.render();
     }
 
     renderer.shutdown();

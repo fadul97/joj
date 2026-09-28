@@ -25,4 +25,9 @@ void Renderer::shutdown() noexcept
     }
 }
 
+void Renderer::render() noexcept
+{
+    m_backend->render();
+}
+
 } // namespace joj::gfx

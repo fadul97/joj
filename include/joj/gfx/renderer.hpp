@@ -14,6 +14,8 @@ public:
     ErrorCode initialize(DisplayServer const* const display_server) noexcept;
     void shutdown() noexcept;
 
+    void render() noexcept;
+
 private:
     rhi::vk::RendererBackend* m_backend{ nullptr };
 };

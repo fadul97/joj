@@ -459,6 +459,8 @@ ErrorCode RendererBackend::initialize(DisplayServer const* const display_server)
 
 void RendererBackend::shutdown() noexcept
 {
+    vkDeviceWaitIdle(m_device);
+
     if (m_image_available_semaphore)
     {
         vkDestroySemaphore(m_device, m_image_available_semaphore, m_allocator);
@@ -589,6 +591,31 @@ void RendererBackend::render() noexcept
         .signalSemaphoreCount = 1,
         .pSignalSemaphores = signal_semaphores,
     };
+
+    result = vkQueueSubmit(m_graphics_queue, 1, &submit_info, m_fence);
+    if JOJ_VK_FAILED_AGAINST_SUCCESS (result)
+    {
+        JOJ_LOG_TRACE("[ERRO]: Failed to submit queue for drawing.\n");
+        return;
+    }
+
+    VkPresentInfoKHR const present_info{
+        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+        .pNext = nullptr,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = signal_semaphores,
+        .swapchainCount = 1,
+        .pSwapchains = &m_swapchain,
+        .pImageIndices = &image_index,
+        .pResults = nullptr,
+    };
+
+    result = vkQueuePresentKHR(m_presentation_queue, &present_info);
+    if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+    {
+        JOJ_LOG_TRACE("[ERRO]: Failed to present queue for drawing.\n");
+        return;
+    }
 }
 
 // ============================================================================
@@ -975,6 +1002,16 @@ void RendererBackend::create_render_pass()
         .pPreserveAttachments = nullptr,
     };
 
+    VkSubpassDependency const subpass_dependency{
+        .srcSubpass = VK_SUBPASS_EXTERNAL,
+        .dstSubpass = 0,
+        .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        .srcAccessMask = 0,
+        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        .dependencyFlags = 0,
+    };
+
     VkRenderPassCreateInfo const render_pass_ci{
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
         .pNext = nullptr,
@@ -983,8 +1020,8 @@ void RendererBackend::create_render_pass()
         .pAttachments = &color_attachment,
         .subpassCount = 1,
         .pSubpasses = &subpass,
-        .dependencyCount = 0,
-        .pDependencies = nullptr,
+        .dependencyCount = 1,
+        .pDependencies = &subpass_dependency,
     };
 
     VkResult result = vkCreateRenderPass(m_device, &render_pass_ci, m_allocator, &m_render_pass);
